@@ -1,0 +1,88 @@
+body {
+    font-family: "Oswald", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400; /* You can adjust the default weight */
+    font-style: normal;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4; /* A light gray background */
+    color: #333; /* Dark gray text for good readability */
+    line-height: 1.6; /* Improves text readability */
+}
+
+header {
+    background-color: #5c6bc0; /* A calming blue-purple color */
+    color: White;
+    padding: 2em 0;
+    text-align: center;
+    margin-bottom: 2em;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+header h1 {
+    font-size: 4.5em;
+    margin-bottom: 0.5em;
+}
+header h2 {
+    background-color: #5c6bc0;
+    color: white;
+    padding: 1.6em 0;
+    text-align: center;
+    margin-bottom: 2em;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+header h2 {
+    font-size: 1.8em; /* Adjust the size as needed */
+    font-weight: normal; /* To make it less bold than a typical h2 if you prefer */
+    color: white; /* Keep the text white */
+    text-align: center; /* Center the heading */
+    margin-bottom: 1em; /* Add some space below it */
+    line-height: 1.4; /* Improve readability for longer headings */
+}
+
+header h2 p {
+    font-size: 1em; /* Style the paragraph within the h2 */
+    opacity: 0.8;
+    margin-top: 0.5em; /* Add some space above the paragraph */
+}
+
+section {
+    width: 80%;
+    margin: 0 auto;
+    padding: 2em;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    margin-bottom: 2em;
+    border-radius: 8px; /* Slightly rounded corners */
+}
+
+section h3 {
+    color: #3f51b5; /* A darker shade of the header color */
+    margin-top: 0;
+    margin-bottom: 1em;
+    border-bottom: 2px solid #3f51b5; /* Underline for the heading */
+    padding-bottom: 0.5em;
+    font-size: 1.5em; /* Adjust the size as needed */
+}
+
+#document-list {
+    margin-top: 1em;
+}
+
+#document-list p {
+    font-style: italic;
+    color: #777;
+}
+
+footer {
+    text-align: center;
+    padding: 1em 0;
+    background-color: #333;
+    color: white;
+    font-size: 0.9em;
+}
