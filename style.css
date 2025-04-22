@@ -90,3 +90,31 @@ footer {
 #document-list a {
   font-size: 1.4em; /* Added this line */
 }
+
+#document-list ul {
+    list-style: none; /* Remove bullet points from the list */
+    padding: 0;
+}
+
+#document-list li {
+    margin-bottom: 1em; /* Add some space between the boxes */
+}
+
+#document-list a {
+    display: block; /* Make the entire link clickable and occupy the full width of the li */
+    padding: 1em;
+    border: 1px solid #ccc; /* Add a border for the box effect */
+    border-radius: 5px; /* Add rounded corners */
+    text-decoration: none; /* Remove the default underline from the link */
+    color: #333; /* Set the text color */
+    background-color: #f9f9f9; /* Add a light background color */
+}
+
+#document-list a:hover {
+    background-color: #eee; /* Change background color on hover for interaction feedback */
+}
+
+#document-list a i {
+    margin-right: 0.5em; /* Add some space between the icon and the text */
+    color: #3f51b5; /* Style the icon color */
+}
