@@ -72,6 +72,7 @@ section h3 {
 
 #document-list {
     margin-top: 1em;
+    text-align: center; /* Center-align text within the document list container */
 }
 
 #document-list p {
@@ -87,34 +88,90 @@ footer {
     font-size: 0.9em;
 }
 
-#document-list a {
-  font-size: 1.4em; /* Added this line */
+#document-list {
+    margin-top: 1em;
+    text-align: center; /* Keep text centered by default */
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns */
+    grid-template-rows: auto auto auto; /* Adjust rows as needed */
+    gap: 20px; /* Spacing between grid items */
+    align-items: start; /* Align items to the top of their grid area */
 }
 
-#document-list ul {
-    list-style: none; /* Remove bullet points from the list */
+.category-item {
+    text-align: center; /* Center content within each category */
+}
+
+.category-item h4 {
+    color: #3f51b5;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 0.2em;
+    text-align: center; /* Ensure heading is centered within its item */
+}
+
+.category-item ul {
+    list-style: none;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-#document-list li {
-    margin-bottom: 1em; /* Add some space between the boxes */
+.category-item li {
+    margin-bottom: 1em;
+    width: 80%;
+    max-width: 400px; /* Adjust max width for items within categories */
 }
 
-#document-list a {
-    display: block; /* Make the entire link clickable and occupy the full width of the li */
+.category-item a {
+    display: block;
     padding: 1em;
-    border: 1px solid #ccc; /* Add a border for the box effect */
-    border-radius: 5px; /* Add rounded corners */
-    text-decoration: none; /* Remove the default underline from the link */
-    color: #333; /* Set the text color */
-    background-color: #f9f9f9; /* Add a light background color */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #333;
+    background-color: #f9f9f9;
+    text-align: center;
 }
 
-#document-list a:hover {
-    background-color: #eee; /* Change background color on hover for interaction feedback */
+.category-item a:hover {
+    background-color: #eee;
 }
 
-#document-list a i {
-    margin-right: 0.5em; /* Add some space between the icon and the text */
-    color: #3f51b5; /* Style the icon color */
+.category-item a i {
+    margin-right: 0.5em;
+    color: #3f51b5;
+}
+
+/* Adjust placement for specific categories */
+#medical-career {
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+}
+
+#spokesperson {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+}
+
+#graphics-cards {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+}
+
+#laptops {
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+}
+
+#mobile {
+    grid-column: 1 / 2;
+    grid-row: 3 / 4;
+}
+
+#cars {
+    grid-column: 2 / 3;
+    grid-row: 3 / 4;
 }
