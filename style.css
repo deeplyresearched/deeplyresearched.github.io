@@ -13,31 +13,31 @@ body {
 header {
     background-color: #5c6bc0; /* A calming blue-purple color */
     color: White;
-    padding: 2em 0;
+    padding: 1.5em 0;
     text-align: center;
-    margin-bottom: 2em;
+    margin-bottom: 1.5em;
     width: 100%;	
     margin-left: auto;
     margin-right: auto;
 }
 
 header h1 {
-    font-size: 4.5em;
-    margin-bottom: 0.5em;
+    font-size: 4.0em;
+    margin-bottom: 0.4em;
 }
 header h2 {
     background-color: #5c6bc0;
     color: white;
-    padding: 1.6em 0;
+    padding: 1.2em 1.2em;
     text-align: center;
-    margin-bottom: 2em;
+    margin-bottom: 1.5em;
     width: 80%;
     margin-left: auto;
     margin-right: auto;
 }
 
 header h2 {
-    font-size: 1.8em; /* Adjust the size as needed */
+    font-size: 1.7em; /* Adjust the size as needed */
     font-weight: normal; /* To make it less bold than a typical h2 if you prefer */
     color: white; /* Keep the text white */
     text-align: center; /* Center the heading */
@@ -49,30 +49,31 @@ header h2 p {
     font-size: 1em; /* Style the paragraph within the h2 */
     opacity: 0.8;
     margin-top: 0.5em; /* Add some space above the paragraph */
+    color: white;
 }
 
 section {
     width: 80%;
-    margin: 0 auto;
-    padding: 2em;
+    margin: 1em auto;
+    padding: 1em;
     background-color: white;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    margin-bottom: 2em;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    margin-bottom: 1em;
     border-radius: 8px; /* Slightly rounded corners */
 }
 
 header h3 {
-    font-size: 1.5em; 
+    font-size: 1.3em; 
     opacity: 0.8;
-    margin-top: 0.5em;
+    margin-top: 0.3em;
     color: Black;
 }
 
 header nav {
     display: flex; /* Enable flexbox for the navigation */
     justify-content: center; /* Center the navigation links horizontally */
-    margin-top: 1em; /* Add some space above the navigation */
-    margin-bottom: 1.3em; /* Add some space below the navigation */
+    margin-top: 0.5em; /* Add some space above the navigation */
+    margin-bottom: 1em; /* Add some space below the navigation */
 }
 
 header nav ul {
@@ -84,7 +85,7 @@ header nav ul {
 }
 
 header nav li {
-    margin: 0 1.5em; 
+    margin: 0.3em 0.5em; 
 }
 
 header nav a {
@@ -92,12 +93,12 @@ header nav a {
     text-decoration: none;
     font-weight: normal; /* Remove bold font */
     padding: 0.3em 2.0em; /* Adjust padding */
-    border-radius: 20px; /* Add rounded corners */
+    border-radius: 17px; /* Add rounded corners */
     background-color: rgba(255, 255, 255, 0.8); /* Lighter white background with slight transparency */
     border: 1px solid #ccc; /* Add a border */
     display: inline-flex; /* Use flex to align icon and text */
     align-items: center; /* Vertically align icon and text */
-    transition: background-color 0.4s ease; /* Add a smooth transition for hover effect */
+    transition: background-color 0.3s ease; /* Add a smooth transition for hover effect */
 }
 
 header nav a:hover {
@@ -105,29 +106,31 @@ header nav a:hover {
 }
 
 header nav a i {
-    margin-right: 0.5em; /* Add space between icon and text */
+    margin-right: 0.3em; /* Add space between icon and text */
     color: #007bff; /* Blue color for the icon */
 }
 
 #document-list {
     margin-top: 1em;
     text-align: center; /* Center-align text within the document list container */
+    display: grid;
+    gap: 10px; /* Adjusted gap for mobile */
 }
 
 #document-list p {
     font-style: italic;
     color: #777;
     text-align: left;
-    font-size: 1.3em
+    font-size: 1.1em
 }
 
 #document-list {
     margin-top: 1em;
     text-align: center; /* Keep text centered by default */
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Two columns */
+    grid-template-columns: auto auto; /* Two columns */
     grid-template-rows: auto auto auto; /* Adjust rows as needed */
-    gap: 20px; /* Spacing between grid items */
+    gap: 10px; /* Adjusted gap for mobile */
     align-items: start; /* Align items to the top of their grid area */
 }
 
@@ -137,12 +140,12 @@ header nav a i {
 
 .category-item h4 {
     color: #3f51b5;
-    margin-top: 1.5em;
-    margin-bottom: 0.5em;
+    margin-top: 1em;
+    margin-bottom: 0.3em;
     border-bottom: 1px solid #ccc;
     padding-bottom: 0.2em;
     text-align: center; /* Ensure heading is centered within its item */
-    font-size: 1.3em
+    font-size: 1.2em
 }
 
 .category-item ul {
@@ -154,21 +157,21 @@ header nav a i {
 }
 
 .category-item li {
-    margin-bottom: 1em;
-    width: 80%;
-    max-width: 400px; /* Adjust max width for items within categories */
+    margin-bottom: 0.5em;
+    width: 100%;
+    max-width: 350px; /* Adjust max width for items within categories */
 }
 
 .category-item a {
     display: block;
-    padding: 1em;
+    padding: 0.6em;
     border: 1px solid #ccc;
     border-radius: 20px;
     text-decoration: none;
     color: #333;
     background-color: #f9f9f9;
     text-align: center;
-    font-size: 1.2em
+    font-size: 1em
 }
 
 .category-item a:hover {
@@ -176,7 +179,7 @@ header nav a i {
 }
 
 .category-item a i {
-    margin-right: 0.5em;
+    margin-right: 0.3em;
     color: #c46641;
 }
 
@@ -217,14 +220,14 @@ header nav a i {
     text-decoration: none;
     font-weight: normal;
     padding: 0.3em 2.0em;
-    border-radius: 8px;
+    border-radius: 10px;
     background-color: rgba(255, 255, 255, 0.8);
     border: 1px solid #ccc;
     display: inline-flex;
     align-items: center;
     transition: background-color 0.4s ease;
-    font-size: 1.3em;
-    margin-top: 1em; /* Add some space above the link */
+    font-size: 0.9em;
+    margin-top: 0.8em; /* Add some space above the link */
 }
 
 .daily-dive-item a:hover {
@@ -232,32 +235,32 @@ header nav a i {
 }
 
 .daily-dive-item a i {
-    margin-right: 0.5em; /* Adjust spacing for the icon */
+    margin-right: 0.3em; /* Adjust spacing for the icon */
     color: #c46641;
 }
 
 .daily-dive-item h4{
-    font-size: 1.7em; /* Adjust this value to your desired size */
-    line-height: 1.7; /* Improve readability for larger text */
+    font-size: 1.5em; /* Adjust this value to your desired size */
+    line-height: 1.4; /* Improve readability for larger text */
     margin-bottom: 1em; /* Add some space below the paragraph */
 }
 
 .daily-dive-item p {
-    font-size: 1.4em; /* Adjust this value to your desired size */
-    line-height: 1.7; /* Improve readability for larger text */
+    font-size: 1.2em; /* Adjust this value to your desired size */
+    line-height: 1.4; /* Improve readability for larger text */
     margin-bottom: 1em; /* Add some space below the paragraph */
 }
 
 .daily-dive-item p1 {
-    font-size: 1.0em; /* Adjust this value to your desired size */
-    line-height: 1.7; /* Improve readability for larger text */
+    font-size: 1.2em; /* Adjust this value to your desired size */
+    line-height: 1.4; /* Improve readability for larger text */
     margin-bottom: 1em; /* Add some space below the paragraph */
 }
 
 footer {
     text-align: center;
-    padding: 1em 0;
+    padding: 0.8em 0;
     background-color: #333;
     color: white;
-    font-size: 0.9em;
+    font-size: 0.8em;
 }
