@@ -25,6 +25,15 @@ header h1 {
     font-size: 4.0em;
     margin-bottom: 0.4em;
 }
+
+header h1 {
+     padding: 0.5em 0.5em;
+     text-align: center;
+     width: 60%;
+     margin-left: auto;
+     margin-right: auto;
+}
+
 header h2 {
     background-color: #5c6bc0;
     color: white;
