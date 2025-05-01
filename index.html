@@ -47,7 +47,9 @@
                 title: "Starlink and the Evolving Satellite Internet Landscape",
                 excerpt: "This report provides a comprehensive analysis of Starlink, the satellite internet constellation developed and operated by SpaceX, and its position within the competitive satellite communications industry. Starlink represents a signicant disruption, leveraging a massive Low Earth Orbit (LEO) satellite constellation to oer high-speed, low-latency broadband internet services globally, particularly targeting unserved and underserved markets. Its technological foundation, built upon thousands of satellites orbiting at approximately 550 km, overcomes the inherent latency limitations of traditional geostationary (GEO) providers, enabling applications previously impractical via satellite. Key technologies include phased-array user terminals, inter-satellite laser links for enhanced global coverage, and continuous deployment facilitated by SpaceX's unique vertical integration and reusable launch capabilities.",
                 link: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/99784ec22e33411457aecf03b8f6d613023b8db7/documents/Starlink%20and%20Competitor%20Analysis_.pdf",
-                linkText: "Read about the full Starlink and the Evolving Satellite Internet Landscape"
+                linkText: "Read about the full Starlink and the Evolving Satellite Internet Landscape",
+                videoLink: "https://youtu.be/KT0zdDp2I80",
+                videoLinkText: "starlink",
             }
                    ];
 
@@ -61,7 +63,10 @@
                 <div class="daily-dive-item">
                     <h4>${currentArticle.title}</h4>
                     <p>${currentArticle.excerpt}</p>
-                    <p1><a href="${currentArticle.link}" target="_blank"><i class="fas fa-file-pdf"></i>${currentArticle.linkText}</a></p1>
+                    <p1>
+                    <a href="${currentArticle.link}" target="_blank"><i class="fas fa-file-pdf"></i>${currentArticle.linkText}</a>
+                    <a href="${currentArticle.videoLink}" target="_blank"><i class="fab fa-youtube"></i>${currentArticle.videoLinkText}</a>
+                    </p1>
                 </div>
             `;
         }
