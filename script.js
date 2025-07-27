@@ -1,9 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const documentListDiv = document.getElementById('document-list');
-    const documents = [
-        { name: 'Research Paper 1', url: 'research_paper_1.pdf' },
-        { name: 'Another Important Document', url: 'another_document.docx' },
-        { name: 'Presentation Slides', url: 'presentation.pptx' }
+   
         // Add more documents here with their names and URLs
     ];
 
