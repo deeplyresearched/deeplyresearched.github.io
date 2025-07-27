@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const documentListDiv = document.getElementById('document-list');
-   
-        // Add more documents here with their names and URLs
+    const documents = [
+        // Remove all entries here if you don't want any dynamic documents
     ];
 
     if (documents.length > 0) {
