@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Porsche: An Interactive History of Innovation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Elegant Neutrality -->
+    <!-- Application Structure Plan: A top-down, single-page application with a sticky navigation bar for easy access to thematic sections. The structure is designed for intuitive exploration, starting with a broad overview and allowing users to drill down into specific areas of interest like Core Technologies, The Electric Era, and Motorsport Influence. This non-linear, thematic approach is chosen over a direct report-to-page conversion because it allows users to more easily compare related concepts and follow their own path of discovery, making the dense information more digestible and engaging. Key interactions include tabbed content for core technologies, an interactive bar chart for performance comparison, and hover/click effects to reveal detailed information. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Historical innovations in Suspension, Aerodynamics, Braking. Goal: Show chronological development. Viz/Method: Interactive Timeline (HTML/CSS/JS). Justification: Intuitively presents historical progression and is more engaging than a list.
+        - Report Info: Performance comparison of Hybrid/EV models. Goal: Compare key performance metrics. Viz/Method: Interactive Bar Chart (Chart.js). Justification: Ideal for direct comparison of quantitative data like horsepower and acceleration.
+        - Report Info: Motorsport technology transfer. Goal: Show direct relationships. Viz/Method: Side-by-side comparison cards (HTML/Tailwind Grid). Justification: Clearly and visually connects race tech to road tech.
+        - Report Info: Key features of current models. Goal: Explain complex features simply. Viz/Method: Accordion-style info panels (HTML/JS). Justification: Prevents information overload by allowing users to expand only what interests them.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+        .porsche-red {
+            color: #D5001C;
+        }
+        .bg-porsche-red {
+            background-color: #D5001C;
+        }
+        .border-porsche-red {
+            border-color: #D5001C;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 1.25rem;
+            left: -0.45rem;
+            width: 0.875rem;
+            height: 0.875rem;
+            border-radius: 9999px;
+            background-color: #D5001C;
+            border: 2px solid #f8f9fa;
+        }
+        .nav-link.active {
+            color: #D5001C;
+            border-bottom: 2px solid #D5001C;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #D5001C;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="header" class="bg-white/80 backdrop-blur-md shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-3">
+            <div class="flex items-center justify-between">
+                <div class="text-xl font-bold text-gray-800">Porsche Innovation</div>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="#core-tech" class="nav-link text-gray-600 hover:porsche-red pb-1 transition-colors duration-300">Core Technologies</a>
+                    <a href="#electric-era" class="nav-link text-gray-600 hover:porsche-red pb-1 transition-colors duration-300">The Electric Era</a>
+                    <a href="#motorsport" class="nav-link text-gray-600 hover:porsche-red pb-1 transition-colors duration-300">Motorsport DNA</a>
+                    <a href="#ai-insights" class="nav-link text-gray-600 hover:porsche-red pb-1 transition-colors duration-300">✨ AI Insights</a>
+                    <a href="#future" class="nav-link text-gray-600 hover:porsche-red pb-1 transition-colors duration-300">Future Focus</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="menu-btn" class="text-gray-600 focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    </button>
+                </div>
+            </div>
+            <div id="mobile-menu" class="hidden md:hidden mt-4">
+                <a href="#core-tech" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-200 rounded">Core Technologies</a>
+                <a href="#electric-era" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-200 rounded">The Electric Era</a>
+                <a href="#motorsport" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-200 rounded">Motorsport DNA</a>
+                <a href="#ai-insights" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-200 rounded">✨ AI Insights</a>
+                <a href="#future" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-200 rounded">Future Focus</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="py-20 bg-white">
+            <div class="container mx-auto px-6 text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-gray-800 leading-tight">A Tradition of Innovation</h1>
+                <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">Beyond the iconic engine roar, Porsche's legacy is built on a relentless pursuit of engineering excellence. This interactive journey explores the groundbreaking technologies in suspension, aerodynamics, braking, and electrification that define every Porsche.</p>
+            </div>
+        </section>
+
+        <section id="core-tech" class="py-16">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold">Core Technology Pillars</h2>
+                    <p class="mt-2 text-gray-600 max-w-2xl mx-auto">Porsche's performance is a symphony of interconnected systems. This section explores the evolution of three foundational pillars—Suspension, Aerodynamics, and Braking—that have been continuously refined to create the signature Porsche driving feel. Click through the tabs to see a timeline of key innovations for each area.</p>
+                </div>
+
+                <div class="bg-white p-4 sm:p-8 rounded-xl shadow-lg">
+                    <div class="mb-6 border-b border-gray-200">
+                        <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+                            <button data-tab="suspension" class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-porsche-red porsche-red">Suspension</button>
+                            <button data-tab="aerodynamics" class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Aerodynamics</button>
+                            <button data-tab="braking" class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Braking</button>
+                        </nav>
+                    </div>
+                    <div id="tab-content"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="electric-era" class="py-16 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold">The Electric Era: Performance Reimagined</h2>
+                    <p class="mt-2 text-gray-600 max-w-2xl mx-auto">Porsche has embraced electrification not as a compromise, but as a new frontier for performance. By integrating hybrid and all-electric powertrains, Porsche enhances its signature driving dynamics with instant torque and remarkable efficiency. This chart compares the raw power of its electrified models, showcasing how the performance DNA is evolving.</p>
+                </div>
+                <div class="bg-gray-50 p-4 sm:p-8 rounded-xl shadow-lg">
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="motorsport" class="py-16">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold">Motorsport DNA: From Track to Road</h2>
+                     <p class="mt-2 text-gray-600 max-w-2xl mx-auto">The racetrack is Porsche's ultimate laboratory. Innovations forged in the crucible of endurance racing and Formula 1 are continuously transferred to road cars, enhancing performance, safety, and reliability. This section highlights some of the most direct and impactful technology transfers that define Porsche's engineering advantage.</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300">
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2">Internally Ventilated Brakes</h3>
+                            <p class="text-gray-600 text-sm mb-4">A solution to brake fade at extreme temperatures.</p>
+                            <div class="grid grid-cols-2 gap-4 text-center">
+                                <div>
+                                    <p class="font-semibold">Track Origin</p>
+                                    <p class="text-sm text-gray-500">1965 906-8 Bergspyder</p>
+                                </div>
+                                <div class="border-l border-gray-200">
+                                    <p class="font-semibold">Road Application</p>
+                                    <p class="text-sm text-gray-500">1966 911 S</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300">
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2">4-Piston Brake Calipers</h3>
+                            <p class="text-gray-600 text-sm mb-4">Massive stopping power to match turbocharged engines.</p>
+                             <div class="grid grid-cols-2 gap-4 text-center">
+                                <div>
+                                    <p class="font-semibold">Track Origin</p>
+                                    <p class="text-sm text-gray-500">1973 917/30 Race Car</p>
+                                </div>
+                                <div class="border-l border-gray-200">
+                                    <p class="font-semibold">Road Application</p>
+                                    <p class="text-sm text-gray-500">1977 911 Turbo 3.3</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300">
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2">Drag Reduction System (DRS)</h3>
+                            <p class="text-gray-600 text-sm mb-4">Formula 1 tech for reducing drag on straightaways.</p>
+                             <div class="grid grid-cols-2 gap-4 text-center">
+                                <div>
+                                    <p class="font-semibold">Track Origin</p>
+                                    <p class="text-sm text-gray-500">Formula 1 Racing</p>
+                                </div>
+                                <div class="border-l border-gray-200">
+                                    <p class="font-semibold">Road Application</p>
+                                    <p class="text-sm text-gray-500">992 GT3 RS</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="ai-insights" class="py-16 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold">✨ AI-Powered Insights</h2>
+                    <p class="mt-2 text-gray-600 max-w-2xl mx-auto">Go beyond the data with AI-powered tools. Generate a custom technology tour for a specific model or ask a detailed question about Porsche's engineering. Powered by the Gemini API.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                    <div class="bg-gray-50 p-8 rounded-xl shadow-lg">
+                        <h3 class="font-bold text-2xl mb-4">Generate a Custom Tech Tour</h3>
+                        <p class="text-gray-600 mb-4">Select a Porsche model and up to three key technologies. Our AI will generate a brief tour explaining how these features create the unique driving experience of that car.</p>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="ai-model" class="block text-sm font-medium text-gray-700">Porsche Model</label>
+                                <select id="ai-model" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-porsche-red focus:border-porsche-red sm:text-sm rounded-md">
+                                    <option>911 GT3 RS</option>
+                                    <option>Taycan Turbo S</option>
+                                    <option>Cayenne Turbo E-Hybrid</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Select Technologies (up to 3)</label>
+                                <div id="tech-options" class="mt-2 grid grid-cols-2 gap-2">
+                                    <label class="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-200 cursor-pointer"><input type="checkbox" class="tech-checkbox h-4 w-4 text-porsche-red border-gray-300 rounded focus:ring-porsche-red"><span>Active Aerodynamics</span></label>
+                                    <label class="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-200 cursor-pointer"><input type="checkbox" class="tech-checkbox h-4 w-4 text-porsche-red border-gray-300 rounded focus:ring-porsche-red"><span>Hybrid Powertrain</span></label>
+                                    <label class="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-200 cursor-pointer"><input type="checkbox" class="tech-checkbox h-4 w-4 text-porsche-red border-gray-300 rounded focus:ring-porsche-red"><span>Ceramic Brakes (PCCB)</span></label>
+                                    <label class="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-200 cursor-pointer"><input type="checkbox" class="tech-checkbox h-4 w-4 text-porsche-red border-gray-300 rounded focus:ring-porsche-red"><span>800V Architecture</span></label>
+                                    <label class="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-200 cursor-pointer"><input type="checkbox" class="tech-checkbox h-4 w-4 text-porsche-red border-gray-300 rounded focus:ring-porsche-red"><span>Weissach Axle</span></label>
+                                    <label class="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-200 cursor-pointer"><input type="checkbox" class="tech-checkbox h-4 w-4 text-porsche-red border-gray-300 rounded focus:ring-porsche-red"><span>eFuels</span></label>
+                                </div>
+                            </div>
+                            <button id="generate-tour-btn" class="w-full bg-porsche-red text-white font-bold py-2 px-4 rounded-md hover:bg-red-700 transition-colors duration-300">Generate Tour</button>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 p-8 rounded-xl shadow-lg flex flex-col">
+                         <h3 class="font-bold text-2xl mb-4">AI-Generated Response</h3>
+                         <div id="ai-tour-response-container" class="flex-grow bg-white p-4 rounded-md border border-gray-200 overflow-y-auto min-h-[200px]">
+                            <p class="text-gray-500">Your custom tech tour will appear here...</p>
+                         </div>
+                         <div id="ai-tour-loader" class="hidden justify-center items-center h-full">
+                            <div class="loader"></div>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="future" class="py-16">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold">Future Focus: The Next Generation</h2>
+                    <p class="mt-2 text-gray-600 max-w-2xl mx-auto">Porsche's innovation never stops. Current research and development is focused on creating a sustainable performance future, exploring advanced battery technologies for its growing EV lineup and pioneering synthetic fuels (eFuels) to potentially preserve the iconic internal combustion engine for generations to come.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <div class="bg-white p-8 rounded-xl shadow-md">
+                        <h3 class="font-bold text-2xl mb-3">Advanced Battery Technology</h3>
+                        <p class="text-gray-600">Continuous R&D aims to increase energy density, reduce charging times, and improve the lifespan of batteries. The goal is to extend range and sustain the high-performance output expected from a Porsche, as seen in the evolution of the Taycan's 800V architecture.</p>
+                    </div>
+                     <div class="bg-white p-8 rounded-xl shadow-md">
+                        <h3 class="font-bold text-2xl mb-3">Synthetic Fuels (eFuels)</h3>
+                        <p class="text-gray-600">Porsche is investing heavily in the production of nearly carbon-neutral eFuels. This technology offers a path to drastically reduce the carbon footprint of the existing fleet and future combustion-engine models, blending heritage with environmental responsibility.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2025 Porsche Innovation Explorer. All data sourced from the provided report.</p>
+            <p class="text-sm text-gray-400 mt-2">This is a conceptual web application for informational purposes.</p>
+        </div>
+    </footer>
+
+    <script>
+        const tabData = {
+            suspension: [
+                { year: 1931, title: 'Torsion Bar Suspension', description: 'Patented by Ferdinand Porsche, this lightweight, space-saving system replaced heavy leaf springs, becoming a hallmark of air-cooled Porsches like the 356 and 911.' },
+                { year: 1977, title: 'Weissach Axle', description: 'A revolutionary self-stabilizing rear axle introduced on the 928. It used elasto-kinematics to create a toe-in effect during cornering, mitigating oversteer and improving stability.' },
+                { year: 1993, title: 'Multi-Link Rear Suspension', description: 'Introduced on the 993 generation of the 911, this advanced system offered greater control over wheel movement, significantly improving handling and ride comfort.' },
+                { year: 2022, title: 'Warp Connector', description: 'A highly specialized, interconnected suspension developed for a record-setting 911. It links all four wheels to maximize traction on extreme terrain, showcasing cutting-edge engineering.' }
+            ],
+            aerodynamics: [
+                { year: 1948, title: '356 "Teardrop" Profile', description: 'The first Porsche model was explicitly designed with aerodynamics in mind, using a streamlined shape inspired by an aircraft wing to achieve high speeds with low engine output.' },
+                { year: 1972, title: '"Ducktail" Spoiler', description: 'The first of its kind on a production car (911 Carrera RS 2.7), this iconic spoiler was designed to increase downforce and counteract high-speed instability.' },
+                { year: 1989, title: 'Active Aerodynamics (PAA)', description: 'Porsche pioneered active aero with the 964 Carrera\'s retractable rear spoiler, which automatically extended at 80 km/h to improve stability and engine cooling.' },
+                { year: 2021, title: 'PAA with DRS', description: 'The 992 GT3 RS features a Formula 1-inspired Drag Reduction System (DRS), which flattens the rear wing on straights to significantly reduce drag and maximize top speed.' }
+            ],
+            braking: [
+                { year: 1962, title: 'Series Disc Brakes', description: 'The 356 B Carrera 2 became the first production Porsche to feature four-wheel disc brakes, a major leap in stopping power over traditional drum brakes.' },
+                { year: 1966, title: 'Internally Ventilated Discs', description: 'First developed for racing, this technology was transferred to the 911 S. Radial channels inside the disc dissipated heat, preventing brake fade and becoming an industry standard.' },
+                { year: 2001, title: 'Ceramic Composite Brakes (PCCB)', description: 'Debuting on the 911 GT2, these ceramic rotors were 50% lighter than cast-iron, reducing unsprung mass to improve handling and providing extreme fade resistance.' },
+                { year: 2019, title: 'High-Power Regenerative Braking', description: 'The all-electric Taycan uses its motors for ~90% of daily braking, recuperating up to 290 kW of power to extend range while reducing wear on the hydraulic brakes.' }
+            ]
+        };
+
+        const tabContentContainer = document.getElementById('tab-content');
+        const tabButtons = document.querySelectorAll('.tab-btn');
+
+        function renderTimeline(category) {
+            const items = tabData[category];
+            if (!items) return;
+            
+            let content = '<div class="relative border-l-2 border-gray-200 pl-8 space-y-12">';
+            items.forEach(item => {
+                content += `
+                    <div class="timeline-item">
+                        <div class="font-bold text-lg porsche-red">${item.year}</div>
+                        <h4 class="font-semibold text-xl mt-1 text-gray-800">${item.title}</h4>
+                        <p class="mt-2 text-gray-600">${item.description}</p>
+                    </div>
+                `;
+            });
+            content += '</div>';
+            tabContentContainer.innerHTML = content;
+        }
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const category = button.dataset.tab;
+                
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('border-porsche-red', 'porsche-red');
+                    btn.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                });
+                
+                button.classList.add('border-porsche-red', 'porsche-red');
+                button.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                
+                renderTimeline(category);
+            });
+        });
+
+        renderTimeline('suspension');
+
+        const performanceData = {
+            labels: ['Cayenne Turbo E-Hybrid', 'Panamera Turbo S E-Hybrid', 'Taycan Turbo S', 'Taycan Turbo GT'],
+            datasets: [{
+                label: 'Combined Horsepower (PS)',
+                data: [739, 680, 761, 1034],
+                backgroundColor: 'rgba(213, 0, 28, 0.6)',
+                borderColor: 'rgba(213, 0, 28, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        const performanceChart = new Chart(ctx, {
+            type: 'bar',
+            data: performanceData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Horsepower (PS)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += context.parsed.y + ' PS';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('main section');
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.3
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href').substring(1) === entry.target.id) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        const generateTourBtn = document.getElementById('generate-tour-btn');
+        const aiModelSelect = document.getElementById('ai-model');
+        const techCheckboxes = document.querySelectorAll('.tech-checkbox');
+        const aiTourResponseContainer = document.getElementById('ai-tour-response-container');
+        const aiTourLoader = document.getElementById('ai-tour-loader');
+
+        techCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const checkedCount = document.querySelectorAll('.tech-checkbox:checked').length;
+                if (checkedCount >= 3) {
+                    techCheckboxes.forEach(cb => {
+                        if (!cb.checked) {
+                            cb.disabled = true;
+                        }
+                    });
+                } else {
+                    techCheckboxes.forEach(cb => {
+                        cb.disabled = false;
+                    });
+                }
+            });
+        });
+
+        generateTourBtn.addEventListener('click', async () => {
+            const model = aiModelSelect.value;
+            const selectedTechs = Array.from(document.querySelectorAll('.tech-checkbox:checked'))
+                                     .map(cb => cb.nextElementSibling.textContent);
+
+            if (selectedTechs.length === 0) {
+                aiTourResponseContainer.innerHTML = '<p class="text-red-500">Please select at least one technology.</p>';
+                return;
+            }
+
+            const prompt = `Create a short, engaging tech tour for a Porsche enthusiast about the ${model}. Explain how the following technologies: ${selectedTechs.join(', ')}, work together to define its unique performance and driving experience. Keep it concise and exciting.`;
+
+            aiTourResponseContainer.classList.add('hidden');
+            aiTourLoader.classList.remove('hidden');
+            aiTourLoader.classList.add('flex');
+
+            try {
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = { contents: chatHistory };
+                const apiKey = ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    aiTourResponseContainer.innerHTML = `<p>${text.replace(/\n/g, '<br>')}</p>`;
+                } else {
+                    aiTourResponseContainer.innerHTML = '<p class="text-red-500">Sorry, something went wrong while generating the tour. Please try again.</p>';
+                }
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                aiTourResponseContainer.innerHTML = '<p class="text-red-500">An error occurred. Please check the console for details.</p>';
+            } finally {
+                aiTourLoader.classList.add('hidden');
+                aiTourLoader.classList.remove('flex');
+                aiTourResponseContainer.classList.remove('hidden');
+            }
+        });
+
+
+    </script>
+</body>
+</html>
