@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KTM 160 Duke: Interactive Market Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link.active {
+            color: #FF6600;
+            border-bottom-color: #FF6600;
+        }
+        .comparison-btn.active {
+            background-color: #FF6600;
+            color: #FFFFFF;
+            box-shadow: 0 4px 14px 0 rgba(255, 102, 0, 0.39);
+        }
+        .spec-tab.active {
+            background-color: #333333;
+            color: #FFFFFF;
+        }
+        .price-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #FF6600;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .price-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: #FF6600;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+    </style>
+    <!-- Chosen Palette: Warm Neutrals with KTM Orange Accent -->
+    <!-- Application Structure Plan: A thematic, single-page dashboard. The flow is designed to tell a story: 1. Why the bike exists (Market Problem/Solution). 2. How it stacks up (Interactive Rival Comparison). 3. What it's made of (Tabbed Specs). 4. What it costs (Interactive Price Calculator). 5. How people feel (Rider Sentiment). This structure prioritizes user discovery and interaction over the linear format of the report, making the complex data more engaging and understandable. -->
+    <!-- Visualization & Content Choices: 
+        - Market Dynamics: Report Info -> 125 Duke vs MT-15 price/power disparity. Goal -> Compare. Viz -> Bar Chart (Chart.js). Interaction -> Visual comparison. Justification -> Clearly shows the value gap KTM needed to fill.
+        - Head-to-Head: Report Info -> KTM vs Yamaha feature comparison. Goal -> Compare. Viz -> Interactive HTML/CSS diagram. Interaction -> User clicks buttons (Power, Suspension, Safety, Features) to update text and visual highlights. Justification -> More engaging and direct than a static table, allows user-driven exploration.
+        - Tech Specs: Report Info -> Detailed specifications table. Goal -> Organize. Viz -> Tabbed content sections. Interaction -> Click tabs to switch views. Justification -> Prevents information overload by chunking data logically.
+        - Pricing: Report Info -> Price range and on-road calculation logic. Goal -> Inform/Interact. Viz -> HTML slider and text output. Interaction -> User drags slider to see real-time on-road price calculation. Justification -> Makes abstract price data tangible and personal.
+        - Rider Sentiment: Report Info -> Polled user data. Goal -> Inform. Viz -> Donut Charts (Chart.js). Interaction -> Hover for tooltips. Justification -> Quick, visual summary of market perception.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-extrabold tracking-tight">
+                <span class="text-gray-900">KTM 160 Duke</span><span class="text-orange-600">.</span>
+            </div>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#market" class="nav-link text-gray-600 hover:text-orange-600 border-b-2 border-transparent pb-1">Market Shift</a>
+                <a href="#rivalry" class="nav-link text-gray-600 hover:text-orange-600 border-b-2 border-transparent pb-1">Rivalry</a>
+                <a href="#specs" class="nav-link text-gray-600 hover:text-orange-600 border-b-2 border-transparent pb-1">Specs</a>
+                <a href="#price" class="nav-link text-gray-600 hover:text-orange-600 border-b-2 border-transparent pb-1">Price</a>
+                <a href="#verdict" class="nav-link text-gray-600 hover:text-orange-600 border-b-2 border-transparent pb-1">Verdict</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 md:py-12">
+
+        <section class="text-center mb-16">
+            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tighter text-gray-900 mb-4">A Strategic Market Correction</h1>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600">
+                The upcoming KTM 160 Duke isn't just a new motorcycle; it's a calculated response to the Indian market. This interactive analysis explores why KTM is pivoting, how the 160 Duke stacks up against its rivals, and what it means for riders.
+            </p>
+        </section>
+
+        <section id="market" class="mb-20 scroll-mt-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">Why 160cc is the New Battleground</h2>
+                <p class="max-w-2xl mx-auto mt-2 text-gray-600">The discontinuation of the 125 Duke wasn't a failure, but a market lesson. Its premium parts couldn't justify its high price for its low power output in India, a space Yamaha masterfully captured. The 160 Duke is KTM's direct answer to fix this value equation.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                    <h3 class="font-bold text-xl mb-2 text-red-600">The Problem: The 125 Duke's Value Gap</h3>
+                    <p class="text-gray-600 mb-4">Equipped with premium WP suspension, the 124.7cc engine's 14.3 bhp was too low for its ₹1.81 Lakh price tag. It was "overpriced" and "underpowered" against rivals like the Yamaha MT-15, which offered more power for less money.</p>
+                    <div class="chart-container">
+                        <canvas id="valueGapChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                    <h3 class="font-bold text-xl mb-2 text-green-600">The Solution: The 160 Duke's Sweet Spot</h3>
+                    <p class="text-gray-600">Engineered for India, the 160 Duke aims for 19-20 BHP, directly challenging the MT-15. By using the 200 Duke's proven platform, KTM can offer its signature premium hardware (like the trellis frame and WP forks) at a competitive price, bridging the gap to the more powerful 200 Duke.</p>
+                    <div class="mt-4 space-y-3 text-gray-700">
+                        <div class="flex items-center"><span class="font-bold text-orange-600 text-2xl mr-3">→</span> Targets the hyper-successful Yamaha MT-15.</div>
+                        <div class="flex items-center"><span class="font-bold text-orange-600 text-2xl mr-3">→</span> Fills the price and performance void left by the 125 Duke.</div>
+                        <div class="flex items-center"><span class="font-bold text-orange-600 text-2xl mr-3">→</span> Delivers performance worthy of the "Ready to Race" brand image.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="rivalry" class="mb-20 scroll-mt-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">Head-to-Head: The Gauntlet</h2>
+                <p class="max-w-2xl mx-auto mt-2 text-gray-600">The 160 Duke's success will be defined by its battle with the Yamaha MT-15 V2. This is a classic showdown of philosophies: KTM's raw mechanical hardware versus Yamaha's refined engine tech and electronic features. Click below to compare key aspects.</p>
+            </div>
+
+            <div class="flex justify-center flex-wrap gap-3 mb-8">
+                <button class="comparison-btn active px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 bg-white shadow-md" data-topic="power">⚡️ Power</button>
+                <button class="comparison-btn px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 bg-white shadow-md" data-topic="chassis">🛠️ Chassis & Suspension</button>
+                <button class="comparison-btn px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 bg-white shadow-md" data-topic="safety">🛡️ Safety & Brakes</button>
+                <button class="comparison-btn px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 bg-white shadow-md" data-topic="features">💡 Features</button>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 bg-white p-6 md:p-8 rounded-xl shadow-xl border border-gray-200">
+                <div id="ktm-comparison" class="border-r-0 md:border-r md:pr-8 border-gray-200">
+                    <h4 class="text-2xl font-bold mb-4 text-orange-600">KTM 160 Duke (Projected)</h4>
+                    <div id="comparison-text-ktm" class="text-gray-700 min-h-[120px]"></div>
+                </div>
+                <div id="yamaha-comparison">
+                    <h4 class="text-2xl font-bold mb-4 text-blue-600">Yamaha MT-15 V2 (Actual)</h4>
+                    <div id="comparison-text-yamaha" class="text-gray-700 min-h-[120px]"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="specs" class="mb-20 scroll-mt-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">Under the Hood</h2>
+                <p class="max-w-2xl mx-auto mt-2 text-gray-600">The 160 Duke inherits the best of the 200 Duke's DNA. It's built on a proven platform with high-spec components, but with an engine tuned for the 160cc segment. Explore the projected technical specifications below.</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                <div class="flex flex-wrap border-b border-gray-200 bg-gray-100">
+                    <button class="spec-tab active flex-grow p-4 font-semibold text-sm md:text-base transition" data-target="spec-engine">Engine & Performance</button>
+                    <button class="spec-tab flex-grow p-4 font-semibold text-sm md:text-base transition" data-target="spec-chassis">Chassis & Suspension</button>
+                    <button class="spec-tab flex-grow p-4 font-semibold text-sm md:text-base transition" data-target="spec-brakes">Brakes & Wheels</button>
+                    <button class="spec-tab flex-grow p-4 font-semibold text-sm md:text-base transition" data-target="spec-price">Launch & Price</button>
+                </div>
+                <div class="p-6 md:p-8">
+                    <div id="spec-engine" class="spec-content grid grid-cols-2 gap-x-8 gap-y-4">
+                        <div><strong class="block text-gray-500">Displacement</strong>~160 cc</div>
+                        <div><strong class="block text-gray-500">Max Power (Est.)</strong>19-20 BHP</div>
+                        <div><strong class="block text-gray-500">Cooling</strong>Liquid-Cooled</div>
+                        <div><strong class="block text-gray-500">Transmission</strong>6-Speed Manual</div>
+                        <div><strong class="block text-gray-500">Valve Train</strong>DOHC, 4-Valve</div>
+                        <div><strong class="block text-gray-500">Fuel System</strong>Fuel Injection</div>
+                    </div>
+                    <div id="spec-chassis" class="spec-content hidden grid grid-cols-2 gap-x-8 gap-y-4">
+                        <div><strong class="block text-gray-500">Frame Type</strong>Steel Trellis Frame</div>
+                        <div><strong class="block text-gray-500">Front Suspension</strong>43mm WP USD Fork</div>
+                        <div><strong class="block text-gray-500">Rear Suspension</strong>WP Monoshock</div>
+                        <div><strong class="block text-gray-500">Design</strong>2nd Gen Duke Platform</div>
+                    </div>
+                    <div id="spec-brakes" class="spec-content hidden grid grid-cols-2 gap-x-8 gap-y-4">
+                        <div><strong class="block text-gray-500">Brakes</strong>Front & Rear Disc (ByBre)</div>
+                        <div><strong class="block text-gray-500">ABS</strong>TBD: Single or Dual-Channel</div>
+                        <div><strong class="block text-gray-500">Wheels</strong>17-inch Alloy</div>
+                    </div>
+                    <div id="spec-price" class="spec-content hidden grid grid-cols-2 gap-x-8 gap-y-4">
+                        <div><strong class="block text-gray-500">Expected Launch</strong>Aug–Sep 2025</div>
+                        <div><strong class="block text-gray-500">Est. Ex-Showroom</strong>₹1,70,000 – ₹1,85,000</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="price" class="mb-20 scroll-mt-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">The Price Question</h2>
+                <p class="max-w-2xl mx-auto mt-2 text-gray-600">Pricing is the most critical factor. Use the slider below to explore the expected ex-showroom price range and see a real-time estimate of the on-road cost, including typical RTO and insurance charges.</p>
+            </div>
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-200 max-w-3xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+                    <label for="price-slider" class="font-bold text-lg mb-2 md:mb-0">Ex-Showroom Price:</label>
+                    <span id="ex-showroom-price-display" class="text-3xl font-extrabold text-gray-800">₹1,77,500</span>
+                </div>
+                <input id="price-slider" type="range" min="170000" max="185000" value="177500" step="500" class="price-slider w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 text-center">
+                    <div>
+                        <div class="text-gray-500">RTO (~9%)</div>
+                        <div id="rto-price" class="font-bold text-xl">₹15,975</div>
+                    </div>
+                    <div>
+                        <div class="text-gray-500">Insurance</div>
+                        <div id="insurance-price" class="font-bold text-xl">₹12,000</div>
+                    </div>
+                    <div class="md:border-l border-gray-200">
+                        <div class="text-gray-500">Est. On-Road Price</div>
+                        <div id="on-road-price" class="font-bold text-3xl text-orange-600">₹2,05,475</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="verdict" class="mb-16 scroll-mt-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">Rider Verdict & Final Takeaway</h2>
+                <p class="max-w-2xl mx-auto mt-2 text-gray-600">Anticipation is high, but so is price sensitivity. The market's reaction hinges on KTM striking the perfect balance between premium hardware and accessible pricing. Here's a look at rider sentiment and the final analysis.</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8 mb-12">
+                <div class="text-center bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                    <h4 class="font-bold mb-2">Buyer Interest</h4>
+                    <div class="chart-container h-48 max-h-48">
+                        <canvas id="interestChart"></canvas>
+                    </div>
+                </div>
+                <div class="text-center bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                    <h4 class="font-bold mb-2">Design Approval</h4>
+                    <div class="chart-container h-48 max-h-48">
+                        <canvas id="designChart"></canvas>
+                    </div>
+                </div>
+                <div class="text-center bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                    <h4 class="font-bold mb-2">Price Perception</h4>
+                    <div class="chart-container h-48 max-h-48">
+                        <canvas id="priceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                 <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                    <h4 class="font-bold text-lg text-green-800 mb-2">Strengths</h4>
+                    <ul class="space-y-2 list-inside list-disc text-green-700">
+                        <li>Prestigious, aspirational brand image.</li>
+                        <li>Best-in-class chassis with WP Suspension.</li>
+                        <li>Promise of sharp, "Ready to Race" handling.</li>
+                        <li>Projected power output to lead the segment.</li>
+                    </ul>
+                </div>
+                <div class="bg-red-50 p-6 rounded-lg border border-red-200">
+                    <h4 class="font-bold text-lg text-red-800 mb-2">Risks & Weaknesses</h4>
+                    <ul class="space-y-2 list-inside list-disc text-red-700">
+                        <li>High price sensitivity of the target market.</li>
+                        <li>Potential feature deficit (e.g., single-channel ABS).</li>
+                        <li>Meeting fuel efficiency expectations (45 kmpl+).</li>
+                        <li>Risk of being seen as poor value if priced too high.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-6 py-8 text-center text-gray-400">
+            <p>This is an interactive web application generated from a source report. All data is based on publicly available information and industry projections for the KTM 160 Duke as of August 2025.</p>
+            <p class="text-sm mt-2">&copy; 2025 Interactive Analysis. Not affiliated with KTM or Yamaha.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const formatCurrency = (value) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(value);
+
+            const comparisonData = {
+                power: {
+                    ktm: "Projected to have a class-leading <strong>19-20 BHP</strong> from its new 160cc liquid-cooled engine. It promises a high-revving, performance-focused character typical of the Duke family.",
+                    yamaha: "Produces a strong <strong>18.1 BHP (18.4 PS)</strong>. Its key advantage is <strong>Variable Valve Actuation (VVA)</strong>, providing excellent torque across the entire rev range, a feature the KTM lacks."
+                },
+                chassis: {
+                    ktm: "Clear advantage with its signature lightweight <strong>Steel Trellis Frame</strong> and premium <strong>43mm WP Apex USD forks</strong> and monoshock. This setup promises superior handling, feedback, and rigidity.",
+                    yamaha: "Uses a proven <strong>Deltabox frame</strong> and a standard (non-WP) USD fork. While competent, it doesn't match the high-specification hardware of the KTM."
+                },
+                safety: {
+                    ktm: "Will feature ByBre disc brakes front and rear. However, to manage costs, it may launch with a <strong>single-channel ABS</strong>. This is a significant gamble against its rival.",
+                    yamaha: "Leads on safety features. It comes standard with <strong>dual-channel ABS</strong>, providing better braking stability, and a <strong>slipper clutch</strong> to prevent rear-wheel hop during aggressive downshifts."
+                },
+                features: {
+                    ktm: "Adopts a cost-effective approach using the 2nd-gen Duke's simple <strong>LCD instrument cluster</strong>. This is a deliberate move to keep the price down and differentiate it from higher-end Dukes.",
+                    yamaha: "Offers a more modern package with its digital console featuring <strong>Bluetooth (Y-Connect)</strong> for call/SMS alerts and app-based ride data, a feature the KTM will likely omit."
+                }
+            };
+
+            function updateComparison(topic) {
+                document.getElementById('comparison-text-ktm').innerHTML = comparisonData[topic].ktm;
+                document.getElementById('comparison-text-yamaha').innerHTML = comparisonData[topic].yamaha;
+                document.querySelectorAll('.comparison-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.topic === topic);
+                });
+            }
+
+            document.querySelectorAll('.comparison-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    updateComparison(e.target.dataset.topic);
+                });
+            });
+
+            updateComparison('power');
+
+            const specTabs = document.querySelectorAll('.spec-tab');
+            const specContents = document.querySelectorAll('.spec-content');
+            specTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    specTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    specContents.forEach(content => {
+                        content.classList.toggle('hidden', content.id !== tab.dataset.target);
+                    });
+                });
+            });
+
+            const priceSlider = document.getElementById('price-slider');
+            const exShowroomDisplay = document.getElementById('ex-showroom-price-display');
+            const rtoPriceDisplay = document.getElementById('rto-price');
+            const insurancePriceDisplay = document.getElementById('insurance-price');
+            const onRoadPriceDisplay = document.getElementById('on-road-price');
+
+            function updatePrice() {
+                const exShowroom = parseInt(priceSlider.value);
+                const rto = exShowroom * 0.09;
+                const insurance = 12000;
+                const other = 2000;
+                const onRoad = exShowroom + rto + insurance + other;
+
+                exShowroomDisplay.textContent = formatCurrency(exShowroom);
+                rtoPriceDisplay.textContent = formatCurrency(rto);
+                insurancePriceDisplay.textContent = formatCurrency(insurance);
+                onRoadPriceDisplay.textContent = formatCurrency(onRoad);
+            }
+            priceSlider.addEventListener('input', updatePrice);
+            updatePrice();
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section[id]');
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 150) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            font: {
+                                family: "'Inter', sans-serif"
+                            }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                family: "'Inter', sans-serif"
+                            }
+                        }
+                    }
+                }
+            };
+            
+            new Chart(document.getElementById('valueGapChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['KTM 125 Duke (Old)', 'Yamaha MT-15 V2'],
+                    datasets: [{
+                        label: 'Power (BHP)',
+                        data: [14.3, 18.1],
+                        backgroundColor: ['#9CA3AF', '#3B82F6'],
+                        borderColor: ['#6B7280', '#2563EB'],
+                        borderWidth: 1,
+                        yAxisID: 'y'
+                    }, {
+                        label: 'Ex-Showroom Price (₹ Lakhs)',
+                        data: [1.81, 1.72],
+                        backgroundColor: ['#FCA5A5', '#93C5FD'],
+                        borderColor: ['#EF4444', '#60A5FA'],
+                        borderWidth: 1,
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.dataset.label.includes('Price')) {
+                                        label += `₹${context.parsed.y} Lakh`;
+                                    } else {
+                                        label += `${context.parsed.y} BHP`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: { display: true, text: 'Power (BHP)' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: { display: true, text: 'Price (₹ Lakhs)' },
+                            grid: { drawOnChartArea: false }
+                        }
+                    }
+                }
+            });
+
+            const sentimentChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => `${context.label}: ${context.raw}%`
+                        }
+                    }
+                }
+            };
+            new Chart(document.getElementById('interestChart'), {
+                type: 'doughnut',
+                data: { labels: ['Interested', 'Not Interested'], datasets: [{ data: [96, 4], backgroundColor: ['#10B981', '#F3F4F6'], borderWidth: 0 }] },
+                options: sentimentChartOptions
+            });
+            new Chart(document.getElementById('designChart'), {
+                type: 'doughnut',
+                data: { labels: ['Approve', 'Disapprove'], datasets: [{ data: [70, 30], backgroundColor: ['#3B82F6', '#F3F4F6'], borderWidth: 0 }] },
+                options: sentimentChartOptions
+            });
+            new Chart(document.getElementById('priceChart'), {
+                type: 'doughnut',
+                data: { labels: ['Reasonable', 'Unreasonable'], datasets: [{ data: [54, 46], backgroundColor: ['#F97316', '#F3F4F6'], borderWidth: 0 }] },
+                options: sentimentChartOptions
+            });
+        });
+    </script>
+</body>
+</html>

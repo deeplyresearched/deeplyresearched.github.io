@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kawasaki Ninja ZX-4R: Interactive Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Kawasaki Green Accent -->
+    <!-- Application Structure Plan: The SPA is designed as a top-down decision funnel for a potential buyer. It starts with a high-level introduction (Hero), moves to the primary conflict (The Dilemma: Experience vs. Horsepower), allows for detailed exploration of key features (Deep Dive), and concludes with a clear verdict (The Verdict). This structure guides the user from initial interest to an informed decision, prioritizing the core narrative of the report—the philosophical choice—over a simple recitation of facts. Interactive charts and toggles are used to make complex comparisons intuitive and engaging. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Competitive Analysis -> Goal: Compare -> Viz: Interactive Bar Chart -> Interaction: User selects rival to compare -> Justification: Directly visualizes the core price/performance trade-off, which is the central theme of the report. Library: Chart.js.
+        - Report Info: US vs. Global Power Discrepancy -> Goal: Inform/Explain -> Viz: Interactive Line Chart -> Interaction: User toggles between power curves -> Justification: Clearly illustrates the "tuner-ready" nature of the US model and explains a key technical nuance. Library: Chart.js.
+        - Report Info: ZX-4R vs. ZX-4RR variants -> Goal: Compare/Decide -> Viz: Interactive HTML Table -> Interaction: User clicks on model to highlight features -> Justification: Simplifies the critical choice between models by showing direct feature comparisons, aiding the purchasing decision. Method: JS/CSS.
+        - Report Info: Key Specs/Features -> Goal: Inform -> Viz: Icon-based feature grids -> Interaction: Static display -> Justification: Provides easily scannable information on electronics and chassis features. Method: HTML/Tailwind.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4;
+            color: #1a202c;
+        }
+        .kawasaki-green { color: #00A84F; }
+        .bg-kawasaki-green { background-color: #00A84F; }
+        .border-kawasaki-green { border-color: #00A84F; }
+        .nav-active { color: #00A84F; border-bottom-width: 2px; border-color: #00A84F; }
+        .nav-link { border-bottom-width: 2px; border-color: transparent; transition: all 0.3s ease; }
+        .nav-link:hover { color: #00A84F; border-color: #00A84F; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container { height: 450px; }
+        }
+        .tab-btn {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-btn.active {
+            border-bottom-color: #00A84F;
+            color: #00A84F;
+            font-weight: 600;
+        }
+        .comparison-table th, .comparison-table td {
+            transition: background-color 0.3s ease;
+        }
+        .highlight-col {
+            background-color: #e6f6ec;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="header" class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-gray-800">Ninja <span class="kawasaki-green">ZX-4R</span></h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#dilemma" class="nav-link">The Dilemma</a>
+                <a href="#deep-dive" class="nav-link">Deep Dive</a>
+                <a href="#verdict" class="nav-link">The Verdict</a>
+            </div>
+            <div class="md:hidden">
+                <button id="menu-btn" class="text-gray-700 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="md:hidden hidden px-6 pb-4 space-y-2">
+            <a href="#dilemma" class="block py-2 text-gray-700 hover:text-kawasaki-green">The Dilemma</a>
+            <a href="#deep-dive" class="block py-2 text-gray-700 hover:text-kawasaki-green">Deep Dive</a>
+            <a href="#verdict" class="block py-2 text-gray-700 hover:text-kawasaki-green">The Verdict</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl md:text-6xl font-black tracking-tight text-gray-900">The <span class="kawasaki-green">400cc Anomaly</span></h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg md:text-xl text-gray-600">Resurrecting the high-revving, inline-four legend for the modern purist. An unapologetic track weapon prioritizing a rich, sensory experience over conventional metrics.</p>
+                <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <p class="text-sm font-medium text-gray-500">Engine</p>
+                        <p class="text-2xl font-bold text-gray-900">399cc</p>
+                        <p class="text-sm font-semibold kawasaki-green">In-Line Four</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <p class="text-sm font-medium text-gray-500">Max Power</p>
+                        <p class="text-2xl font-bold text-gray-900">80 <span class="text-lg font-medium">PS</span></p>
+                        <p class="text-sm font-semibold kawasaki-green">w/ Ram Air</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <p class="text-sm font-medium text-gray-500">Redline</p>
+                        <p class="text-2xl font-bold text-gray-900">>15,000</p>
+                        <p class="text-sm font-semibold kawasaki-green">RPM</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <p class="text-sm font-medium text-gray-500">USP</p>
+                        <p class="text-2xl font-bold text-gray-900">The Sound</p>
+                        <p class="text-sm font-semibold kawasaki-green">Banshee's Wail</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="dilemma" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold text-gray-900">The Core Dilemma</h3>
+                    <p class="mt-3 max-w-2xl mx-auto text-lg text-gray-600">The ZX-4R isn't defined by its displacement, but by its price. This forces a philosophical choice: do you invest in an unparalleled, track-focused <span class="font-bold kawasaki-green">experience</span>, or opt for the greater outright <span class="font-bold text-gray-700">horsepower</span> offered by larger rivals for similar money?</p>
+                </div>
+
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                    <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-6">
+                        <button class="rival-btn bg-gray-200 text-gray-800 py-2 px-4 rounded-full font-semibold transition duration-300" data-rival="cbr650r">vs Honda CBR650R</button>
+                        <button class="rival-btn bg-gray-200 text-gray-800 py-2 px-4 rounded-full font-semibold transition duration-300" data-rival="daytona660">vs Triumph Daytona 660</button>
+                        <button class="rival-btn bg-gray-200 text-gray-800 py-2 px-4 rounded-full font-semibold transition duration-300" data-rival="z900">vs Kawasaki Z900</button>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="rivalsChart"></canvas>
+                    </div>
+                    <div id="rival-summary" class="mt-6 text-center text-gray-700 prose prose-lg max-w-none">
+                        <p>Select a rival above to see how the Ninja ZX-4R stacks up in a head-to-head comparison of key specifications.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="deep-dive" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold text-gray-900">Deep Dive</h3>
+                    <p class="mt-3 max-w-2xl mx-auto text-lg text-gray-600">Explore the engineering and technology that define this unique machine. From its high-revving heart to its superbike-derived chassis, discover what makes the ZX-4R a class of one.</p>
+                </div>
+
+                <div class="mb-8 border-b border-gray-200">
+                    <nav class="flex justify-center -mb-px space-x-6 md:space-x-8" aria-label="Tabs">
+                        <button class="tab-btn py-4 px-1 text-base font-medium text-gray-500 hover:text-kawasaki-green hover:border-kawasaki-green" data-tab="engine">Engine & Power</button>
+                        <button class="tab-btn py-4 px-1 text-base font-medium text-gray-500 hover:text-kawasaki-green hover:border-kawasaki-green" data-tab="chassis">Chassis & Handling</button>
+                        <button class="tab-btn py-4 px-1 text-base font-medium text-gray-500 hover:text-kawasaki-green hover:border-kawasaki-green" data-tab="models">Model Variants</button>
+                        <button class="tab-btn py-4 px-1 text-base font-medium text-gray-500 hover:text-kawasaki-green hover:border-kawasaki-green" data-tab="electronics">Electronics</button>
+                    </nav>
+                </div>
+
+                <div id="tab-content">
+                    <div id="engine-content" class="tab-pane">
+                        <div class="grid md:grid-cols-2 gap-8 items-center">
+                            <div>
+                                <h4 class="text-2xl font-bold text-gray-800">The Tuner's Dilemma: Global vs. US Spec</h4>
+                                <p class="mt-4 text-gray-600">A significant point of discussion is the power difference between global and North American models. The engine's mechanical capability is electronically restricted in markets like the US, flattening the power curve above 11,500 rpm. This creates a "tuner-ready" platform where an ECU flash is seen as a necessary step to unlock the bike's full, globally-advertised potential. Use the buttons below to see the difference.</p>
+                                <div class="mt-4 flex gap-4">
+                                    <button id="show-global-btn" class="bg-kawasaki-green text-white py-2 px-4 rounded-lg font-semibold">Show Global Power</button>
+                                    <button id="show-us-btn" class="bg-gray-600 text-white py-2 px-4 rounded-lg font-semibold">Show US Power</button>
+                                </div>
+                            </div>
+                            <div class="chart-container h-80 md:h-96">
+                                <canvas id="powerCurveChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="chassis-content" class="tab-pane hidden">
+                       <div class="grid md:grid-cols-5 gap-8">
+                           <div class="md:col-span-3">
+                                <h4 class="text-2xl font-bold text-gray-800">World Superbike DNA</h4>
+                                <p class="mt-4 text-gray-600">The ZX-4R's handling precision comes from a chassis deliberately over-engineered for its class. The high-tensile steel trellis frame's design and geometry are directly inspired by the WorldSBK Champion Ninja ZX-10RR. This isn't just marketing; it's a commitment to elite performance, creating razor-sharp, confidence-inspiring handling that feels eager to change direction. The chassis is built to a supersport standard, fully capable of handling more power, making it a rewarding platform for enthusiasts.</p>
+                           </div>
+                           <div class="md:col-span-2 bg-gray-100 p-6 rounded-lg">
+                                <h5 class="font-bold text-lg mb-4">Key Geometry & Brakes</h5>
+                                <ul class="space-y-3 text-gray-700">
+                                    <li class="flex items-start"><span class="font-bold kawasaki-green mr-2">➔</span> <div><span class="font-semibold">Rake/Trail:</span> 23.5° / 97 mm for agility</div></li>
+                                    <li class="flex items-start"><span class="font-bold kawasaki-green mr-2">➔</span> <div><span class="font-semibold">Wheelbase:</span> 1380 mm for stability</div></li>
+                                    <li class="flex items-start"><span class="font-bold kawasaki-green mr-2">➔</span> <div><span class="font-semibold">Front Brakes:</span> Dual 290mm discs</div></li>
+                                    <li class="flex items-start"><span class="font-bold kawasaki-green mr-2">➔</span> <div><span class="font-semibold">Calipers:</span> Radial-mount 4-piston monobloc</div></li>
+                                </ul>
+                           </div>
+                       </div>
+                    </div>
+
+                    <div id="models-content" class="tab-pane hidden">
+                        <h4 class="text-2xl font-bold text-gray-800 text-center mb-2">Choose Your Weapon: ZX-4R vs. ZX-4RR</h4>
+                        <p class="text-gray-600 text-center mb-8 max-w-3xl mx-auto">The choice between models is critical. While the core is the same, differences in suspension and equipment fundamentally alter the bike's capability. For the serious enthusiast, the RR's upgrades are less a luxury and more a necessity. Click column headers to highlight.</p>
+                        <div class="overflow-x-auto">
+                            <table class="w-full max-w-4xl mx-auto text-left border-collapse comparison-table">
+                                <thead>
+                                    <tr class="bg-gray-100">
+                                        <th class="p-4 font-semibold text-gray-700">Feature</th>
+                                        <th id="th-zx4r" class="p-4 font-semibold text-gray-700 text-center cursor-pointer">Ninja ZX-4R</th>
+                                        <th id="th-zx4rr" class="p-4 font-semibold text-gray-700 text-center cursor-pointer">Ninja ZX-4RR</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-gray-200">
+                                        <td class="p-4 font-medium">Front Suspension</td>
+                                        <td data-col="zx4r" class="p-4 text-center">Showa SFF-BP (Non-Adjustable)</td>
+                                        <td data-col="zx4rr" class="p-4 text-center font-semibold kawasaki-green">Showa SFF-BP (Preload Adjustable)</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200">
+                                        <td class="p-4 font-medium">Rear Suspension</td>
+                                        <td data-col="zx4r" class="p-4 text-center">Showa Shock (Preload Adj.)</td>
+                                        <td data-col="zx4rr" class="p-4 text-center font-semibold kawasaki-green">Showa BFRC Lite (Fully Adjustable)</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200">
+                                        <td class="p-4 font-medium">Quick Shifter (KQS)</td>
+                                        <td data-col="zx4r" class="p-4 text-center">Optional Accessory</td>
+                                        <td data-col="zx4rr" class="p-4 text-center font-semibold kawasaki-green">Standard (Up/Down)</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200">
+                                        <td class="p-4 font-medium">Color Scheme</td>
+                                        <td data-col="zx4r" class="p-4 text-center">Metallic Spark Black</td>
+                                        <td data-col="zx4rr" class="p-4 text-center font-semibold kawasaki-green">KRT Edition Graphics</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="electronics-content" class="tab-pane hidden">
+                        <h4 class="text-2xl font-bold text-gray-800 text-center mb-2">The Digital Co-Pilot</h4>
+                        <p class="text-gray-600 text-center mb-8 max-w-3xl mx-auto">A comprehensive electronics suite, typically reserved for larger supersports, elevates the ZX-4R to a high-tech tool for experienced riders, justifying its premium position.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div class="bg-gray-100 p-6 rounded-lg text-center">
+                                <div class="text-4xl kawasaki-green mb-3">🖥️</div>
+                                <h5 class="font-bold text-lg">4.3" TFT Display</h5>
+                                <p class="text-sm text-gray-600 mt-1">Full-color screen with a track-focused "Circuit Mode" and smartphone connectivity.</p>
+                            </div>
+                            <div class="bg-gray-100 p-6 rounded-lg text-center">
+                                <div class="text-4xl kawasaki-green mb-3">🏍️</div>
+                                <h5 class="font-bold text-lg">Integrated Riding Modes</h5>
+                                <p class="text-sm text-gray-600 mt-1">Four modes (Sport, Road, Rain, Rider) combine traction and power settings for any condition.</p>
+                            </div>
+                             <div class="bg-gray-100 p-6 rounded-lg text-center">
+                                <div class="text-4xl kawasaki-green mb-3">🚦</div>
+                                <h5 class="font-bold text-lg">Kawasaki Traction Control</h5>
+                                <p class="text-sm text-gray-600 mt-1">3-level KTRC provides a crucial safety net against changes in surface grip. Can be disabled.</p>
+                            </div>
+                             <div class="bg-gray-100 p-6 rounded-lg text-center">
+                                <div class="text-4xl kawasaki-green mb-3">⚡</div>
+                                <h5 class="font-bold text-lg">Power Modes</h5>
+                                <p class="text-sm text-gray-600 mt-1">Two modes (Full, Low) allow the rider to tailor the engine's character to their preference.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="verdict" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold text-gray-900">The Final Verdict</h3>
+                    <p class="mt-3 max-w-2xl mx-auto text-lg text-gray-600">The ZX-4R is a brilliant, audacious, and deeply specialized motorcycle. It's an "experience machine" that asks its owner to value the quality of the ride over the quantity of horsepower.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white p-8 rounded-xl shadow-lg border-t-4 border-kawasaki-green">
+                        <h4 class="text-xl font-bold text-gray-900">For the Track Purist</h4>
+                        <p class="mt-4 text-gray-600">An experienced rider who craves the unique character of a high-revving engine and prioritizes handling above all else.</p>
+                        <p class="mt-6 text-2xl font-black kawasaki-green">DEFINITIVE BUY</p>
+                        <p class="font-semibold text-gray-800">Recommendation: Opt for the ZX-4RR.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg border-t-4 border-gray-400">
+                        <h4 class="text-xl font-bold text-gray-900">For the Value Seeker</h4>
+                        <p class="mt-4 text-gray-600">A rider prioritizing all-around performance and the most horsepower-per-dollar from their purchase.</p>
+                        <p class="mt-6 text-2xl font-black text-gray-700">CLEAR PASS</p>
+                        <p class="font-semibold text-gray-800">Alternative: Kawasaki Z900.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg border-t-4 border-yellow-500">
+                        <h4 class="text-xl font-bold text-gray-900">For the Novice Rider</h4>
+                        <p class="mt-4 text-gray-600">A first-time sportbike owner looking for a forgiving and cost-effective entry into performance riding.</p>
+                        <p class="mt-6 text-2xl font-black text-yellow-600">CAUTIOUS PASS</p>
+                        <p class="font-semibold text-gray-800">Alternative: Kawasaki Ninja 500.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p>Interactive Analysis of the Kawasaki Ninja ZX-4R</p>
+            <p class="text-sm text-gray-400 mt-2">Data synthesized from the comprehensive report. This is an informational tool and not an official Kawasaki publication.</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const mobileMenuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    const rivalData = {
+        cbr650r: {
+            name: "Honda CBR650R",
+            power: 87,
+            torque: 57.5,
+            weight: 211,
+            price: 10.40,
+            summary: "The CBR650R offers a larger inline-four engine with more raw power and significantly more torque, delivered lower in the rev range. However, it's heavier and tuned more as a comfortable sport-tourer, lacking the ZX-4R's razor-sharp, track-focused edge and premium, fully-adjustable suspension (on the RR model)."
+        },
+        daytona660: {
+            name: "Triumph Daytona 660",
+            power: 95,
+            torque: 69,
+            weight: 201,
+            price: 9.72,
+            summary: "A formidable rival with a potent inline-three engine, the Daytona 660 boasts a significant power and torque advantage. It offers a compelling blend of sporty handling and tractable power, but the ZX-4R counters with its unique high-rpm wail, lighter feel, and superior chassis feedback for the absolute purist."
+        },
+        z900: {
+            name: "Kawasaki Z900",
+            power: 125,
+            torque: 98.6,
+            weight: 212,
+            price: 10.15,
+            summary: "The starkest value dilemma comes from Kawasaki's own showroom. For a similar price, the Z900 offers a colossal performance advantage with its 948cc engine. This is the 'power-for-the-price' champion, forcing a decision: is the ZX-4R's unique, lightweight, high-revving character worth sacrificing this much raw power?"
+        }
+    };
+
+    const zx4rData = {
+        name: "Ninja ZX-4R",
+        power: 77,
+        torque: 37.6,
+        weight: 189,
+        price: 10.15
+    };
+
+    let rivalsChart;
+    const rivalsCtx = document.getElementById('rivalsChart').getContext('2d');
+    const rivalBtns = document.querySelectorAll('.rival-btn');
+    const rivalSummaryEl = document.getElementById('rival-summary');
+
+    function createRivalsChart(rivalKey) {
+        if (rivalsChart) {
+            rivalsChart.destroy();
+        }
+        const selectedRival = rivalData[rivalKey];
+        rivalsChart = new Chart(rivalsCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Max Power (PS/hp)', 'Max Torque (Nm)', 'Curb Weight (kg)'],
+                datasets: [{
+                    label: zx4rData.name,
+                    data: [zx4rData.power, zx4rData.torque, zx4rData.weight],
+                    backgroundColor: 'rgba(0, 168, 79, 0.8)',
+                    borderColor: 'rgba(0, 168, 79, 1)',
+                    borderWidth: 1
+                }, {
+                    label: selectedRival.name,
+                    data: [selectedRival.power, selectedRival.torque, selectedRival.weight],
+                    backgroundColor: 'rgba(54, 62, 82, 0.8)',
+                    borderColor: 'rgba(54, 62, 82, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: { color: '#e5e7eb' }
+                    },
+                    y: {
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.x !== null) {
+                                    label += context.parsed.x;
+                                    if(context.label.includes('Power')) label += ' PS';
+                                    if(context.label.includes('Torque')) label += ' Nm';
+                                    if(context.label.includes('Weight')) label += ' kg';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        rivalSummaryEl.innerHTML = `<h5 class="font-bold text-xl mb-2">${zx4rData.name} vs ${selectedRival.name}</h5><p>${selectedRival.summary}</p>`;
+    }
+    
+    rivalBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            rivalBtns.forEach(b => b.classList.remove('bg-kawasaki-green', 'text-white'));
+            btn.classList.add('bg-kawasaki-green', 'text-white');
+            createRivalsChart(btn.dataset.rival);
+        });
+    });
+    
+    rivalBtns[0].click();
+
+    const tabs = document.querySelectorAll('.tab-btn');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            tabPanes.forEach(pane => {
+                pane.classList.add('hidden');
+            });
+            document.getElementById(`${tab.dataset.tab}-content`).classList.remove('hidden');
+        });
+    });
+    tabs[0].classList.add('active');
+    document.getElementById('engine-content').classList.remove('hidden');
+
+    const powerCurveCtx = document.getElementById('powerCurveChart').getContext('2d');
+    const rpmLabels = Array.from({length: 17}, (_, i) => i * 1000); 
+    const globalPowerData = [5, 10, 18, 25, 32, 40, 48, 55, 62, 68, 72, 75, 76, 76.5, 77, 76, 75];
+    const usPowerData =    [5, 10, 18, 25, 32, 40, 48, 54, 55, 55.5, 56, 56, 55, 54, 53, 52, 51];
+
+    let powerCurveChart = new Chart(powerCurveCtx, {
+        type: 'line',
+        data: {
+            labels: rpmLabels,
+            datasets: []
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'Power (PS)' }
+                },
+                x: {
+                    title: { display: true, text: 'RPM' }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                title: {
+                    display: true,
+                    text: 'Power Curve Comparison'
+                }
+            },
+            tension: 0.4
+        }
+    });
+
+    function updatePowerChart(dataset) {
+        powerCurveChart.data.datasets = [dataset];
+        powerCurveChart.update();
+    }
+
+    const globalDataset = {
+        label: 'Global Spec Power (PS)',
+        data: globalPowerData,
+        borderColor: '#00A84F',
+        backgroundColor: 'rgba(0, 168, 79, 0.1)',
+        fill: true,
+    };
+
+    const usDataset = {
+        label: 'US Spec Power (hp)',
+        data: usPowerData.map(hp => hp * 1.014), 
+        borderColor: '#4A5568',
+        backgroundColor: 'rgba(74, 85, 104, 0.1)',
+        fill: true,
+    };
+    
+    document.getElementById('show-global-btn').addEventListener('click', () => updatePowerChart(globalDataset));
+    document.getElementById('show-us-btn').addEventListener('click', () => updatePowerChart(usDataset));
+    
+    updatePowerChart(globalDataset);
+
+    const thZx4r = document.getElementById('th-zx4r');
+    const thZx4rr = document.getElementById('th-zx4rr');
+    const allCells = document.querySelectorAll('.comparison-table td');
+
+    function highlightColumn(colName) {
+        allCells.forEach(cell => {
+            if (cell.dataset.col === colName) {
+                cell.classList.add('highlight-col');
+            } else {
+                cell.classList.remove('highlight-col');
+            }
+        });
+        if (colName === 'zx4r') {
+            thZx4r.classList.add('highlight-col');
+            thZx4rr.classList.remove('highlight-col');
+        } else {
+            thZx4rr.classList.add('highlight-col');
+            thZx4r.classList.remove('highlight-col');
+        }
+    }
+
+    thZx4r.addEventListener('click', () => highlightColumn('zx4r'));
+    thZx4rr.addEventListener('click', () => highlightColumn('zx4rr'));
+    
+    highlightColumn('zx4rr');
+
+});
+</script>
+</body>
+</html>

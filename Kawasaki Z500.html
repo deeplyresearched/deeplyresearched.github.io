@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kawasaki Z500: Interactive Analysis</title>
+    <!-- Chosen Palette: Warm Neutrals with Kawasaki Green Accent -->
+    <!-- Application Structure Plan: A thematic, single-page application designed for user-driven exploration. The structure starts with a high-level overview (Hero, Variants), then allows users to dive deeper into specific areas of interest (Performance, Features, Rider Feedback) via a sticky navigation. The core interaction is the 'Competitor Comparison Arena', which allows direct, dynamic comparison through charts and text, a more engaging method than static tables. This non-linear structure was chosen because it empowers users to access the information most relevant to them first, enhancing usability and comprehension over a rigid, report-like flow. The final verdict and local dealership info serve as a clear call to action. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Z500 vs Competitors (KTM, Honda, etc.) -> Goal: Compare -> Viz/Presentation: Interactive Bar Chart -> Interaction: User selects competitor to update chart -> Justification: Bar charts are optimal for direct comparison of quantitative stats (HP, Torque, Price). Interaction allows users to focus on the comparisons they care about most. -> Library/Method: Chart.js (Canvas).
+        - Report Info: Z500 ABS vs SE features -> Goal: Inform/Compare -> Viz/Presentation: Toggled content cards -> Interaction: User clicks buttons to switch view -> Justification: Clearly and concisely shows the value proposition of the SE model without cluttering the UI. -> Library/Method: Vanilla JS DOM manipulation.
+        - Report Info: Pros & Cons list -> Goal: Inform/Summarize -> Viz/Presentation: Two-column layout -> Interaction: Static display -> Justification: A simple, highly readable format for qualitative feedback. -> Library/Method: HTML/Tailwind.
+        - Report Info: Key technical specs -> Goal: Inform -> Viz/Presentation: Icon-driven stat cards -> Interaction: Static display -> Justification: Quickly conveys top-line performance figures in a visually appealing way. -> Library/Method: HTML/Tailwind with Unicode characters.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Condensed:wght@700&display=swap');
+        h1, h2, h3 {
+            font-family: 'Roboto Condensed', sans-serif;
+            letter-spacing: 0.025em;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #4c9a2a;
+            border-bottom-color: #4c9a2a;
+        }
+        .variant-btn.active {
+            background-color: #4c9a2a;
+            color: #ffffff;
+            border-color: #4c9a2a;
+        }
+        .competitor-btn.active {
+            background-color: #4c9a2a;
+            color: #ffffff;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="text-2xl font-bold text-gray-800">
+                <span class="text-[#4c9a2a]">Z</span>500 Analysis
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="#overview" class="nav-link border-b-2 border-transparent pb-1">Overview</a>
+                <a href="#performance" class="nav-link border-b-2 border-transparent pb-1">Performance</a>
+                <a href="#features" class="nav-link border-b-2 border-transparent pb-1">Features</a>
+                <a href="#experience" class="nav-link border-b-2 border-transparent pb-1">Rider Experience</a>
+                <a href="#compare" class="nav-link border-b-2 border-transparent pb-1">Compare</a>
+                <a href="#verdict" class="nav-link border-b-2 border-transparent pb-1">Verdict</a>
+            </div>
+            <div class="md:hidden">
+                <select id="mobile-nav" class="bg-white border border-gray-300 rounded-md p-2">
+                    <option value="#overview">Overview</option>
+                    <option value="#performance">Performance</option>
+                    <option value="#features">Features</option>
+                    <option value="#experience">Rider Experience</option>
+                    <option value="#compare">Compare</option>
+                    <option value="#verdict">Verdict</option>
+                </select>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="bg-gray-900 text-white text-center py-20 px-6" style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://placehold.co/1200x600/1a202c/ffffff?text=Kawasaki+Z500'); background-size: cover; background-position: center;">
+            <h1 class="text-5xl md:text-6xl font-bold mb-4">KAWASAKI Z500</h1>
+            <p class="text-xl md:text-2xl text-gray-300 mb-8">Fierce Sugomi™ Style, Approachable Rider-Friendly Power</p>
+            <div class="flex flex-wrap justify-center gap-4 md:gap-8">
+                <div class="bg-gray-800 bg-opacity-50 p-4 rounded-lg">
+                    <span class="text-3xl font-bold text-[#4c9a2a]">51</span>
+                    <span class="block text-sm text-gray-400">Horsepower</span>
+                </div>
+                <div class="bg-gray-800 bg-opacity-50 p-4 rounded-lg">
+                    <span class="text-3xl font-bold text-[#4c9a2a]">370</span>
+                    <span class="block text-sm text-gray-400">Curb Weight (lbs)</span>
+                </div>
+                <div class="bg-gray-800 bg-opacity-50 p-4 rounded-lg">
+                    <span class="text-3xl font-bold text-[#4c9a2a]">$5,599</span>
+                    <span class="block text-sm text-gray-400">Starting MSRP</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="overview" class="py-16 px-6 container mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-4">A Tale of Two Models</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">The Z500 is positioned as a potent yet approachable supernaked, available in two distinct variants. The standard ABS model provides the core experience, while the SE (Special Edition) model comes fully loaded with premium features. This section allows you to explore the key differences and understand the value proposition of each, helping you see how Kawasaki caters to different rider needs and budgets right from the factory.</p>
+            <div class="text-center mb-8">
+                <button id="btn-abs" class="variant-btn active text-lg font-semibold py-2 px-6 rounded-l-full border-2 border-gray-300 transition-all duration-300">Z500 ABS</button>
+                <button id="btn-se" class="variant-btn text-lg font-semibold py-2 px-6 rounded-r-full border-2 border-gray-300 transition-all duration-300">Z500 SE ABS</button>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div id="variant-image-container">
+                     <img id="variant-image" src="https://placehold.co/600x400/333333/ffffff?text=Z500+ABS" alt="Kawasaki Z500" class="rounded-lg shadow-xl mx-auto transition-all duration-500">
+                </div>
+                <div>
+                    <h3 id="variant-title" class="text-3xl font-bold mb-4 text-gray-800">Kawasaki Z500 ABS</h3>
+                    <p id="variant-description" class="text-gray-600 mb-6">The foundation of the Z500 experience. It offers the aggressive Sugomi™ styling, a potent 451cc parallel-twin engine, and rider-friendly ergonomics, making it an excellent entry-level bike that riders won't quickly outgrow.</p>
+                    <ul id="variant-features" class="space-y-3 text-gray-700">
+                        <li class="flex items-center"><span class="text-green-500 mr-3">✔</span>High-Contrast Full LCD Instrumentation</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-3">✔</span>New Triple LED Headlight Design</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-3">✔</span>Assist & Slipper Clutch</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-3">✔</span>Standard ABS</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-3">✔</span>Smartphone Connectivity via RIDEOLOGY App</li>
+                    </ul>
+                    <div id="variant-price" class="mt-6 text-3xl font-bold text-[#4c9a2a]">$5,599 MSRP</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="performance" class="py-16 px-6 bg-gray-100">
+            <div class="container mx-auto">
+                <h2 class="text-4xl font-bold text-center mb-4">The Heart of the Beast</h2>
+                 <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">At its core, the Z500 is defined by a carefully engineered balance of power and agility. This section breaks down the key technical specifications of its engine, chassis, and braking systems. Explore the numbers that translate into the Z500's acclaimed nimble handling, responsive power, and confident stopping ability, giving you a clear picture of the bike's mechanical prowess.</p>
+                <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="text-5xl mb-2">⚙️</div>
+                        <h3 class="text-2xl font-bold mb-2">Engine</h3>
+                        <p class="text-gray-600">A liquid-cooled <strong>451cc Parallel Twin</strong> DOHC engine, tuned for strong low-end torque and approachable power, delivering <strong>51.0 hp</strong> and <strong>31.7 lb-ft</strong> of torque.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="text-5xl mb-2"> chassis </div>
+                        <h3 class="text-2xl font-bold mb-2">Chassis & Suspension</h3>
+                        <p class="text-gray-600">A lightweight <strong>high-tensile steel trellis frame</strong> provides nimble handling. The <strong>41mm telescopic fork</strong> and horizontal back-link rear suspension are tuned for comfort and stability.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="text-5xl mb-2">🛑</div>
+                        <h3 class="text-2xl font-bold mb-2">Brakes & Wheels</h3>
+                        <p class="text-gray-600">A large <strong>310mm front disc</strong> and 220mm rear disc with standard <strong>ABS</strong> ensure confident stopping power. Lightweight 5-spoke wheels reduce unsprung weight.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="py-16 px-6">
+            <div class="container mx-auto">
+                <h2 class="text-4xl font-bold text-center mb-4">Technology That Empowers</h2>
+                <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">The Z500 integrates smart technology designed to make the ride safer, more comfortable, and more connected. This section highlights the key features that define the modern Z500 experience. From the race-derived slipper clutch to smartphone integration, discover how these technologies contribute to the bike's rider-friendly character and overall value.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="bg-gray-100 p-6 rounded-lg shadow-sm text-center">
+                        <h3 class="text-xl font-bold mb-2">Assist & Slipper Clutch</h3>
+                        <p class="text-gray-600">Provides a lighter lever pull and prevents rear-wheel hop during aggressive downshifts, enhancing control and safety for all skill levels.</p>
+                    </div>
+                    <div class="bg-gray-100 p-6 rounded-lg shadow-sm text-center">
+                        <h3 class="text-xl font-bold mb-2">Sugomi™ Styling</h3>
+                        <p class="text-gray-600">The aggressive design philosophy gives the Z500 its crouching stance, sharp lines, and a commanding street presence, highlighted by the new triple LED headlight.</p>
+                    </div>
+                    <div class="bg-gray-100 p-6 rounded-lg shadow-sm text-center">
+                        <h3 class="text-xl font-bold mb-2">Smartphone Connectivity</h3>
+                        <p class="text-gray-600">Use the RIDEOLOGY app to access vehicle info, riding logs, and phone notifications directly on the instrument panel (LCD or TFT).</p>
+                    </div>
+                    <div class="bg-gray-100 p-6 rounded-lg shadow-sm text-center">
+                        <h3 class="text-xl font-bold mb-2">ERGO-FIT® Comfort</h3>
+                        <p class="text-gray-600">A relaxed, versatile rider triangle with a low 30.9-inch seat height makes the bike comfortable and confidence-inspiring for a wide range of riders.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="experience" class="py-16 px-6 bg-gray-100">
+            <div class="container mx-auto">
+                <h2 class="text-4xl font-bold text-center mb-4">The Rider's Perspective</h2>
+                 <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">Beyond the spec sheet, the true measure of a motorcycle is the experience it delivers. This section synthesizes feedback from owners and reviewers to provide a clear picture of what it's like to live with the Z500. We've distilled the most common points into a simple pros-and-cons list to help you understand its real-world strengths and weaknesses.</p>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4 text-green-600">Pros (Frequently Praised)</h3>
+                        <ul class="space-y-3">
+                            <li class="bg-white p-4 rounded-lg shadow-sm"><strong>Lightweight & Nimble:</strong> Praised for enhanced maneuverability, especially in city traffic.</li>
+                            <li class="bg-white p-4 rounded-lg shadow-sm"><strong>Usable Power:</strong> Potent yet approachable 451cc engine is beginner-friendly but still exciting.</li>
+                            <li class="bg-white p-4 rounded-lg shadow-sm"><strong>Rider-Friendly Ergonomics:</strong> Low seat height and relaxed position inspire confidence.</li>
+                            <li class="bg-white p-4 rounded-lg shadow-sm"><strong>Excellent Value:</strong> Considered one of the best bikes in its class for the price.</li>
+                            <li class="bg-white p-4 rounded-lg shadow-sm"><strong>Comfortable Ride:</strong> Supple suspension and well-padded seat are ideal for daily use.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4 text-red-600">Cons (Reported Drawbacks)</h3>
+                        <ul class="space-y-3">
+                            <li class="bg-white p-4 rounded-lg shadow-sm"><strong>Handlebar Vibration:</strong> Some vibration is reported at highway speeds, though it's an improvement over the Z400.</li>
+                            <li class="bg-white p-4 rounded-lg shadow-sm"><strong>Basic Suspension:</strong> Comfortable for general use, but may lack precision for aggressive sport riders.</li>
+                             <li class="bg-white p-4 rounded-lg shadow-sm"><strong>TFT on SE Only:</strong> The premium full-color display is exclusive to the more expensive SE model.</li>
+                            <li class="bg-white p-4 rounded-lg shadow-sm"><strong>Limited Passing Power:</strong> May feel strained when passing at very high highway speeds (80-90 mph).</li>
+                            <li class="bg-white p-4 rounded-lg shadow-sm"><strong>Limited Base Colors:</strong> The base model has fewer color options compared to the SE.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="compare" class="py-16 px-6">
+            <div class="container mx-auto">
+                <h2 class="text-4xl font-bold text-center mb-4">Showdown in the Streets</h2>
+                <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">The Z500 enters a fiercely competitive arena. To understand its place in the market, it's crucial to see how it stacks up against its main rivals. Use the interactive chart below to compare the Z500 against other popular models on key performance metrics. This direct comparison will highlight the Z500's specific advantages in power, weight, and value.</p>
+                <div id="competitor-buttons" class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8">
+                </div>
+                <div class="bg-white p-4 md:p-8 rounded-lg shadow-xl">
+                    <div class="chart-container">
+                        <canvas id="competitorChart"></canvas>
+                    </div>
+                    <div id="comparison-text" class="mt-8 text-center text-gray-600 max-w-2xl mx-auto">
+                        <p>Select a competitor to see a detailed comparison.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="verdict" class="py-16 px-6 bg-gray-100">
+            <div class="container mx-auto text-center">
+                <h2 class="text-4xl font-bold mb-4">The Final Verdict</h2>
+                <p class="max-w-3xl mx-auto text-gray-600 mb-8">The Kawasaki Z500 is a masterclass in balance, offering a compelling package of aggressive styling, thrilling yet manageable performance, and rider-friendly features. It's an ideal choice for new riders seeking a bike they can grow with, commuters needing an agile urban weapon, and experienced riders wanting a fun, lightweight secondary bike.</p>
+                <div class="grid md:grid-cols-3 gap-8 mb-12">
+                     <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold mb-2">New Riders</h3>
+                        <p class="text-gray-600">An excellent first "big bike" that is forgiving, confidence-inspiring, and won't be easily outgrown.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold mb-2">Urban Commuters</h3>
+                        <p class="text-gray-600">Its agility, comfort, and nimble handling make it perfect for navigating dense city traffic.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold mb-2">Fun Seekers</h3>
+                        <p class="text-gray-600">A cost-effective and rewarding machine for spirited weekend rides on winding roads.</p>
+                    </div>
+                </div>
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-800 p-6 rounded-r-lg max-w-3xl mx-auto text-left shadow-lg">
+                    <h3 class="text-2xl font-bold mb-2">See It In Person in Indore</h3>
+                    <p>Ready to experience the Z500? The official Kawasaki dealership in Indore can help.</p>
+                    <p class="mt-4"><strong>Kawasaki Indore:</strong> 1, Babji Nagar, Near Shalimar Township, A B Road, Indore, Madhya Pradesh, 452010</p>
+                    <p><strong>Phone:</strong> 6262124555</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2025 Kawasaki Z500 Interactive Analysis. All data sourced from public research.</p>
+            <p class="text-sm text-gray-400 mt-2">This is an informational web application and not affiliated with Kawasaki Motors Corp.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const variantData = {
+                abs: {
+                    title: 'Kawasaki Z500 ABS',
+                    description: 'The foundation of the Z500 experience. It offers the aggressive Sugomi™ styling, a potent 451cc parallel-twin engine, and rider-friendly ergonomics, making it an excellent entry-level bike that riders won\'t quickly outgrow.',
+                    features: [
+                        'High-Contrast Full LCD Instrumentation',
+                        'New Triple LED Headlight Design',
+                        'Assist & Slipper Clutch',
+                        'Standard ABS',
+                        'Smartphone Connectivity via RIDEOLOGY App'
+                    ],
+                    price: '$5,599 MSRP',
+                    image: 'https://placehold.co/600x400/333333/ffffff?text=Z500+ABS'
+                },
+                se: {
+                    title: 'Kawasaki Z500 SE ABS',
+                    description: 'The "absolutely loaded" Special Edition. It includes all the features of the base model plus a host of premium upgrades, offering a complete package for riders who want the best experience right from the showroom.',
+                    features: [
+                        '<strong>High-Grade Full-Color TFT Display</strong>',
+                        '<strong>LED Turn Signals</strong>',
+                        '<strong>USB-C Outlet</strong>',
+                        'Frame Sliders & Radiator Screen',
+                        'Pillion Seat Cover & Lower Cowl',
+                        'Exclusive SE Color & Graphics'
+                    ],
+                    price: '$6,299 MSRP',
+                    image: 'https://placehold.co/600x400/c53030/ffffff?text=Z500+SE+ABS'
+                }
+            };
+
+            const btnAbs = document.getElementById('btn-abs');
+            const btnSe = document.getElementById('btn-se');
+            const titleEl = document.getElementById('variant-title');
+            const descriptionEl = document.getElementById('variant-description');
+            const featuresEl = document.getElementById('variant-features');
+            const priceEl = document.getElementById('variant-price');
+            const imageEl = document.getElementById('variant-image');
+
+            function updateVariant(variant) {
+                const data = variantData[variant];
+                titleEl.textContent = data.title;
+                descriptionEl.textContent = data.description;
+                featuresEl.innerHTML = data.features.map(f => `<li class="flex items-center"><span class="text-green-500 mr-3">✔</span>${f}</li>`).join('');
+                priceEl.textContent = data.price;
+                imageEl.src = data.image;
+                imageEl.alt = data.title;
+
+                if (variant === 'abs') {
+                    btnAbs.classList.add('active');
+                    btnSe.classList.remove('active');
+                } else {
+                    btnSe.classList.add('active');
+                    btnAbs.classList.remove('active');
+                }
+            }
+
+            btnAbs.addEventListener('click', () => updateVariant('abs'));
+            btnSe.addEventListener('click', () => updateVariant('se'));
+            
+            updateVariant('abs');
+
+            const competitorData = {
+                'KTM Duke 390': {
+                    hp: 43.0,
+                    torque: 27.3,
+                    weight: 364,
+                    msrp: 5999,
+                    text: "The Z500 boasts more horsepower and torque from its larger parallel-twin engine compared to the Duke's single-cylinder. While the Duke is slightly lighter and praised for its handling, the Z500 offers a clear advantage in peak power and acceleration."
+                },
+                'Honda CB500F': {
+                    hp: 46.8,
+                    torque: 31.7,
+                    weight: 416,
+                    msrp: 6899,
+                    text: "The Z500 has a significant power advantage and is substantially lighter than the CB500F, contributing to better acceleration. It also comes in at a lower price point, making the Z500 SE a strong value proposition against the Honda."
+                },
+                'Triumph Speed 400': {
+                    hp: 39.5,
+                    torque: 26.2,
+                    weight: 375,
+                    msrp: 4995,
+                    text: "The Z500 significantly outperforms the Speed 400 in both horsepower and torque. While the Triumph is priced lower, the Z500 provides a major step up in performance for a modest price increase."
+                },
+                'CFMOTO 450NK': {
+                    hp: 49.6,
+                    torque: 28.8,
+                    weight: 364,
+                    msrp: 5399,
+                    text: "A very close competitor in performance and price. The 450NK often comes better equipped with features like traction control. However, the Z500 benefits from Kawasaki's strong brand reputation, resale value, and dealer network."
+                },
+                'Yamaha MT-03': {
+                    hp: 41.6,
+                    torque: 21.8,
+                    weight: 373,
+                    msrp: 4999,
+                    text: "The Z500 offers a substantial upgrade in displacement, horsepower, and torque over the MT-03. For riders looking for more performance, the Z500 is a clear step up from the smaller Yamaha."
+                }
+            };
+
+            const z500Base = { name: 'Kawasaki Z500', hp: 51.0, torque: 31.7, weight: 370.4, msrp: 5599 };
+            const competitorButtonsContainer = document.getElementById('competitor-buttons');
+            const comparisonTextEl = document.getElementById('comparison-text');
+            let currentCompetitor = 'KTM Duke 390'; 
+            let chart;
+
+            function createButtons() {
+                Object.keys(competitorData).forEach(name => {
+                    const button = document.createElement('button');
+                    button.textContent = name;
+                    button.className = 'competitor-btn text-sm md:text-base font-semibold py-2 px-4 rounded-full border-2 border-gray-300 transition-all duration-300 hover:bg-gray-200';
+                    if (name === currentCompetitor) {
+                        button.classList.add('active');
+                    }
+                    button.addEventListener('click', () => {
+                        currentCompetitor = name;
+                        document.querySelectorAll('.competitor-btn').forEach(btn => btn.classList.remove('active'));
+                        button.classList.add('active');
+                        updateChart();
+                    });
+                    competitorButtonsContainer.appendChild(button);
+                });
+            }
+
+            function updateChart() {
+                const competitor = competitorData[currentCompetitor];
+                comparisonTextEl.innerHTML = `<h4 class="text-xl font-bold mb-2">Z500 vs ${currentCompetitor}</h4><p>${competitor.text}</p>`;
+
+                const datasets = [
+                    {
+                        label: z500Base.name,
+                        data: [z500Base.hp, z500Base.torque, z500Base.weight, z500Base.msrp],
+                        backgroundColor: 'rgba(76, 154, 42, 0.6)',
+                        borderColor: 'rgba(76, 154, 42, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: currentCompetitor,
+                        data: [competitor.hp, competitor.torque, competitor.weight, competitor.msrp],
+                        backgroundColor: 'rgba(107, 114, 128, 0.6)',
+                        borderColor: 'rgba(107, 114, 128, 1)',
+                        borderWidth: 1
+                    }
+                ];
+
+                chart.data.datasets = datasets;
+                chart.update();
+            }
+
+            function initChart() {
+                const ctx = document.getElementById('competitorChart').getContext('2d');
+                chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Horsepower (hp)', 'Torque (lb-ft)', 'Weight (lbs)', 'MSRP ($)'],
+                        datasets: []
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: '#e5e7eb'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                            },
+                        },
+                        indexAxis: 'x',
+                    }
+                });
+                updateChart();
+            }
+            
+            createButtons();
+            initChart();
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 100) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+            
+            const mobileNav = document.getElementById('mobile-nav');
+            mobileNav.addEventListener('change', (e) => {
+                window.location.hash = e.target.value;
+            });
+        });
+    </script>
+</body>
+</html>

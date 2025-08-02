@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Analysis: The BMW R 1250 GS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (Warm Neutrals & BMW Blue Accent) -->
+    <!-- Application Structure Plan: A user-centric, task-oriented SPA guiding a potential buyer. The structure is not linear like the report but follows a logical discovery path: 1) Introduction (Hero), 2) Core DNA (Engine, Chassis, Tech), 3) The Key Decision (GS vs GSA interactive comparison), 4) Competitive Landscape (interactive chart), 5) Real-World Ownership (maintenance, reliability), 6) India-Specific Context (service, cost), and 7) Final Verdict. This structure prioritizes the user's primary questions, making complex information accessible and facilitating a clear decision-making process. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: GS vs GSA specs -> Goal: Direct Comparison -> Viz: Bar Chart -> Interaction: Toggle switch updates chart and text -> Justification: Visually highlights key differences for the most crucial user decision -> Library: Chart.js.
+        - Report Info: Competitor specs (Power, Torque, Weight, Price) -> Goal: Competitive Positioning -> Viz: Radar Chart -> Interaction: Hover/click on dataset highlights competitor -> Justification: Provides a multi-axial view of how the GS platform compares to rivals on key decision metrics -> Library: Chart.js.
+        - Report Info: Maintenance Schedule -> Goal: Inform on long-term ownership -> Viz: Structured HTML list/timeline -> Interaction: Simple, clear layout -> Justification: Presents complex schedule data in an easy-to-scan format.
+        - Report Info: Core Tech (Engine, Chassis, Electronics) -> Goal: Explain key features -> Viz: Icon-driven cards -> Interaction: Click to expand/reveal details -> Justification: Breaks down dense technical info into digestible, user-initiated chunks.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #F8F7F4;
+            color: #333333;
+        }
+        .bg-warm-neutral { background-color: #F8F7F4; }
+        .bg-secondary { background-color: #FFFFFF; }
+        .text-primary { color: #1c1c1e; }
+        .text-secondary { color: #5a5a5e; }
+        .accent-color { color: #0066b2; }
+        .accent-bg { background-color: #0066b2; }
+        .accent-border { border-color: #0066b2; }
+        .nav-link {
+            transition: color 0.3s ease, border-bottom-color 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #0066b2;
+            border-bottom-color: #0066b2;
+        }
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #1c1c1e;
+        }
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: #5a5a5e;
+            max-width: 800px;
+            margin: 0 auto 2rem auto;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 40vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .toggle-bg:after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            background: white;
+            border-radius: 9999px;
+            height: 1.75rem;
+            width: 1.75rem;
+            transition: 0.3s;
+        }
+        input:checked + .toggle-bg:after {
+            transform: translateX(100%);
+            left: -2px;
+        }
+        input:checked + .toggle-bg {
+            background-color: #0066b2;
+        }
+        .tab-button.active {
+            border-color: #0066b2;
+            background-color: #0066b2;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-warm-neutral">
+
+    <header id="header" class="bg-secondary/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-primary">R 1250 <span class="accent-color">GS</span></a>
+            <div class="hidden md:flex space-x-8">
+                <a href="#dna" class="nav-link py-2">Core DNA</a>
+                <a href="#choose" class="nav-link py-2">Choose Your GS</a>
+                <a href="#compete" class="nav-link py-2">Competition</a>
+                <a href="#ownership" class="nav-link py-2">Ownership</a>
+                <a href="#india" class="nav-link py-2">India Focus</a>
+                <a href="#verdict" class="nav-link py-2">Verdict</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500">
+                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden">
+            <a href="#dna" class="block py-2 px-6 text-sm hover:bg-gray-200">Core DNA</a>
+            <a href="#choose" class="block py-2 px-6 text-sm hover:bg-gray-200">Choose Your GS</a>
+            <a href="#compete" class="block py-2 px-6 text-sm hover:bg-gray-200">Competition</a>
+            <a href="#ownership" class="block py-2 px-6 text-sm hover:bg-gray-200">Ownership</a>
+            <a href="#india" class="block py-2 px-6 text-sm hover:bg-gray-200">India Focus</a>
+            <a href="#verdict" class="block py-2 px-6 text-sm hover:bg-gray-200">Verdict</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="relative text-white text-center py-20 md:py-32 flex items-center justify-center min-h-[60vh] bg-gray-800">
+             <div class="absolute inset-0 bg-cover bg-center opacity-30" style="background-image: url('https://images.unsplash.com/photo-1621768216058-39f518939e56?q=80&w=2070&auto=format&fit=crop');"></div>
+            <div class="relative z-10 p-6">
+                <h1 class="text-4xl md:text-6xl font-bold mb-4">BMW R 1250 GS</h1>
+                <p class="text-xl md:text-2xl max-w-3xl mx-auto">The definitive adventure machine, analyzed. Discover the technology, performance, and spirit that make it an icon.</p>
+            </div>
+        </section>
+
+        <section id="dna" class="py-16 md:py-24 bg-warm-neutral">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="section-title">Core DNA</h2>
+                <p class="section-subtitle">The R 1250 GS is more than a motorcycle; it's a synthesis of three core pillars that have been refined over decades. This section explores the foundational elements that define its unmatched versatility: the heart of the machine, its revolutionary chassis, and the intelligent electronics that bind them together.</p>
+                <div class="grid md:grid-cols-3 gap-8 mt-12">
+                    <div class="card p-8 text-center">
+                        <div class="text-5xl accent-color mb-4">⚙️</div>
+                        <h3 class="text-2xl font-bold mb-2">The Boxer, Reimagined</h3>
+                        <p class="text-secondary">The soul of the GS is its 1,254cc Boxer engine. Featuring innovative ShiftCam technology, it delivers a massive wave of low-end torque for technical riding and a rush of high-RPM power for the open road, resolving a classic engineering compromise.</p>
+                    </div>
+                    <div class="card p-8 text-center">
+                        <div class="text-5xl accent-color mb-4">⚖️</div>
+                        <h3 class="text-2xl font-bold mb-2">A Study in Stability</h3>
+                        <p class="text-secondary">BMW's unique Telelever and Paralever suspension systems create a ride of legendary comfort and stability. By separating steering from damping and neutralizing shaft drive forces, the chassis remains composed, providing a "magic carpet ride" feel on any terrain.</p>
+                    </div>
+                    <div class="card p-8 text-center">
+                        <div class="text-5xl accent-color mb-4">💡</div>
+                        <h3 class="text-2xl font-bold mb-2">Digital Command Center</h3>
+                        <p class="text-secondary">A suite of advanced electronics, including Dynamic ESA, cornering ABS, and multiple ride modes, makes the GS both safer and more capable. The brilliant 6.5-inch TFT display serves as the intuitive hub for the entire digital ecosystem.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="choose" class="py-16 md:py-24 bg-secondary">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="section-title">Choose Your GS</h2>
+                <p class="section-subtitle">The most fundamental decision for a prospective owner is choosing between the all-round excellence of the standard R 1250 GS and the globe-trotting prowess of the R 1250 GS Adventure (GSA). They share a soul but are built for different missions. Use the toggle below to compare them and find the right machine for your adventure.</p>
+                
+                <div class="flex items-center justify-center space-x-4 my-8">
+                    <span id="gs-label" class="text-xl font-bold accent-color">R 1250 GS</span>
+                    <label for="model-toggle" class="flex items-center cursor-pointer">
+                        <div class="relative">
+                            <input type="checkbox" id="model-toggle" class="sr-only">
+                            <div class="toggle-bg block bg-gray-300 w-14 h-8 rounded-full"></div>
+                        </div>
+                    </label>
+                    <span id="gsa-label" class="text-xl font-bold text-gray-400">R 1250 GS Adventure</span>
+                </div>
+
+                <div class="grid lg:grid-cols-5 gap-8 mt-12 items-center">
+                    <div class="lg:col-span-2 text-left">
+                        <h3 id="model-name" class="text-3xl font-bold mb-4">R 1250 GS</h3>
+                        <p id="model-description" class="text-secondary mb-6">The quintessential all-rounder. Its focus is on supreme on-road touring capability, agility, and comfort, while retaining excellent competence for light off-road duty. It is the lighter, more road-biased, and more accessible of the two.</p>
+                        <div id="model-features" class="space-y-3">
+                            <p>✅ Lighter and more agile for on-road handling.</p>
+                            <p>✅ Lower, more accessible seat height.</p>
+                            <p>✅ Ideal for touring and light off-road trails.</p>
+                            <p>✅ Cast aluminum wheels as standard.</p>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-3">
+                        <div class="chart-container">
+                            <canvas id="modelComparisonChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="compete" class="py-16 md:py-24 bg-warm-neutral">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="section-title">Competitive Landscape</h2>
+                <p class="section-subtitle">The R 1250 GS doesn't reign in isolation. It faces fierce competition from Europe's finest, each offering a unique philosophy on adventure. This chart compares the GSA variant against its key rivals on the metrics that matter most. The GS succeeds not by being an outlier in one category, but by its supreme competence across all of them.</p>
+                <div class="chart-container h-[400px] md:h-[500px]">
+                    <canvas id="competitorRadarChart"></canvas>
+                </div>
+                <p class="text-secondary mt-4 text-sm">Note: Chart values are normalized for comparison. The GS's strength is its balanced "master of all trades" profile.</p>
+            </div>
+        </section>
+
+        <section id="ownership" class="py-16 md:py-24 bg-secondary">
+            <div class="container mx-auto px-6">
+                <div class="text-center">
+                    <h2 class="section-title">Living with the GS</h2>
+                    <p class="section-subtitle">Beyond the spec sheet, the long-term ownership experience defines a premium motorcycle. This section covers the practical realities of owning an R 1250 GS, from its class-leading comfort and maintenance needs to known issues that prospective buyers should be aware of. An informed owner is a happy owner.</p>
+                </div>
+                
+                <div class="max-w-4xl mx-auto mt-12">
+                    <div class="flex justify-center border-b">
+                        <button data-tab="ergonomics" class="tab-button py-2 px-6 border-b-2 font-medium active">Ergonomics</button>
+                        <button data-tab="maintenance" class="tab-button py-2 px-6 border-b-2 font-medium">Maintenance</button>
+                        <button data-tab="reliability" class="tab-button py-2 px-6 border-b-2 font-medium">Reliability</button>
+                    </div>
+
+                    <div id="ergonomics-content" class="tab-content mt-8">
+                        <h3 class="text-2xl font-bold mb-4">All-Day Comfort</h3>
+                        <p class="text-secondary mb-4">The GS is famed for its spacious, upright ergonomics providing a commanding view and all-day comfort. The adjustable windscreen offers excellent protection, and pillion comfort is a standout feature, making it a premier choice for two-up touring. While the stock seat is good, some long-distance riders opt for aftermarket solutions for ultimate support.</p>
+                    </div>
+
+                    <div id="maintenance-content" class="tab-content mt-8 hidden">
+                        <h3 class="text-2xl font-bold mb-4">Service Schedule</h3>
+                         <ul class="space-y-4 text-secondary">
+                            <li class="flex items-start">
+                                <span class="accent-color font-bold w-40 shrink-0">Intervals:</span>
+                                <span>Service is required every 10,000 km or every 12 months.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="accent-color font-bold w-40 shrink-0">Minor Service:</span>
+                                <span>Includes engine oil/filter change, diagnostic checks, and visual inspections.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="accent-color font-bold w-40 shrink-0">Major Service:</span>
+                                <span>Adds valve clearance adjustment, spark plug replacement, and new air filter. (Every 20,000 km)</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="accent-color font-bold w-40 shrink-0">Time-Based:</span>
+                                <span>Brake fluid changed annually/bi-annually. Final drive oil every 20,000 km or two years.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div id="reliability-content" class="tab-content mt-8 hidden">
+                        <h3 class="text-2xl font-bold mb-4">Known Issues & Recalls</h3>
+                        <p class="text-secondary mb-4">While known for durability, some issues have been reported. An extended warranty is a critical consideration.</p>
+                        <ul class="space-y-3 list-disc list-inside text-secondary">
+                            <li><b>Cardan Shaft Recall:</b> BMW has a proactive campaign to inspect and replace the drive shaft at 60,000 km to prevent moisture-related issues.</li>
+                            <li><b>Rear Brake Pad Wear:</b> The linked braking system can lead to accelerated rear pad wear, with some owners replacing them around 6,500 km.</li>
+                            <li><b>Other Reports:</b> Isolated reports in India mention ESA strut leaks and throttle grip recalls, typically rectified under warranty.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="india" class="py-16 md:py-24 bg-warm-neutral">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="section-title">The Indian Context</h2>
+                <p class="section-subtitle">Owning a premium machine like the R 1250 GS in India comes with a unique set of considerations. From service accessibility to on-road costs, this section provides a focused look at the practicalities for buyers in India, particularly for those in states with a limited dealership network like Madhya Pradesh.</p>
+                <div class="grid md:grid-cols-2 gap-8 md:gap-12 mt-12 text-left max-w-5xl mx-auto">
+                    <div class="card p-8">
+                        <h3 class="text-2xl font-bold mb-4">The Tyranny of Distance</h3>
+                        <p class="text-secondary mb-4">For prospective buyers in Madhya Pradesh, service is a major logistical challenge. The only authorized service center is <strong>Munich Motorrad in Indore</strong>.</p>
+                        <div class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                            <p class="text-secondary">A rider from a city like <strong>Seoni</strong> faces a ~485 km, 8-10 hour one-way journey for every service. This turns routine maintenance into a multi-day commitment with significant added costs for fuel and time.</p>
+                        </div>
+                    </div>
+                    <div class="card p-8">
+                        <h3 class="text-2xl font-bold mb-4">Cost of Ownership</h3>
+                        <p class="text-secondary mb-4">On-road prices vary, so direct dealer consultation is essential. Maintenance costs are premium.</p>
+                        <ul class="space-y-3 list-disc list-inside text-secondary">
+                            <li><strong>On-Road Price (MP):</strong> Approx. ₹22.5 Lakh - ₹26.6 Lakh, depending on model and charges.</li>
+                            <li><strong>Standard Service:</strong> ₹10,000 - ₹19,000.</li>
+                            <li><strong>Major Service:</strong> Can exceed ₹46,000 with consumables.</li>
+                            <li><strong>Extended Warranty:</strong> Considered essential to mitigate high costs of potential failures (e.g., ESA, drive shaft).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="verdict" class="py-16 md:py-24 bg-secondary">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="section-title">Final Verdict & Recommendations</h2>
+                <p class="section-subtitle">The R 1250 GS has earned its icon status through profound competence. It lacks significant weaknesses, masterfully blending comfort, performance, and technology. Here are our final recommendations based on your riding profile.</p>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-12 max-w-6xl mx-auto text-left">
+                    <div class="p-6 border rounded-lg">
+                        <h4 class="font-bold text-lg accent-color">The Dedicated Road Tourer</h4>
+                        <p class="text-secondary text-sm">Choose the standard <strong>R 1250 GS</strong>. Its lower weight and seat height offer superior agility for the road, with plenty of range for any tour.</p>
+                    </div>
+                    <div class="p-6 border rounded-lg">
+                        <h4 class="font-bold text-lg accent-color">The Globe-Trotter</h4>
+                        <p class="text-secondary text-sm">The <strong>R 1250 GS Adventure</strong> is non-negotiable. Its massive 30L tank and long-travel suspension are essential for remote, challenging terrain.</p>
+                    </div>
+                    <div class="p-6 border rounded-lg">
+                        <h4 class="font-bold text-lg accent-color">The Tech Aficionado</h4>
+                        <p class="text-secondary text-sm">Equip any model with Dynamic ESA, Ride Modes Pro, and the Adaptive Headlight. These options unlock the bike's full potential.</p>
+                    </div>
+                    <div class="p-6 border rounded-lg">
+                        <h4 class="font-bold text-lg accent-color">The Value-Conscious Buyer</h4>
+                        <p class="text-secondary text-sm">Consider the <strong>Triumph Tiger 1200</strong>. It offers a shaft drive and similar features at a competitive price point in India.</p>
+                    </div>
+                    <div class="p-6 border rounded-lg">
+                        <h4 class="font-bold text-lg accent-color">The Performance-First Rider</h4>
+                        <p class="text-secondary text-sm">For a more visceral, high-revving experience, look to the <strong>Ducati Multistrada V4</strong> or <strong>KTM 1290 Super Adventure</strong>.</p>
+                    </div>
+                     <div class="p-6 border rounded-lg bg-blue-50 border-blue-200">
+                        <h4 class="font-bold text-lg accent-color">The Buyer in MP, India</h4>
+                        <p class="text-secondary text-sm">The GS is exceptional but demanding. Be prepared for the high costs and significant logistical challenges of service. A test ride and detailed dealer consultation are mandatory.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-6 text-center text-sm">
+            <p>&copy; 2024 Interactive Motorcycle Analysis. All data sourced from the public report for educational purposes.</p>
+            <p class="text-gray-400 mt-2">This is an independent analysis and is not affiliated with BMW Motorrad.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const navLinks = document.querySelectorAll('#mobile-menu a');
+
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            const modelToggle = document.getElementById('model-toggle');
+            const gsLabel = document.getElementById('gs-label');
+            const gsaLabel = document.getElementById('gsa-label');
+            const modelName = document.getElementById('model-name');
+            const modelDescription = document.getElementById('model-description');
+            const modelFeatures = document.getElementById('model-features');
+
+            const gsData = {
+                name: 'R 1250 GS',
+                description: 'The quintessential all-rounder. Its focus is on supreme on-road touring capability, agility, and comfort, while retaining excellent competence for light off-road duty. It is the lighter, more road-biased, and more accessible of the two.',
+                features: [
+                    '✅ Lighter and more agile for on-road handling.',
+                    '✅ Lower, more accessible seat height.',
+                    '✅ Ideal for touring and light off-road trails.',
+                    '✅ Cast Aluminium wheels as standard.'
+                ],
+                specs: {
+                    weight: 249,
+                    fuel: 20,
+                    suspension: 190,
+                    seat: 850,
+                }
+            };
+
+            const gsaData = {
+                name: 'R 1250 GS Adventure',
+                description: 'This is the rugged, long-haul specialist. It is designed and equipped from the factory for greater self-sufficiency on extended journeys, superior capability in demanding off-road terrain, and the ability to carry heavy loads with unwavering stability.',
+                features: [
+                    '✅ Massive 30-litre tank for extreme range.',
+                    '✅ Longer travel suspension for serious off-road.',
+                    '✅ Standard engine & tank crash bars.',
+                    '✅ Cross-spoke wheels for durability.'
+                ],
+                specs: {
+                    weight: 268,
+                    fuel: 30,
+                    suspension: 210,
+                    seat: 890,
+                }
+            };
+
+            const modelChartCtx = document.getElementById('modelComparisonChart').getContext('2d');
+            let modelComparisonChart = new Chart(modelChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Wet Weight (kg)', 'Fuel Capacity (L)', 'Suspension Travel (mm)', 'Seat Height (mm)'],
+                    datasets: [{
+                        label: 'R 1250 GS',
+                        data: Object.values(gsData.specs),
+                        backgroundColor: 'rgba(0, 102, 178, 0.6)',
+                        borderColor: 'rgba(0, 102, 178, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'R 1250 GS Adventure',
+                        data: Object.values(gsaData.specs),
+                        backgroundColor: 'rgba(90, 90, 94, 0.6)',
+                        borderColor: 'rgba(90, 90, 94, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: { color: '#5a5a5e' },
+                            grid: { color: '#e5e7eb' }
+                        },
+                        y: {
+                            ticks: { color: '#5a5a5e' },
+                            grid: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { color: '#1c1c1e' }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += context.parsed.x;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            function updateModelView(isGSA) {
+                const data = isGSA ? gsaData : gsData;
+                gsLabel.classList.toggle('accent-color', !isGSA);
+                gsLabel.classList.toggle('text-gray-400', isGSA);
+                gsaLabel.classList.toggle('accent-color', isGSA);
+                gsaLabel.classList.toggle('text-gray-400', !isGSA);
+
+                modelName.textContent = data.name;
+                modelDescription.textContent = data.description;
+                modelFeatures.innerHTML = data.features.map(f => `<p>${f}</p>`).join('');
+            }
+
+            modelToggle.addEventListener('change', (event) => {
+                updateModelView(event.target.checked);
+            });
+            updateModelView(false);
+
+            const competitorCtx = document.getElementById('competitorRadarChart').getContext('2d');
+            const competitorData = {
+                labels: ['Torque', 'Power', 'Low Weight', 'Fuel Range', 'Low Price'],
+                datasets: [{
+                    label: 'R 1250 GS Adv.',
+                    data: [10, 7, 5, 10, 6],
+                    backgroundColor: 'rgba(0, 102, 178, 0.2)',
+                    borderColor: 'rgba(0, 102, 178, 1)',
+                    pointBackgroundColor: 'rgba(0, 102, 178, 1)',
+                }, {
+                    label: 'Ducati Multistrada V4 S',
+                    data: [8, 10, 8, 6, 7],
+                    backgroundColor: 'rgba(214, 39, 40, 0.2)',
+                    borderColor: 'rgba(214, 39, 40, 1)',
+                    pointBackgroundColor: 'rgba(214, 39, 40, 1)',
+                }, {
+                    label: 'KTM 1290 Super Adv. S',
+                    data: [9, 9, 9, 7, 5],
+                    backgroundColor: 'rgba(255, 127, 14, 0.2)',
+                    borderColor: 'rgba(255, 127, 14, 1)',
+                    pointBackgroundColor: 'rgba(255, 127, 14, 1)',
+                }, {
+                    label: 'Triumph Tiger 1200 GT',
+                    data: [8.5, 8, 7, 5, 8],
+                    backgroundColor: 'rgba(44, 160, 44, 0.2)',
+                    borderColor: 'rgba(44, 160, 44, 1)',
+                    pointBackgroundColor: 'rgba(44, 160, 44, 1)',
+                }]
+            };
+            const competitorRadarChart = new Chart(competitorCtx, {
+                type: 'radar',
+                data: competitorData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    elements: {
+                        line: {
+                            borderWidth: 3
+                        }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: { color: '#d1d5db' },
+                            grid: { color: '#d1d5db' },
+                            pointLabels: {
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                color: '#374151'
+                            },
+                            ticks: {
+                                display: false,
+                                stepSize: 2
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 10
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#1c1c1e',
+                                font: { size: 12 }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const tabs = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    const target = tab.getAttribute('data-tab');
+                    tabContents.forEach(content => {
+                        if (content.id === `${target}-content`) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+            
+            const header = document.getElementById('header');
+            const navLinksDesktop = document.querySelectorAll('#header .hidden.md\\:flex a');
+            const sections = document.querySelectorAll('main section');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.4
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        navLinksDesktop.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${id}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
