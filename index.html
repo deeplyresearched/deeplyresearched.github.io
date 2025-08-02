@@ -4,79 +4,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-adsense-account" content="ca-pub-9366280694141719">
-    <title>Research Hub</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="icon" href="documents/favicon.png" type="image/png">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+    <title>Deeply Researched - Interactive Analyses and Reports</title>
+    <link rel="icon" href="documents/favicon.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-936B4T5NEY"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-936B4T5NEY');
-</script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-936B4T5NEY');
+    </script>
 </head>
 <body>
     <header>
-        <h1>Welcome to My Research</h1>
-        <h2>Explore meticulously researched documents spanning a vast yet focused range of topics, driven by a passionate car enthusiast and a dedicated researcher uncovering insightful and comprehensive information.
-        <p>Fuel your knowledge – dive in! </p> </h2>
- <h3> 
+        <h1>Welcome to My Research Hub</h1>
+        <h2>Explore meticulously researched interactive analyses and in-depth PDF reports on a wide range of subjects.</h2>
         <nav>
             <ul>
-                <li> <a href="index.html">Daily Dive</a>  </li>
-                <li> <a href="research-articles.html">Research Articles</a> </li>
+                <li> <a href="index.html">Home</a>  </li>
+                <li> <a href="research-articles.html">All PDF Reports</a> </li>
             </ul>
         </nav>
-          </h3>
+    </header>
 
-    </header> 
+    <main>
+        <section class="category-section">
+            <h2 class="category-title">Interactive Analyses</h2>
+            <div class="project-grid">
 
-<section id="daily-dive-section">
-    <h3>Daily Dive</h3>
-    <div id="daily-dive">
-        </div>
-</section>
-
-    <script>
-        const dailyDiveArticles = [
-            {
-                title: "Starlink and the Evolving Satellite Internet Landscape",
-                excerpt: "This report provides a comprehensive analysis of Starlink, the satellite internet constellation developed and operated by SpaceX, and its position within the competitive satellite communications industry. Starlink represents a signicant disruption, leveraging a massive Low Earth Orbit (LEO) satellite constellation to oer high-speed, low-latency broadband internet services globally, particularly targeting unserved and underserved markets. Its technological foundation, built upon thousands of satellites orbiting at approximately 550 km, overcomes the inherent latency limitations of traditional geostationary (GEO) providers, enabling applications previously impractical via satellite. Key technologies include phased-array user terminals, inter-satellite laser links for enhanced global coverage, and continuous deployment facilitated by SpaceX's unique vertical integration and reusable launch capabilities.",
-                link: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/99784ec22e33411457aecf03b8f6d613023b8db7/documents/Starlink%20and%20Competitor%20Analysis_.pdf",
-                linkText: "Read about the full Starlink and the Evolving Satellite Internet Landscape",
-                videoLink: "https://youtu.be/KT0zdDp2I80",
-                videoLinkText: "starlink",
-            }
-                   ];
-
-        const today = new Date();
-        const dayIndex = today.getDate() % dailyDiveArticles.length;
-        const currentArticle = dailyDiveArticles[dayIndex];
-
-        const dailyDiveDiv = document.getElementById('daily-dive');
-        if (currentArticle) {
-            dailyDiveDiv.innerHTML = `
-                <div class="daily-dive-item">
-                    <h4>${currentArticle.title}</h4>
-                    <p>${currentArticle.excerpt}</p>
-                    <p1>
-                    <a href="${currentArticle.link}" target="_blank"><i class="fas fa-file-pdf"></i>${currentArticle.linkText}</a>
-                    <a href="${currentArticle.videoLink}" target="_blank"><i class="fab fa-youtube"></i>${currentArticle.videoLinkText}</a>
-                    </p1>
+                <div class="project-card">
+                    <img src="https://images.unsplash.com/photo-1621768216058-39f518939e56" alt="Kawasaki Ninja ZX-4R" class="project-card-image">
+                    <div class="project-card-content">
+                        <h4>Kawasaki Ninja ZX-4R: The 400cc Anomaly</h4>
+                        <p>An interactive deep dive into the high-revving, inline-four legend. Explore its performance, competitors, and the core dilemma it presents to buyers.</p>
+                        <a href="Ninja ZX-4R.html" target="_blank">View The Analysis</a>
+                    </div>
                 </div>
-            `;
-        }
-    </script>
+
+                <div class="project-card">
+                    <img src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc" alt="Kawasaki Z500" class="project-card-image">
+                    <div class="project-card-content">
+                        <h4>Kawasaki Z500: Fierce Sugomi Style</h4>
+                        <p>An interactive analysis of the potent yet approachable supernaked. Compare it against rivals and explore its features and rider-focused ergonomics.</p>
+                        <a href="Kawasaki Z500.html" target="_blank">View The Analysis</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                     <img src="https://images.unsplash.com/photo-1629885372373-275b3117e0dc" alt="BMW R 1250 GS" class="project-card-image">
+                    <div class="project-card-content">
+                        <h4>BMW R 1250 GS: The Definitive Adventure Machine</h4>
+                        <p>Discover the technology, performance, and spirit that make the GS an icon. An interactive look at the king of the adventure motorcycle segment.</p>
+                        <a href="BMW R 1250 GS.html" target="_blank">View The Analysis</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                     <img src="https://images.unsplash.com/photo-1609630815124-b34e409395f1" alt="KTM Duke" class="project-card-image">
+                    <div class="project-card-content">
+                        <h4>KTM 160 Duke: A Strategic Market Correction</h4>
+                        <p>This analysis explores why KTM is pivoting to the 160cc segment in India, how it stacks up against rivals, and what it means for riders.</p>
+                        <a href="KTM 160 Duke.html" target="_blank">View The Analysis</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                     <img src="https://images.unsplash.com/photo-1664448530932-fdd4133b3a63" alt="Adventure Motorcycle" class="project-card-image">
+                    <div class="project-card-content">
+                        <h4>The Guerrilla: CFMoto 450MT Analysis</h4>
+                        <p>A deep dive into the CFMoto 450MT, a calculated maneuver to disrupt the sub-500cc adventure motorcycle market with high-spec hardware.</p>
+                        <a href="The Guerrilla.html" target="_blank">View The Analysis</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="category-section pdf-library-section">
+            <h2 class="category-title">Comprehensive PDF Report Library</h2>
+            <p class="pdf-library-description">Beyond the interactive analyses, I have compiled an extensive library of detailed PDF reports covering a wide range of topics from medical careers to in-depth automotive research. Click the button below to explore the full collection.</p>
+            <a href="research-articles.html" class="pdf-library-button">Explore All PDF Reports</a>
+        </section>
+    </main>
 
     <footer>
-        <p>&copy; 2025 @deeplyresearched</p>
+        <p>© 2025 @deeplyresearched</p>
     </footer>
-
-    <script src="script.js"></script>
 </body>
 </html>
