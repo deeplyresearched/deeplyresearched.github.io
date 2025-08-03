@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The One Big Beautiful Bill Act: An Interactive Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: A thematic, single-page dashboard. The structure is designed for intuitive, non-linear exploration, starting with a high-level fiscal overview, then drilling down into impacts on people, specific policy areas, and finally the political context. This is more user-friendly than the report's linear format, allowing users to quickly grasp the core concepts (the fiscal trade-offs) and then explore sections of interest (e.g., "How does this affect me?"). Key interactions include toggling between tax cut types to reveal the bill's political strategy and using tabs to explore deep policy details without cluttering the UI. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Overall fiscal numbers -> Goal: Show the scale and composition of the bill's cost -> Viz: A vertical bar chart (Chart.js) to clearly illustrate the massive tax cuts versus smaller spending cuts leading to a large deficit. Justification: A bar chart is the most direct way to compare the magnitude of these competing fiscal forces.
+        - Report Info: Permanent vs. Temporary Tax Cuts -> Goal: Explain the bill's political strategy and differential impact -> Presentation: Interactive toggle buttons and info cards (HTML/CSS/JS). Justification: This interaction makes the abstract concept of "fiscal cliffs" tangible and highlights who benefits from which type of cut.
+        - Report Info: Medicaid/SNAP changes -> Goal: Show the human impact -> Presentation: Large, bold "Key Figure" callouts (HTML/CSS). Justification: For powerful, singular data points like coverage loss, a direct numerical presentation is more impactful than a complex chart.
+        - Report Info: Healthcare strategy comparison -> Goal: Clarify policy evolution -> Presentation: A 3-column comparison table (HTML/CSS). Justification: A structured table is ideal for comparing distinct attributes across multiple legislative approaches (ACA vs. AHCA vs. OBBBA).
+        - Report Info: Public opinion data -> Goal: Show the political divide -> Viz: A horizontal bar chart (Chart.js). Justification: This effectively visualizes the stark contrast in opinion between partisan groups.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 500px;
+            }
+        }
+        .nav-link {
+            transition: color 0.2s;
+        }
+        .nav-link.active {
+            color: #2563eb; /* blue-600 */
+            font-weight: 600;
+        }
+        .tab-btn.active {
+            background-color: #3b82f6; /* blue-500 */
+            color: white;
+        }
+        .loader {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #3b82f6; /* Blue */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <header id="header" class="bg-slate-800 text-white shadow-lg sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl md:text-2xl font-bold">OBBBA Interactive</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white">Overview</a>
+                        <a href="#fiscal-impact" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white">Fiscal Impact</a>
+                        <a href="#who-it-affects" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white">Who It Affects</a>
+                        <a href="#ai-analysis" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white">✨ AI Analysis</a>
+                        <a href="#policy-deep-dive" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white">Policy Deep Dive</a>
+                        <a href="#public-reaction" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white">Public Reaction</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <select id="mobile-nav" class="bg-slate-700 text-white border-slate-600 rounded-md">
+                        <option value="#overview">Overview</option>
+                        <option value="#fiscal-impact">Fiscal Impact</option>
+                        <option value="#who-it-affects">Who It Affects</option>
+                        <option value="#ai-analysis">✨ AI Analysis</option>
+                        <option value="#policy-deep-dive">Policy Deep Dive</option>
+                        <option value="#public-reaction">Public Reaction</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="overview" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-3xl md:text-5xl font-bold text-slate-900 tracking-tight">The One Big Beautiful Bill Act (OBBBA)</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg md:text-xl text-slate-600">A sweeping law that reshapes U.S. policy through massive tax cuts financed by deep changes to social programs and a significant increase in the national debt.</p>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-slate-50 p-6 rounded-lg shadow-sm">
+                        <p class="text-4xl font-bold text-red-600">~$4.2T</p>
+                        <p class="mt-2 text-slate-600 font-medium">Total Cost with Interest</p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-lg shadow-sm">
+                        <p class="text-4xl font-bold text-red-600">-$4.5T</p>
+                        <p class="mt-2 text-slate-600 font-medium">Net Tax Reductions</p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-lg shadow-sm">
+                        <p class="text-4xl font-bold text-green-600">+$1.1T</p>
+                        <p class="mt-2 text-slate-600 font-medium">Net Spending Reductions</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="fiscal-impact" class="py-16 md:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900">The Fiscal Architecture</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">The OBBBA's core is a fundamental trade-off: large, permanent tax cuts are only partially paid for by significant changes to social programs, resulting in a substantial increase in the national debt over the next decade.</p>
+                </div>
+                <div class="mt-12">
+                    <div class="chart-container">
+                        <canvas id="fiscalImpactChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="who-it-affects" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900">Who It Affects: A Tale of Two Policies</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">The law creates different outcomes for different groups. It delivers permanent tax relief that largely benefits corporations and wealthier individuals, alongside temporary, targeted cuts for specific workers. Simultaneously, it tightens eligibility for social programs affecting millions of low-income families.</p>
+                </div>
+
+                <div class="mt-12">
+                    <h3 class="text-2xl font-bold text-center mb-6">Tax Policy: Permanent vs. Temporary</h3>
+                    <div class="flex justify-center space-x-4 mb-8">
+                        <button id="show-permanent" class="tax-toggle-btn bg-blue-500 text-white px-6 py-2 rounded-md font-semibold shadow-md transition-transform transform hover:scale-105">Permanent Cuts</button>
+                        <button id="show-temporary" class="tax-toggle-btn bg-slate-200 text-slate-700 px-6 py-2 rounded-md font-semibold shadow-md transition-transform transform hover:scale-105">Temporary Cuts</button>
+                    </div>
+
+                    <div id="permanent-cuts-content" class="tax-content">
+                        <p class="text-center text-slate-600 mb-6">These provisions, extended from the 2017 TCJA, form the fiscal core of the bill and disproportionately benefit higher-income households and corporations.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="bg-slate-50 p-6 rounded-lg">
+                                <h4 class="font-bold text-lg">20% Pass-Through Deduction <button class="explain-btn" data-term="The 20% Pass-Through Deduction">✨ Explain</button></h4>
+                                <p class="text-sm text-slate-600 mt-1">Permanently allows many businesses to deduct 20% of their income.</p>
+                            </div>
+                            <div class="bg-slate-50 p-6 rounded-lg">
+                                <h4 class="font-bold text-lg">Higher Estate Tax Exemption <button class="explain-btn" data-term="The Estate Tax Exemption">✨ Explain</button></h4>
+                                <p class="text-sm text-slate-600 mt-1">Permanently raises the amount exempt from estate tax to $15M+.</p>
+                            </div>
+                             <div class="bg-slate-50 p-6 rounded-lg">
+                                <h4 class="font-bold text-lg">Business Investment Expensing</h4>
+                                <p class="text-sm text-slate-600 mt-1">Allows 100% bonus depreciation for equipment and R&D.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="temporary-cuts-content" class="tax-content hidden">
+                        <p class="text-center text-slate-600 mb-6">These populist, high-profile deductions expire after 2028, creating a future "fiscal cliff" and lowering the bill's official 10-year cost.</p>
+                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div class="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-500">
+                                <h4 class="font-bold text-lg">"No Tax on Tips"</h4>
+                                <p class="text-sm text-slate-600 mt-1">Deduction for tip income up to $25,000.</p>
+                            </div>
+                            <div class="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-500">
+                                <h4 class="font-bold text-lg">"No Tax on Overtime"</h4>
+                                <p class="text-sm text-slate-600 mt-1">Deduction for overtime pay up to $12,500.</p>
+                            </div>
+                             <div class="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-500">
+                                <h4 class="font-bold text-lg">"No Tax on Car Loan Interest"</h4>
+                                <p class="text-sm text-slate-600 mt-1">Deduction for interest on U.S.-assembled car loans.</p>
+                            </div>
+                            <div class="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-500">
+                                <h4 class="font-bold text-lg">"Bonus" Senior Deduction</h4>
+                                <p class="text-sm text-slate-600 mt-1">Additional $6,000 deduction for those age 65+.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-20">
+                    <h3 class="text-2xl font-bold text-center mb-6">Social Program Impact</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-red-50 p-8 rounded-lg text-center border-l-4 border-red-500">
+                            <p class="text-5xl font-bold text-red-700">10.9 Million</p>
+                            <p class="mt-2 text-lg font-semibold text-slate-800">Projected to Lose Health Insurance</p>
+                            <p class="mt-2 text-slate-600">Primarily due to new Medicaid work requirements and administrative hurdles.</p>
+                        </div>
+                        <div class="bg-red-50 p-8 rounded-lg text-center border-l-4 border-red-500">
+                            <p class="text-5xl font-bold text-red-700">22 Million</p>
+                            <p class="mt-2 text-lg font-semibold text-slate-800">Families Projected to Lose SNAP Benefits</p>
+                            <p class="mt-2 text-slate-600">Due to expanded work requirements and changes to benefit calculations.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ai-analysis" class="py-16 md:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900">✨ Your Personal Impact Analysis</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">Curious how the OBBBA might affect you? Select a profile to get a personalized analysis generated by AI, based on the bill's key provisions.</p>
+                </div>
+                <div class="mt-12 max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label for="income-level" class="block text-sm font-medium text-slate-700">Income Level</label>
+                            <select id="income-level" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                <option>Low-income ($30k/yr)</option>
+                                <option selected>Middle-income ($75k/yr)</option>
+                                <option>High-income ($250k/yr)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="family-status" class="block text-sm font-medium text-slate-700">Family Status</label>
+                            <select id="family-status" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                <option>Single, no children</option>
+                                <option selected>Married, 2 children</option>
+                                <option>Retiree</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="occupation-type" class="block text-sm font-medium text-slate-700">Occupation</label>
+                            <select id="occupation-type" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                <option>Salaried Employee</option>
+                                <option>Service Worker (receives tips)</option>
+                                <option selected>Small Business Owner</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <button id="generate-analysis-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center">
+                            <span>✨ Generate Analysis</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="analysis-result-container" class="mt-8 max-w-2xl mx-auto">
+                    <div id="analysis-loader" class="hidden loader"></div>
+                    <div id="analysis-output" class="bg-slate-50 p-6 rounded-lg prose max-w-none hidden"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="policy-deep-dive" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900">Policy Deep Dive</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">Explore the specific changes across major policy areas, from healthcare and social welfare to energy and defense.</p>
+                </div>
+                <div class="mt-12 max-w-4xl mx-auto">
+                    <div class="mb-4 flex flex-wrap justify-center border-b border-slate-200">
+                        <button class="tab-btn flex-grow md:flex-grow-0 text-center px-4 py-2 font-medium text-slate-600 hover:bg-slate-100 active" data-tab="healthcare">Healthcare</button>
+                        <button class="tab-btn flex-grow md:flex-grow-0 text-center px-4 py-2 font-medium text-slate-600 hover:bg-slate-100" data-tab="welfare">Social Welfare</button>
+                        <button class="tab-btn flex-grow md:flex-grow-0 text-center px-4 py-2 font-medium text-slate-600 hover:bg-slate-100" data-tab="energy">Energy</button>
+                        <button class="tab-btn flex-grow md:flex-grow-0 text-center px-4 py-2 font-medium text-slate-600 hover:bg-slate-100" data-tab="spending">New Spending</button>
+                    </div>
+
+                    <div id="healthcare-content" class="tab-content p-4">
+                        <h3 class="text-xl font-bold mb-4">Healthcare: "Restructure and Constrain"</h3>
+                        <p class="text-slate-600 mb-6">Instead of repealing the ACA, the OBBBA weakens it by imposing new rules on Medicaid and allowing premium subsidies to expire. This comparison shows the evolution of strategy from the failed 2017 "Repeal and Replace" effort.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                            <div class="p-4 bg-slate-50 rounded-lg">
+                                <h4 class="font-bold text-base text-blue-700">ACA (2010)</h4>
+                                <ul class="mt-2 space-y-2 list-disc list-inside text-slate-700">
+                                    <li>Expanded Medicaid eligibility</li>
+                                    <li>Provided income-based subsidies</li>
+                                    <li>Regulated private insurance</li>
+                                </ul>
+                            </div>
+                            <div class="p-4 bg-slate-50 rounded-lg">
+                                <h4 class="font-bold text-base text-orange-600">AHCA (2017 - Failed)</h4>
+                                <ul class="mt-2 space-y-2 list-disc list-inside text-slate-700">
+                                    <li>Sought to repeal ACA mandates</li>
+                                    <li>Aimed to cap Medicaid funding</li>
+                                    <li>Proposed work requirements as a state option</li>
+                                </ul>
+                            </div>
+                            <div class="p-4 bg-slate-50 rounded-lg">
+                                <h4 class="font-bold text-base text-red-700">OBBBA (2025 - Enacted)</h4>
+                                <ul class="mt-2 space-y-2 list-disc list-inside text-slate-700">
+                                    <li>Federally mandates Medicaid work requirements <button class="explain-btn" data-term="Medicaid work requirements">✨ Explain</button></li>
+                                    <li>Limits state financing tools</li>
+                                    <li>Lets enhanced ACA subsidies expire</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="welfare-content" class="tab-content hidden p-4">
+                        <h3 class="text-xl font-bold mb-4">Social Welfare: Tighter Eligibility</h3>
+                        <p class="text-slate-600 mb-6">The law applies a consistent philosophy of tightening access to benefits for SNAP (food stamps) and federal student loans.</p>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-semibold">SNAP Reforms</h4>
+                                <p class="text-slate-600">Expands work requirements to age 65, requires states to share costs for payment errors, and freezes the formula for calculating benefit amounts, effectively cutting them over time.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">Student Loan Reforms</h4>
+                                <p class="text-slate-600">Establishes new lifetime borrowing caps for graduate ($100k) and professional ($200k) students, and replaces existing income-driven repayment plans with a new, less generous plan for future borrowers.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="energy-content" class="tab-content hidden p-4">
+                        <h3 class="text-xl font-bold mb-4">Energy: A Sharp Reversal</h3>
+                        <p class="text-slate-600 mb-6">The OBBBA systematically dismantles clean energy incentives from the Inflation Reduction Act (IRA) while actively promoting fossil fuel extraction.</p>
+                    </div>
+                    <div id="spending-content" class="tab-content hidden p-4">
+                        <h3 class="text-xl font-bold mb-4">New Spending Priorities</h3>
+                        <p class="text-slate-600 mb-6">While cutting social programs, the bill allocates hundreds of billions in new funding for defense and immigration enforcement.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="public-reaction" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900">A Nation Divided</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">The OBBBA was met with unified Democratic opposition and deep public skepticism, revealing a stark partisan divide over its merits and likely impacts.</p>
+                </div>
+                <div class="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h3 class="text-xl font-bold text-center mb-4">Public Opinion on the OBBBA</h3>
+                        <div class="chart-container" style="height:300px; max-height: 40vh;">
+                            <canvas id="publicOpinionChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-blue-50 p-6 rounded-lg">
+                            <h4 class="font-bold text-lg text-blue-800">Arguments in Support</h4>
+                        </div>
+                        <div class="bg-red-50 p-6 rounded-lg">
+                            <h4 class="font-bold text-lg text-red-800">Arguments in Opposition</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-800 text-slate-400">
+        <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm">
+            <p>This is an interactive visualization based on a public report of the One Big Beautiful Bill Act of 2025. All data is derived from the source document. Application created for informational purposes. AI-generated content may be inaccurate.</p>
+        </div>
+    </footer>
+
+    <!-- Modal for Explainer -->
+    <div id="explainer-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl p-6 max-w-lg w-full mx-4">
+            <h3 id="modal-title" class="text-xl font-bold mb-4"></h3>
+            <div id="modal-content" class="text-slate-600 prose"></div>
+            <div class="mt-6 text-right">
+                <button id="modal-close-btn" class="bg-slate-500 text-white px-4 py-2 rounded-md hover:bg-slate-600">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Chart.js and basic navigation logic from previous version...
+            const fiscalData = {
+                labels: ['Net Tax Cuts', 'Spending Cuts', 'New Spending', 'Net Deficit Impact'],
+                datasets: [{
+                    label: 'Impact in Billions of USD',
+                    data: [-4500, 1400, -325, 3488],
+                    backgroundColor: ['rgba(239, 68, 68, 0.6)','rgba(34, 197, 94, 0.6)','rgba(239, 68, 68, 0.6)','rgba(239, 68, 68, 0.8)'],
+                    borderColor: ['rgba(239, 68, 68, 1)','rgba(34, 197, 94, 1)','rgba(239, 68, 68, 1)','rgba(239, 68, 68, 1)'],
+                    borderWidth: 1
+                }]
+            };
+            const fiscalImpactCtx = document.getElementById('fiscalImpactChart').getContext('2d');
+            new Chart(fiscalImpactCtx, { type: 'bar', data: fiscalData, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { callback: (v) => '$' + v/1000 + 'T' }, title: { display: true, text: '10-Year Fiscal Impact (Trillions USD)'}}, x: { ticks: { maxRotation: 0, minRotation: 0 }}} }});
+
+            const opinionData = {
+                labels: ['Republicans', 'Democrats', 'All Americans'],
+                datasets: [ { label: 'Support', data: [56, 10, 35], backgroundColor: 'rgba(59, 130, 246, 0.6)' }, { label: 'Oppose', data: [30, 80, 53], backgroundColor: 'rgba(239, 68, 68, 0.6)' } ]
+            };
+            const publicOpinionCtx = document.getElementById('publicOpinionChart').getContext('2d');
+            new Chart(publicOpinionCtx, { type: 'bar', data: opinionData, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { max: 100, ticks: { callback: (v) => v + '%' } } } }});
+            
+            // UI interaction logic...
+            const taxToggleBtns = document.querySelectorAll('.tax-toggle-btn');
+            const taxContents = document.querySelectorAll('.tax-content');
+            taxToggleBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    taxToggleBtns.forEach(b => b.classList.replace('bg-blue-500', 'bg-slate-200') || b.classList.replace('text-white', 'text-slate-700'));
+                    btn.classList.replace('bg-slate-200', 'bg-blue-500');
+                    btn.classList.replace('text-slate-700', 'text-white');
+                    const targetId = btn.id.replace('show-', '') + '-cuts-content';
+                    taxContents.forEach(c => c.id === targetId ? c.classList.remove('hidden') : c.classList.add('hidden'));
+                });
+            });
+            document.getElementById('show-permanent').click();
+
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    const tabId = btn.dataset.tab;
+                    tabContents.forEach(c => c.id === `${tabId}-content` ? c.classList.remove('hidden') : c.classList.add('hidden'));
+                });
+            });
+
+            // Nav scrollspy
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                        });
+                    }
+                });
+            }, { rootMargin: "-50% 0px -50% 0px" });
+            sections.forEach(section => observer.observe(section));
+            
+            const mobileNav = document.getElementById('mobile-nav');
+            mobileNav.addEventListener('change', (e) => window.location.hash = e.target.value);
+
+
+            // --- Gemini API Integration ---
+
+            const apiKey = ""; // This will be populated by the environment.
+            const apiUrlBase = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=";
+
+            // Personal Impact Analyzer Logic
+            const generateBtn = document.getElementById('generate-analysis-btn');
+            const analysisLoader = document.getElementById('analysis-loader');
+            const analysisOutput = document.getElementById('analysis-output');
+
+            generateBtn.addEventListener('click', async () => {
+                const income = document.getElementById('income-level').value;
+                const family = document.getElementById('family-status').value;
+                const occupation = document.getElementById('occupation-type').value;
+
+                analysisOutput.classList.add('hidden');
+                analysisLoader.classList.remove('hidden');
+                generateBtn.disabled = true;
+
+                const prompt = `You are a neutral, non-partisan financial policy analyst. Based on the known provisions of the 'One Big Beautiful Bill Act of 2025' (OBBBA), analyze the likely financial impact on an individual with the following profile. The OBBBA includes: permanent extension of TCJA tax cuts (lower individual rates, higher standard deduction, 20% pass-through deduction), temporary populist tax cuts (no tax on tips/overtime), major changes to social programs (Medicaid work requirements, SNAP benefit changes), and new spending on defense/immigration. Your analysis should be balanced, mentioning both potential positive and negative impacts. Keep the tone objective and informative. Do not give financial advice. Structure your response with a brief summary, then bullet points for 'Potential Benefits' and 'Potential Challenges'. The user's profile is: Income: ${income}, Family: ${family}, Occupation: ${occupation}.`;
+                
+                try {
+                    const response = await fetch(`${apiUrlBase}${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                    });
+                    const result = await response.json();
+                    const text = result.candidates[0].content.parts[0].text;
+                    // Basic markdown to HTML
+                    let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                                 .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                                 .replace(/•/g, '</li><li>')
+                                 .replace(/\n/g, '<br>');
+                    html = '<ul><li>' + html.substring(4) + '</li></ul>';
+                    analysisOutput.innerHTML = html;
+                    analysisOutput.classList.remove('hidden');
+                } catch (error) {
+                    analysisOutput.innerHTML = '<p class="text-red-500">Sorry, the analysis could not be generated at this time. Please try again later.</p>';
+                    analysisOutput.classList.remove('hidden');
+                } finally {
+                    analysisLoader.classList.add('hidden');
+                    generateBtn.disabled = false;
+                }
+            });
+
+            // Policy Explainer Logic
+            const modal = document.getElementById('explainer-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalContent = document.getElementById('modal-content');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+
+            document.querySelectorAll('.explain-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const term = e.target.dataset.term;
+                    modalTitle.textContent = `Explaining: ${term}`;
+                    modalContent.innerHTML = '<div class="loader mx-0"></div>';
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+
+                    const prompt = `You are a helpful economics teacher. Explain the following policy concept in simple, easy-to-understand terms for a high school student. Use a simple analogy if it helps. Do not give an opinion on whether it is good or bad. The concept is: ${term}.`;
+
+                    try {
+                        const response = await fetch(`${apiUrlBase}${apiKey}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                        });
+                        const result = await response.json();
+                        const text = result.candidates[0].content.parts[0].text;
+                        modalContent.innerHTML = text.replace(/\n/g, '<br>');
+                    } catch (error) {
+                        modalContent.innerHTML = '<p class="text-red-500">Could not load explanation. Please try again.</p>';
+                    }
+                });
+            });
+
+            modalCloseBtn.addEventListener('click', () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            });
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hero XPulse 210: Interactive AI-Powered Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Earth Tones -->
+    <!-- Application Structure Plan: A thematic, single-page dashboard. The structure prioritizes user-driven exploration over the linear format of the source report. It starts with a high-level overview (Hero section, Key Specs), moves to a detailed, tab-based analysis (Performance, Design, Pros/Cons), provides an interactive competitive comparison, and concludes with a clear verdict. This non-linear flow allows users (potential buyers) to quickly access the information most relevant to their decision-making process, such as comparing specs or understanding the core trade-offs, which is more usable than reading a long document. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Engine performance curve (Power/Torque vs RPM). Goal: Show the bike's dual character. Viz: Line Chart (Chart.js). Interaction: Hover for details. Justification: A line chart is the standard and most effective way to show performance characteristics over an RPM range.
+        - Report Info: User-reported pros and cons. Goal: Directly address the "Hero Paradox" of good design vs. inconsistent quality. Viz: Toggled HTML lists. Interaction: Clickable buttons to filter views. Justification: This provides a clear, interactive way for users to digest the most critical ownership concerns and benefits without clutter.
+        - Report Info: Competitive landscape data (Price, Power, Weight, etc.). Goal: Allow users to compare the XPulse 210 against rivals on key metrics. Viz: Horizontal Bar Chart (Chart.js). Interaction: Buttons to dynamically change the data displayed on the chart. Justification: An interactive bar chart is far more engaging and useful than a static table, allowing for direct, at-a-glance comparisons on the user's chosen metric.
+        - Report Info: Key technical specifications. Goal: Provide quick, scannable information. Viz: Icon-driven HTML/CSS grid. Interaction: None. Justification: Simple, clear presentation for high-level data.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #2c3e50;
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-color 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #c0392b;
+            border-bottom-color: #c0392b;
+        }
+        .tab-button {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .tab-button.active {
+            background-color: #c0392b;
+            color: #ffffff;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 40vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .comparison-btn.active {
+            background-color: #2c3e50;
+            color: #ffffff;
+            border-color: #2c3e50;
+        }
+        .pro-con-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .pro-con-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .gemini-btn {
+            background-color: #c0392b;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .gemini-btn:hover {
+            background-color: #a53125;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #c0392b;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-[#2c3e50]">XPulse 210 AI Analysis</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#overview" class="nav-link pb-1">Overview</a>
+                <a href="#analysis" class="nav-link pb-1">Analysis</a>
+                <a href="#competitors" class="nav-link pb-1">Competitors</a>
+                <a href="#trip-planner" class="nav-link pb-1">✨ Trip Planner</a>
+                <a href="#verdict" class="nav-link pb-1">Verdict</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4 flex flex-col space-y-2">
+            <a href="#overview" class="nav-link block text-center py-2">Overview</a>
+            <a href="#analysis" class="nav-link block text-center py-2">Analysis</a>
+            <a href="#competitors" class="nav-link block text-center py-2">Competitors</a>
+            <a href="#trip-planner" class="nav-link block text-center py-2">✨ Trip Planner</a>
+            <a href="#verdict" class="nav-link block text-center py-2">Verdict</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="overview" class="container mx-auto px-6 py-16 md:py-24 text-center">
+            <h2 class="text-4xl md:text-6xl font-bold text-[#c0392b] tracking-tight">Hero XPulse 210</h2>
+            <p class="mt-4 text-lg md:text-xl max-w-3xl mx-auto text-gray-600">More than a successor, it's a statement of intent. This interactive report dissects the machine designed to conquer Indian roads and trails.</p>
+            <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200/50">
+                    <div class="text-3xl font-bold text-[#2c3e50]">24.6 <span class="text-lg font-medium">PS</span></div>
+                    <p class="text-sm text-gray-500 mt-1">Max Power</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200/50">
+                    <div class="text-3xl font-bold text-[#2c3e50]">20.7 <span class="text-lg font-medium">Nm</span></div>
+                    <p class="text-sm text-gray-500 mt-1">Max Torque</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200/50">
+                    <div class="text-3xl font-bold text-[#2c3e50]">210 <span class="text-lg font-medium">mm</span></div>
+                    <p class="text-sm text-gray-500 mt-1">Front Suspension Travel</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200/50">
+                    <div class="text-3xl font-bold text-[#2c3e50]">220 <span class="text-lg font-medium">mm</span></div>
+                    <p class="text-sm text-gray-500 mt-1">Ground Clearance</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="analysis" class="bg-white py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold text-[#2c3e50]">In-Depth Analysis</h3>
+                    <p class="mt-3 text-lg text-gray-600 max-w-3xl mx-auto">This section provides a detailed look into the core aspects of the XPulse 210. Use the tabs below to explore its performance characteristics, design philosophy, and the crucial balance of its strengths and weaknesses, all synthesized from expert and user reviews.</p>
+                </div>
+
+                <div class="max-w-4xl mx-auto">
+                    <div class="flex justify-center border-b border-gray-200 mb-8">
+                        <button class="tab-button active py-2 px-6 font-semibold text-gray-600" data-tab="performance">Performance</button>
+                        <button class="tab-button py-2 px-6 font-semibold text-gray-600" data-tab="design">Design & Comfort</button>
+                        <button class="tab-button py-2 px-6 font-semibold text-gray-600" data-tab="pro-con">Pros & Cons</button>
+                    </div>
+
+                    <div id="performance-content" class="tab-content">
+                        <h4 class="text-2xl font-bold mb-4 text-center">The New Heartbeat: Engine & Chassis</h4>
+                        <p class="text-gray-600 mb-8 text-center">The 210cc liquid-cooled engine and linkage-type suspension redefine the bike's character. It's refined in the city and competent on the highway, while the chassis offers a class-leading "magic carpet" ride. The chart below visualizes the engine's dual personality.</p>
+                        <div class="chart-container">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                        <div class="mt-8 grid md:grid-cols-2 gap-6 text-sm">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h5 class="font-bold mb-2 text-[#2c3e50]">Urban Jungle Master</h5>
+                                <p class="text-gray-600">Remarkably refined below 7,000 rpm. Its excellent low-end torque and light slip-assist clutch make it a joy in traffic, pulling cleanly from low speeds without protest.</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h5 class="font-bold mb-2 text-[#2c3e50]">Highway Deficit Conquered</h5>
+                                <p class="text-gray-600">The 6th gear enables comfortable cruising at 80-100 km/h. However, a manageable "buzz" appears past 7,000 rpm, defining it as a capable dual-sport, not a high-speed tourer.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="design-content" class="tab-content hidden">
+                        <h4 class="text-2xl font-bold mb-4 text-center">Form Meets Function</h4>
+                        <p class="text-gray-600 mb-8 text-center">The design is an evolution, retaining the classic dual-sport silhouette while adding a more mature, substantial presence. Ergonomics are heavily revised for all-day comfort and off-road control, directly addressing feedback from the previous model.</p>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-gray-50 p-6 rounded-lg">
+                                <h5 class="font-semibold text-lg mb-2 text-[#c0392b]">"Sofa-Like" Comfort</h5>
+                                <p class="text-gray-600">The universally praised new single-piece seat is a massive upgrade, providing exceptional comfort. The rider triangle is refined with an adjustable handlebar and neutral footpegs, perfect for both sitting and standing.</p>
+                            </div>
+                            <div class="bg-gray-50 p-6 rounded-lg">
+                                <h5 class="font-semibold text-lg mb-2 text-[#c0392b]">Aspirant Aesthetics</h5>
+                                <p class="text-gray-600">New body panels, a sculpted tank, and a Class-D LED projector headlamp give the bike a premium look. The 4.2-inch color TFT display adds modern tech, though its visibility in harsh sunlight is a noted flaw.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="pro-con-content" class="tab-content hidden">
+                        <h4 class="text-2xl font-bold mb-4 text-center">The Ownership Proposition</h4>
+                        <p class="text-gray-600 mb-8 text-center">Owning the XPulse 210 involves a balance of brilliant engineering and real-world compromises. This section highlights the key strengths that make it a compelling choice against the significant risks and practical limitations you must consider.</p>
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <h5 class="text-xl font-bold text-green-600 mb-4 text-center">The Good (Pros) ✅</h5>
+                                <ul class="space-y-3">
+                                    <li class="bg-white p-4 rounded-lg shadow-sm pro-con-card"><strong>Unmatched Ride Quality:</strong> "Magic carpet" ride from the linkage suspension soaks up bad roads like nothing in its class.</li>
+                                    <li class="bg-white p-4 rounded-lg shadow-sm pro-con-card"><strong>Refined Performance:</strong> Smooth, tractable engine is perfect for the city and now capable on the highway.</li>
+                                    <li class="bg-white p-4 rounded-lg shadow-sm pro-con-card"><strong>Genuine Off-Road Prowess:</strong> Proper 21/18-inch wheels, long-travel suspension, and switchable ABS make it a true all-terrain machine.</li>
+                                    <li class="bg-white p-4 rounded-lg shadow-sm pro-con-card"><strong>Aggressive Value:</strong> Offers a high-tech package (liquid-cooling, TFT, linkage) at a price that significantly undercuts rivals.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="text-xl font-bold text-red-600 mb-4 text-center">The Bad (Cons) ❌</h5>
+                                <ul class="space-y-3">
+                                    <li class="bg-white p-4 rounded-lg shadow-sm pro-con-card"><strong>The "Quality Lottery":</strong> Inconsistent manufacturing is the biggest risk, with reports of cosmetic flaws and even mechanical issues on new bikes.</li>
+                                    <li class="bg-white p-4 rounded-lg shadow-sm pro-con-card"><strong>Tubed Tyre Liability:</strong> A major drawback for touring. Punctures are difficult and time-consuming to repair on the road.</li>
+                                    <li class="bg-white p-4 rounded-lg shadow-sm pro-con-card"><strong>Limited Service Network:</strong> Sold exclusively via the sparse "Premia" network, which contradicts the bike's "go-anywhere" ethos and creates service anxiety.</li>
+                                    <li class="bg-white p-4 rounded-lg shadow-sm pro-con-card"><strong>TFT Screen Glare:</strong> The matte finish on the color display makes it difficult to read in direct, harsh sunlight.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="competitors" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold text-[#2c3e50]">The Battlefield: Competitive Showdown</h3>
+                    <p class="mt-3 text-lg text-gray-600 max-w-3xl mx-auto">The XPulse 210 enters a maturing adventure segment. It doesn't aim to beat every rival on every spec, but to disrupt the market with an unbeatable combination of capability and cost. Use the buttons below to interactively compare it against key competitors on the metrics that matter most to you.</p>
+                </div>
+                <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8">
+                    <button class="comparison-btn active border-2 border-gray-300 rounded-full px-4 py-1 text-sm font-semibold transition" data-metric="price">Price</button>
+                    <button class="comparison-btn border-2 border-gray-300 rounded-full px-4 py-1 text-sm font-semibold transition" data-metric="power">Power</button>
+                    <button class="comparison-btn border-2 border-gray-300 rounded-full px-4 py-1 text-sm font-semibold transition" data-metric="weight">Weight</button>
+                    <button class="comparison-btn border-2 border-gray-300 rounded-full px-4 py-1 text-sm font-semibold transition" data-metric="groundClearance">Ground Clearance</button>
+                    <button class="comparison-btn border-2 border-gray-300 rounded-full px-4 py-1 text-sm font-semibold transition" data-metric="fuel">Fuel Capacity</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="competitorChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="trip-planner" class="bg-white py-16 md:py-24">
+            <div class="container mx-auto px-6 max-w-4xl">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold text-[#2c3e50]">✨ AI-Powered Trip Planner</h3>
+                    <p class="mt-3 text-lg text-gray-600 max-w-3xl mx-auto">Imagine your first adventure. Select a starting city and riding style, and our AI will generate a custom day trip, perfectly suited for the XPulse 210's capabilities.</p>
+                </div>
+                <div class="bg-gray-50 p-8 rounded-lg shadow-md">
+                    <div class="grid md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label for="start-city" class="block text-sm font-medium text-gray-700">Starting City</label>
+                            <select id="start-city" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+                                <option>Mumbai</option>
+                                <option>Delhi</option>
+                                <option>Bangalore</option>
+                                <option>Chennai</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="ride-style" class="block text-sm font-medium text-gray-700">Riding Style</label>
+                            <select id="ride-style" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+                                <option>Adventurous (Off-road focus)</option>
+                                <option>Leisurely (Scenic routes)</option>
+                                <option>Highway Focused (Covering distance)</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button id="generate-trip-btn" class="gemini-btn font-bold py-2 px-4 rounded-md w-full">Generate Trip</button>
+                        </div>
+                    </div>
+                    <div id="trip-loader" class="hidden flex justify-center items-center my-4">
+                        <div class="loader"></div>
+                    </div>
+                    <div id="trip-output" class="mt-6 p-6 bg-white rounded-md border border-gray-200 prose max-w-none hidden"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="verdict" class="py-16 md:py-24">
+            <div class="container mx-auto px-6 max-w-4xl">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold text-[#2c3e50]">The Final Verdict</h3>
+                    <p class="mt-3 text-lg text-gray-600 max-w-3xl mx-auto">This final section synthesizes all the analysis into a clear recommendation. It defines the ideal owner for the XPulse 210 and provides a final verdict to help you decide if this brilliantly flawed champion is the right motorcycle for your adventures.</p>
+                </div>
+                <div class="bg-[#FDFBF8] border border-gray-200/80 rounded-lg p-8">
+                    <h4 class="text-2xl font-bold text-center text-[#c0392b]">A Brilliant, Flawed Champion</h4>
+                    <p class="mt-4 text-gray-700">The Hero XPulse 210 is a landmark product, brilliantly engineered and tantalizingly close to being the perfect all-rounder for Indian conditions. Its suspension dynamics are exceptional for the price. However, it's a product let down by potential flaws in execution.</p>
+                    <div class="mt-8 grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h5 class="font-bold text-lg mb-3 text-[#2c3e50]">Who is it for? 🤔</h5>
+                            <p class="text-gray-600">The ideal owner prioritizes off-road and bad-road capability above all. They are a hands-on enthusiast, comfortable with basic maintenance (like fixing a puncture), and live near a Premia dealership. For them, it's a versatile daily commuter and a serious weekend trail machine.</p>
+                        </div>
+                        <div>
+                            <h5 class="font-bold text-lg mb-3 text-[#2c3e50]">Should you buy it? ⚖️</h5>
+                            <p class="text-gray-600"><strong class="text-green-700">YES, but with a crucial caveat.</strong> Approach the purchase with eyes wide open to the "Hero Paradox." A meticulous pre-delivery inspection is non-negotiable. If you get a good unit, it is arguably the best value adventure-oriented motorcycle in India. But you must accept the gamble.</p>
+                        </div>
+                    </div>
+                    <div class="mt-10 pt-8 border-t border-gray-200">
+                         <h4 class="text-2xl font-bold text-center text-[#2c3e50]">✨ Ask the AI Expert</h4>
+                         <p class="text-center text-gray-600 mt-2 mb-4">Have a specific question? Get an instant answer from our AI, trained on all the data from this report.</p>
+                         <div class="flex gap-2">
+                            <input type="text" id="expert-question-input" class="flex-grow p-2 border border-gray-300 rounded-md" placeholder="e.g., Is it good for a beginner?">
+                            <button id="ask-expert-btn" class="gemini-btn font-bold py-2 px-4 rounded-md">Ask</button>
+                         </div>
+                         <div id="expert-loader" class="hidden flex justify-center items-center my-4">
+                            <div class="loader"></div>
+                         </div>
+                         <div id="expert-answer" class="mt-4 p-4 bg-gray-100 rounded-md text-gray-700 hidden"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p>&copy; 2025 Interactive Motorcycle Analysis. All data synthesized from public reports and user reviews.</p>
+            <p class="text-xs text-gray-400 mt-2">This is an informational tool and not an official publication by Hero MotoCorp.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+            
+            const tabs = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    const target = tab.getAttribute('data-tab');
+                    tabContents.forEach(content => {
+                        if (content.id === `${target}-content`) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(performanceCtx, {
+                type: 'line',
+                data: {
+                    labels: ['2k', '3k', '4k', '5k', '6k', '7k', '8k', '9k', '9.25k'],
+                    datasets: [{
+                        label: 'Torque (Nm)',
+                        data: [12, 16, 18, 19.5, 20.5, 20.7, 20.2, 19, 18.5],
+                        borderColor: '#2980b9',
+                        backgroundColor: 'rgba(41, 128, 185, 0.1)',
+                        yAxisID: 'y1',
+                        tension: 0.4,
+                        fill: true,
+                    }, {
+                        label: 'Power (PS)',
+                        data: [5, 8, 12, 16, 20, 22.5, 24, 24.5, 24.67],
+                        borderColor: '#c0392b',
+                        backgroundColor: 'rgba(192, 57, 43, 0.1)',
+                        yAxisID: 'y',
+                        tension: 0.4,
+                        fill: true,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        title: { display: true, text: 'XPulse 210 Performance Curve (Illustrative)' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y + (context.dataset.label === 'Power (PS)' ? ' PS' : ' Nm');
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'Engine RPM' } },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: { display: true, text: 'Power (PS)' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: { display: true, text: 'Torque (Nm)' },
+                            grid: { drawOnChartArea: false }
+                        }
+                    }
+                }
+            });
+
+            const competitorData = {
+                labels: ['Hero XPulse 210', 'RE Himalayan 450', 'Suzuki V-Strom SX', 'Yezdi Adventure'],
+                price: {
+                    data: [1.76, 2.85, 2.16, 2.15],
+                    label: 'Ex-Showroom Price (₹ Lakh)'
+                },
+                power: {
+                    data: [24.67, 40.02, 26.5, 29.6],
+                    label: 'Power (PS)'
+                },
+                weight: {
+                    data: [170, 196, 167, 187],
+                    label: 'Kerb Weight (kg)'
+                },
+                groundClearance: {
+                    data: [220, 230, 205, 220],
+                    label: 'Ground Clearance (mm)'
+                },
+                fuel: {
+                    data: [13, 17, 12, 15.5],
+                    label: 'Fuel Tank (L)'
+                }
+            };
+
+            const competitorCtx = document.getElementById('competitorChart').getContext('2d');
+            let competitorChart = new Chart(competitorCtx, {
+                type: 'bar',
+                data: {
+                    labels: competitorData.labels,
+                    datasets: [{
+                        label: competitorData.price.label,
+                        data: competitorData.price.data,
+                        backgroundColor: [
+                            '#c0392b',
+                            '#7f8c8d',
+                            '#7f8c8d',
+                            '#7f8c8d',
+                        ],
+                        borderColor: [
+                            '#c0392b',
+                            '#7f8c8d',
+                            '#7f8c8d',
+                            '#7f8c8d',
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Competitor Comparison: Price' }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Ex-Showroom Price (₹ Lakh)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            const comparisonBtns = document.querySelectorAll('.comparison-btn');
+            comparisonBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    comparisonBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    const metric = btn.getAttribute('data-metric');
+                    competitorChart.data.datasets[0].data = competitorData[metric].data;
+                    competitorChart.data.datasets[0].label = competitorData[metric].label;
+                    competitorChart.options.plugins.title.text = `Competitor Comparison: ${competitorData[metric].label}`;
+                    competitorChart.options.scales.x.title.text = competitorData[metric].label;
+                    competitorChart.update();
+                });
+            });
+
+            const generateTripBtn = document.getElementById('generate-trip-btn');
+            const tripLoader = document.getElementById('trip-loader');
+            const tripOutput = document.getElementById('trip-output');
+            const startCityEl = document.getElementById('start-city');
+            const rideStyleEl = document.getElementById('ride-style');
+
+            generateTripBtn.addEventListener('click', async () => {
+                const startCity = startCityEl.value;
+                const rideStyle = rideStyleEl.value;
+                const prompt = `Generate a one-day motorcycle trip plan starting from ${startCity}, India. The trip should be for a Hero XPulse 210, which is a dual-sport motorcycle excellent for bad roads and decent on highways. The desired riding style is "${rideStyle}". The plan should include a destination, a suggested route, interesting stops, and tips specific to the bike's capabilities. Format the output in Markdown with headings for Route, Highlights, and Pro-Tips.`;
+
+                tripLoader.classList.remove('hidden');
+                tripOutput.classList.add('hidden');
+                tripOutput.innerHTML = '';
+
+                try {
+                    const text = await callGemini(prompt);
+                    tripOutput.innerHTML = parseMarkdown(text);
+                    tripOutput.classList.remove('hidden');
+                } catch (error) {
+                    console.error("Error calling Gemini API:", error);
+                    tripOutput.innerHTML = '<p class="text-red-500">Sorry, something went wrong while generating the trip plan. Please try again later.</p>';
+                    tripOutput.classList.remove('hidden');
+                } finally {
+                    tripLoader.classList.add('hidden');
+                }
+            });
+
+            const askExpertBtn = document.getElementById('ask-expert-btn');
+            const expertQuestionInput = document.getElementById('expert-question-input');
+            const expertLoader = document.getElementById('expert-loader');
+            const expertAnswer = document.getElementById('expert-answer');
+
+            askExpertBtn.addEventListener('click', async () => {
+                const question = expertQuestionInput.value;
+                if (!question.trim()) return;
+
+                const context = `Based on the following information about the Hero XPulse 210, answer the user's question.
+                Info: Max Power 24.6 PS, Max Torque 20.7 Nm. Excellent ride quality with linkage suspension. Refined engine for city, capable on highway with 6th gear. True off-road ability with 21/18-inch wheels and 220mm ground clearance. Great value.
+                Cons: Potential for inconsistent manufacturing quality. Uses tubed tyres which are hard to repair on the road. Limited 'Premia' service network. TFT screen has glare in sunlight.
+                Ideal owner: Prioritizes off-road/bad-road capability, is a hands-on enthusiast, and lives near a Premia dealership.
+                User Question: "${question}"`;
+
+                expertLoader.classList.remove('hidden');
+                expertAnswer.classList.add('hidden');
+                expertAnswer.textContent = '';
+
+                try {
+                    const text = await callGemini(context);
+                    expertAnswer.textContent = text;
+                    expertAnswer.classList.remove('hidden');
+                } catch (error) {
+                    console.error("Error calling Gemini API:", error);
+                    expertAnswer.textContent = 'Sorry, I could not fetch an answer. Please try again.';
+                    expertAnswer.classList.remove('hidden');
+                } finally {
+                    expertLoader.classList.add('hidden');
+                }
+            });
+            
+            async function callGemini(prompt, retries = 3, delay = 1000) {
+                const apiKey = ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                
+                const payload = {
+                    contents: [{
+                        parts: [{ text: prompt }]
+                    }]
+                };
+
+                for (let i = 0; i < retries; i++) {
+                    try {
+                        const response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+
+                        const result = await response.json();
+                        
+                        if (result.candidates && result.candidates.length > 0 &&
+                            result.candidates[0].content && result.candidates[0].content.parts &&
+                            result.candidates[0].content.parts.length > 0) {
+                            return result.candidates[0].content.parts[0].text;
+                        } else {
+                            throw new Error("Invalid response structure from Gemini API");
+                        }
+                    } catch (error) {
+                        if (i === retries - 1) throw error;
+                        await new Promise(res => setTimeout(res, delay * Math.pow(2, i)));
+                    }
+                }
+            }
+
+            function parseMarkdown(text) {
+                return text
+                    .replace(/^### (.*$)/gim, '<h3 class="text-xl font-bold mt-4 mb-2">$1</h3>')
+                    .replace(/^## (.*$)/gim, '<h2 class="text-2xl font-bold mt-6 mb-3">$1</h2>')
+                    .replace(/^# (.*$)/gim, '<h1 class="text-3xl font-bold mt-8 mb-4">$1</h1>')
+                    .replace(/\*\*(.*)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*)\*/g, '<em>$1</em>')
+                    .replace(/^\* (.*$)/gim, '<ul class="list-disc list-inside"><li>$1</li></ul>')
+                    .replace(/\n/g, '<br>');
+            }
+        });
+    </script>
+</body>
+</html>

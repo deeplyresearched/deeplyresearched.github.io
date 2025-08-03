@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hero Karizma XMR 250 - Interactive Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Modern Sport - Off-White, Charcoal, Hero Red -->
+    <!-- Application Structure Plan: A single-page dashboard with a sticky navigation bar linking to thematic sections: Overview, Performance, Chassis, Technology, Market Competition, and Verdict. This non-linear structure allows users to jump directly to their area of interest. The key interaction is a dynamic comparison chart in the 'Market Competition' section, letting users switch metrics (Power, Torque, Price) to see how the Karizma stacks up, which is more engaging than a static table. This design prioritizes user-driven exploration and data comparison over the linear narrative of the original report. -->
+    <!-- Visualization & Content Choices: Report Info -> Goal -> Viz/Presentation Method -> Interaction -> Justification -> Library/Method. 1. Power/Torque Comparison -> Goal: Compare core performance -> Viz: Grouped Bar Chart -> Interaction: Hover for tooltips -> Justification: Clearly shows Karizma's projected advantage -> Library: Chart.js. 2. Competitor Specs -> Goal: Detailed head-to-head comparison -> Viz: Interactive Bar Chart + Info Cards -> Interaction: Click buttons to change chart data (Power, Torque, Price) and update cards -> Justification: Allows focused, user-selected comparisons, far more dynamic than a static table -> Library: Chart.js + Vanilla JS. 3. SWOT Analysis -> Goal: Summarize strategic position -> Viz: 4-quadrant grid layout -> Interaction: Static display -> Justification: Classic, clear business visualization for strengths/weaknesses -> Method: HTML/Tailwind. 4. Key Features -> Goal: Highlight tech & hardware -> Viz: Icon + Text Cards -> Interaction: Static display -> Justification: Quickly scannable and visually separates features -> Method: HTML/Tailwind + Unicode Icons. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F9FA;
+            color: #212529;
+        }
+        .hero-red-bg { background-color: #E41E26; }
+        .hero-red-text { color: #E41E26; }
+        .hero-red-border { border-color: #E41E26; }
+        .nav-link {
+            transition: color 0.3s ease, border-bottom-color 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #E41E26;
+            border-bottom-color: #E41E26;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 40vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .stat-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .gemini-output {
+            min-height: 150px;
+            background-color: #f7fafc;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        .gemini-output p, .gemini-output ul {
+            margin-bottom: 0.75rem;
+        }
+        .gemini-output ul {
+            list-style-position: inside;
+            list-style-type: disc;
+        }
+        .gemini-output strong {
+            color: #2d3748;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="header" class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <a href="#hero" class="text-2xl font-bold hero-red-text">Karizma XMR 250</a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Overview</a>
+                        <a href="#performance" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Performance</a>
+                        <a href="#chassis" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Chassis & Handling</a>
+                        <a href="#technology" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Technology</a>
+                        <a href="#competition" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Market Competition</a>
+                        <a href="#verdict" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Verdict</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <select id="mobile-nav" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md">
+                        <option value="#hero">Home</option>
+                        <option value="#overview">Overview</option>
+                        <option value="#performance">Performance</option>
+                        <option value="#chassis">Chassis & Handling</option>
+                        <option value="#technology">Technology</option>
+                        <option value="#competition">Competition</option>
+                        <option value="#verdict">Verdict</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="relative pt-16 pb-20 text-center bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-gray-900">
+                    The Legend, <span class="hero-red-text">Reimagined.</span>
+                </h1>
+                <p class="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-gray-500">
+                    An interactive analysis of the upcoming Hero Karizma XMR 250, a strategic entry into the competitive quarter-litre sports segment.
+                </p>
+                <div class="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                    <div class="stat-card text-center">
+                        <p class="text-4xl font-bold hero-red-text">~30 <span class="text-2xl text-gray-600">PS</span></p>
+                        <p class="mt-2 text-sm font-medium text-gray-500">Projected Max Power</p>
+                    </div>
+                    <div class="stat-card text-center">
+                        <p class="text-4xl font-bold hero-red-text">~25 <span class="text-2xl text-gray-600">Nm</span></p>
+                        <p class="mt-2 text-sm font-medium text-gray-500">Projected Peak Torque</p>
+                    </div>
+                    <div class="stat-card text-center">
+                        <p class="text-4xl font-bold hero-red-text">₹2.1 <span class="text-2xl text-gray-600">Lakh</span></p>
+                        <p class="mt-2 text-sm font-medium text-gray-500">Expected Ex-Showroom Price</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="overview" class="py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Design & Ergonomics</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-500">This section explores the Karizma's new design philosophy and rider-focused ergonomics. The bike adopts a modern, aggressive aesthetic while retaining the comfortable "sport-tourer" DNA of its lineage, aiming for a balance between thrilling rides and daily usability.</p>
+                </div>
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="stat-card">
+                        <h3 class="text-lg font-semibold text-gray-900">Dynamic Aero-Layered Design</h3>
+                        <p class="mt-2 text-gray-600">A sharp, modern aesthetic with a functional, layered fairing that reduces drag and channels hot air away from the rider. Winglets and an aggressive stance create a commanding presence.</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 class="text-lg font-semibold text-gray-900">Signature H-Shaped LEDs</h3>
+                        <p class="mt-2 text-gray-600">A key brand identifier, the H-shaped Class-D LED projector headlamp and tail lamp ensure the bike is instantly recognizable, providing excellent visibility day or night.</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 class="text-lg font-semibold text-gray-900">Adjustable Windshield</h3>
+                        <p class="mt-2 text-gray-600">A segment-first feature that allows riders to alter airflow for more comfortable high-speed cruising, underscoring the bike's versatile sport-touring credentials.</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 class="text-lg font-semibold text-gray-900">Balanced Ergonomics</h3>
+                        <p class="mt-2 text-gray-600">A well-judged riding posture that is sporty and engaging yet comfortable enough for long journeys and city commutes. An accessible 810mm seat height suits most riders.</p>
+                    </div>
+                    <div class="stat-card lg:col-span-2 bg-amber-50 border-amber-200">
+                        <h3 class="text-lg font-semibold text-amber-800">Challenge: Fit, Finish & Quality</h3>
+                        <p class="mt-2 text-amber-700">The biggest hurdle for the XMR 250 is overcoming the build quality concerns from its 210cc sibling. Issues like inconsistent paint, untidy welds, and poor-quality switchgear must be addressed to justify its premium positioning against rivals known for superior fit and finish.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="performance" class="py-20 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Powertrain & Performance</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-500">This section analyzes the heart of the new Karizma: its 250cc DOHC engine. We'll look at the projected power figures, the expected performance character, and how it compares to key competitors, giving you a clear picture of its capabilities on the road.</p>
+                </div>
+                <div class="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900">Hero's New 250cc DOHC Heart</h3>
+                        <p class="mt-4 text-gray-600">The XMR 250 features a new 250cc, liquid-cooled, 4-valve, DOHC engine. Derived from the 210cc unit, it uses a longer stroke to boost displacement, a method that favors stronger torque delivery. This promises a more muscular and versatile performance character, blending a rev-happy top end with a tractable mid-range for both city and highway dominance.</p>
+                        <div class="mt-8 space-y-4">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 h-6 w-6 rounded-full hero-red-bg text-white flex items-center justify-center font-bold text-sm">1</div>
+                                <p class="ml-4 text-gray-700 font-medium">6-Speed Gearbox with Slip & Assist Clutch for smooth shifts and rider comfort.</p>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 h-6 w-6 rounded-full hero-red-bg text-white flex items-center justify-center font-bold text-sm">2</div>
+                                <p class="ml-4 text-gray-700 font-medium">Projected 140 km/h top speed, placing it competitively in the segment.</p>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 h-6 w-6 rounded-full hero-red-bg text-white flex items-center justify-center font-bold text-sm">3</div>
+                                <p class="ml-4 text-gray-700 font-medium">Expected to be more tractable at low speeds, reducing gear shifts in city traffic.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="chassis" class="py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Chassis & Handling</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-500">A motorcycle's performance is more than its engine. This section breaks down the components that define its handling and ride quality. From the modern trellis frame to the crucial suspension upgrades, we explore the hardware that gives the Karizma its confident and agile character.</p>
+                </div>
+                <div class="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="stat-card">
+                        <h3 class="text-lg font-semibold text-gray-900">Steel Trellis Frame</h3>
+                        <p class="mt-2 text-gray-600">Provides an excellent balance of rigidity and light weight, ensuring precise cornering, high-speed stability, and overall agility.</p>
+                    </div>
+                    <div class="stat-card hero-red-border border-2">
+                        <h3 class="text-lg font-semibold text-gray-900">The USD Advantage</h3>
+                        <p class="mt-2 text-gray-600">A significant upgrade, the standard Upside-Down (USD) front forks provide better feedback, improved stability under braking, and a more premium ride quality.</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 class="text-lg font-semibold text-gray-900">Adjustable Monoshock</h3>
+                        <p class="mt-2 text-gray-600">A 6-step preload-adjustable gas-charged monoshock at the rear delivers a consistent ride and excellent body control over varied surfaces.</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 class="text-lg font-semibold text-gray-900">Robust Braking System</h3>
+                        <p class="mt-2 text-gray-600">A 300mm front and 230mm rear petal disc setup governed by dual-channel ABS provides confident and safe stopping power.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="technology" class="py-20 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Technology & Features</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-500">The modern rider demands modern technology. This section details the Karizma's digital command center and suite of convenience features. We also analyze the "strategic omissions" to understand Hero's positioning of the bike as a versatile all-rounder rather than a track weapon.</p>
+                </div>
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="stat-card lg:col-span-2">
+                        <h3 class="text-lg font-semibold text-gray-900">Digital Command Center</h3>
+                        <p class="mt-2 text-gray-600">Features a comprehensive digital console (potentially a full-colour TFT) with over 35 features, including Bluetooth connectivity for turn-by-turn navigation, call/SMS alerts, and detailed ride data.</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 class="text-lg font-semibold text-gray-900">Safety & Convenience</h3>
+                        <p class="mt-2 text-gray-600">Equipped with all-LED lighting, dual-channel ABS (potentially switchable), a USB fast-charging port, and hazard indicators for a complete package.</p>
+                    </div>
+                    <div class="stat-card lg:col-span-3 bg-blue-50 border-blue-200">
+                        <h3 class="text-lg font-semibold text-blue-800">Strategic Omissions: The All-Rounder Philosophy</h3>
+                        <p class="mt-2 text-blue-700">The absence of features like a quick-shifter and traction control is a deliberate choice. It positions the Karizma as a powerful and comfortable sport-tourer for real-world riding, prioritizing a balanced package over a feature-for-feature arms race with track-focused rivals like the Yamaha R15.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="competition" class="py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">The Quarter-Litre Gauntlet</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-500">How does the Karizma XMR 250 stack up against the competition? This interactive section allows you to compare it head-to-head with its main rivals. Use the buttons below to switch the comparison metric and see how the bikes compare on power, torque, and price.</p>
+                </div>
+                <div class="mt-8 text-center space-x-2">
+                    <button id="powerBtn" class="comp-btn hero-red-bg text-white px-4 py-2 rounded-md font-semibold">Power (PS)</button>
+                    <button id="torqueBtn" class="comp-btn bg-gray-200 text-gray-800 px-4 py-2 rounded-md font-semibold">Torque (Nm)</button>
+                    <button id="priceBtn" class="comp-btn bg-gray-200 text-gray-800 px-4 py-2 rounded-md font-semibold">Price (₹ Lakh)</button>
+                </div>
+                <div class="mt-8 chart-container">
+                    <canvas id="competitionChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="verdict" class="py-20 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Final Verdict & Prospects</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-500">This final section synthesizes all the analysis into a clear verdict. The SWOT analysis provides a strategic overview, while our new AI-powered tool helps you determine if this bike is the right fit for your personal riding style.</p>
+                </div>
+                <div class="mt-16">
+                    <h3 class="text-2xl font-bold text-center text-gray-900 mb-8">SWOT Analysis</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-green-50 p-6 rounded-lg">
+                            <h4 class="text-xl font-semibold text-green-800">Strengths</h4>
+                            <ul class="mt-4 list-disc list-inside space-y-2 text-green-700">
+                                <li>Powerful 250cc DOHC engine with class-leading projected specs.</li>
+                                <li>Striking, modern design and excellent feature list for the price.</li>
+                                <li>Well-balanced sport-touring ergonomics for comfort and versatility.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-red-50 p-6 rounded-lg">
+                            <h4 class="text-xl font-semibold text-red-800">Weaknesses</h4>
+                            <ul class="mt-4 list-disc list-inside space-y-2 text-red-700">
+                                <li>Potential for inconsistent build quality based on the 210 platform.</li>
+                                <li>Unproven "Hero Premia" service network is a major question mark.</li>
+                                <li>Small 11-litre fuel tank limits long-distance touring range.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-blue-50 p-6 rounded-lg">
+                            <h4 class="text-xl font-semibold text-blue-800">Opportunities</h4>
+                            <ul class="mt-4 list-disc list-inside space-y-2 text-blue-700">
+                                <li>Fills a market gap for a powerful, feature-rich Indian sport-tourer.</li>
+                                <li>Leverages Karizma brand nostalgia while appealing to new riders.</li>
+                                <li>Aggressive pricing could disrupt the 250cc segment.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-yellow-50 p-6 rounded-lg">
+                            <h4 class="text-xl font-semibold text-yellow-800">Threats</h4>
+                            <ul class="mt-4 list-disc list-inside space-y-2 text-yellow-700">
+                                <li>Intense competition from established Japanese and European rivals.</li>
+                                <li>Hero's mass-market brand image may hinder premium sales.</li>
+                                <li>Failure to fix quality/service issues could damage reputation.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+                    <div class="stat-card">
+                        <h3 class="text-xl font-bold text-gray-900">The Ideal Owner Profile</h3>
+                        <p class="mt-4 text-gray-600">The Karizma XMR 250 is perfect for the rider seeking a versatile, do-it-all motorcycle. They want the aggressive looks of a supersport but need the real-world comfort for daily commutes and weekend tours. They are a value-conscious buyer who appreciates a rich feature set and prioritizes balanced, on-road performance over razor-sharp track focus.</p>
+                        <div class="mt-auto pt-4">
+                           <div class="stat-card hero-red-bg text-white mt-6">
+                                <h3 class="text-xl font-bold">The "Hero Premia" Imperative</h3>
+                                <p class="mt-4">The bike's ultimate success hinges on the ownership experience. Delivering a truly premium sales and service experience is the final, critical piece of the puzzle to win over discerning buyers.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <h3 class="text-xl font-bold text-gray-900">✨ Is This Bike For You?</h3>
+                        <p class="mt-4 text-gray-600">Describe your typical riding style below, and our AI expert will give you a personalized analysis.</p>
+                        <textarea id="riderStyleInput" class="mt-2 w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500" rows="4" placeholder="e.g., I ride 30km daily in city traffic and go for 300km highway rides on weekends. I value comfort and good mileage..."></textarea>
+                        <button id="geminiAnalyzeBtn" class="mt-4 w-full hero-red-bg text-white font-bold py-2 px-4 rounded-md hover:bg-red-700 transition-colors duration-300">
+                            Analyze My Riding Style
+                        </button>
+                        <div id="geminiOutput" class="gemini-output text-gray-700">
+                            Your personalized analysis will appear here...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800">
+        <div class="container mx-auto py-4 px-4 sm:px-6 lg:px-8 text-center text-gray-400 text-sm">
+            <p>Interactive analysis based on publicly available reports and projected data for the Hero Karizma XMR 250. All data is for illustrative purposes. AI analysis powered by Google Gemini.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const competitionData = {
+                labels: ['Karizma XMR 250', 'Gixxer SF 250', 'Yamaha R15 V4', 'Pulsar RS 200'],
+                power: [30, 26.5, 18.4, 24.5],
+                torque: [25, 22.2, 14.2, 18.7],
+                price: [2.1, 2.05, 1.9, 1.72]
+            };
+
+            const performanceData = {
+                labels: ['Power (PS)', 'Torque (Nm)'],
+                datasets: [
+                    {
+                        label: 'Karizma XMR 250',
+                        data: [30, 25],
+                        backgroundColor: '#E41E26',
+                        borderColor: '#E41E26',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Gixxer SF 250',
+                        data: [26.5, 22.2],
+                        backgroundColor: '#4A5568',
+                        borderColor: '#4A5568',
+                        borderWidth: 1
+                    }
+                ]
+            };
+
+            const chartOptions = (title) => ({
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: title,
+                        font: { size: 16 }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += context.parsed.y;
+                                    if(title.includes('Power')) label += ' PS';
+                                    if(title.includes('Torque')) label += ' Nm';
+                                    if(title.includes('Price')) label += ' Lakh';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            });
+            
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            const performanceChart = new Chart(performanceCtx, {
+                type: 'bar',
+                data: performanceData,
+                options: chartOptions('Power vs. Torque: Karizma XMR 250 vs. Gixxer SF 250')
+            });
+
+            const competitionCtx = document.getElementById('competitionChart').getContext('2d');
+            let competitionChart;
+
+            function createCompetitionChart(metric, data, label, title) {
+                if (competitionChart) {
+                    competitionChart.destroy();
+                }
+                competitionChart = new Chart(competitionCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: competitionData.labels,
+                        datasets: [{
+                            label: label,
+                            data: data,
+                            backgroundColor: competitionData.labels.map(l => l.startsWith('Karizma') ? '#E41E26' : '#4A5568'),
+                            borderColor: competitionData.labels.map(l => l.startsWith('Karizma') ? '#E41E26' : '#4A5568'),
+                            borderWidth: 1
+                        }]
+                    },
+                    options: chartOptions(title)
+                });
+            }
+
+            const powerBtn = document.getElementById('powerBtn');
+            const torqueBtn = document.getElementById('torqueBtn');
+            const priceBtn = document.getElementById('priceBtn');
+            const compBtns = [powerBtn, torqueBtn, priceBtn];
+
+            function updateActiveButton(activeBtn) {
+                compBtns.forEach(btn => {
+                    btn.classList.remove('hero-red-bg', 'text-white');
+                    btn.classList.add('bg-gray-200', 'text-gray-800');
+                });
+                activeBtn.classList.add('hero-red-bg', 'text-white');
+                activeBtn.classList.remove('bg-gray-200', 'text-gray-800');
+            }
+
+            powerBtn.addEventListener('click', () => {
+                createCompetitionChart('power', competitionData.power, 'Power (PS)', 'Competitor Power Comparison (PS)');
+                updateActiveButton(powerBtn);
+            });
+            torqueBtn.addEventListener('click', () => {
+                createCompetitionChart('torque', competitionData.torque, 'Torque (Nm)', 'Competitor Torque Comparison (Nm)');
+                updateActiveButton(torqueBtn);
+            });
+            priceBtn.addEventListener('click', () => {
+                createCompetitionChart('price', competitionData.price, 'Price (₹ Lakh)', 'Competitor Price Comparison (Ex-Showroom)');
+                updateActiveButton(priceBtn);
+            });
+
+            powerBtn.click();
+
+            const sections = document.querySelectorAll('main section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const mobileNav = document.getElementById('mobile-nav');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 80) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+            
+            mobileNav.addEventListener('change', (e) => {
+                window.location.href = e.target.value;
+            });
+            
+            const geminiAnalyzeBtn = document.getElementById('geminiAnalyzeBtn');
+            const riderStyleInput = document.getElementById('riderStyleInput');
+            const geminiOutput = document.getElementById('geminiOutput');
+
+            geminiAnalyzeBtn.addEventListener('click', async () => {
+                const userInput = riderStyleInput.value;
+                if (!userInput.trim()) {
+                    geminiOutput.innerHTML = '<p class="text-red-600">Please describe your riding style first.</p>';
+                    return;
+                }
+
+                geminiOutput.innerHTML = '<p class="text-gray-500">✨ Analyzing... Please wait.</p>';
+                geminiAnalyzeBtn.disabled = true;
+                geminiAnalyzeBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+                const prompt = `You are a motorcycle expert based in India. A user is considering the Hero Karizma XMR 250. Based on the bike's known characteristics (powerful 250cc DOHC engine, approx 30 PS power & 25 Nm torque, sport-touring ergonomics, adjustable windshield, dual-channel ABS, but with potential quality control issues and a small 11L fuel tank) and the user's riding style described below, provide a personalized analysis in markdown format of whether this bike is a good fit for them. Address their specific needs and mention how the Karizma's strengths and weaknesses would apply. User's riding style: "${userInput}"`;
+
+                try {
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { contents: chatHistory };
+                    const apiKey = ""; 
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                       throw new Error(`API request failed with status ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        geminiOutput.innerHTML = marked.parse(text);
+                    } else {
+                        throw new Error('Invalid response structure from API.');
+                    }
+
+                } catch (error) {
+                    console.error("Gemini API Error:", error);
+                    geminiOutput.innerHTML = '<p class="text-red-600">Sorry, something went wrong while analyzing. Please try again later.</p>';
+                } finally {
+                    geminiAnalyzeBtn.disabled = false;
+                    geminiAnalyzeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

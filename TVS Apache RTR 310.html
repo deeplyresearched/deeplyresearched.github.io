@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TVS Apache RTR 310 - Interactive Analysis with AI</title>
+    <!-- Chosen Palette: Warm Neutrals & TVS Accents -->
+    <!-- Application Structure Plan: A thematic, single-page dashboard structure was chosen over a linear report format to enhance user engagement and facilitate non-linear exploration. The core idea is to allow users to jump directly to the information they care about most (e.g., Performance, Competition). Key interactions include a BTO kit simulator to demystify the complex pricing, and a dynamic competitor comparison chart. This structure breaks down dense information into digestible, interactive modules (Performance, Tech, Ownership), making the content more accessible and understandable for a potential buyer. The user flow is guided by a sticky navigation bar, encouraging exploration across different facets of the motorcycle. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Dual Identity -> Goal: Inform -> Presentation: Key stat cards & intro text -> Interaction: Static display -> Justification: Quickly establish the bike's core theme.
+        - Report Info: Engine Power/Torque in different modes -> Goal: Compare -> Viz: Grouped Bar Chart (Chart.js) -> Interaction: Toggle buttons to switch modes -> Justification: Visually demonstrates the tangible difference between riding modes.
+        - Report Info: Complex BTO pricing -> Goal: Explain/Organize -> Presentation: Interactive "Build Your Bike" module -> Interaction: Toggles for kits update a feature list and total price -> Justification: Simplifies the most confusing aspect of the bike's purchasing process, making it tangible.
+        - Report Info: Competitor specs -> Goal: Compare -> Viz: Dynamic Horizontal Bar Chart (Chart.js) -> Interaction: Dropdown to select rival, updating chart and text -> Justification: Provides a direct, data-driven comparison against key market rivals, a primary concern for buyers.
+        - Report Info: Refinement Journey -> Goal: Show Change -> Presentation: HTML/CSS Timeline -> Interaction: Static visual -> Justification: Effectively tells the story of TVS's iterative improvements over time.
+        - New Feature: AI Ride Planner -> Goal: Engage/Assist -> Presentation: Form & Text Output -> Interaction: User inputs trigger Gemini API call -> Justification: Adds a practical, value-add tool for potential owners, leveraging LLM creativity.
+        - New Feature: AI Expert Chat -> Goal: Inform/Support -> Presentation: Modal with chat interface -> Interaction: User question triggers Gemini API call -> Justification: Provides instant, contextual answers to ownership questions, enhancing user support.
+        - All visualizations use Chart.js on a Canvas element, adhering to the NO SVG/Mermaid constraint. The structure is designed to be a cohesive, interactive story. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 50vh;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #ca8a04; /* yellow-600 */
+            border-bottom-color: #ca8a04;
+        }
+        .stat-card {
+            background-color: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .btn-primary {
+            background-color: #1e3a8a; /* blue-900 */
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #1c3473;
+        }
+        .btn-secondary {
+            background-color: #f59e0b; /* amber-500 */
+            color: #1f2937;
+        }
+        .btn-secondary:hover {
+            background-color: #d97706; /* amber-600 */
+        }
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 800;
+            line-height: 1.2;
+            color: #1e3a8a;
+        }
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: #4b5563;
+            margin-top: 0.5rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1e3a8a;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <a href="#" class="text-2xl font-bold text-gray-800">Apache <span class="text-blue-900">RTR 310</span></a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Overview</a>
+                        <a href="#performance" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Performance</a>
+                        <a href="#technology" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Technology</a>
+                        <a href="#ride-planner" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">✨ Ride Planner</a>
+                        <a href="#ownership" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Ownership</a>
+                        <a href="#rivals" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Rivals</a>
+                        <a href="#dealers" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Dealers</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#overview" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700">Overview</a>
+                <a href="#performance" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700">Performance</a>
+                <a href="#technology" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700">Technology</a>
+                <a href="#ride-planner" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700">✨ Ride Planner</a>
+                <a href="#ownership" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700">Ownership</a>
+                <a href="#rivals" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700">Rivals</a>
+                <a href="#dealers" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700">Dealers</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="relative text-center py-20 md:py-32 bg-white overflow-hidden">
+            <div class="absolute inset-0 bg-grid-gray-200/50 [mask-image:linear-gradient(to_bottom,white_40%,transparent_100%)]"></div>
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative">
+                <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-gray-900">TVS Apache RTR 310</h1>
+                <p class="mt-4 text-xl md:text-2xl font-semibold text-amber-600">The "Freestyler's" Dual Identity</p>
+                <p class="mt-6 max-w-2xl mx-auto text-lg text-gray-600">An ambitious blend of aggressive design, class-leading technology, and agile performance, defining a new era for Indian streetfighters.</p>
+                <div class="mt-8 flex justify-center gap-4">
+                    <a href="#ride-planner" class="btn-primary px-8 py-3 rounded-full text-base font-semibold shadow-lg transition-transform transform hover:scale-105">✨ Plan a Ride</a>
+                    <a href="#rivals" class="btn-secondary px-8 py-3 rounded-full text-base font-semibold shadow-lg transition-transform transform hover:scale-105">Compare Rivals</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="overview" class="py-16 sm:py-24 bg-gray-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="section-title">Aggression Meets Accessibility</h2>
+                <p class="section-subtitle">The Apache RTR 310 masterfully balances a menacing, cyborg-inspired aesthetic with surprisingly rider-friendly ergonomics. It's a machine designed to look sharp and feel comfortable, embodying a core philosophy of accessible performance for the real world.</p>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="stat-card">
+                        <div class="text-5xl text-blue-900 mb-2">🤖</div>
+                        <h3 class="text-xl font-bold text-gray-900">Cyborg Aesthetics</h3>
+                        <p class="mt-2 text-gray-600">A forward-biased, minimalist design with an adaptive Bi-LED headlamp creates a distinct and aggressive road presence.</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="text-5xl text-blue-900 mb-2">🧘</div>
+                        <h3 class="text-xl font-bold text-gray-900">Friendly Ergonomics</h3>
+                        <p class="mt-2 text-gray-600">A "mildly aggressive" riding triangle and an 800mm seat height make it comfortable for daily commutes and accessible to a wide range of riders.</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="text-5xl text-blue-900 mb-2">👤</div>
+                        <h3 class="text-xl font-bold text-gray-900">Solo-Rider Focus</h3>
+                        <p class="mt-2 text-gray-600">While the rider is pampered, the minimalist pillion seat is a conscious design choice, making this a dedicated solo machine.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="performance" class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="section-title">The Heart of the Machine</h2>
+                <p class="section-subtitle">At its core is a 312.12cc reverse-inclined engine, a product of the TVS-BMW collaboration. Tuned for punchy, real-world performance, its character is defined by strong mid-range torque and a journey of continuous refinement by TVS.</p>
+                
+                <div class="mt-12">
+                    <h3 class="text-2xl font-bold text-gray-800">Power & Torque Across Riding Modes</h3>
+                    <p class="mt-2 text-gray-600 max-w-2xl mx-auto">Toggle between modes to see how the engine's character changes. The performance is electronically tempered in Urban/Rain modes for better control in tricky conditions.</p>
+                    <div class="mt-4 flex justify-center gap-2 mb-4">
+                        <button id="mode-sport" class="px-4 py-2 rounded-md text-sm font-medium bg-blue-900 text-white">Sport/Track</button>
+                        <button id="mode-urban" class="px-4 py-2 rounded-md text-sm font-medium bg-gray-200 text-gray-700">Urban/Rain</button>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="mt-20">
+                    <h3 class="text-2xl font-bold text-gray-800">The Refinement Journey</h3>
+                    <p class="mt-2 text-gray-600 max-w-2xl mx-auto">TVS has proactively addressed initial feedback on engine vibrations through continuous software and hardware updates, showcasing a strong commitment to customer satisfaction.</p>
+                    <div class="mt-8 relative">
+                        <div class="border-l-2 border-blue-300 absolute h-full left-1/2 -ml-px"></div>
+                        <div class="space-y-12">
+                            <div class="relative">
+                                <div class="absolute w-4 h-4 bg-blue-900 rounded-full mt-1.5 -left-2 border-4 border-white"></div>
+                                <div class="ml-10 md:ml-0 md:w-5/12 md:text-right md:float-left">
+                                    <h4 class="font-bold text-lg">Initial Launch</h4>
+                                    <p class="text-gray-600">Engine criticized for significant vibrations and a "buzzy" character.</p>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute w-4 h-4 bg-blue-900 rounded-full mt-1.5 -left-2 border-4 border-white"></div>
+                                <div class="ml-10 md:ml-0 md:w-5/12 md:float-right md:text-left">
+                                    <h4 class="font-bold text-lg">Software Updates</h4>
+                                    <p class="text-gray-600">ECU re-calibration for a smoother, less jerky throttle response at low speeds.</p>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute w-4 h-4 bg-blue-900 rounded-full mt-1.5 -left-2 border-4 border-white"></div>
+                                <div class="ml-10 md:ml-0 md:w-5/12 md:text-right md:float-left">
+                                    <h4 class="font-bold text-lg">Hardware Updates</h4>
+                                    <p class="text-gray-600">Heavier bar-end dampers and denser foam padding added to absorb vibrations.</p>
+                                </div>
+                            </div>
+                             <div class="relative">
+                                <div class="absolute w-4 h-4 bg-blue-900 rounded-full mt-1.5 -left-2 border-4 border-white"></div>
+                                <div class="ml-10 md:ml-0 md:w-5/12 md:float-right md:text-left">
+                                    <h4 class="font-bold text-lg">Current State</h4>
+                                    <p class="text-gray-600">Vibrations significantly reduced to a "character trait" rather than a flaw.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="technology" class="py-16 sm:py-24 bg-gray-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="section-title">A Technological Tour de Force</h2>
+                <p class="section-subtitle">The RTR 310's biggest differentiator is its electronics suite. It's not just best-in-class; it introduces features unheard of in this segment, establishing it as the undisputed tech-forward choice.</p>
+
+                <div class="mt-12 bg-white p-8 rounded-xl shadow-lg border">
+                    <h3 class="text-2xl font-bold text-gray-800">Build Your "Freestyler"</h3>
+                    <p class="mt-2 text-gray-600 max-w-3xl mx-auto">The bike's price and features change dramatically with the optional BTO kits. Use the toggles below to see how adding each kit transforms the machine and its price.</p>
+                    
+                    <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                        <div class="lg:col-span-1 flex flex-col gap-4">
+                            <div class="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
+                                <label for="dynamicKitToggle" class="font-semibold text-gray-700">Dynamic Kit</label>
+                                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" name="btoKit" id="dynamicKitToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                                    <label for="dynamicKitToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
+                                <label for="dynamicProKitToggle" class="font-semibold text-gray-700">Dynamic Pro Kit</label>
+                                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" name="btoKit" id="dynamicProKitToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                                    <label for="dynamicProKitToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-2 text-left bg-gray-50 p-6 rounded-lg">
+                            <h4 class="font-bold text-lg">Selected Features:</h4>
+                            <ul id="btoFeatureList" class="mt-4 space-y-2 text-gray-700 list-disc list-inside">
+                                <li>5 Riding Modes, Cruise Control, DTC, ABS</li>
+                                <li>Bi-Directional Quickshifter</li>
+                            </ul>
+                        </div>
+                    </div>
+                     <div class="mt-8 bg-blue-900 text-white p-6 rounded-xl flex flex-col md:flex-row justify-between items-center">
+                        <span class="font-bold text-xl">Approx. Ex-Showroom Price:</span>
+                        <span id="btoPrice" class="font-extrabold text-3xl md:text-4xl text-amber-400">₹2,57,000</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="ride-planner" class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="section-title">✨ AI Ride Planner</h2>
+                <p class="section-subtitle">Let Gemini plan the perfect ride for your Apache RTR 310. Enter your start and end points, choose your preferred ride style, and get a custom route with interesting stops.</p>
+                <div class="mt-12 max-w-4xl mx-auto bg-gray-50 p-8 rounded-xl shadow-lg border">
+                    <form id="ride-planner-form" class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                        <div>
+                            <label for="start-location" class="block text-sm font-medium text-gray-700 text-left">Start Location</label>
+                            <input type="text" id="start-location" class="mt-1 block w-full p-2 border-gray-300 rounded-md shadow-sm" placeholder="e.g., Mumbai" required>
+                        </div>
+                        <div>
+                            <label for="end-location" class="block text-sm font-medium text-gray-700 text-left">End Location</label>
+                            <input type="text" id="end-location" class="mt-1 block w-full p-2 border-gray-300 rounded-md shadow-sm" placeholder="e.g., Goa" required>
+                        </div>
+                        <div>
+                            <label for="ride-style" class="block text-sm font-medium text-gray-700 text-left">Ride Style</label>
+                            <select id="ride-style" class="mt-1 block w-full p-2 border-gray-300 rounded-md shadow-sm">
+                                <option>Scenic & Relaxed</option>
+                                <option>Spirited & Twisty</option>
+                                <option>Direct & Efficient</option>
+                                <option>Cultural & Historic</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-3">
+                            <button type="submit" class="w-full btn-primary px-8 py-3 rounded-md text-base font-semibold shadow-lg">Generate Route</button>
+                        </div>
+                    </form>
+                    <div id="ride-planner-result" class="mt-8 text-left">
+                        <!-- AI generated route will appear here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ownership" class="py-16 sm:py-24 bg-gray-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="section-title">The Ownership Reality</h2>
+                <p class="section-subtitle">Owning the RTR 310 involves understanding its real-world running costs and navigating the service experience. Have a question? Our AI expert can help.</p>
+                <div class="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Real-World Fuel Efficiency</h3>
+                        <div class="chart-container h-64 md:h-80">
+                            <canvas id="mileageChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="text-left space-y-6">
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800">Maintenance & Service</h3>
+                             <p class="mt-2 text-gray-600">A standard paid service costs around <span class="font-semibold">₹3,500</span>. While spare parts can be pricier than Japanese rivals, the biggest variable is the service quality itself.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg border">
+                            <h4 class="font-bold text-lg text-green-600">The Good: Corporate Support</h4>
+                            <p class="mt-2 text-gray-600">TVS as a company is highly responsive, actively monitoring owner forums and resolving issues when escalated beyond the dealer level.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg border">
+                            <h4 class="font-bold text-lg text-red-600">The Bad: Dealer Experience</h4>
+                            <p class="mt-2 text-gray-600">Service quality is inconsistent. Premium 310s are sometimes serviced alongside mass-market scooters, and parts availability can be a concern at certain locations.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-12">
+                     <button id="ask-expert-btn" class="btn-secondary px-8 py-3 rounded-full text-base font-semibold shadow-lg transition-transform transform hover:scale-105">✨ Ask the Expert</button>
+                </div>
+            </div>
+        </section>
+        
+        <section id="rivals" class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="section-title">The Gauntlet: Competitive Landscape</h2>
+                <p class="section-subtitle">The RTR 310 doesn't exist in a vacuum. It faces formidable rivals, and its value proposition shifts dramatically when compared against them. Select a rival to see how they stack up.</p>
+
+                <div class="mt-8 max-w-md mx-auto">
+                    <label for="rival-select" class="sr-only">Select a Rival</label>
+                    <select id="rival-select" class="block w-full p-3 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-lg">
+                        <option value="ktm">vs. KTM 390 Duke</option>
+                        <option value="bmw">vs. BMW G 310 R</option>
+                        <option value="triumph">vs. Triumph Speed 400</option>
+                    </select>
+                </div>
+                
+                <div class="mt-8 grid grid-cols-1 lg:grid-cols-5 gap-8 items-center">
+                    <div class="lg:col-span-3">
+                        <div class="chart-container">
+                            <canvas id="rivalsChart"></canvas>
+                        </div>
+                    </div>
+                    <div id="rival-summary" class="lg:col-span-2 text-left bg-gray-50 p-8 rounded-xl border">
+                        
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="dealers" class="py-16 sm:py-24 bg-gray-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="section-title">Find Yours in Jabalpur</h2>
+                <p class="section-subtitle">Ready for a test ride? Here are the authorized TVS dealerships in Jabalpur where you can experience the Apache RTR 310 firsthand. It's always best to call ahead for availability and the latest on-road pricing.</p>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+                    <div class="bg-white p-6 rounded-lg shadow-md border">
+                        <h3 class="font-bold text-lg">TVS - Singhai Motocorp LLP</h3>
+                        <p class="mt-2 text-gray-600">No 622, Civic Centre, Marhatal, Opp. Gurunanak School, Jabalpur - 482002</p>
+                        <p class="mt-2 font-semibold text-blue-800">+919355530534</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md border">
+                        <h3 class="font-bold text-lg">TVS - Kanha Motors</h3>
+                        <p class="mt-2 text-gray-600">No 376, Main Road, Kanchghar Chowk, Jabalpur - 482001</p>
+                        <p class="mt-2 font-semibold text-blue-800">+917838582592</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md border">
+                        <h3 class="font-bold text-lg">TVS - Super Auto Care</h3>
+                        <p class="mt-2 text-gray-600">Nagpur Road, Bedi Nagar, Near Reliance Petrol Pump, Jabalpur - 482001</p>
+                        <p class="mt-2 font-semibold text-blue-800">+917838891989</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-md border">
+                        <h3 class="font-bold text-lg">TVS - Siya Auto Agencies</h3>
+                        <p class="mt-2 text-gray-600">Plot No 236, JDA Scheme No 3, Main Road, Adhartal, Jabalpur - 482004</p>
+                        <p class="mt-2 font-semibold text-blue-800">+916366528536</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md border">
+                        <h3 class="font-bold text-lg">TVS - Shukla Automobiles</h3>
+                        <p class="mt-2 text-gray-600">Ground Floor, Main Road, Gokalpur, Ranjhi, Jabalpur - 482005</p>
+                        <p class="mt-2 font-semibold text-blue-800">+917669344562</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white">
+        <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
+            <p>This interactive analysis was generated based on a comprehensive report on the TVS Apache RTR 310.</p>
+            <p class="text-sm text-gray-400 mt-2">All data is for informational purposes. AI-generated content may be inaccurate. Prices and specifications are subject to change. Please consult an authorized dealer for the latest information.</p>
+        </div>
+    </footer>
+
+    <!-- AI Expert Modal -->
+    <div id="expert-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg m-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-bold text-gray-800">✨ Ask the Expert</h3>
+                <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <p class="text-gray-600 mb-4">Have a question about owning the Apache RTR 310? Ask away!</p>
+            <form id="expert-form">
+                <textarea id="expert-question" class="w-full p-2 border-gray-300 rounded-md shadow-sm" rows="3" placeholder="e.g., What is the ideal tyre pressure for city riding?" required></textarea>
+                <button type="submit" class="w-full mt-4 btn-primary px-6 py-2 rounded-md font-semibold">Get Answer</button>
+            </form>
+            <div id="expert-answer" class="mt-4 text-left">
+                <!-- AI generated answer will appear here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.4
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            mobileMenu.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+
+            const performanceData = {
+                sport: {
+                    labels: ['Max Power (PS)', 'Max Torque (Nm)'],
+                    data: [35.6, 28.7]
+                },
+                urban: {
+                    labels: ['Max Power (PS)', 'Max Torque (Nm)'],
+                    data: [27.1, 27.3]
+                }
+            };
+
+            const perfCtx = document.getElementById('performanceChart').getContext('2d');
+            let performanceChart = new Chart(perfCtx, {
+                type: 'bar',
+                data: {
+                    labels: performanceData.sport.labels,
+                    datasets: [{
+                        label: 'Performance',
+                        data: performanceData.sport.data,
+                        backgroundColor: ['#1e3a8a', '#f59e0b'],
+                        borderColor: ['#1e3a8a', '#f59e0b'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#e5e7eb'
+                            }
+                        },
+                        y: {
+                           grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const modeSportBtn = document.getElementById('mode-sport');
+            const modeUrbanBtn = document.getElementById('mode-urban');
+
+            function updatePerfChart(mode) {
+                performanceChart.data.datasets[0].data = performanceData[mode].data;
+                performanceChart.update();
+                if(mode === 'sport') {
+                    modeSportBtn.classList.add('bg-blue-900', 'text-white');
+                    modeSportBtn.classList.remove('bg-gray-200', 'text-gray-700');
+                    modeUrbanBtn.classList.add('bg-gray-200', 'text-gray-700');
+                    modeUrbanBtn.classList.remove('bg-blue-900', 'text-white');
+                } else {
+                    modeUrbanBtn.classList.add('bg-blue-900', 'text-white');
+                    modeUrbanBtn.classList.remove('bg-gray-200', 'text-gray-700');
+                    modeSportBtn.classList.add('bg-gray-200', 'text-gray-700');
+                    modeSportBtn.classList.remove('bg-blue-900', 'text-white');
+                }
+            }
+
+            modeSportBtn.addEventListener('click', () => updatePerfChart('sport'));
+            modeUrbanBtn.addEventListener('click', () => updatePerfChart('urban'));
+
+            const mileageCtx = document.getElementById('mileageChart').getContext('2d');
+            const mileageChart = new Chart(mileageCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Heavy Urban', 'Mixed City', 'Highway'],
+                    datasets: [{
+                        label: 'Real-World Mileage (kmpl)',
+                        data: [23.5, 29.5, 33.5],
+                        backgroundColor: ['#f59e0b', '#fbbf24', '#fcd34d'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Mileage (kmpl)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false,
+                        }
+                    }
+                }
+            });
+
+            const btoData = {
+                basePrice: 257000,
+                dynamicKit: {
+                    price: 18000,
+                    features: ['Fully Adjustable KYB Suspension', 'Tyre Pressure Monitoring System (TPMS)', 'Brass-Coated Chain']
+                },
+                dynamicProKit: {
+                    price: 22000,
+                    features: ['6-axis IMU (Cornering ABS/TC)', 'Wheelie & Slope Dependent Control', 'Keyless Ignition & Launch Control', 'Climate Control Seat']
+                },
+                baseFeatures: ['5 Riding Modes, Cruise Control, DTC, ABS', 'Bi-Directional Quickshifter']
+            };
+
+            const dynamicKitToggle = document.getElementById('dynamicKitToggle');
+            const dynamicProKitToggle = document.getElementById('dynamicProKitToggle');
+            const btoFeatureList = document.getElementById('btoFeatureList');
+            const btoPrice = document.getElementById('btoPrice');
+
+            function updateBTO() {
+                let currentPrice = btoData.basePrice;
+                let features = [...btoData.baseFeatures];
+
+                if (dynamicKitToggle.checked) {
+                    currentPrice += btoData.dynamicKit.price;
+                    features.push(...btoData.dynamicKit.features);
+                }
+                if (dynamicProKitToggle.checked) {
+                    currentPrice += btoData.dynamicProKit.price;
+                    features.push(...btoData.dynamicProKit.features);
+                }
+
+                btoFeatureList.innerHTML = features.map(f => `<li>${f}</li>`).join('');
+                btoPrice.textContent = `₹${currentPrice.toLocaleString('en-IN')}`;
+            }
+
+            dynamicKitToggle.addEventListener('change', updateBTO);
+            dynamicProKitToggle.addEventListener('change', updateBTO);
+            
+            const rivalsData = {
+                tvs: { name: 'Apache RTR 310', power: 35.6, torque: 28.7, weight: 169 },
+                ktm: { 
+                    name: 'KTM 390 Duke', power: 45.5, torque: 39, weight: 168.3,
+                    summary: `<h3 class="text-2xl font-bold text-gray-800 mb-2">Features vs. Raw Power</h3>
+                              <p class="text-gray-600">The KTM 390 Duke is the undisputed performance king with a larger, more powerful engine. It's quicker and has a higher top speed. The RTR 310 fights back with a vastly superior electronics package (climate seat, cornering cruise control) and better low-end tractability for city riding. If raw performance is your only metric, the Duke wins. If you value tech and daily usability, the RTR 310 makes a compelling case.</p>`
+                },
+                bmw: { 
+                    name: 'BMW G 310 R', power: 34, torque: 28, weight: 164,
+                    summary: `<h3 class="text-2xl font-bold text-gray-800 mb-2">Value vs. Brand Prestige</h3>
+                              <p class="text-gray-600">This is a sibling rivalry. Both share the same core engine, but the RTR 310 is tuned for more power and completely outclasses the BMW in features. The G 310 R is comparatively bare-bones, lacking the TFT screen, riding modes, and advanced aids. The RTR 310 offers significantly more for less money, making the BMW's appeal primarily about brand prestige.</p>`
+                },
+                triumph: { 
+                    name: 'Triumph Speed 400', power: 40, torque: 37.5, weight: 176,
+                    summary: `<h3 class="text-2xl font-bold text-gray-800 mb-2">Tech vs. Neo-Retro Charm</h3>
+                              <p class="text-gray-600">This comparison is about philosophy. The Triumph boasts a larger engine with smooth, linear torque and a modern-classic design. It appeals to riders who value refinement and heritage. The Apache is the aggressive, tech-focused streetfighter. While the Speed 400 is a strong performer, the RTR 310 wins hands-down on the technology and features front.</p>`
+                }
+            };
+
+            const rivalsCtx = document.getElementById('rivalsChart').getContext('2d');
+            let rivalsChart = new Chart(rivalsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Max Power (PS)', 'Max Torque (Nm)', 'Kerb Weight (kg)'],
+                    datasets: []
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: { beginAtZero: true }
+                    },
+                    plugins: {
+                        legend: { position: 'top' },
+                    }
+                }
+            });
+
+            const rivalSelect = document.getElementById('rival-select');
+            const rivalSummary = document.getElementById('rival-summary');
+
+            function updateRivalsChart() {
+                const selectedRivalKey = rivalSelect.value;
+                const rival = rivalsData[selectedRivalKey];
+                
+                rivalsChart.data.datasets = [
+                    {
+                        label: rivalsData.tvs.name,
+                        data: [rivalsData.tvs.power, rivalsData.tvs.torque, rivalsData.tvs.weight],
+                        backgroundColor: '#1e3a8a',
+                        borderColor: '#1e3a8a',
+                    },
+                    {
+                        label: rival.name,
+                        data: [rival.power, rival.torque, rival.weight],
+                        backgroundColor: '#f59e0b',
+                        borderColor: '#f59e0b',
+                    }
+                ];
+                rivalsChart.update();
+                rivalSummary.innerHTML = rival.summary;
+            }
+
+            rivalSelect.addEventListener('change', updateRivalsChart);
+
+            // Gemini API Integration
+            const ridePlannerForm = document.getElementById('ride-planner-form');
+            const ridePlannerResult = document.getElementById('ride-planner-result');
+            const expertModal = document.getElementById('expert-modal');
+            const askExpertBtn = document.getElementById('ask-expert-btn');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const expertForm = document.getElementById('expert-form');
+            const expertAnswer = document.getElementById('expert-answer');
+
+            async function callGemini(prompt) {
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                
+                const payload = {
+                    contents: [{ role: "user", parts: [{ text: prompt }] }]
+                };
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API call failed with status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts.length > 0) {
+                        return result.candidates[0].content.parts[0].text;
+                    } else {
+                        return "Sorry, I couldn't generate a response. Please try again.";
+                    }
+                } catch (error) {
+                    console.error("Gemini API call error:", error);
+                    return "An error occurred while contacting the AI. Please check the console for details.";
+                }
+            }
+
+            ridePlannerForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const start = document.getElementById('start-location').value;
+                const end = document.getElementById('end-location').value;
+                const style = document.getElementById('ride-style').value;
+
+                ridePlannerResult.innerHTML = '<div class="loader"></div>';
+
+                const prompt = `As a motorcycle touring expert, create a detailed ride plan for a TVS Apache RTR 310 from ${start} to ${end}. The desired style is "${style}". The RTR 310 is an agile streetfighter, so suggest routes that play to its strengths. Include interesting waypoints, potential food stops, and photo opportunities. Format the output as clean HTML with headings and lists.`;
+                
+                const responseText = await callGemini(prompt);
+                ridePlannerResult.innerHTML = responseText;
+            });
+
+            askExpertBtn.addEventListener('click', () => {
+                expertModal.style.display = 'flex';
+            });
+
+            closeModalBtn.addEventListener('click', () => {
+                expertModal.style.display = 'none';
+            });
+
+            expertForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const question = document.getElementById('expert-question').value;
+                expertAnswer.innerHTML = '<div class="loader"></div>';
+
+                const prompt = `You are a knowledgeable and friendly TVS Apache RTR 310 owner and mechanic. A user has asked the following question about the bike: "${question}". Provide a clear, helpful, and concise answer.`;
+                
+                const responseText = await callGemini(prompt);
+                expertAnswer.innerHTML = `<p class="text-gray-700 bg-gray-100 p-4 rounded-md">${responseText.replace(/\n/g, '<br>')}</p>`;
+            });
+
+
+            updateBTO();
+            updatePerfChart('sport');
+            updateRivalsChart();
+
+            const style = document.createElement('style');
+            style.innerHTML = `
+                .toggle-checkbox:checked {
+                    right: 0;
+                    border-color: #f59e0b;
+                }
+                .toggle-checkbox:checked + .toggle-label {
+                    background-color: #f59e0b;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>

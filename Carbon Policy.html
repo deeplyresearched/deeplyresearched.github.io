@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Climate Policy Dashboard with Gemini AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Green & Blue Accents -->
+    <!-- Application Structure Plan: A single-page dashboard structure is used to facilitate direct comparison between the three core climate policies (Offsets, Pricing, Green New Deal). The user flow begins with a high-level summary, then moves to a main tab-based navigation allowing users to select a policy. Each policy tab reveals a consistent layout with sections for 'How it Works', 'Key Data & Case Studies', and 'Pros & Cons'. This structure was chosen over a linear report format to empower users to explore non-linearly and compare the policies on an apples-to-apples basis, which is key to understanding their relative strengths and weaknesses. The final section synthesizes the findings, showcasing how hybrid models can be formed, directly addressing the report's main conclusion. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Comparative effectiveness of the three policies. Goal: Compare. Viz: Grouped Bar Chart (Chart.js). Interaction: Tooltips on hover provide specific ratings. Justification: A bar chart is the most direct way to visually compare quantitative/qualitative ratings across multiple categories.
+        - Report Info: EU ETS & BC Carbon Tax emissions data over time. Goal: Show Change. Viz: Line Charts (Chart.js). Interaction: Annotations on hover explain key policy events that influenced the trend. Justification: Line charts are ideal for showing trends over a continuous period.
+        - Report Info: Voluntary Carbon Market size projection. Goal: Inform. Viz: Bar Chart (Chart.js). Justification: Clearly shows growth over time.
+        - Report Info: Policy mechanisms (Tax vs. ETS, GND pillars). Goal: Organize/Explain. Viz: Styled HTML/CSS Flexbox/Grid layouts. Interaction: Clickable tabs and cards to reveal detailed information. Justification: Interactive HTML elements are more engaging than static text and allow for layering complex information without overwhelming the user.
+        - Report Info: Pros and Cons for each policy. Goal: Compare. Viz: Two-column card layout. Justification: Provides a clear, balanced view of the arguments for and against each policy.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f7f4;
+            color: #3d405b;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        .nav-button.active {
+            border-bottom-color: #81b29a;
+            color: #3d405b;
+            font-weight: 600;
+        }
+        .nav-button:hover {
+            background-color: #e0e0e030;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .pro-con-card {
+            border-left-width: 4px;
+        }
+        .pro-card {
+            border-left-color: #81b29a;
+        }
+        .con-card {
+            border-left-color: #e07a5f;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3d405b;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-3d405b mb-2">Navigating Climate Policy</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">An AI-enhanced dashboard exploring Carbon Offsets, Carbon Pricing, and the Green New Deal.</p>
+        </header>
+
+        <main>
+            <section id="intro" class="mb-12">
+                <div class="bg-white p-6 sm:p-8 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold mb-4 text-center">Three Paths to Decarbonization</h2>
+                    <p class="text-gray-700 mb-6 text-center max-w-4xl mx-auto">The climate crisis demands effective policy solutions. This dashboard analyzes three dominant frameworks: Carbon Offsets, which compensate for emissions; Carbon Pricing, which puts a cost on pollution; and the Green New Deal, a plan for systemic transformation. Explore each approach to understand its mechanisms, effectiveness, and real-world impact.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                        <div class="p-4 border border-gray-200 rounded-lg">
+                            <h3 class="font-semibold text-xl mb-2">🔄 Carbon Offsets</h3>
+                            <p class="text-sm text-gray-600">Compensate for emissions by funding reduction projects elsewhere. A flexible but controversial tool.</p>
+                        </div>
+                        <div class="p-4 border border-gray-200 rounded-lg">
+                            <h3 class="font-semibold text-xl mb-2">💰 Carbon Pricing</h3>
+                            <p class="text-sm text-gray-600">Make polluters pay via a tax or a trading system to incentivize change across the economy.</p>
+                        </div>
+                        <div class="p-4 border border-gray-200 rounded-lg">
+                            <h3 class="font-semibold text-xl mb-2">🏛️ Green New Deal</h3>
+                            <p class="text-sm text-gray-600">A government-led mobilization to build a green economy and address social inequality.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="policy-dashboard" class="mb-12">
+                <div class="sticky top-0 bg-f8f7f4/80 backdrop-blur-sm z-10 mb-8">
+                    <nav class="flex justify-center border-b border-gray-300">
+                        <button class="nav-button py-4 px-6 text-gray-600 active" data-target="offsets">Carbon Offsets</button>
+                        <button class="nav-button py-4 px-6 text-gray-600" data-target="pricing">Carbon Pricing</button>
+                        <button class="nav-button py-4 px-6 text-gray-600" data-target="gnd">Green New Deal</button>
+                    </nav>
+                </div>
+
+                <div id="policy-content">
+                </div>
+            </section>
+
+            <section id="synthesis" class="mb-12">
+                 <div class="card p-6 sm:p-8">
+                    <h2 class="text-2xl font-bold mb-4 text-center">Synthesis: The Power of Hybrid Models</h2>
+                    <p class="text-gray-700 mb-6 text-center max-w-4xl mx-auto">The report concludes that no single policy is a panacea. The most effective path forward lies in pragmatically combining the strengths of each approach. A robust strategy involves a rising carbon price to drive incentives, a Green New Deal-style investment program to ensure a just transition, and a high-integrity market for permanent carbon removals to tackle the hardest-to-abate emissions.</p>
+                    <div class="chart-container mx-auto">
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+                    <p class="text-xs text-center text-gray-500 mt-2">Comparative assessment based on the report's analysis. Effectiveness ratings are qualitative.</p>
+                </div>
+            </section>
+
+            <section id="gemini-recommender" class="mb-12">
+                <div class="card p-6 sm:p-8">
+                    <h2 class="text-2xl font-bold mb-2 text-center">✨ AI Policy Recommender</h2>
+                    <p class="text-gray-700 mb-6 text-center max-w-4xl mx-auto">Describe your country or region's context below. Our AI advisor will suggest a tailored hybrid climate policy strategy.</p>
+                    <div class="max-w-2xl mx-auto">
+                        <textarea id="recommender-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300 transition" rows="4" placeholder="E.g., 'A developing nation with a large agricultural sector, growing urban population, and limited fiscal capacity. Relies heavily on imported fossil fuels.'"></textarea>
+                        <button id="recommender-button" class="mt-4 w-full bg-3d405b text-white font-bold py-3 px-4 rounded-lg hover:bg-opacity-90 transition-colors flex items-center justify-center">
+                            Get AI Recommendation
+                        </button>
+                        <div id="recommender-output" class="mt-6"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center text-gray-500 text-sm mt-12">
+            <p>Interactive visualization based on the report "Navigating the Climate Policy Landscape". AI features powered by Google Gemini.</p>
+        </footer>
+    </div>
+
+    <script>
+        const policyData = {
+            offsets: {
+                title: 'Carbon Offsets',
+                summary: 'Carbon Offsets involve compensating for emissions by funding reduction projects elsewhere. It is a flexible but controversial tool. Key mechanisms are avoidance/reduction credits (e.g., renewable energy projects) and removal/sequestration credits (e.g., reforestation, Direct Air Capture).',
+                howItWorks: {
+                    title: 'How It Works: Compensating for Emissions',
+                    intro: 'Carbon offsetting allows an entity to compensate for its emissions by financing an emissions reduction or removal project elsewhere. It operates on the principle that a tonne of CO2 has the same atmospheric impact regardless of where it is emitted. The process is quantified in "carbon credits," where one credit typically equals one tonne of CO2 equivalent.',
+                    steps: [
+                        { name: 'Avoidance/Reduction', description: 'Credits from projects that prevent emissions that would have otherwise occurred, like building a wind farm instead of a coal plant. This is the most common but most criticized type due to reliance on hypothetical baselines.', icon: '💨' },
+                        { name: 'Removal/Sequestration', description: 'Credits from projects that physically pull CO2 from the atmosphere, such as planting trees (reforestation) or using technology like Direct Air Capture (DAC). These are considered higher quality.', icon: '🌳' }
+                    ]
+                },
+                charts: [
+                    {
+                        id: 'vcmMarketChart',
+                        type: 'bar',
+                        title: 'Voluntary Carbon Market (VCM) Growth',
+                        data: {
+                            labels: ['2022 Value', '2050 Projection (High Integrity)'],
+                            datasets: [{
+                                label: 'Market Value (USD)',
+                                data: [2, 1100],
+                                backgroundColor: ['#81b29a', '#3d405b'],
+                                borderColor: ['#81b29a', '#3d405b'],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: { scales: { y: { beginAtZero: true, ticks: { callback: value => `$${value}B` } } } },
+                        context: 'The VCM, driven by voluntary corporate pledges, was valued at ~$2 billion in 2022. Projections suggest it could exceed $1 trillion by 2050, but only if systemic integrity issues are resolved.'
+                    }
+                ],
+                pros: [
+                    'Channels finance to emission reduction projects, often in developing nations.',
+                    'Provides a flexible mechanism for companies to meet climate goals.',
+                    'In theory, finds the lowest-cost abatement opportunities globally.'
+                ],
+                cons: [
+                    'Plagued by a credibility crisis, with many "phantom credits" that don\'t represent real reductions.',
+                    'Risks of "carbon colonialism," where projects harm Indigenous and local communities.',
+                    'Enables corporate "greenwashing," allowing continued pollution with claims of carbon neutrality.'
+                ]
+            },
+            pricing: {
+                title: 'Carbon Pricing',
+                summary: 'Carbon Pricing makes polluters pay for their emissions via a tax or an emissions trading system (ETS). It is economically efficient and creates broad incentives for change. A carbon tax provides price certainty, while an ETS guarantees the environmental outcome (emissions cap).',
+                howItWorks: {
+                    title: 'How It Works: Making Pollution Costly',
+                    intro: 'Carbon pricing corrects a market failure by "internalizing the externality" of pollution. It places a direct cost on greenhouse gas emissions, creating a financial incentive for businesses and individuals to reduce their carbon footprint. This is achieved through two main models.',
+                    steps: [
+                        { name: 'Carbon Tax', description: 'A straightforward tax levied on the carbon content of fossil fuels. Provides price certainty for businesses but environmental outcomes are not guaranteed.', icon: '💵' },
+                        { name: 'Emissions Trading System (ETS)', description: 'A "cap-and-trade" system where a limit (cap) is set on total emissions. Emitters must hold permits (allowances) and can trade them. This guarantees the environmental outcome but the price can be volatile.', icon: '🔄' }
+                    ]
+                },
+                charts: [
+                    {
+                        id: 'euEtsChart',
+                        type: 'line',
+                        title: 'Case Study: EU Emissions Trading System (ETS)',
+                        data: {
+                            labels: ['2008', '2010', '2012', '2014', '2016', '2018', '2020', '2022'],
+                            datasets: [{
+                                label: 'Emissions in Covered Sectors (Indexed)',
+                                data: [100, 95, 90, 85, 82, 79, 70, 65],
+                                fill: false,
+                                borderColor: '#3d405b',
+                                tension: 0.1
+                            }]
+                        },
+                        options: { scales: { y: { beginAtZero: false } } },
+                        context: 'The EU ETS has proven effective, reducing emissions in covered sectors by over 11.5% between 2008-2016 compared to a world without it. Reforms like the Market Stability Reserve have strengthened the price signal in recent years.'
+                    },
+                    {
+                        id: 'bcTaxChart',
+                        type: 'line',
+                        title: 'Case Study: British Columbia Carbon Tax',
+                        data: {
+                            labels: ['2008', '2010', '2012', '2014', '2016', '2018'],
+                            datasets: [{
+                                label: 'Per-Capita Fuel Use (Indexed)',
+                                data: [100, 92, 85, 84, 86, 87],
+                                fill: false,
+                                borderColor: '#81b29a',
+                                tension: 0.1
+                            }]
+                        },
+                        options: { scales: { y: { beginAtZero: false } } },
+                        context: 'The BC Carbon Tax initially led to a 5-15% reduction in emissions. However, the effect plateaued when the tax rate was frozen after 2012, highlighting the need for a predictably rising price to drive long-term change.'
+                    }
+                ],
+                pros: [
+                    'Economically efficient, achieving reductions at the lowest overall cost.',
+                    'Creates a broad, economy-wide incentive for innovation and behavior change.',
+                    'Revenue can be "recycled" to cut other taxes or fund social programs, neutralizing regressive impacts.'
+                ],
+                cons: [
+                    'Can be regressive, disproportionately impacting low-income households if revenue is not recycled.',
+                    'Politically difficult to implement due to the negative perception of "taxes".',
+                    'Risk of "carbon leakage" where industries move to jurisdictions without a carbon price.'
+                ]
+            },
+            gnd: {
+                title: 'Green New Deal',
+                summary: 'The Green New Deal (GND) is a government-led mobilization to build a green economy and address social inequality simultaneously. It focuses on massive public investment in sustainable infrastructure and a just transition for workers and communities. It aims to shape new markets rather than just correcting existing ones.',
+                howItWorks: {
+                    title: 'How It Works: Systemic Transformation',
+                    intro: 'The Green New Deal (GND) is not a single policy but a comprehensive framework for societal mobilization. It aims to tackle climate change and economic inequality together through a massive, government-led, investment-driven strategy. It seeks to shape and create new markets rather than just correct existing ones.',
+                    steps: [
+                        { name: 'Massive Public Investment', description: 'A government-led program to build sustainable infrastructure, like a national smart grid, high-speed rail, and retrofitting all buildings for energy efficiency.', icon: '🏗️' },
+                        { name: 'Just Transition & Social Justice', description: 'Guarantees high-quality union jobs, invests in frontline communities, and expands the social safety net (e.g., universal healthcare, housing).', icon: '🤝' }
+                    ]
+                },
+                charts: [],
+                customContent: `
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h4 class="font-semibold text-lg mb-3 text-center">Investment-Led vs. Market-Based Strategy</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="text-center p-4 border-2 border-dashed border-blue-300 rounded-lg">
+                                <h5 class="font-bold mb-2">Green New Deal (Market Shaping)</h5>
+                                <p class="text-sm">Government actively <span class="font-bold">directs investment</span> to create new green industries and infrastructure, assuming the market alone is too slow and will not ensure equity.</p>
+                                <div class="text-4xl my-4">🏛️ ➡️ 🏭</div>
+                                <p class="text-xs font-mono">Gov't Investment ➡️ New Markets</p>
+                            </div>
+                            <div class="text-center p-4 border-2 border-dashed border-green-300 rounded-lg">
+                                <h5 class="font-bold mb-2">Carbon Pricing (Market Correcting)</h5>
+                                <p class="text-sm">Government sets a <span class="font-bold">price on pollution</span> and relies on private sector innovation to find the most efficient solutions in response.</p>
+                                <div class="text-4xl my-4">💰 ➡️ 🏭</div>
+                                <p class="text-xs font-mono">Price Signal ➡️ Private Sector Response</p>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                pros: [
+                    'Directly addresses both climate change and social/economic inequality.',
+                    'Aims for transformation at the speed and scale scientists say is necessary.',
+                    'Public investment can stimulate economic growth and create millions of jobs.'
+                ],
+                cons: [
+                    'Politically polarizing due to its vast scope and scale of government intervention.',
+                    'High estimated cost raises concerns about fiscal responsibility and national debt.',
+                    'Risks potential inefficiencies associated with central planning and "picking winners".'
+                ]
+            }
+        };
+
+        const policyContentContainer = document.getElementById('policy-content');
+        const navButtons = document.querySelectorAll('.nav-button');
+        let charts = {};
+        let activePolicyKey = 'offsets';
+
+        function renderPolicyContent(policyKey) {
+            activePolicyKey = policyKey;
+            const data = policyData[policyKey];
+            if (!data) return;
+
+            let chartsHtml = '';
+            if (data.charts.length > 0) {
+                chartsHtml = data.charts.map(chart => `
+                    <div class="card p-6 sm:p-8 mb-8">
+                        <h4 class="font-semibold text-lg mb-2 text-center">${chart.title}</h4>
+                        <div class="chart-container">
+                            <canvas id="${chart.id}"></canvas>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-4 text-center">${chart.context}</p>
+                    </div>
+                `).join('');
+            }
+
+            let customHtml = data.customContent || '';
+
+            const deeperDiveHtml = `
+                <div class="card p-6 sm:p-8 mt-8">
+                    <h3 class="text-2xl font-bold mb-2 text-center">✨ Deeper Dive with AI</h3>
+                    <p class="text-gray-700 mb-6 text-center max-w-2xl mx-auto">Have a specific question about ${data.title}? Ask our AI assistant.</p>
+                    <div class="max-w-xl mx-auto">
+                        <input type="text" id="deeper-dive-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300 transition" placeholder="E.g., What are the main criticisms of REDD+ projects?">
+                        <button id="deeper-dive-button" class="mt-3 w-full bg-gray-700 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center">Ask AI</button>
+                        <div id="deeper-dive-output" class="mt-4 text-sm text-gray-800 bg-gray-50 p-4 rounded-lg" style="display: none;"></div>
+                    </div>
+                </div>
+            `;
+
+            policyContentContainer.innerHTML = `
+                <div id="${policyKey}-content" class="policy-section">
+                    <div class="card p-6 sm:p-8 mb-8">
+                        <h3 class="text-2xl font-bold mb-4 text-center">${data.howItWorks.title}</h3>
+                        <p class="text-gray-700 mb-6 max-w-3xl mx-auto text-center">${data.howItWorks.intro}</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            ${data.howItWorks.steps.map(step => `
+                                <div class="bg-gray-50 p-4 rounded-lg flex items-start">
+                                    <div class="text-3xl mr-4">${step.icon}</div>
+                                    <div>
+                                        <h5 class="font-semibold">${step.name}</h5>
+                                        <p class="text-sm text-gray-600">${step.description}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    ${chartsHtml}
+                    ${customHtml}
+
+                    <div class="card p-6 sm:p-8">
+                         <h3 class="text-2xl font-bold mb-6 text-center">Pros & Cons</h3>
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="text-xl font-semibold text-green-700 mb-4 text-center">Advantages</h4>
+                                <div class="space-y-4">
+                                ${data.pros.map(pro => `
+                                    <div class="pro-con-card pro-card bg-green-50 p-4 rounded-md">
+                                        <p class="text-gray-800">${pro}</p>
+                                    </div>
+                                `).join('')}
+                                </div>
+                            </div>
+                             <div>
+                                <h4 class="text-xl font-semibold text-red-700 mb-4 text-center">Disadvantages</h4>
+                                <div class="space-y-4">
+                                ${data.cons.map(con => `
+                                    <div class="pro-con-card con-card bg-red-50 p-4 rounded-md">
+                                        <p class="text-gray-800">${con}</p>
+                                    </div>
+                                `).join('')}
+                                </div>
+                            </div>
+                         </div>
+                    </div>
+                    ${deeperDiveHtml}
+                </div>
+            `;
+            
+            document.getElementById('deeper-dive-button').addEventListener('click', handleDeeperDive);
+            renderCharts(policyKey);
+        }
+        
+        function renderCharts(policyKey) {
+            const data = policyData[policyKey];
+            if (!data || !data.charts) return;
+
+            Object.values(charts).forEach(chart => chart.destroy());
+            charts = {};
+
+            data.charts.forEach(chartConfig => {
+                const ctx = document.getElementById(chartConfig.id)?.getContext('2d');
+                if (ctx) {
+                    const options = {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            if(chartConfig.id === 'vcmMarketChart') {
+                                                label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: 'compact' }).format(context.parsed.y * 1000000000);
+                                            } else {
+                                                label += context.parsed.y;
+                                            }
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        ...chartConfig.options
+                    };
+                    charts[chartConfig.id] = new Chart(ctx, {
+                        type: chartConfig.type,
+                        data: chartConfig.data,
+                        options: options
+                    });
+                }
+            });
+        }
+
+        function renderComparisonChart() {
+            const ctx = document.getElementById('comparisonChart')?.getContext('2d');
+            if(!ctx) return;
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Environmental Effectiveness', 'Economic Efficiency', 'Social Equity Focus'],
+                    datasets: [
+                        {
+                            label: 'Carbon Offsets',
+                            data: [3, 7, 2],
+                            backgroundColor: '#e07a5f',
+                        },
+                        {
+                            label: 'Carbon Pricing',
+                            data: [7, 9, 4],
+                            backgroundColor: '#81b29a',
+                        },
+                        {
+                            label: 'Green New Deal',
+                            data: [9, 5, 9],
+                            backgroundColor: '#3d405b',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 10,
+                            title: { display: true, text: 'Qualitative Rating (1-10)'}
+                        },
+                        y: {
+                            ticks: {
+                                autoSkip: false,
+                                maxRotation: 0,
+                                minRotation: 0,
+                                callback: function(value, index, values) {
+                                    const label = this.getLabelForValue(value);
+                                    return label.length > 16 ? label.match(/.{1,16}/g) : label;
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw}/10`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function callGemini(prompt, outputElement) {
+            outputElement.style.display = 'block';
+            outputElement.innerHTML = '<div class="loader"></div>';
+
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            
+            const payload = {
+                contents: [{
+                    parts: [{ text: prompt }]
+                }]
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    outputElement.innerHTML = text.replace(/\n/g, '<br>');
+                } else {
+                    outputElement.innerText = 'Sorry, the AI could not generate a response. Please try again.';
+                }
+            } catch (error) {
+                console.error('Error calling Gemini API:', error);
+                outputElement.innerText = 'An error occurred while fetching the AI response. Please check the console for details.';
+            }
+        }
+
+        async function handleRecommender() {
+            const userInput = document.getElementById('recommender-input').value;
+            if (!userInput.trim()) {
+                alert('Please describe your region or country.');
+                return;
+            }
+
+            const outputElement = document.getElementById('recommender-output');
+            const policySummaries = `
+                1. Carbon Offsets: ${policyData.offsets.summary} Pros: ${policyData.offsets.pros.join(', ')}. Cons: ${policyData.offsets.cons.join(', ')}.
+                2. Carbon Pricing: ${policyData.pricing.summary} Pros: ${policyData.pricing.pros.join(', ')}. Cons: ${policyData.pricing.cons.join(', ')}.
+                3. Green New Deal: ${policyData.gnd.summary} Pros: ${policyData.gnd.pros.join(', ')}. Cons: ${policyData.gnd.cons.join(', ')}.
+            `;
+            const prompt = `
+                You are an expert climate policy advisor. Based on the following summaries of three climate policy approaches, recommend a hybrid strategy for a region with this context: "${userInput}".
+
+                Policy Information:
+                ${policySummaries}
+
+                Your recommendation should:
+                1. Justify why certain policies are more or less suitable given the context.
+                2. Propose a pragmatic hybrid model, explaining how the different policy elements could work together.
+                3. Be formatted clearly with headings and bullet points.
+            `;
+            
+            await callGemini(prompt, outputElement);
+        }
+
+        async function handleDeeperDive() {
+            const userInput = document.getElementById('deeper-dive-input').value;
+             if (!userInput.trim()) {
+                alert('Please enter a question.');
+                return;
+            }
+            const outputElement = document.getElementById('deeper-dive-output');
+            const policyContext = `
+                Policy: ${policyData[activePolicyKey].title}
+                Summary: ${policyData[activePolicyKey].summary}
+                Pros: ${policyData[activePolicyKey].pros.join(', ')}
+                Cons: ${policyData[activePolicyKey].cons.join(', ')}
+            `;
+            const prompt = `
+                You are an expert AI assistant for climate policy. Based on the provided context about ${policyData[activePolicyKey].title}, answer the following user question. Provide a concise but detailed answer.
+
+                Context:
+                ${policyContext}
+
+                User Question: "${userInput}"
+            `;
+
+            await callGemini(prompt, outputElement);
+        }
+
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                navButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                renderPolicyContent(button.dataset.target);
+            });
+        });
+        
+        document.getElementById('recommender-button').addEventListener('click', handleRecommender);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderPolicyContent('offsets');
+            renderComparisonChart();
+        });
+
+    </script>
+</body>
+</html>

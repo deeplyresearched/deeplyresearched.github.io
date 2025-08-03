@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royal Enfield Himalayan 450: An Interactive Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Earth Tones -->
+    <!-- Application Structure Plan: The SPA is designed as a thematic journey for a potential buyer, moving from core identity to performance, ownership realities, and market comparison. This non-linear structure prioritizes user exploration over the report's chapter format. Key interactions include a performance toggle (On-Road/Off-Road) to compare its dual nature, interactive charts for cost and competitor analysis, and tabbed views for common issues. This design helps users quickly grasp the bike's "flawed masterpiece" narrative and make informed decisions. -->
+    <!-- Visualization & Content Choices: 1. Engine/Chassis Specs -> Inform -> Icon-based cards -> Quick visual summary of core strengths. 2. Performance -> Compare -> JS Toggle Switch -> Dynamically updates text blocks to contrast on-road vs. off-road character, enhancing user engagement. 3. Service Costs -> Change -> Line Chart (Chart.js) -> Visualizes cost accumulation over time, which is more intuitive than a table. 4. Competitor Specs -> Compare -> Interactive Bar Chart (Chart.js) -> Allows users to select a metric (Power, Weight, Price) and see a direct visual comparison, making complex data easily digestible. 5. Common Issues -> Organize -> Tabbed Interface -> Presents critical owner feedback cleanly without overwhelming the user. All choices use HTML/CSS/JS and Chart.js, confirming no SVG/Mermaid. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F4F1;
+            color: #44403C;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 45vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #A16207;
+            border-bottom-color: #A16207;
+        }
+        .btn-primary {
+             background-color: #A16207;
+             color: #FFFFFF;
+             transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #854d0e;
+        }
+        .btn-active {
+            background-color: #A16207 !important;
+            color: #FFFFFF !important;
+        }
+        .tab-active {
+            background-color: #D6A35A;
+            color: #FFFFFF;
+            border-color: #A16207;
+        }
+        .toggle-bg:after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            background: white;
+            border-radius: 9999px;
+            height: 1.5rem;
+            width: 1.5rem;
+            transition: 0.3s;
+        }
+        input:checked + .toggle-bg:after {
+            transform: translateX(100%);
+        }
+        input:checked + .toggle-bg {
+            background-color: #A16207;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #A16207;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header id="header" class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-stone-800">Himalayan 450</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#introduction" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-600">Introduction</a>
+                        <a href="#core-dna" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-600">Core DNA</a>
+                        <a href="#performance" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-600">Performance</a>
+                        <a href="#ownership" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-600">Ownership</a>
+                        <a href="#competitors" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-600">Competitors</a>
+                        <a href="#trip-planner" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-600">AI Trip Planner</a>
+                        <a href="#verdict" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-600">Verdict</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Section: Introduction -->
+        <section id="introduction" class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-base font-semibold text-amber-700 tracking-wide uppercase">A New Peak for Royal Enfield</h2>
+                <p class="mt-2 text-3xl font-extrabold text-stone-900 tracking-tight sm:text-4xl">The Himalayan Ascendant</p>
+                <p class="mt-6 max-w-3xl mx-auto text-lg text-stone-600">
+                    The arrival of the Himalayan 450 marks a seismic shift for Royal Enfield. It's a ground-up redesign, a machine that shares a purpose with its predecessor but little else. This interactive analysis explores the bike's core duality: a story of brilliant engineering strides, from its revolutionary liquid-cooled engine to its sublime suspension, shadowed by the teething problems and quality control issues that define the real-world ownership experience. Is it a flawed masterpiece or a masterclass in value? Let's find out.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section: Core DNA -->
+        <section id="core-dna" class="py-16 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">The Heart of the Machine</h2>
+                    <p class="mt-4 text-lg leading-8 text-stone-600 max-w-2xl mx-auto">
+                        Two key areas define the Himalayan 450's remarkable capability and character: the all-new "Sherpa" engine and the masterfully engineered chassis and suspension package. Together, they create a motorcycle that is both powerful and poised, ready for any adventure.
+                    </p>
+                </div>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        <h3 class="text-2xl font-semibold text-stone-800">Engineered Heart: The Sherpa 450</h3>
+                        <p class="mt-2 text-stone-600">A monumental leap into modernity, the Sherpa 450 is Royal Enfield's first liquid-cooled, DOHC, short-stroke single. It transforms the bike's performance, offering nearly 70% more power than its predecessor.</p>
+                        <div class="mt-6 space-y-4">
+                            <div class="flex items-center">
+                                <span class="text-amber-600 text-2xl mr-4">⚡</span>
+                                <div><strong>Max Power:</strong> 39.5 bhp @ 8000 rpm</div>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-amber-600 text-2xl mr-4">⚙️</span>
+                                <div><strong>Max Torque:</strong> 40 Nm @ 5500 rpm</div>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-amber-600 text-2xl mr-4">💧</span>
+                                <div><strong>Cooling:</strong> Liquid Cooled with Ride-by-Wire</div>
+                            </div>
+                             <div class="flex items-center">
+                                <span class="text-amber-600 text-2xl mr-4">↔️</span>
+                                <div><strong>Transmission:</strong> 6-Speed with Slip & Assist Clutch</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        <h3 class="text-2xl font-semibold text-stone-800">The Art of Balance: Chassis & Suspension</h3>
+                        <p class="mt-2 text-stone-600">A Harris Performance-designed twin-spar frame provides a rigid backbone, but the Showa suspension is the true hero, delivering a "magic carpet" ride that absorbs imperfections with sublime composure.</p>
+                        <div class="mt-6 space-y-4">
+                            <div class="flex items-center">
+                                <span class="text-amber-600 text-2xl mr-4">📏</span>
+                                <div><strong>Suspension Travel:</strong> 200mm Front & Rear</div>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-amber-600 text-2xl mr-4">⛰️</span>
+                                <div><strong>Ground Clearance:</strong> 230 mm</div>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-amber-600 text-2xl mr-4">⚖️</span>
+                                <div><strong>Kerb Weight:</strong> 196 kg</div>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-amber-600 text-2xl mr-4">🛑</span>
+                                <div><strong>Brakes:</strong> Dual Channel ABS (Switchable Rear)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Performance -->
+        <section id="performance" class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">A Dual-Sport Personality</h2>
+                    <p class="mt-4 text-lg leading-8 text-stone-600 max-w-2xl mx-auto">
+                        The Himalayan 450 is a true all-rounder, but its character changes depending on the terrain. Use the toggle below to explore its distinct performance profiles on the tarmac and on the trail, and see how its strengths and weaknesses shift with the environment.
+                    </p>
+                </div>
+
+                <div class="mt-10 flex justify-center items-center space-x-4">
+                    <span class="font-medium text-stone-700">On-Road Mettle</span>
+                    <label for="performanceToggle" class="flex items-center cursor-pointer">
+                        <input type="checkbox" id="performanceToggle" class="sr-only">
+                        <div class="toggle-bg bg-stone-200 border-2 border-transparent relative w-12 h-7 rounded-full"></div>
+                    </label>
+                    <span class="font-medium text-stone-700">Off-Road Soul</span>
+                </div>
+
+                <div id="performanceContent" class="mt-8 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Content will be dynamically inserted here by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Ownership -->
+        <section id="ownership" class="py-16 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">The Ownership Reality</h2>
+                    <p class="mt-4 text-lg leading-8 text-stone-600 max-w-2xl mx-auto">
+                        Living with the Himalayan 450 is a tale of two sides. On one hand, maintenance is affordable and its versatility is unmatched. On the other, early models have been plagued by a series of well-documented "teething pains." This section provides a transparent look at what to expect.
+                    </p>
+                </div>
+
+                <div class="mt-12">
+                    <h3 class="text-2xl font-semibold text-center text-stone-800 mb-6">Common Issues: The "Big Three"</h3>
+                    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
+                        <div class="border-b border-stone-200">
+                            <nav class="-mb-px flex space-x-4" aria-label="Tabs">
+                                <button id="tab-cone-set" class="tab-btn tab-active whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">Cone-set Loosening</button>
+                                <button id="tab-joystick" class="tab-btn whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm border-transparent text-stone-500 hover:text-stone-700 hover:border-stone-300">Joystick Failure</button>
+                                <button id="tab-drift" class="tab-btn whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm border-transparent text-stone-500 hover:text-stone-700 hover:border-stone-300">Right-Side Pull</button>
+                            </nav>
+                        </div>
+                        <div id="tab-content" class="mt-6">
+                            <!-- Content will be dynamically inserted here by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-16">
+                     <h3 class="text-2xl font-semibold text-center text-stone-800 mb-2">Scheduled Service Costs (India)</h3>
+                     <p class="text-center text-stone-600 mb-6 max-w-2xl mx-auto">The chart below visualizes the estimated cumulative service cost over the first 30,000 km, based on Royal Enfield's official data. This highlights the bike's reasonable maintenance, a key part of its value proposition.</p>
+                    <div class="chart-container bg-white p-4 rounded-lg shadow-lg">
+                        <canvas id="serviceCostChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Competitors -->
+        <section id="competitors" class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">Battle in the Middleweight Arena</h2>
+                     <p class="mt-4 text-lg leading-8 text-stone-600 max-w-2xl mx-auto">
+                        The Himalayan doesn't exist in a vacuum. It faces fierce competition from established rivals. Use the buttons below to interactively compare it against the field on key metrics and see where it wins, and where it compromises.
+                    </p>
+                </div>
+                <div class="mt-8 flex justify-center flex-wrap gap-2">
+                    <button class="comp-btn btn-active bg-amber-600 text-white px-4 py-2 rounded-md font-semibold transition" data-metric="price">Price (₹ Lakh)</button>
+                    <button class="comp-btn bg-white text-amber-700 px-4 py-2 rounded-md font-semibold transition hover:bg-amber-50" data-metric="power">Power (bhp)</button>
+                    <button class="comp-btn bg-white text-amber-700 px-4 py-2 rounded-md font-semibold transition hover:bg-amber-50" data-metric="weight">Weight (kg)</button>
+                    <button class="comp-btn bg-white text-amber-700 px-4 py-2 rounded-md font-semibold transition hover:bg-amber-50" data-metric="suspension">Suspension Travel (mm)</button>
+                </div>
+                <div class="mt-8 chart-container bg-white p-4 rounded-lg shadow-lg">
+                    <canvas id="competitorChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: AI Trip Planner -->
+        <section id="trip-planner" class="py-16 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">✨ AI Adventure Planner</h2>
+                    <p class="mt-4 text-lg leading-8 text-stone-600 max-w-2xl mx-auto">
+                        Dreaming of your next ride? Let our AI craft a custom trip plan for you and your Himalayan 450. Just provide a start, destination, and preferred riding style.
+                    </p>
+                </div>
+                <div class="mt-10 max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label for="start-location" class="block text-sm font-medium text-stone-700">Starting Point</label>
+                            <input type="text" id="start-location" class="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm" placeholder="e.g., Mumbai">
+                        </div>
+                        <div>
+                            <label for="end-location" class="block text-sm font-medium text-stone-700">Destination</label>
+                            <input type="text" id="end-location" class="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm" placeholder="e.g., Goa">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label for="trip-style" class="block text-sm font-medium text-stone-700">Trip Style</label>
+                            <select id="trip-style" class="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm">
+                                <option>Adventurous (mix of tarmac and trails)</option>
+                                <option>Scenic (beautiful landscapes and relaxed pace)</option>
+                                <option>Direct (fastest route with good roads)</option>
+                                <option>Cultural (historical sites and local experiences)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <button id="generate-trip-btn" class="w-full btn-primary font-bold py-2 px-4 rounded-md">
+                            Generate My Trip Plan
+                        </button>
+                    </div>
+                </div>
+                <div id="trip-plan-result" class="mt-8 max-w-4xl mx-auto bg-stone-50 p-6 rounded-lg shadow-inner" style="display: none;">
+                    <!-- AI generated trip plan will appear here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Verdict -->
+        <section id="verdict" class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-amber-800 text-white rounded-2xl p-8 lg:p-12 shadow-2xl">
+                    <div class="text-center">
+                        <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">The Final Verdict: A Flawed Masterpiece</h2>
+                    </div>
+                    <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div>
+                            <h3 class="text-xl font-semibold text-amber-200">Who is it for?</h3>
+                            <p class="mt-2 text-amber-50">
+                                The ideal owner is the pragmatic adventurer. A rider who prioritizes fundamental mechanical capability—the sublime suspension, flexible engine, and stable chassis—over electronic polish. They are willing to tolerate or fix minor issues in exchange for a supremely versatile platform that can genuinely "do it all," from the daily commute to serious off-road exploration.
+                            </p>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-amber-200">Who should look elsewhere?</h3>
+                            <ul class="mt-2 space-y-2 list-disc list-inside text-amber-50">
+                                <li>Riders demanding flawless reliability and tech from day one.</li>
+                                <li>Performance-focused riders who want maximum power and minimum weight.</li>
+                                <li>Novice riders who may be intimidated by its 196 kg weight.</li>
+                            </ul>
+                        </div>
+                    </div>
+                     <p class="mt-8 text-center text-lg text-amber-100">
+                        In the final analysis, the Himalayan 450 is not perfect, but it is deeply compelling. For the right rider—one who understands and accepts its compromises—the "masterpiece" part of the equation will far outweigh the "flawed," offering an incredible amount of adventure motorcycle for the money.
+                    </p>
+
+                    <!-- AI Expert Q&A -->
+                    <div class="mt-12 border-t border-amber-600 pt-8">
+                        <h3 class="text-2xl font-bold text-center text-white">✨ Still Have Questions? Ask Our AI Expert</h3>
+                        <div class="mt-6 max-w-xl mx-auto">
+                            <input type="text" id="expert-question" class="w-full rounded-md border-amber-300 bg-amber-700 text-white placeholder-amber-200 shadow-sm focus:border-amber-300 focus:ring-amber-300 sm:text-sm" placeholder="e.g., Is it a good bike for a beginner?">
+                            <button id="ask-expert-btn" class="mt-4 w-full bg-white text-amber-800 font-bold py-2 px-4 rounded-md hover:bg-amber-100 transition">Get AI-Powered Answer</button>
+                        </div>
+                         <div id="expert-answer-result" class="mt-6 max-w-xl mx-auto bg-amber-700 p-4 rounded-lg" style="display: none;">
+                            <!-- AI generated answer will appear here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="bg-stone-800 text-white py-4">
+        <div class="container mx-auto px-4 text-center text-sm text-stone-400">
+            <p>Interactive Analysis based on the "Himalayan 450 Comprehensive Analysis" report. AI features powered by Gemini. All data is for illustrative purposes.</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // --- Data Store ---
+    const performanceData = {
+        onRoad: {
+            title: 'On-Road Agility & Highway Mettle',
+            summary: 'On tarmac, the Himalayan 450 is a revelation. It transforms from a charming but slow machine into a genuinely capable road bike. With a 0-100 kph time of just 6.35 seconds and a top speed around 150 kph, it’s a legitimate long-distance tourer. The chassis feels planted and confident in corners, though a distinct vibration zone between 5,000-6,000 rpm can impact highway cruising comfort.',
+            pros: [
+                { icon: '🚀', text: '<strong>Brisk Acceleration:</strong> Confident overtakes and highway merging.' },
+                { icon: '🛣️', text: '<strong>High-Speed Stability:</strong> Planted and trustworthy feel on expressways.' },
+                { icon: '🧘', text: '<strong>Comfortable Ergonomics:</strong> Spacious, neutral riding position for long hours.' }
+            ],
+            cons: [
+                { icon: '🐝', text: '<strong>Vibration Zone:</strong> Noticeable buzz around 110-115 kph.' },
+                { icon: '🦥', text: '<strong>Lethargic Low Revs:</strong> Requires active gear work in city traffic.' },
+                { icon: '🪑', text: '<strong>Firm Stock Seat:</strong> Can cause discomfort on very long rides.' }
+            ]
+        },
+        offRoad: {
+            title: 'Taming the Trail with Confidence',
+            summary: 'Off the pavement is where the Himalayan\'s soul resides. It\'s a purpose-built machine designed to make challenging terrain accessible. The combination of long-travel Showa suspension, a 21-inch front wheel, and a forgiving engine inspires immense confidence, encouraging riders to explore trails they might otherwise find daunting. It’s less about racing and more about enabling adventure.',
+            pros: [
+                { icon: '✨', text: '<strong>"Magic Carpet" Suspension:</strong> Superbly absorbs rocks, ruts, and bumps.' },
+                { icon: '👍', text: '<strong>Forgiving Power Delivery:</strong> Linear torque prevents unintentional wheelspin.' },
+                { icon: '🚶', text: '<strong>Excellent Standing Ergonomics:</strong> Neutral posture for great control on the trail.' }
+            ],
+            cons: [
+                { icon: '🏋️', text: '<strong>Significant Weight:</strong> At 196 kg, it can feel cumbersome in technical terrain.' },
+                { icon: '🤔', text: '<strong>Non-Adjustable Front Fork:</strong> Limits fine-tuning for expert riders.' },
+                { icon: '❓', text: '<strong>Tube-Type Rims Standard:</strong> Tubeless is a costly and sometimes elusive upgrade.' }
+            ]
+        }
+    };
+
+    const commonIssuesData = {
+        'cone-set': {
+            title: 'Cone-set / Steering Stem Loosening',
+            symptom: 'A "kat kat" or clicking noise from the front end, with excessive play developing in the handlebar.',
+            cause: 'Often attributed to a worn rubber bush in the steering stem fastener kit or incorrect torquing from the factory.',
+            resolution: 'A dealer visit to tighten or replace the fastener kit under warranty. Some owners have required this multiple times.'
+        },
+        'joystick': {
+            title: 'Joystick / Switchgear Failure',
+            symptom: 'The left-hand joystick becomes unresponsive, operates erratically, or fails completely.',
+            cause: 'Poor protection against water ingress is a primary suspect, leading to component failure.',
+            resolution: 'This is a common warranty claim that typically results in the replacement of the entire left-hand switchgear assembly.'
+        },
+        'drift': {
+            title: 'Right-Side Pull / Drift',
+            symptom: 'The motorcycle noticeably pulls or drifts to the right when the rider momentarily releases the handlebar.',
+            cause: 'Linked to the incorrect torquing of engine mounting bolts or front wheel alignment from the factory.',
+            resolution: 'The fix involves a dealer service visit to loosen and correctly re-torque these critical fasteners.'
+        }
+    };
+
+    const competitorData = {
+        labels: ['Himalayan 450', 'KTM 390 Adv', 'Triumph Scrambler 400X', 'BMW G 310 GS'],
+        price: [2.98, 3.68, 2.66, 3.30],
+        power: [39.5, 45.3, 39.5, 33.5],
+        weight: [196, 182, 185, 175],
+        suspension: [200, 177, 150, 180],
+    };
+
+    const serviceCostData = {
+        labels: ['500', '5k', '10k', '15k', '20k', '25k', '30k'],
+        costs: [1441, 120, 2035, 120, 3258, 1093, 2829],
+    };
+
+    // --- Chart.js Instances ---
+    let competitorChart, serviceCostChart;
+    
+    // --- Gemini API Call Function ---
+    const callGeminiAPI = async (prompt, resultElementId) => {
+        const resultElement = document.getElementById(resultElementId);
+        resultElement.style.display = 'block';
+        resultElement.innerHTML = '<div class="loader"></div>';
+
+        let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+        const payload = { contents: chatHistory };
+        const apiKey = ""; 
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+        
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`API call failed with status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.candidates && result.candidates.length > 0 &&
+                result.candidates[0].content && result.candidates[0].content.parts &&
+                result.candidates[0].content.parts.length > 0) {
+                let text = result.candidates[0].content.parts[0].text;
+                // Basic markdown to HTML conversion
+                text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold
+                text = text.replace(/\n/g, '<br>'); // Newlines
+                resultElement.innerHTML = text;
+            } else {
+                resultElement.innerHTML = '<p class="text-red-500">Sorry, something went wrong while generating the response. Please try again.</p>';
+            }
+        } catch (error) {
+            console.error("Gemini API Error:", error);
+            resultElement.innerHTML = `<p class="text-red-500">An error occurred: ${error.message}. Please check the console for details.</p>`;
+        }
+    };
+
+    // --- Functions ---
+    function updatePerformanceContent(isOffRoad) {
+        const data = isOffRoad ? performanceData.offRoad : performanceData.onRoad;
+        const contentDiv = document.getElementById('performanceContent');
+        contentDiv.innerHTML = `
+            <div class="bg-stone-50 p-6 rounded-lg">
+                <h4 class="text-xl font-semibold text-stone-800">${data.title}</h4>
+                <p class="mt-2 text-stone-600">${data.summary}</p>
+            </div>
+            <div class="bg-stone-50 p-6 rounded-lg">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <h5 class="font-semibold text-green-700 mb-2">Strengths</h5>
+                        <ul class="space-y-2 text-stone-600">${data.pros.map(item => `<li class="flex items-start"><span class="mr-2">${item.icon}</span><span>${item.text}</span></li>`).join('')}</ul>
+                    </div>
+                    <div>
+                        <h5 class="font-semibold text-red-700 mb-2">Weaknesses</h5>
+                        <ul class="space-y-2 text-stone-600">${data.cons.map(item => `<li class="flex items-start"><span class="mr-2">${item.icon}</span><span>${item.text}</span></li>`).join('')}</ul>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function updateTabContent(issueKey) {
+        const data = commonIssuesData[issueKey];
+        const contentDiv = document.getElementById('tab-content');
+        contentDiv.innerHTML = `
+            <h4 class="text-lg font-bold text-stone-800">${data.title}</h4>
+            <dl class="mt-4 space-y-3 text-stone-600">
+                <div><dt class="font-semibold text-stone-700">Symptom:</dt><dd class="ml-4">${data.symptom}</dd></div>
+                <div><dt class="font-semibold text-stone-700">Reported Cause:</dt><dd class="ml-4">${data.cause}</dd></div>
+                <div><dt class="font-semibold text-stone-700">Common Resolution:</dt><dd class="ml-4">${data.resolution}</dd></div>
+            </dl>
+        `;
+    }
+    
+    function createCompetitorChart(metric) {
+        const ctx = document.getElementById('competitorChart').getContext('2d');
+        const data = competitorData[metric];
+        const colors = ['#A16207', '#F97316', '#374151', '#3B82F6'];
+        const labels = {
+            price: 'Ex-Showroom Price (₹ Lakh)',
+            power: 'Max Power (bhp)',
+            weight: 'Kerb Weight (kg)',
+            suspension: 'Rear Suspension Travel (mm)'
+        };
+
+        if (competitorChart) {
+            competitorChart.destroy();
+        }
+
+        competitorChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: competitorData.labels,
+                datasets: [{
+                    label: labels[metric],
+                    data: data,
+                    backgroundColor: colors,
+                    borderColor: colors.map(c => c + 'B3'),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.x !== null) {
+                                    label += context.parsed.x;
+                                    if(metric === 'price') label += ' Lakh';
+                                    if(metric === 'power') label += ' bhp';
+                                    if(metric === 'weight') label += ' kg';
+                                    if(metric === 'suspension') label += ' mm';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: labels[metric]
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function createServiceCostChart() {
+        const ctx = document.getElementById('serviceCostChart').getContext('2d');
+        const cumulativeCosts = serviceCostData.costs.reduce((acc, cost) => {
+            acc.push((acc.length > 0 ? acc[acc.length - 1] : 0) + cost);
+            return acc;
+        }, []);
+
+        serviceCostChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: serviceCostData.labels,
+                datasets: [{
+                    label: 'Cumulative Service Cost (₹)',
+                    data: cumulativeCosts,
+                    borderColor: '#A16207',
+                    backgroundColor: 'rgba(161, 98, 7, 0.1)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                         callbacks: {
+                            label: function(context) {
+                                let label = 'Cumulative Cost';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(context.parsed.y);
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Cumulative Cost (₹)'
+                        }
+                    },
+                     x: {
+                        title: {
+                            display: true,
+                            text: 'Service Interval (km)'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // --- Event Listeners ---
+    document.getElementById('performanceToggle').addEventListener('change', (event) => {
+        updatePerformanceContent(event.target.checked);
+    });
+
+    document.querySelectorAll('.tab-btn').forEach(button => {
+        button.addEventListener('click', (event) => {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('tab-active'));
+            event.target.classList.add('tab-active');
+            const issueKey = event.target.id.replace('tab-', '');
+            updateTabContent(issueKey);
+        });
+    });
+
+    document.querySelectorAll('.comp-btn').forEach(button => {
+        button.addEventListener('click', (event) => {
+            document.querySelectorAll('.comp-btn').forEach(btn => btn.classList.remove('btn-active'));
+            event.target.classList.add('btn-active');
+            const metric = event.target.dataset.metric;
+            createCompetitorChart(metric);
+        });
+    });
+    
+    document.getElementById('generate-trip-btn').addEventListener('click', () => {
+        const start = document.getElementById('start-location').value;
+        const end = document.getElementById('end-location').value;
+        const style = document.getElementById('trip-style').value;
+
+        if (!start || !end) {
+            alert("Please enter a starting point and destination.");
+            return;
+        }
+
+        const prompt = `As a motorcycle touring expert, create a detailed 3-day trip plan from ${start} to ${end} in India for a Royal Enfield Himalayan 450 rider. The trip style should be "${style}". For each day, provide a suggested route, key points of interest (like viewpoints, cafes, or attractions suitable for a motorcyclist), and specific tips for riding the Himalayan 450 on that day's terrain. Format the output with clear headings for each day.`;
+        callGeminiAPI(prompt, 'trip-plan-result');
+    });
+
+    document.getElementById('ask-expert-btn').addEventListener('click', () => {
+        const question = document.getElementById('expert-question').value;
+        if (!question) {
+            alert("Please enter a question.");
+            return;
+        }
+
+        const context = `
+            The Royal Enfield Himalayan 450 has a 452cc liquid-cooled engine making 39.5 bhp and 40 Nm torque. It has a 6-speed gearbox.
+            On-road performance is strong with good acceleration but has vibrations at highway speeds (110-115 kph).
+            Off-road performance is excellent due to 200mm Showa suspension and 230mm ground clearance, but its weight (196 kg) can be a challenge in technical terrain.
+            Common reported issues include steering cone-set loosening, joystick failure, and a right-side pull.
+            It competes with the KTM 390 Adventure (more powerful, lighter, more expensive), Triumph Scrambler 400X (cheaper, less suspension travel), and BMW G 310 GS (lighter, less powerful).
+            The verdict is that it's a 'flawed masterpiece' best for pragmatic adventurers who value mechanical capability over flawless polish.
+        `;
+
+        const prompt = `Based on the following expert summary of the Royal Enfield Himalayan 450: "${context}". Now, answer the following user question as an expert motorcycle journalist, providing a balanced and informative response: "${question}"`;
+        callGeminiAPI(prompt, 'expert-answer-result');
+    });
+    
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('main section');
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (pageYOffset >= sectionTop - 80) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').includes(current)) {
+                link.classList.add('active');
+            }
+        });
+    });
+
+
+    // --- Initial Load ---
+    updatePerformanceContent(false);
+    updateTabContent('cone-set');
+    createCompetitorChart('price');
+    createServiceCostChart();
+    
+    // Set active link on load
+    navLinks[0].classList.add('active');
+
+});
+</script>
+
+</body>
+</html>
