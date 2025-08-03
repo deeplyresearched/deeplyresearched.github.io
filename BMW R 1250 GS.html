@@ -9,7 +9,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
     <!-- Chosen Palette: Calm Harmony (Warm Neutrals & BMW Blue Accent) -->
     <!-- Application Structure Plan: A user-centric, task-oriented SPA guiding a potential buyer. The structure is not linear like the report but follows a logical discovery path: 1) Introduction (Hero), 2) Core DNA (Engine, Chassis, Tech), 3) The Key Decision (GS vs GSA interactive comparison), 4) Competitive Landscape (interactive chart), 5) Real-World Ownership (maintenance, reliability), 6) India-Specific Context (service, cost), and 7) Final Verdict. This structure prioritizes the user's primary questions, making complex information accessible and facilitating a clear decision-making process. -->
     <!-- Visualization & Content Choices: 
@@ -98,6 +97,69 @@
             background-color: #0066b2;
             color: white;
         }
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+        
     </style>
 </head>
 <body class="bg-warm-neutral">
@@ -587,5 +649,6 @@
     </script>
 </body>
 </html>
+
 
 
