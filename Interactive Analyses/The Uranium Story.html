@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Uranium Story: An Interactive Exploration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Slate Blue Accent -->
+    <!-- Application Structure Plan: A thematic, single-page dashboard designed for non-linear exploration. The structure guides the user from the fundamental science to the geopolitical implications. It starts with a high-level overview (the fuel cycle), dives into the most critical concept (enrichment), visualizes the global power balance (geopolitics), contrasts the end-uses (dual-use dilemma), and finally looks to the future. This structure was chosen to make a complex topic digestible by breaking it into interactive, self-contained modules, allowing users to explore based on interest rather than following a rigid report format. The goal is intuitive understanding through interaction. -->
+    <!-- Visualization & Content Choices: 
+        1. Report Info: Nuclear Fuel Cycle -> Goal: Explain the multi-stage process -> Viz/Method: Interactive HTML/CSS flowchart -> Interaction: Clickable stages reveal detailed descriptions -> Justification: Transforms a linear text description into an engaging, step-by-step exploration, improving comprehension and retention.
+        2. Report Info: Enrichment Levels (Table 2) -> Goal: Demonstrate why enrichment is the critical step -> Viz/Method: Interactive HTML/CSS visual scale/slider -> Interaction: Clicking on different enrichment levels (LEU, HALEU, HEU) dynamically updates a detailed info panel -> Justification: This is the most effective way to explain the non-linear importance of enrichment levels and the concept of proliferation thresholds (e.g., 20% HEU). It's more intuitive than a static table.
+        3. Report Info: Global Production/Enrichment Data (Table 3) -> Goal: Show the concentration of global power -> Viz/Method: Two Chart.js donut charts -> Interaction: Hover tooltips show country/entity and market share -> Justification: Donut charts provide an immediate, powerful visual comparison of market shares, making the geopolitical dependencies far clearer than raw numbers in a table.
+        4. Report Info: Reactor vs. Weapon -> Goal: Explain the dual-use dilemma -> Viz/Method: Side-by-side comparison using HTML/CSS with icons -> Interaction: Static display for clear, direct comparison -> Justification: A simple, direct visual contrast is the best way to communicate the core difference between controlled and uncontrolled fission.
+        5. Report Info: Future Technologies -> Goal: Introduce advanced concepts -> Viz/Method: Card-based layout -> Interaction: Simple, readable cards -> Justification: Presents future-looking information in a clean, scannable format.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f7f4;
+            color: #1a202c;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        .nav-button.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+        .nav-button:not(.active):hover {
+            color: #6b7280;
+            border-bottom-color: #d1d5db;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .fuel-cycle-step {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .fuel-cycle-step.active {
+            background-color: #4a5568;
+            color: #ffffff;
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .enrichment-level {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .enrichment-level.active {
+            transform: scale(1.1);
+            font-weight: 700;
+        }
+        .chart-container {
+            position: relative; 
+            width: 100%; 
+            max-width: 400px; 
+            margin-left: auto; 
+            margin-right: auto; 
+            height: auto;
+            max-height: 400px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-30 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold text-gray-800">⚛️ The Uranium Story</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <button onclick="showSection('science')" class="nav-button active text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">The Science</button>
+                        <button onclick="showSection('cycle')" class="nav-button text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">The Fuel Cycle</button>
+                        <button onclick="showSection('geopolitics')" class="nav-button text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">Geopolitics</button>
+                        <button onclick="showSection('future')" class="nav-button text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">The Future</button>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <select id="mobile-nav" onchange="showSection(this.value)" class="bg-gray-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                        <option value="science">The Science</option>
+                        <option value="cycle">The Fuel Cycle</option>
+                        <option value="geopolitics">Geopolitics</option>
+                        <option value="future">The Future</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <section id="science" class="content-section active fade-in">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4">The Element of Duality</h1>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600">Uranium's power lies in its atomic heart. A tiny difference between its two main isotopes, U-235 and U-238, is the foundation of the entire nuclear age. This section explores this fundamental science and the critical process that unlocks its potential: enrichment.</p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-12">
+                <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">The Spectrum of Enrichment</h2>
+                <p class="text-center text-gray-500 mb-8">Click on a level to understand its use and significance. Enrichment is not linear; reaching 20% is over two-thirds of the work to get to 90%.</p>
+                
+                <div class="relative w-full h-8 bg-gray-200 rounded-full mb-4">
+                    <div class="absolute top-0 left-0 h-8 bg-gradient-to-r from-yellow-300 via-green-400 to-red-500 rounded-full" style="width: 100%;"></div>
+                    <div id="enrichment-levels" class="relative flex justify-between items-center h-full px-2">
+                        <div class="enrichment-level text-xs text-center" data-level="nu" style="left: 0.7%;">
+                            <span class="block cursor-pointer">NU</span>
+                            <div class="h-4 w-0.5 bg-gray-600 mx-auto"></div>
+                        </div>
+                        <div class="enrichment-level text-xs text-center" data-level="leu" style="position: absolute; left: 4%;">
+                            <span class="block cursor-pointer">LEU</span>
+                            <div class="h-4 w-0.5 bg-gray-600 mx-auto"></div>
+                        </div>
+                        <div class="enrichment-level text-xs text-center" data-level="haleu" style="position: absolute; left: 19%;">
+                            <span class="block cursor-pointer">HALEU</span>
+                            <div class="h-4 w-0.5 bg-gray-600 mx-auto"></div>
+                        </div>
+                        <div class="enrichment-level text-xs text-center" data-level="heu" style="position: absolute; left: 60%;">
+                            <span class="block cursor-pointer">HEU</span>
+                            <div class="h-4 w-0.5 bg-gray-600 mx-auto"></div>
+                        </div>
+                        <div class="enrichment-level text-xs text-center" data-level="wgu" style="position: absolute; left: 90%;">
+                            <span class="block cursor-pointer">WGU</span>
+                            <div class="h-4 w-0.5 bg-gray-600 mx-auto"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-between text-xs font-medium text-gray-500 px-1">
+                    <span>0%</span>
+                    <span>20%</span>
+                    <span>100%</span>
+                </div>
+
+                <div id="enrichment-details" class="mt-8 p-6 bg-gray-50 rounded-lg min-h-[200px] fade-in">
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">Two Fates of the Fissile Atom</h2>
+                <p class="text-center text-gray-500 max-w-2xl mx-auto mb-8">The same fundamental physics of fission leads to two vastly different outcomes. The difference lies in the enrichment level of the fuel and the speed of the chain reaction.</p>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="border border-green-200 bg-green-50 rounded-lg p-6">
+                        <h3 class="text-xl font-bold text-green-800 mb-3">💡 Controlled Burn: Power Reactor</h3>
+                        <p class="text-green-700 mb-4">The goal is a stable, self-sustaining chain reaction (criticality) to generate heat for electricity.</p>
+                        <ul class="space-y-2 text-sm text-gray-700">
+                            <li><span class="font-semibold text-green-800">Fuel:</span> Low-Enriched Uranium (LEU) at 3-5% U-235.</li>
+                            <li><span class="font-semibold text-green-800">Reaction:</span> Precisely balanced. For every atom that splits, exactly one released neutron causes another split.</li>
+                            <li><span class="font-semibold text-green-800">Control:</span> Moderators (like water) slow neutrons, and control rods absorb excess neutrons to prevent the reaction from accelerating.</li>
+                            <li><span class="font-semibold text-green-800">Outcome:</span> Sustained, controllable energy release over years.</li>
+                        </ul>
+                    </div>
+                    <div class="border border-red-200 bg-red-50 rounded-lg p-6">
+                        <h3 class="text-xl font-bold text-red-800 mb-3">💥 Uncontrolled Release: Weapon</h3>
+                        <p class="text-red-700 mb-4">The goal is an exponentially multiplying chain reaction (supercriticality) to release massive energy instantly.</p>
+                        <ul class="space-y-2 text-sm text-gray-700">
+                            <li><span class="font-semibold text-red-800">Fuel:</span> Weapons-Grade Uranium (HEU) at >90% U-235.</li>
+                            <li><span class="font-semibold text-red-800">Reaction:</span> Uncontrolled cascade. Nearly every released neutron causes another split.</li>
+                            <li><span class="font-semibold text-red-800">Control:</span> None. The design ensures the fastest possible assembly of a critical mass to maximize the explosive yield.</li>
+                            <li><span class="font-semibold text-red-800">Outcome:</span> Instantaneous, catastrophic energy release in a fraction of a second.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cycle" class="content-section fade-in">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4">The Nuclear Fuel Cycle</h1>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600">From raw ore buried in the earth to precisely engineered fuel assemblies, uranium undergoes a complex industrial transformation. Click on each step of this journey to learn more about the process.</p>
+            </div>
+            
+            <div class="w-full overflow-x-auto p-4">
+                <div class="flex items-center justify-between space-x-2 md:space-x-4 min-w-[700px] md:min-w-0">
+                    <div id="step-mining" class="fuel-cycle-step flex-1 text-center bg-white rounded-lg shadow p-4">
+                        <div class="text-3xl mb-2">⛏️</div>
+                        <h3 class="font-semibold">1. Mining</h3>
+                    </div>
+                    <div class="text-gray-400 font-bold text-2xl">→</div>
+                    <div id="step-milling" class="fuel-cycle-step flex-1 text-center bg-white rounded-lg shadow p-4">
+                        <div class="text-3xl mb-2">🏭</div>
+                        <h3 class="font-semibold">2. Milling</h3>
+                    </div>
+                    <div class="text-gray-400 font-bold text-2xl">→</div>
+                    <div id="step-conversion" class="fuel-cycle-step flex-1 text-center bg-white rounded-lg shadow p-4">
+                        <div class="text-3xl mb-2">⚗️</div>
+                        <h3 class="font-semibold">3. Conversion</h3>
+                    </div>
+                    <div class="text-gray-400 font-bold text-2xl">→</div>
+                    <div id="step-enrichment" class="fuel-cycle-step flex-1 text-center bg-white rounded-lg shadow p-4">
+                        <div class="text-3xl mb-2">⚙️</div>
+                        <h3 class="font-semibold">4. Enrichment</h3>
+                    </div>
+                    <div class="text-gray-400 font-bold text-2xl">→</div>
+                    <div id="step-fabrication" class="fuel-cycle-step flex-1 text-center bg-white rounded-lg shadow p-4">
+                        <div class="text-3xl mb-2">🔩</div>
+                        <h3 class="font-semibold">5. Fabrication</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div id="cycle-details" class="mt-8 p-6 md:p-8 bg-white rounded-xl shadow-lg min-h-[250px] fade-in">
+            </div>
+        </section>
+
+        <section id="geopolitics" class="content-section fade-in">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4">The Global Chessboard</h1>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600">The distribution of uranium resources and processing capabilities creates a complex web of global dependencies. While mining is concentrated in a few countries, enrichment—the most critical step—is controlled by an even smaller, more powerful group, creating significant strategic vulnerabilities.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 lg:gap-12">
+                <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-2xl font-bold text-center text-gray-800 mb-4">Top Uranium Mining Countries (2022)</h2>
+                    <p class="text-center text-gray-500 mb-6">Where the raw material comes from.</p>
+                    <div class="chart-container">
+                        <canvas id="miningChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-2xl font-bold text-center text-gray-800 mb-4">Major Enrichment Providers (2022)</h2>
+                    <p class="text-center text-gray-500 mb-6">Who controls the critical technology.</p>
+                    <div class="chart-container">
+                        <canvas id="enrichmentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="future" class="content-section fade-in">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4">The Future of Fission</h1>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600">As the world grapples with climate change and energy security, nuclear technology is evolving. Innovations aim to make nuclear power safer, more scalable, and more sustainable, while addressing legacy challenges like waste.</p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Small Modular Reactors (SMRs)</h3>
+                    <p class="text-gray-600">Factory-built, smaller reactors (under 300 MW) that promise lower costs, faster construction, and enhanced safety through passive cooling systems. They can be sited in more locations, like replacing old coal plants.</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">High-Assay LEU (HALEU)</h3>
+                    <p class="text-gray-600">A new class of fuel enriched between 5% and 20%. Required by many advanced SMR designs, it allows for smaller reactor cores and longer-lasting fuel, but also creates a new non-proliferation challenge.</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Thorium Fuel Cycle</h3>
+                    <p class="text-gray-600">A potential long-term alternative using abundant thorium to breed fissile U-233. It offers advantages like reduced long-lived waste and higher proliferation resistance, but faces significant technical hurdles.</p>
+                </div>
+                <div class="lg:col-span-3 bg-white rounded-xl shadow-lg p-6">
+                     <h3 class="text-xl font-bold text-gray-800 mb-3">The Forever Problem: Waste Management</h3>
+                    <p class="text-gray-600">The most profound challenge is the permanent disposal of high-level radioactive waste. The global scientific consensus points to deep geological repositories as the safest solution, but political and social opposition has stalled progress worldwide, leaving most spent fuel in temporary storage at reactor sites.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+
+    <footer class="bg-gray-800 text-white mt-12">
+        <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm">
+            <p>An interactive summary based on the report "Why Uranium Enrichment is a Big Deal".</p>
+            <p>This application is for educational purposes only.</p>
+        </div>
+    </footer>
+
+    <script>
+        const cycleData = {
+            mining: {
+                title: "1. Mining: Extracting Ore from the Earth",
+                description: "The journey begins with extracting uranium ore. This is done through open-pit mining for shallow deposits, underground mining for deep ones, or increasingly, In-Situ Leaching (ISL), where a solution is pumped underground to dissolve uranium directly from the rock. The environmental challenge is managing vast amounts of waste rock and tailings.",
+                icon: "⛏️"
+            },
+            milling: {
+                title: "2. Milling: From Rock to Yellowcake",
+                description: "At a mill, the ore is crushed into a fine powder and leached with acid to dissolve the uranium. The uranium is then extracted from this solution and dried into a concentrate called 'yellowcake' (U3O8). This powder, still with natural 0.7% U-235, is the standard form for global trade.",
+                icon: "🏭"
+            },
+            conversion: {
+                title: "3. Conversion: From Solid to Gas",
+                description: "Yellowcake cannot be enriched as a solid. At a conversion facility, it is purified and reacted with fluorine to create uranium hexafluoride (UF6) gas. UF6 is ideal because it becomes a gas at a low temperature, and fluorine's single stable isotope means any mass difference in UF6 molecules is due only to the uranium isotope (U-235 vs U-238).",
+                icon: "⚗️"
+            },
+            enrichment: {
+                title: "4. Enrichment: The Critical Step",
+                description: "This is the most difficult and sensitive step. Since U-235 and U-238 are chemically identical, they must be separated based on their tiny mass difference. Modern gas centrifuges spin UF6 gas at immense speeds, pushing the heavier U-238 UF6 to the outside and allowing the lighter U-235 UF6 to be collected from the center. This process is repeated in a 'cascade' to achieve the desired U-235 concentration.",
+                icon: "⚙️"
+            },
+            fabrication: {
+                title: "5. Fabrication: From Gas to Fuel Rod",
+                description: "The enriched UF6 gas is converted back into a solid, stable uranium dioxide (UO2) powder. This powder is pressed into small ceramic pellets, which are then stacked and sealed into long metal tubes (fuel rods). These rods are bundled into fuel assemblies, ready to be loaded into a reactor core.",
+                icon: "🔩"
+            }
+        };
+
+        const enrichmentData = {
+            nu: {
+                title: "Natural Uranium (NU)",
+                level: "0.7% U-235",
+                description: "This is uranium as found in nature. It can be used directly as fuel only in specific reactor designs with high neutron economy, like heavy-water CANDU reactors.",
+                risk: "Low",
+                riskColor: "text-green-600"
+            },
+            leu: {
+                title: "Low-Enriched Uranium (LEU)",
+                level: "3% - 5% U-235",
+                description: "The standard fuel for the vast majority of the world's commercial nuclear power reactors. It cannot be used to make a weapon.",
+                risk: "Low (but feedstock for further enrichment)",
+                riskColor: "text-yellow-600"
+            },
+            haleu: {
+                title: "High-Assay LEU (HALEU)",
+                level: "5% - 20% U-235",
+                description: "A new fuel type required for many advanced and Small Modular Reactors (SMRs). It allows for smaller, more efficient designs but blurs the line to weapons-usable material.",
+                risk: "Moderate",
+                riskColor: "text-orange-600"
+            },
+            heu: {
+                title: "Highly Enriched Uranium (HEU)",
+                level: "≥ 20% U-235",
+                description: "Considered a direct-use nuclear weapons material. Also used as fuel for naval propulsion (submarines, aircraft carriers) and some research reactors.",
+                risk: "High (Direct-use weapons material)",
+                riskColor: "text-red-600"
+            },
+            wgu: {
+                title: "Weapons-Grade Uranium",
+                level: "≥ 90% U-235",
+                description: "This is HEU optimized for nuclear weapons. A nation enriching to this level is unequivocally pursuing a nuclear weapons capability.",
+                risk: "Very High (Optimal for weapons)",
+                riskColor: "text-red-800"
+            }
+        };
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+
+            document.querySelectorAll('.nav-button').forEach(button => {
+                button.classList.remove('active');
+                if (button.getAttribute('onclick').includes(sectionId)) {
+                    button.classList.add('active');
+                }
+            });
+            
+            const mobileNav = document.getElementById('mobile-nav');
+            if (mobileNav.value !== sectionId) {
+                mobileNav.value = sectionId;
+            }
+        }
+
+        function updateCycleDetails(stepId) {
+            const detailsDiv = document.getElementById('cycle-details');
+            const data = cycleData[stepId];
+            detailsDiv.innerHTML = `
+                <h3 class="text-2xl font-bold text-gray-800 mb-3">${data.icon} ${data.title}</h3>
+                <p class="text-gray-600 text-lg">${data.description}</p>
+            `;
+            
+            document.querySelectorAll('.fuel-cycle-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            document.getElementById(`step-${stepId}`).classList.add('active');
+        }
+        
+        function updateEnrichmentDetails(levelId) {
+            const detailsDiv = document.getElementById('enrichment-details');
+            const data = enrichmentData[levelId];
+            detailsDiv.innerHTML = `
+                <h3 class="text-xl font-bold text-gray-800">${data.title}</h3>
+                <p class="font-semibold text-blue-600 mb-2">${data.level}</p>
+                <p class="text-gray-600 mb-4">${data.description}</p>
+                <p class="text-sm"><span class="font-semibold">Proliferation Significance:</span> <span class="${data.riskColor} font-medium">${data.risk}</span></p>
+            `;
+
+            document.querySelectorAll('.enrichment-level').forEach(level => {
+                level.classList.remove('active');
+            });
+            document.querySelector(`.enrichment-level[data-level="${levelId}"]`).classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            showSection('science');
+            updateCycleDetails('enrichment');
+            updateEnrichmentDetails('leu');
+
+            document.querySelectorAll('.fuel-cycle-step').forEach(step => {
+                step.addEventListener('click', () => {
+                    updateCycleDetails(step.id.split('-')[1]);
+                });
+            });
+            
+            document.querySelectorAll('.enrichment-level').forEach(level => {
+                level.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    updateEnrichmentDetails(level.dataset.level);
+                });
+            });
+
+            const miningCtx = document.getElementById('miningChart').getContext('2d');
+            new Chart(miningCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Kazakhstan', 'Canada', 'Namibia', 'Australia', 'Uzbekistan', 'Other'],
+                    datasets: [{
+                        label: '% of World Total',
+                        data: [43, 15, 11, 9, 7, 15],
+                        backgroundColor: ['#6366F1', '#818CF8', '#A5B4FC', '#C7D2FE', '#E0E7FF', '#F3F4F6'],
+                        borderColor: '#f8f7f4',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const enrichmentCtx = document.getElementById('enrichmentChart').getContext('2d');
+            new Chart(enrichmentCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Rosatom (Russia)', 'Urenco (EU/USA)', 'CNNC (China)', 'Orano (France/USA)'],
+                    datasets: [{
+                        label: '% of World Capacity',
+                        data: [44, 29, 14, 12],
+                        backgroundColor: ['#EC4899', '#F472B6', '#F9A8D4', '#FBCFE8'],
+                        borderColor: '#f8f7f4',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+
