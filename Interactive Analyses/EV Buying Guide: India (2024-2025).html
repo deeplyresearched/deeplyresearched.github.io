@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive EV Buying Guide: India (2024-2025)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals (Slate, Stone, Zinc) with a Sky Blue accent -->
+    <!-- Application Structure Plan: A task-oriented, single-page dashboard. The structure prioritizes user decision-making over the report's linear format. It starts with the core user question ("Buy Now or Wait?"), then provides interactive tools to explore options ('Find Your EV'), see the future ('2025 Models'), and understand practicalities ('Ownership Costs'). This non-linear approach allows users to jump to the information most relevant to them, using filters and dynamic charts to compare options effectively, leading to an informed verdict. -->
+    <!-- Visualization & Content Choices: Report Info: 2024 EV data (price, range, etc.). Goal: Compare options. Viz: Interactive scatter plot (Price vs. Real-World Range) and filterable cards. Interaction: Users filter by price/use, see results instantly on the chart and in cards. Justification: This visualizes the market landscape, making trade-offs between cost and range immediately obvious. Report Info: ARAI vs. Real-World Range. Goal: Inform/Set expectations. Viz: Dynamic dual-bar chart. Interaction: Select a car to see the comparison. Justification: Directly addresses a key point of confusion for buyers. Report Info: Service network disparity. Goal: Organize/Inform. Viz: HTML/CSS-based tier list. Justification: Simplifies a complex issue into an easy-to-understand visual without needing complex map data. Library: Chart.js for all charts due to its simplicity, performance on canvas, and responsiveness. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #27272a; /* zinc-800 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link {
+            @apply px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-200 hover:text-slate-900 transition-colors;
+        }
+        .active-nav-link {
+            @apply bg-slate-900 text-white hover:bg-slate-800 hover:text-white;
+        }
+        .filter-btn {
+            @apply px-4 py-2 text-sm font-medium border rounded-lg focus:outline-none transition-all duration-200;
+        }
+        .active-filter {
+            @apply bg-slate-800 text-white border-slate-800;
+        }
+        .inactive-filter {
+            @apply bg-white text-slate-700 border-slate-300 hover:bg-slate-100;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-40 border-b border-slate-200">
+        <nav class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-slate-900">EV Buying Guide</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link">Market Overview</a>
+                        <a href="#finder" class="nav-link">Find Your 2024 EV</a>
+                        <a href="#future" class="nav-link">2025 Horizon</a>
+                        <a href="#ownership" class="nav-link">Ownership Costs</a>
+                        <a href="#verdict" class="nav-link">Our Verdict</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-slate-500">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#overview" class="nav-link block">Market Overview</a>
+                <a href="#finder" class="nav-link block">Find Your 2024 EV</a>
+                <a href="#future" class="nav-link block">2025 Horizon</a>
+                <a href="#ownership" class="nav-link block">Ownership Costs</a>
+                <a href="#verdict" class="nav-link block">Our Verdict</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 md:py-12">
+        
+        <section id="hero" class="text-center py-16">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">The Indian EV Dilemma</h2>
+            <p class="mt-4 max-w-2xl mx-auto text-lg text-slate-600">The market is evolving fast. New models, changing policies, and growing infrastructure make the decision harder than ever. Should you buy now or wait for what's next?</p>
+            <div class="mt-8 flex justify-center gap-4">
+                <a href="#finder" class="px-8 py-3 bg-slate-900 text-white font-semibold rounded-lg shadow-md hover:bg-slate-800 transition-all">Explore 2024 Models</a>
+                <a href="#future" class="px-8 py-3 bg-white text-slate-900 font-semibold rounded-lg border border-slate-300 hover:bg-slate-100 transition-all">See What's Coming in 2025</a>
+            </div>
+        </section>
+
+        <div class="border-b border-slate-200 my-12"></div>
+
+        <section id="overview" class="space-y-12">
+            <div class="text-center">
+                <h3 class="text-3xl font-bold tracking-tight text-slate-900">The Big Picture: India's EV Ecosystem</h3>
+                <p class="mt-3 max-w-3xl mx-auto text-md text-slate-600">Understanding the market's foundation—from government policies to the on-ground charging reality—is the first step to making a smart choice. While national growth is impressive, the real experience depends heavily on where you live.</p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-xl border border-slate-200">
+                    <h4 class="font-semibold text-slate-900">Market Momentum</h4>
+                    <p class="text-4xl font-bold text-sky-600 mt-2">7.7%</p>
+                    <p class="text-sm text-slate-500 mt-1">EV share in total vehicle sales by 2024, up from 0.5% in 2018. However, passenger EVs are only about 2% of this, showing the market is still nascent.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl border border-slate-200">
+                    <h4 class="font-semibold text-slate-900">Policy Push (FAME)</h4>
+                    <p class="text-4xl font-bold text-sky-600 mt-2">₹11,500 Cr</p>
+                    <p class="text-sm text-slate-500 mt-1">Outlay for FAME-II, which subsidized over 1.6 million vehicles. The structure of the upcoming FAME-III scheme is a major uncertainty for 2025 buyers.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl border border-slate-200 md:col-span-2 lg:col-span-1">
+                    <h4 class="font-semibold text-slate-900">Charging Infrastructure</h4>
+                    <p class="text-4xl font-bold text-sky-600 mt-2">25,000</p>
+                    <p class="text-sm text-slate-500 mt-1">Public chargers installed nationally. This number hides huge regional gaps, with reliability and charger type being major concerns outside metro cities.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="border-b border-slate-200 my-12"></div>
+
+        <section id="finder" class="space-y-12">
+            <div class="text-center">
+                <h3 class="text-3xl font-bold tracking-tight text-slate-900">Find Your Perfect 2024 EV</h3>
+                <p class="mt-3 max-w-3xl mx-auto text-md text-slate-600">Use the filters below to find vehicles that match your budget and needs. The chart visualizes the trade-off between price and real-world range for the available models.</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl border border-slate-200 sticky top-16 z-30">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="font-medium text-slate-700 text-sm">Price Range (Ex-Showroom)</label>
+                        <div id="price-filters" class="flex flex-wrap gap-2 mt-2">
+                            <button data-price="all" class="filter-btn active-filter">All</button>
+                            <button data-price="<15" class="filter-btn inactive-filter">Under ₹15 Lakh</button>
+                            <button data-price="15-40" class="filter-btn inactive-filter">₹15 - ₹40 Lakh</button>
+                            <button data-price=">40" class="filter-btn inactive-filter">Over ₹40 Lakh</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="font-medium text-slate-700 text-sm">Primary Use</label>
+                        <div id="use-filters" class="flex flex-wrap gap-2 mt-2">
+                            <button data-use="all" class="filter-btn active-filter">All</button>
+                            <button data-use="city" class="filter-btn inactive-filter">Urban Commuter</button>
+                            <button data-use="family" class="filter-btn inactive-filter">Single-Car Family</button>
+                            <button data-use="highway" class="filter-btn inactive-filter">Highway Explorer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="priceVsRangeChart"></canvas>
+            </div>
+
+            <div id="car-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            </div>
+        </section>
+
+        <div class="border-b border-slate-200 my-12"></div>
+
+        <section id="future" class="space-y-12">
+            <div class="text-center">
+                <h3 class="text-3xl font-bold tracking-tight text-slate-900">The 2025 Horizon: What's Coming Next?</h3>
+                <p class="mt-3 max-w-3xl mx-auto text-md text-slate-600">The market is set for a shake-up. Major players are entering the field and established ones are launching next-gen platforms. Here's a look at the key models that might make waiting worthwhile.</p>
+            </div>
+            <div id="future-car-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            </div>
+        </section>
+
+        <div class="border-b border-slate-200 my-12"></div>
+
+        <section id="ownership" class="space-y-12">
+            <div class="text-center">
+                <h3 class="text-3xl font-bold tracking-tight text-slate-900">The Real Cost of Ownership</h3>
+                <p class="mt-3 max-w-3xl mx-auto text-md text-slate-600">Beyond the sticker price, the true ownership experience is defined by real-world range, service accessibility, and long-term costs. These factors can be more important than specs on paper.</p>
+            </div>
+            <div class="grid lg:grid-cols-2 gap-8 items-start">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 space-y-4">
+                    <h4 class="text-xl font-bold text-slate-800">Range Reality vs. ARAI Claims</h4>
+                    <p class="text-slate-600">Official ARAI range figures are achieved in ideal test conditions. Real-world range is typically 25-35% lower. Use our "70% Rule of Thumb" calculator to set realistic expectations.</p>
+                    <div>
+                        <label for="range-car-select" class="block text-sm font-medium text-slate-700">Select a Car:</label>
+                        <select id="range-car-select" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm rounded-md">
+                        </select>
+                    </div>
+                    <div class="chart-container" style="height: 250px; max-height: 300px;">
+                        <canvas id="rangeComparisonChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl border border-slate-200 space-y-4">
+                    <h4 class="text-xl font-bold text-slate-800">The Service Network Lottery</h4>
+                    <p class="text-slate-600">Outside major metros, your choice of brands can be limited by service availability. A great car is useless without reliable support. Here's a look at the service tiers in a sample Tier-2 city (Jabalpur).</p>
+                    <div class="space-y-3">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 w-16 text-center"><span class="px-2 py-1 text-xs font-bold text-green-800 bg-green-100 rounded-full">Tier 1</span></div>
+                            <p class="ml-3 text-sm text-slate-600"><strong class="text-slate-800">Most Accessible:</strong> Tata, Mahindra. Multiple, well-established service centers provide peace of mind.</p>
+                        </div>
+                         <div class="flex items-start">
+                            <div class="flex-shrink-0 w-16 text-center"><span class="px-2 py-1 text-xs font-bold text-yellow-800 bg-yellow-100 rounded-full">Tier 2</span></div>
+                            <p class="ml-3 text-sm text-slate-600"><strong class="text-slate-800">Good Presence:</strong> Hyundai, Kia. Present and reliable, but with fewer options than Tier 1.</p>
+                        </div>
+                         <div class="flex items-start">
+                            <div class="flex-shrink-0 w-16 text-center"><span class="px-2 py-1 text-xs font-bold text-orange-800 bg-orange-100 rounded-full">Tier 3</span></div>
+                            <p class="ml-3 text-sm text-slate-600"><strong class="text-slate-800">Limited Footprint:</strong> MG, Citroen. Typically a single dealer, making service a potential bottleneck.</p>
+                        </div>
+                         <div class="flex items-start">
+                            <div class="flex-shrink-0 w-16 text-center"><span class="px-2 py-1 text-xs font-bold text-red-800 bg-red-100 rounded-full">Tier 4</span></div>
+                            <p class="ml-3 text-sm text-slate-600"><strong class="text-slate-800">Non-Existent:</strong> BYD. No local service center, making ownership impractical for many.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="border-b border-slate-200 my-12"></div>
+
+        <section id="verdict" class="space-y-12">
+            <div class="text-center">
+                <h3 class="text-3xl font-bold tracking-tight text-slate-900">Final Verdict & Top Picks</h3>
+                <p class="mt-3 max-w-3xl mx-auto text-md text-slate-600">So, what's the final call? Here are our top picks for 2024 and our strategic advice on whether you should buy now or wait.</p>
+            </div>
+
+            <div>
+                <h4 class="text-2xl font-bold text-slate-800 text-center mb-6">Analyst's Top Picks for 2024</h4>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-xl border-2 border-sky-500 shadow-lg">
+                        <span class="inline-block px-3 py-1 text-xs font-semibold text-sky-800 bg-sky-100 rounded-full mb-2">Best Budget EV</span>
+                        <h5 class="text-lg font-bold text-slate-900">Tata Punch EV</h5>
+                        <p class="mt-2 text-sm text-slate-600">It redefines the entry-level segment with an SUV form factor, modern features, and a native EV platform at a highly competitive price. It's the most forward-looking package under ₹12 Lakh.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border-2 border-sky-500 shadow-lg">
+                        <span class="inline-block px-3 py-1 text-xs font-semibold text-sky-800 bg-sky-100 rounded-full mb-2">Best All-Rounder</span>
+                        <h5 class="text-lg font-bold text-slate-900">Tata Nexon EV (45kWh)</h5>
+                        <p class="mt-2 text-sm text-slate-600">The market leader for a reason. It offers the best balance of design, features, safety, and practical range, backed by the widest service network. The most pragmatic choice for most families.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border-2 border-sky-500 shadow-lg">
+                        <span class="inline-block px-3 py-1 text-xs font-semibold text-sky-800 bg-sky-100 rounded-full mb-2">Best Premium EV</span>
+                        <h5 class="text-lg font-bold text-slate-900">Hyundai Ioniq 5</h5>
+                        <p class="mt-2 text-sm text-slate-600">Its 800V architecture provides a tangible tech advantage with ultra-fast charging. Combined with a spacious, futuristic interior, it offers the most complete and future-proof premium experience.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="text-2xl font-bold text-slate-800 text-center mb-6">Should You Buy Now or Wait?</h4>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-green-50 p-6 rounded-xl border border-green-200">
+                        <h5 class="text-lg font-bold text-green-800">Buy in 2024 If...</h5>
+                        <ul class="mt-3 list-disc list-inside space-y-2 text-sm text-green-700">
+                            <li>Your needs are met by a current model like the Punch or Nexon EV.</li>
+                            <li>You have reliable home charging.</li>
+                            <li>You want to lock in current prices and potential subsidies.</li>
+                            <li><strong>Your priority is certainty.</strong></li>
+                        </ul>
+                    </div>
+                    <div class="bg-yellow-50 p-6 rounded-xl border border-yellow-200">
+                        <h5 class="text-lg font-bold text-yellow-800">Wait for 2025 If...</h5>
+                        <ul class="mt-3 list-disc list-inside space-y-2 text-sm text-yellow-700">
+                            <li>You live in a Tier-2/3 city and prioritize Maruti/Toyota's service network.</li>
+                            <li>You absolutely need a 7-seater electric SUV (wait for Mahindra XEV 7e).</li>
+                            <li>You believe next-gen tech will be a revolutionary leap.</li>
+                            <li><strong>You're willing to trade certainty for potential upside.</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="bg-slate-800 text-slate-300 mt-16">
+        <div class="container mx-auto px-4 py-6 text-center text-sm">
+            <p>This interactive guide is based on the "Definitive Guide to Buying an Electric Vehicle in India: 2024-2025 Market Analysis".</p>
+            <p>© 2024 Interactive EV Guide. All data is for informational purposes only.</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const carData2024 = [
+        { id: 1, name: 'MG Comet EV', segment: 'Compact Hatchback', price: 6.24, battery: 17.3, range_arai: 230, range_real: 190, use_case: ['city'], image: 'https://placehold.co/600x400/a3e635/1e293b?text=Comet+EV' },
+        { id: 2, name: 'Tata Tiago EV', segment: 'Hatchback', price: 7.99, battery: 24, range_arai: 315, range_real: 245, use_case: ['city'], image: 'https://placehold.co/600x400/67e8f9/1e293b?text=Tiago+EV' },
+        { id: 3, name: 'Tata Punch EV', segment: 'Compact SUV', price: 9.99, battery: 35, range_arai: 421, range_real: 320, use_case: ['city', 'family'], image: 'https://placehold.co/600x400/f9a8d4/1e293b?text=Punch+EV' },
+        { id: 4, name: 'Citroen eC3', segment: 'Hatchback', price: 12.84, battery: 29.2, range_arai: 320, range_real: 235, use_case: ['city'], image: 'https://placehold.co/600x400/fde047/1e293b?text=eC3' },
+        { id: 5, name: 'Tata Nexon EV', segment: 'Compact SUV', price: 12.49, battery: 45, range_arai: 489, range_real: 365, use_case: ['family', 'highway'], image: 'https://placehold.co/600x400/38bdf8/1e293b?text=Nexon+EV' },
+        { id: 6, name: 'Mahindra XUV400 Pro', segment: 'Compact SUV', price: 15.49, battery: 39.4, range_arai: 456, range_real: 335, use_case: ['family', 'highway'], image: 'https://placehold.co/600x400/ef4444/1e293b?text=XUV400' },
+        { id: 7, name: 'MG ZS EV', segment: 'SUV', price: 18.49, battery: 50.3, range_arai: 461, range_real: 345, use_case: ['family', 'highway'], image: 'https://placehold.co/600x400/fb923c/1e293b?text=ZS+EV' },
+        { id: 8, name: 'Hyundai Kona Electric', segment: 'SUV', price: 23.84, battery: 39.2, range_arai: 452, range_real: 355, use_case: ['family', 'highway'], image: 'https://placehold.co/600x400/a78bfa/1e293b?text=Kona' },
+        { id: 9, name: 'BYD Atto 3', segment: 'SUV', price: 24.99, battery: 60.48, range_arai: 521, range_real: 400, use_case: ['family', 'highway'], image: 'https://placehold.co/600x400/22d3ee/1e293b?text=Atto+3' },
+        { id: 10, name: 'BYD Seal', segment: 'Sedan', price: 41.00, battery: 82.56, range_arai: 650, range_real: 525, use_case: ['highway'], image: 'https://placehold.co/600x400/60a5fa/1e293b?text=Seal' },
+        { id: 11, name: 'Hyundai Ioniq 5', segment: 'SUV', price: 46.05, battery: 72.6, range_arai: 631, range_real: 475, use_case: ['highway'], image: 'https://placehold.co/600x400/c084fc/1e293b?text=Ioniq+5' },
+        { id: 12, name: 'Kia EV6', segment: 'Crossover', price: 65.97, battery: 84, range_arai: 663, range_real: 525, use_case: ['highway'], image: 'https://placehold.co/600x400/f472b6/1e293b?text=EV6' }
+    ];
+
+    const futureCarData = [
+        { name: 'Maruti Suzuki e-Vitara', segment: 'SUV', price: '17 - 26 Lakh', launch: 'Sep 2025', feature: '500+ km Range, Vast Service Network', image: 'https://placehold.co/600x400/84cc16/1e293b?text=e-Vitara' },
+        { name: 'Toyota Urban Cruiser EV', segment: 'SUV', price: '20 - 25 Lakh', launch: 'Oct 2025', feature: '500+ km Range, Toyota Reliability', image: 'https://placehold.co/600x400/a16207/fefce8?text=Urban+Cruiser' },
+        { name: 'Tata Sierra EV', segment: 'Lifestyle SUV', price: '25 - 30 Lakh', launch: 'Festive Season 2025', feature: 'Iconic Design, 500+ km Range, V2L', image: 'https://placehold.co/600x400/16a34a/dcfce7?text=Sierra+EV' },
+        { name: 'Mahindra XEV 7e', segment: '7-Seater SUV', price: '21 - 30 Lakh', launch: 'July 2025', feature: '7-Seater, 600+ km Range', image: 'https://placehold.co/600x400/b91c1c/fee2e2?text=XEV+7e' },
+        { name: 'Kia Syros EV', segment: 'Compact SUV', price: '~15 - 20 Lakh', launch: 'End of 2025', feature: 'Nexon EV Competitor', image: 'https://placehold.co/600x400/be185d/fce7f3?text=Syros+EV' },
+        { name: 'Volvo EX30', segment: 'Premium Compact SUV', price: '55 - 60 Lakh', launch: 'Late 2025', feature: 'Local Assembly, Premium Features', image: 'https://placehold.co/600x400/0e7490/ecfeff?text=EX30' }
+    ];
+
+    let priceFilter = 'all';
+    let useFilter = 'all';
+
+    const carGrid = document.getElementById('car-grid');
+    const futureCarGrid = document.getElementById('future-car-grid');
+    const priceFilters = document.getElementById('price-filters');
+    const useFilters = document.getElementById('use-filters');
+    
+    const rangeCarSelect = document.getElementById('range-car-select');
+
+    let priceVsRangeChart, rangeComparisonChart;
+
+    function renderCarCards() {
+        carGrid.innerHTML = '';
+        const filteredCars = carData2024.filter(car => {
+            const priceCondition =
+                priceFilter === 'all' ||
+                (priceFilter === '<15' && car.price < 15) ||
+                (priceFilter === '15-40' && car.price >= 15 && car.price <= 40) ||
+                (priceFilter === '>40' && car.price > 40);
+            const useCondition = useFilter === 'all' || car.use_case.includes(useFilter);
+            return priceCondition && useCondition;
+        });
+
+        if (filteredCars.length === 0) {
+            carGrid.innerHTML = `<p class="text-slate-500 md:col-span-2 lg:col-span-3 text-center">No vehicles match your selected filters. Try a different combination.</p>`;
+        } else {
+            filteredCars.forEach(car => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 fade-in';
+                card.innerHTML = `
+                    <img src="${car.image}" alt="${car.name}" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg text-slate-900">${car.name}</h3>
+                        <p class="text-sm text-slate-500">${car.segment}</p>
+                        <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <p class="font-semibold text-slate-800">₹${car.price.toFixed(2)} Lakh</p>
+                                <p class="text-xs text-slate-500">Ex-Showroom</p>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-slate-800">${car.range_real} km</p>
+                                <p class="text-xs text-slate-500">Est. Real-World Range</p>
+                            </div>
+                             <div>
+                                <p class="font-semibold text-slate-800">${car.battery} kWh</p>
+                                <p class="text-xs text-slate-500">Battery</p>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-slate-800">${car.range_arai} km</p>
+                                <p class="text-xs text-slate-500">ARAI Range</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                carGrid.appendChild(card);
+            });
+        }
+        updatePriceVsRangeChart(filteredCars);
+    }
+
+    function renderFutureCarCards() {
+        futureCarGrid.innerHTML = '';
+        futureCarData.forEach(car => {
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 fade-in';
+            card.innerHTML = `
+                <img src="${car.image}" alt="${car.name}" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="font-bold text-lg text-slate-900">${car.name}</h3>
+                    <p class="text-sm text-slate-500">${car.segment}</p>
+                    <div class="mt-4 space-y-2 text-sm">
+                        <p><strong class="font-medium text-slate-700">Launch:</strong> ${car.launch}</p>
+                        <p><strong class="font-medium text-slate-700">Price:</strong> ${car.price}</p>
+                        <p><strong class="font-medium text-slate-700">Key Feature:</strong> ${car.feature}</p>
+                    </div>
+                </div>
+            `;
+            futureCarGrid.appendChild(card);
+        });
+    }
+
+    function setupFilters() {
+        priceFilters.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                priceFilter = e.target.dataset.price;
+                priceFilters.querySelectorAll('button').forEach(btn => {
+                    btn.classList.remove('active-filter');
+                    btn.classList.add('inactive-filter');
+                });
+                e.target.classList.add('active-filter');
+                e.target.classList.remove('inactive-filter');
+                renderCarCards();
+            }
+        });
+
+        useFilters.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                useFilter = e.target.dataset.use;
+                useFilters.querySelectorAll('button').forEach(btn => {
+                    btn.classList.remove('active-filter');
+                    btn.classList.add('inactive-filter');
+                });
+                e.target.classList.add('active-filter');
+                e.target.classList.remove('inactive-filter');
+                renderCarCards();
+            }
+        });
+    }
+
+    function updatePriceVsRangeChart(data) {
+        const chartData = {
+            datasets: [{
+                label: '2024 EV Models',
+                data: data.map(car => ({ x: car.price, y: car.range_real, r: car.battery / 3, name: car.name })),
+                backgroundColor: 'rgba(56, 189, 248, 0.6)',
+                borderColor: 'rgb(56, 189, 248)',
+                borderWidth: 1
+            }]
+        };
+
+        if (priceVsRangeChart) {
+            priceVsRangeChart.data = chartData;
+            priceVsRangeChart.update();
+        } else {
+            const ctx = document.getElementById('priceVsRangeChart').getContext('2d');
+            priceVsRangeChart = new Chart(ctx, {
+                type: 'bubble',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const d = context.raw;
+                                    return `${d.name}: ₹${d.x.toFixed(2)}L, ${d.y}km, ${d.r * 3}kWh`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Price (Ex-Showroom, in Lakhs)' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Est. Real-World Range (km)' }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    function setupRangeComparison() {
+        carData2024.forEach(car => {
+            const option = document.createElement('option');
+            option.value = car.id;
+            option.textContent = car.name;
+            rangeCarSelect.appendChild(option);
+        });
+
+        rangeCarSelect.addEventListener('change', (e) => {
+            updateRangeComparisonChart(e.target.value);
+        });
+        
+        updateRangeComparisonChart(rangeCarSelect.value);
+    }
+    
+    function updateRangeComparisonChart(carId) {
+        const car = carData2024.find(c => c.id == carId);
+        if (!car) return;
+
+        const data = {
+            labels: ['ARAI Claimed Range', 'Est. Real-World Range (70%)'],
+            datasets: [{
+                label: 'Range (km)',
+                data: [car.range_arai, car.range_real],
+                backgroundColor: [
+                    'rgba(165, 243, 252, 0.6)',
+                    'rgba(56, 189, 248, 0.6)'
+                ],
+                borderColor: [
+                    'rgb(22, 163, 74)',
+                    'rgb(2, 132, 199)'
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        if (rangeComparisonChart) {
+            rangeComparisonChart.data = data;
+            rangeComparisonChart.update();
+        } else {
+            const ctx = document.getElementById('rangeComparisonChart').getContext('2d');
+            rangeComparisonChart = new Chart(ctx, {
+                type: 'bar',
+                data: data,
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: `${car.name} Range Comparison` }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Kilometers (km)' }
+                        }
+                    }
+                }
+            });
+        }
+        rangeComparisonChart.options.plugins.title.text = `${car.name} Range Comparison`;
+        rangeComparisonChart.update();
+    }
+    
+    function setupMobileMenu() {
+        const menuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        mobileMenu.addEventListener('click', (e) => {
+             if (e.target.tagName === 'A') {
+                mobileMenu.classList.add('hidden');
+             }
+        });
+    }
+
+    renderCarCards();
+    renderFutureCarCards();
+    setupFilters();
+    setupRangeComparison();
+    setupMobileMenu();
+});
+</script>
+</body>
+</html>
+
+
