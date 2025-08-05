@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Global Challenge of Nuclear Waste: An Interactive Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: "Calm Neutral" - A palette of warm grays, soft beige, and muted blues/greens for a serious, academic, and non-alarming feel. Accent color is a subtle, deep teal. -->
+    <!-- Application Structure Plan: A single-page, thematic dashboard design. A sticky top navigation bar allows users to jump to key sections: 1) The Science (interactive cards for radiation types), 2) Classification (doughnut chart for volume/radioactivity ratio and an interactive bar chart for waste classes), 3) Management Lifecycle (a clickable process flow diagram), 4) Global Strategies (comparative cards and a bar chart), and 5) The Human Dimension (key takeaways). This non-linear structure prioritizes user-led exploration over the report's linear format, making complex information more digestible and engaging. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Volume vs. Radioactivity (90/1 & 3/95 rules). Goal: Compare. Viz: Doughnut chart (Chart.js). Interaction: Hover tooltips. Justification: Instantly visualizes the core asymmetry.
+        - Report Info: IAEA Waste Classes. Goal: Organize/Inform. Viz: Horizontal Bar Chart (Chart.js) next to a dynamic text area. Interaction: Clicking a bar updates the text with details for that class. Justification: Links visual data directly to detailed, contextual information.
+        - Report Info: Waste Management Lifecycle. Goal: Organize/Inform. Viz: HTML/CSS process diagram. Interaction: Clicking a stage reveals detailed text. Justification: Simplifies a complex, multi-stage process into an intuitive, explorable flow.
+        - Report Info: National Policy Comparison (Finland, France, US). Goal: Compare. Viz: Grouped Bar Chart (Chart.js). Interaction: Tooltips for quick data points. Justification: Provides an at-a-glance comparison of national progress and strategies.
+        - Report Info: Radiation Types. Goal: Inform. Viz: Interactive HTML cards. Interaction: Hover/click to reveal details. Justification: More engaging than a static list.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f7f4;
+            color: #333;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #0d9488; /* teal-600 */
+            border-bottom-color: #0d9488;
+        }
+        .section-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .gemini-button {
+            background-color: #14b8a6; /* teal-500 */
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .gemini-button:hover {
+            background-color: #0d9488; /* teal-600 */
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0d9488;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header and Navigation -->
+    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-gray-800">Nuclear Waste Explained</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#introduction" class="nav-link px-3 py-2 text-sm font-medium text-gray-600 border-b-2 border-transparent">Introduction</a>
+                        <a href="#science" class="nav-link px-3 py-2 text-sm font-medium text-gray-600 border-b-2 border-transparent">The Science</a>
+                        <a href="#classification" class="nav-link px-3 py-2 text-sm font-medium text-gray-600 border-b-2 border-transparent">Classification</a>
+                        <a href="#lifecycle" class="nav-link px-3 py-2 text-sm font-medium text-gray-600 border-b-2 border-transparent">Lifecycle</a>
+                        <a href="#strategies" class="nav-link px-3 py-2 text-sm font-medium text-gray-600 border-b-2 border-transparent">Global Strategies</a>
+                        <a href="#human-dimension" class="nav-link px-3 py-2 text-sm font-medium text-gray-600 border-b-2 border-transparent">Human Dimension</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <!-- Introduction Section -->
+        <section id="introduction" class="text-center mb-16 md:mb-24 scroll-mt-20">
+            <h2 class="text-3xl md:text-5xl font-bold text-gray-900 mb-4">The Global Challenge of Nuclear Waste</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600">
+                Nuclear technology offers immense benefits but creates a unique and enduring liability: radioactive waste. This interactive report dissects the science, management, and societal challenges of this "wicked problem," exploring the path from generation to permanent disposal.
+            </p>
+        </section>
+
+        <!-- The Science of Radioactivity -->
+        <section id="science" class="mb-16 md:mb-24 scroll-mt-20">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-2">The Fundamental Hazard</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Radioactive waste contains unstable atoms that release energy as ionizing radiation. Understanding the different types of radiation is key to understanding the hazard and the methods used for protection.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Alpha Particle Card -->
+                <div class="section-card p-6 text-center">
+                    <div class="text-4xl mb-3">α</div>
+                    <h3 class="text-xl font-semibold mb-2 text-gray-800">Alpha Particles</h3>
+                    <p class="text-gray-600">Heavy and slow, stopped by paper or skin. An internal hazard if inhaled or ingested.</p>
+                </div>
+                <!-- Beta Particle Card -->
+                <div class="section-card p-6 text-center">
+                    <div class="text-4xl mb-3">β</div>
+                    <h3 class="text-xl font-semibold mb-2 text-gray-800">Beta Particles</h3>
+                    <p class="text-gray-600">Lighter and faster, stopped by aluminum. An external and internal hazard.</p>
+                </div>
+                <!-- Gamma Ray Card -->
+                <div class="section-card p-6 text-center">
+                    <div class="text-4xl mb-3">γ</div>
+                    <h3 class="text-xl font-semibold mb-2 text-gray-800">Gamma Rays</h3>
+                    <p class="text-gray-600">High-energy photons requiring lead or concrete shielding. A significant external hazard.</p>
+                </div>
+                <!-- Neutron Radiation Card -->
+                <div class="section-card p-6 text-center">
+                    <div class="text-4xl mb-3">n</div>
+                    <h3 class="text-xl font-semibold mb-2 text-gray-800">Neutron Radiation</h3>
+                    <p class="text-gray-600">Highly penetrating, requires specialized hydrogen-rich shielding like water or polyethylene.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Classification Section -->
+        <section id="classification" class="mb-16 md:mb-24 scroll-mt-20">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-2">A Tale of Two Wastes: Volume vs. Radioactivity</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">A core principle of waste management is the profound asymmetry between waste volume and its hazard. This interactive section explores how waste is classified and the implications for its disposal.</p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <div class="section-card p-6">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">Global Waste Inventory Profile</h3>
+                    <div class="flex flex-col md:flex-row gap-8 items-center">
+                        <div class="chart-container h-64 md:h-auto md:w-1/2">
+                            <canvas id="volumeChart"></canvas>
+                        </div>
+                        <div class="chart-container h-64 md:h-auto md:w-1/2">
+                            <canvas id="radioactivityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="section-card p-6">
+                     <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">Explore Waste Classes (IAEA Framework)</h3>
+                     <p class="text-center text-sm text-gray-500 mb-4">Click on a bar to see details about each waste category.</p>
+                     <div class="chart-container h-80">
+                        <canvas id="wasteClassChart"></canvas>
+                     </div>
+                </div>
+            </div>
+            <div id="wasteClassInfo" class="section-card p-6 mt-8 hidden">
+                <h4 id="infoTitle" class="text-lg font-bold text-teal-700"></h4>
+                <p id="infoChars" class="text-gray-600 mt-2"></p>
+                <p id="infoDisposal" class="text-gray-600 mt-2"></p>
+            </div>
+        </section>
+
+        <!-- Lifecycle Section -->
+        <section id="lifecycle" class="mb-16 md:mb-24 scroll-mt-20">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-2">The Waste Management Lifecycle</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">From the moment it's created, nuclear waste goes through a multi-stage process to ensure it is handled, stored, and eventually disposed of safely. Click each stage to learn more.</p>
+            <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4 text-center">
+                <div class="lifecycle-stage cursor-pointer p-4 bg-white rounded-lg shadow hover:shadow-lg transition" data-stage="treatment">
+                    <h3 class="font-semibold text-gray-800">1. Treatment</h3>
+                    <p class="text-sm text-gray-500">Volume Reduction</p>
+                </div>
+                <div class="text-gray-400 text-2xl font-light hidden md:block">&rarr;</div>
+                <div class="lifecycle-stage cursor-pointer p-4 bg-white rounded-lg shadow hover:shadow-lg transition" data-stage="conditioning">
+                    <h3 class="font-semibold text-gray-800">2. Conditioning</h3>
+                    <p class="text-sm text-gray-500">Immobilization</p>
+                </div>
+                 <div class="text-gray-400 text-2xl font-light hidden md:block">&rarr;</div>
+                <div class="lifecycle-stage cursor-pointer p-4 bg-white rounded-lg shadow hover:shadow-lg transition" data-stage="storage">
+                    <h3 class="font-semibold text-gray-800">3. Interim Storage</h3>
+                    <p class="text-sm text-gray-500">Cooling & Shielding</p>
+                </div>
+                 <div class="text-gray-400 text-2xl font-light hidden md:block">&rarr;</div>
+                <div class="lifecycle-stage cursor-pointer p-4 bg-white rounded-lg shadow hover:shadow-lg transition" data-stage="disposal">
+                    <h3 class="font-semibold text-gray-800">4. Final Disposal</h3>
+                    <p class="text-sm text-gray-500">Permanent Isolation</p>
+                </div>
+            </div>
+            <div id="lifecycleInfo" class="section-card p-6 mt-8 hidden">
+                <h4 id="lifecycleTitle" class="text-lg font-bold text-teal-700"></h4>
+                <p id="lifecycleText" class="text-gray-600 mt-2"></p>
+            </div>
+        </section>
+        
+        <!-- Global Strategies Section -->
+        <section id="strategies" class="mb-16 md:mb-24 scroll-mt-20">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-2">Global Strategies: A Comparative Look</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Nations have adopted different philosophies for managing their nuclear waste. This section compares the approaches of three key countries, highlighting the vast differences in policy and progress.</p>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 text-center">
+                <!-- Finland Card -->
+                <div class="section-card p-6">
+                    <h3 class="text-2xl font-bold mb-2 text-gray-800">🇫🇮 Finland</h3>
+                    <p class="font-semibold text-teal-600 mb-2">Direct Disposal</p>
+                    <p class="text-gray-600">A model of success with its Onkalo repository, built on long-term policy and public consent. Poised to be the first to begin permanent disposal.</p>
+                </div>
+                <!-- France Card -->
+                <div class="section-card p-6">
+                    <h3 class="text-2xl font-bold mb-2 text-gray-800">🇫🇷 France</h3>
+                    <p class="font-semibold text-teal-600 mb-2">Reprocessing & Recycling</p>
+                    <p class="text-gray-600">A world leader in reprocessing spent fuel to recover resources, reducing the final volume of high-level waste but not the need for a repository (Cigéo project).</p>
+                </div>
+                <!-- United States Card -->
+                <div class="section-card p-6">
+                    <h3 class="text-2xl font-bold mb-2 text-gray-800">🇺🇸 United States</h3>
+                    <p class="font-semibold text-teal-600 mb-2">Political Impasse</p>
+                    <p class="text-gray-600">The Yucca Mountain project was terminated due to political opposition, leaving the U.S. without a permanent disposal path and forcing a shift to a consent-based approach.</p>
+                </div>
+            </div>
+            <div class="section-card p-6 mt-8">
+                <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">Repository Progress Comparison</h3>
+                <div class="chart-container h-80">
+                    <canvas id="strategyChart"></canvas>
+                </div>
+            </div>
+            <!-- Gemini Policy Summarizer -->
+            <div class="section-card p-6 mt-8">
+                <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">✨ AI Policy Summarizer</h3>
+                <p class="text-center text-gray-600 mb-4 max-w-xl mx-auto">Select a country to get a concise, AI-generated summary of its nuclear waste management policy.</p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <select id="countrySelect" class="block w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500">
+                        <option value="Finland">Finland</option>
+                        <option value="France">France</option>
+                        <option value="United States">United States</option>
+                    </select>
+                    <button id="generatePolicyBtn" class="gemini-button font-bold py-2 px-4 rounded-md inline-flex items-center w-full sm:w-auto justify-center">
+                        Generate Summary
+                    </button>
+                </div>
+                <div id="policyResultContainer" class="mt-6 hidden">
+                    <div id="policyLoader" class="flex justify-center items-center">
+                        <div class="loader"></div>
+                    </div>
+                    <div id="policyResult" class="text-gray-700 bg-gray-50 p-4 rounded-md"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Human Dimension Section -->
+        <section id="human-dimension" class="scroll-mt-20">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-2">The Human Dimension</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">The greatest hurdles in solving the waste problem are not technical, but social. They involve complex debates about politics, ethics, and public trust that will shape the future of nuclear energy.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="section-card p-6 flex flex-col">
+                    <h3 class="text-xl font-semibold mb-2 text-gray-800">Political Paralysis</h3>
+                    <p class="text-gray-600">Technically sound plans are often derailed by political gridlock and short-term thinking, leading to policy vacuums and immense costs, as seen in the U.S.</p>
+                </div>
+                <div class="section-card p-6 flex flex-col">
+                    <h3 class="text-xl font-semibold mb-2 text-gray-800">Intergenerational Equity</h3>
+                    <p class="text-gray-600 flex-grow">A core ethical dilemma: the current generation benefits from nuclear power, while future generations inherit the waste. This creates a moral duty to implement a permanent solution now.</p>
+                    <button id="exploreEthicsBtn" class="gemini-button font-bold py-2 px-4 rounded-md mt-4 inline-flex items-center justify-center">
+                       ✨ Explore the Ethical Argument
+                    </button>
+                </div>
+                <div class="section-card p-6 flex flex-col">
+                    <h3 class="text-xl font-semibold mb-2 text-gray-800">Public Trust & Consent</h3>
+                    <p class="text-gray-600">The old "Decide-Announce-Defend" model has failed. The future lies in consent-based siting, treating communities as partners, not just locations.</p>
+                </div>
+            </div>
+             <div id="ethicsResultContainer" class="section-card p-6 mt-8 hidden">
+                <div id="ethicsLoader" class="flex justify-center items-center">
+                    <div class="loader"></div>
+                </div>
+                <div id="ethicsResult" class="text-gray-700 italic bg-gray-50 p-4 rounded-md"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm">
+            <p>This interactive analysis is based on "The Global Challenge of Nuclear Waste" report.</p>
+            <p>&copy; 2024 Interactive Reports Inc. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const lifecycleData = {
+                treatment: {
+                    title: "Treatment: Volume Reduction & Activity Concentration",
+                    text: "The primary goal of treatment is to reduce the volume of waste to lower costs for packaging, storage, and disposal. Common methods include compaction for solids, incineration for combustibles, and evaporation or ion exchange for liquids. These processes concentrate the radioactivity into a smaller, more manageable form."
+                },
+                conditioning: {
+                    title: "Conditioning: Immobilization & Containment",
+                    text: "Conditioning converts treated waste into a stable, solid, and durable form. This 'waste form' is a critical barrier to prevent radionuclides from escaping. Technologies include cementation for LLW/ILW and vitrification (encasement in glass), the international standard for HLW, which creates an exceptionally leach-resistant monolith."
+                },
+                storage: {
+                    title: "Interim Storage: Cooling & Shielding",
+                    text: "After processing, waste, especially spent nuclear fuel, requires secure interim storage for decades to allow its intense heat and radioactivity to decrease. This began with wet storage in spent fuel pools and has evolved to passively safe dry cask storage, which is now the de facto long-term solution in countries without a permanent repository."
+                },
+                disposal: {
+                    title: "Final Disposal: Permanent Isolation",
+                    text: "The final step is permanent disposal, designed to be passively safe without needing future management. The international consensus for HLW is a Deep Geological Repository (DGR), using a multi-barrier system of engineered components (waste form, canister, buffer) and the natural geology to isolate waste for thousands of years. LLW is placed in engineered near-surface facilities."
+                }
+            };
+            
+            const wasteClassData = {
+                'VLLW': {
+                    title: "Very Low-Level Waste (VLLW)",
+                    chars: "Characteristics: Contains low concentrations of radionuclides, just above exempt levels. Does not require a high degree of containment or isolation.",
+                    disposal: "Disposal Pathway: Suitable for disposal in engineered near-surface landfill-type facilities with limited regulatory control after closure."
+                },
+                'LLW': {
+                    title: "Low-Level Waste (LLW)",
+                    chars: "Characteristics: Radioactive enough to require robust isolation but has limited amounts of long-lived radionuclides. Requires containment for a few hundred years.",
+                    disposal: "Disposal Pathway: Engineered near-surface disposal facilities."
+                },
+                'ILW': {
+                    title: "Intermediate-Level Waste (ILW)",
+                    chars: "Characteristics: More radioactive than LLW and contains significant long-lived radionuclides, but generates little to no decay heat. Requires greater isolation than LLW.",
+                    disposal: "Disposal Pathway: Deeper geological disposal, from tens to a few hundred meters deep."
+                },
+                'HLW': {
+                    title: "High-Level Waste (HLW)",
+                    chars: "Characteristics: The most hazardous category. Intensely radioactive, generates significant decay heat, and contains large amounts of both short- and long-lived radionuclides.",
+                    disposal: "Disposal Pathway: Deep Geological Repository (DGR), hundreds of meters or more below the surface, for permanent isolation."
+                }
+            };
+
+            // Smooth scrolling for nav links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Active nav link highlighting on scroll
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('nav a');
+            window.onscroll = () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 80) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            };
+
+            // Chart.js doughnut charts for volume vs radioactivity
+            const volumeCtx = document.getElementById('volumeChart').getContext('2d');
+            new Chart(volumeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Low-Level Waste (LLW)', 'High-Level Waste (HLW) & ILW'],
+                    datasets: [{
+                        label: 'Waste Volume',
+                        data: [90, 10],
+                        backgroundColor: ['#9ca3af', '#0d9488'],
+                        borderColor: '#f8f7f4',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12 } },
+                        title: { display: true, text: '% of Total Volume' }
+                    }
+                }
+            });
+
+            const radioactivityCtx = document.getElementById('radioactivityChart').getContext('2d');
+            new Chart(radioactivityCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['High-Level Waste (HLW) & ILW', 'Low-Level Waste (LLW)'],
+                    datasets: [{
+                        label: 'Waste Radioactivity',
+                        data: [99, 1],
+                        backgroundColor: ['#ef4444', '#6b7280'],
+                        borderColor: '#f8f7f4',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12 } },
+                        title: { display: true, text: '% of Total Radioactivity' }
+                    }
+                }
+            });
+            
+            // Waste Class Chart
+            const wasteClassCtx = document.getElementById('wasteClassChart').getContext('2d');
+            const wasteClassChart = new Chart(wasteClassCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['VLLW', 'LLW', 'ILW', 'HLW'],
+                    datasets: [{
+                        label: 'Relative Hazard & Disposal Complexity',
+                        data: [1, 2, 5, 10],
+                        backgroundColor: [
+                            'rgba(107, 114, 128, 0.6)',
+                            'rgba(252, 165, 165, 0.6)',
+                            'rgba(248, 113, 113, 0.6)',
+                            'rgba(239, 68, 68, 0.6)'
+                        ],
+                        borderColor: [
+                             'rgba(107, 114, 128, 1)',
+                            'rgba(252, 165, 165, 1)',
+                            'rgba(248, 113, 113, 1)',
+                            'rgba(239, 68, 68, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            display: false,
+                        },
+                        y: {
+                            ticks: { font: { weight: 'bold' } }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    onClick: (e) => {
+                        const activePoints = wasteClassChart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
+                        if (activePoints.length) {
+                            const firstPoint = activePoints[0];
+                            const label = wasteClassChart.data.labels[firstPoint.index];
+                            const data = wasteClassData[label];
+                            
+                            const infoBox = document.getElementById('wasteClassInfo');
+                            document.getElementById('infoTitle').textContent = data.title;
+                            document.getElementById('infoChars').textContent = data.chars;
+                            document.getElementById('infoDisposal').textContent = data.disposal;
+                            infoBox.classList.remove('hidden');
+                        }
+                    }
+                }
+            });
+
+            // Lifecycle interaction
+            const lifecycleStages = document.querySelectorAll('.lifecycle-stage');
+            const lifecycleInfoBox = document.getElementById('lifecycleInfo');
+            const lifecycleTitle = document.getElementById('lifecycleTitle');
+            const lifecycleText = document.getElementById('lifecycleText');
+
+            lifecycleStages.forEach(stage => {
+                stage.addEventListener('click', () => {
+                    const stageKey = stage.dataset.stage;
+                    const data = lifecycleData[stageKey];
+
+                    lifecycleTitle.textContent = data.title;
+                    lifecycleText.textContent = data.text;
+                    lifecycleInfoBox.classList.remove('hidden');
+
+                    lifecycleStages.forEach(s => s.classList.remove('bg-teal-100'));
+                    stage.classList.add('bg-teal-100');
+                });
+            });
+
+            // Strategy Chart
+            const strategyCtx = document.getElementById('strategyChart').getContext('2d');
+            new Chart(strategyCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Finland', 'France', 'United States'],
+                    datasets: [{
+                        label: 'Repository Progress',
+                        data: [3, 2, 1], // 3: Advanced, 2: Planning, 1: Stalled
+                        backgroundColor: ['#2dd4bf', '#60a5fa', '#f87171'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    if (value === 3) return 'Advanced Construction';
+                                    if (value === 2) return 'Planning / Licensing';
+                                    if (value === 1) return 'Stalled / Reset';
+                                    return '';
+                                },
+                                stepSize: 1
+                            },
+                            beginAtZero: true,
+                            max: 3.5
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    const value = context.parsed.y;
+                                    if (value === 3) label += 'Onkalo operational mid-2020s';
+                                    if (value === 2) label += 'Cigéo project in progress';
+                                    if (value === 1) label += 'Yucca Mountain terminated';
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Gemini API Integration
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+            const generatePolicyBtn = document.getElementById('generatePolicyBtn');
+            const policyResultContainer = document.getElementById('policyResultContainer');
+            const policyLoader = document.getElementById('policyLoader');
+            const policyResult = document.getElementById('policyResult');
+            const countrySelect = document.getElementById('countrySelect');
+
+            generatePolicyBtn.addEventListener('click', async () => {
+                const country = countrySelect.value;
+                const prompt = `Explain the national policy for high-level nuclear waste management in ${country} in three concise bullet points, focusing on the current strategy, key projects, and primary challenges. Format the output as simple HTML bullet points.`;
+
+                policyResultContainer.classList.remove('hidden');
+                policyLoader.classList.remove('hidden');
+                policyResult.classList.add('hidden');
+
+                try {
+                    const payload = { contents: [{ parts: [{ text: prompt }] }] };
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+                    const text = result.candidates[0].content.parts[0].text;
+                    policyResult.innerHTML = text;
+                } catch (error) {
+                    console.error("Error fetching policy summary:", error);
+                    policyResult.innerHTML = "<p class='text-red-500'>Sorry, an error occurred while generating the summary. Please try again later.</p>";
+                } finally {
+                    policyLoader.classList.add('hidden');
+                    policyResult.classList.remove('hidden');
+                }
+            });
+
+            const exploreEthicsBtn = document.getElementById('exploreEthicsBtn');
+            const ethicsResultContainer = document.getElementById('ethicsResultContainer');
+            const ethicsLoader = document.getElementById('ethicsLoader');
+            const ethicsResult = document.getElementById('ethicsResult');
+
+            exploreEthicsBtn.addEventListener('click', async () => {
+                const prompt = `Generate a short, thought-provoking paragraph from the perspective of a future historian in the year 2525, reflecting on the 21st century's approach to nuclear waste and the ethical concept of intergenerational equity. The tone should be slightly critical but reflective.`;
+
+                ethicsResultContainer.classList.remove('hidden');
+                ethicsLoader.classList.remove('hidden');
+                ethicsResult.classList.add('hidden');
+
+                try {
+                    const payload = { contents: [{ parts: [{ text: prompt }] }] };
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+                    const text = result.candidates[0].content.parts[0].text;
+                    ethicsResult.textContent = text;
+                } catch (error) {
+                    console.error("Error fetching ethical argument:", error);
+                    ethicsResult.textContent = "Sorry, an error occurred while generating the text. Please try again later.";
+                } finally {
+                    ethicsLoader.classList.add('hidden');
+                    ethicsResult.classList.remove('hidden');
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
