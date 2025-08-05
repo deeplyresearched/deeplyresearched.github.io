@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025 Gaming PC Build Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: The application is designed as a top-down, interactive dashboard. The core is a filterable set of "Build Cards" that allows users to immediately find recommendations matching their budget/performance tier (1080p, 1440p, 4K). This is more user-friendly than a linear report, as it's task-oriented. Clicking a card reveals an in-depth "Details View" with performance charts, rationale, and two new AI-powered features: a build summary and a full component list generator. A collapsible "Core Concepts" section at the bottom provides background info without cluttering the primary user flow. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Tiered build recommendations -> Goal: Compare & Select -> Viz: Interactive Cards + Filter Buttons -> Interaction: Click to filter cards, click card to show details -> Justification: Faster, user-driven exploration vs. reading a long document. -> Library/Method: HTML/JS.
+        - Report Info: Performance data table -> Goal: Visualize performance -> Viz: Horizontal Bar Chart -> Interaction: Chart dynamically updates when a build is selected -> Justification: Charts are more intuitive for comparing performance data than tables. -> Library/Method: Chart.js (Canvas).
+        - Report Info: Core principles/tech specs -> Goal: Provide optional deep-dive info -> Viz: Collapsible Accordion -> Interaction: Click to expand/collapse -> Justification: Hides complex info by default, reducing initial cognitive load. -> Library/Method: HTML/JS.
+        - Report Info: Build Rationale -> Goal: Simplify technical explanation -> Viz: AI-Generated Text Block -> Interaction: Click button to generate summary -> Justification: Uses Gemini to make complex info accessible to beginners. -> Library/Method: Gemini API (Fetch).
+        - Report Info: CPU/GPU Pairing -> Goal: Generate full, compatible parts list -> Viz: AI-Generated List -> Interaction: Click button to generate list -> Justification: Solves the user's next problem (choosing other parts) and adds significant value. -> Library/Method: Gemini API (Fetch).
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .filter-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .filter-btn.active {
+            background-color: #2563eb; /* blue-600 */
+            color: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .build-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .build-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .accordion-button.active + .accordion-content {
+            max-height: 2000px; /* Adjust as needed */
+        }
+        .loader {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #3b82f6; /* Blue */
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .ai-feature-card {
+            background-color: #f1f5f9; /* slate-100 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e2e8f0; /* slate-200 */
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+      
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <div class="container mx-auto px-4 py-8 md:py-12">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-2">The 2025 Architect's Guide</h1>
+            <p class="text-lg text-slate-600 max-w-3xl mx-auto">An interactive dashboard for discovering the optimal CPU & GPU pairings for your next gaming PC.</p>
+        </header>
+
+        <main>
+            <!-- Filter Section -->
+            <section id="filters" class="mb-10">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                    <p class="text-center font-semibold text-slate-700 mb-3">Select Your Gaming Target</p>
+                    <div class="flex flex-wrap justify-center gap-2 md:gap-4">
+                        <button class="filter-btn active w-full sm:w-auto text-sm md:text-base font-medium py-2 px-5 rounded-full bg-slate-200 text-slate-700 hover:bg-slate-300" data-filter="all">All Builds</button>
+                        <button class="filter-btn w-full sm:w-auto text-sm md:text-base font-medium py-2 px-5 rounded-full bg-slate-200 text-slate-700 hover:bg-slate-300" data-filter="1080p">1080p Excellence</button>
+                        <button class="filter-btn w-full sm:w-auto text-sm md:text-base font-medium py-2 px-5 rounded-full bg-slate-200 text-slate-700 hover:bg-slate-300" data-filter="1440p">1440p Sweet Spot</button>
+                        <button class="filter-btn w-full sm:w-auto text-sm md:text-base font-medium py-2 px-5 rounded-full bg-slate-200 text-slate-700 hover:bg-slate-300" data-filter="4k">4K & Beyond</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recommended Builds Section -->
+            <section id="builds" class="mb-12">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-slate-900">Recommended Builds</h2>
+                    <p class="text-slate-600 mt-1">Select a build to see detailed performance analysis and rationale.</p>
+                </div>
+                <div id="builds-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Build cards will be injected here by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Details View Section -->
+            <section id="details-view" class="mb-12 bg-white rounded-xl shadow-lg border border-slate-200 p-6 md:p-8 hidden">
+                 <div id="details-content" class="text-center">
+                    <p class="text-slate-500 text-lg">Please select a build to view its details.</p>
+                 </div>
+            </section>
+            
+            <!-- Core Concepts Section -->
+            <section id="core-concepts">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-slate-900">Core Concepts & Technologies</h2>
+                    <p class="text-slate-600 mt-1">Expand the sections below to learn about the foundational principles of PC building.</p>
+                </div>
+                <div class="space-y-4">
+                    <!-- Accordion Item 1 -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200">
+                        <button class="accordion-button w-full flex justify-between items-center text-left p-5 font-semibold text-lg text-slate-800" data-accordion="bottleneck">
+                            <span>Deconstructing the Bottleneck: The Art of System Balance</span>
+                            <span class="accordion-icon transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content px-5 pb-5 text-slate-600">
+                            <p>In the pursuit of peak gaming performance, a "bottleneck" is an inherent and unavoidable characteristic of any computer system. The art of building a balanced gaming PC is not about eliminating bottlenecks, but about strategically designing the system so the primary limitation aligns with the intended use case. For gaming, the ideal state is to be "GPU-bound," where the graphics card is consistently at or near 100% utilization. This ensures the most expensive component delivers its maximum possible value.</p>
+                            <p class="mt-2">The performance burden shifts based on resolution. At 1080p, the CPU's role is more pronounced, as it must prepare a high volume of frames for the GPU. At 1440p and 4K, the GPU load increases dramatically, making it the primary limiting factor. A truly balanced system requires careful consideration of not just the hardware, but the specific games and resolutions it is intended to run.</p>
+                        </div>
+                    </div>
+                    <!-- Accordion Item 2 -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200">
+                        <button class="accordion-button w-full flex justify-between items-center text-left p-5 font-semibold text-lg text-slate-800" data-accordion="tech">
+                            <span>The Architectural Arms Race: Key Technologies of 2025</span>
+                            <span class="accordion-icon transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content px-5 pb-5 text-slate-600">
+                            <p class="mb-4">The 2025 hardware landscape is defined by fierce competition between NVIDIA, AMD, and Intel, with each introducing new architectures that fundamentally change how frames are rendered. Understanding these is essential to making an informed investment.</p>
+                            <ul class="list-disc list-inside space-y-3 mb-6">
+                                <li><strong>NVIDIA's Blackwell & DLSS 4:</strong> Introduces 4th-gen RT Cores and 5th-gen Tensor Cores. Its flagship feature, DLSS 4 with Multi-Frame Generation (MFG), uses a transformer AI model to generate up to three new frames for every one rendered, creating a closed ecosystem that drives sales of premium hardware.</li>
+                                <li><strong>AMD's Zen 5 & RDNA 4:</strong> The Zen 5 CPU architecture delivers a ~16% IPC uplift with dramatic power efficiency gains. On the graphics front, RDNA 4 with FSR 4 moves to a hardware-locked, machine-learning pipeline, improving quality but restricting it to the latest AMD GPUs.</li>
+                                <li><strong>Intel's Arrow Lake & Battlemage:</strong> Arrow Lake CPUs use a tile-based architecture for power efficiency gains. Battlemage GPUs are paired with XeSS 2, which includes AI frame generation. Intel's key strategy is making its XeSS SDK open-source, allowing it to work on competing hardware to encourage widespread developer adoption.</li>
+                            </ul>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-slate-200 border border-slate-200 rounded-lg">
+                                    <thead class="bg-slate-100">
+                                        <tr>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Feature</th>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">NVIDIA Blackwell</th>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">AMD RDNA 4</th>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Intel Battlemage</th>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">AMD Zen 5</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-slate-200 text-sm">
+                                        <tr><td class="px-4 py-2 font-medium">Core Architecture</td><td class="px-4 py-2">Blackwell</td><td class="px-4 py-2">RDNA 4</td><td class="px-4 py-2">Xe2</td><td class="px-4 py-2">Zen 5</td></tr>
+                                        <tr><td class="px-4 py-2 font-medium">Key Upscaling Tech</td><td class="px-4 py-2">DLSS 4</td><td class="px-4 py-2">FSR 4</td><td class="px-4 py-2">XeSS 2</td><td class="px-4 py-2">N/A</td></tr>
+                                        <tr><td class="px-4 py-2 font-medium">Key Platform</td><td class="px-4 py-2">Closed Ecosystem</td><td class="px-4 py-2">Closed Ecosystem</td><td class="px-4 py-2">Open Standard</td><td class="px-4 py-2">AM5 Socket</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const buildsData = [
+            {
+                id: 'value-king',
+                tier: '1080p',
+                name: 'The Value King',
+                useCase: '1080p High/Ultra Gaming',
+                cpu: 'Intel Core i5-13400F',
+                gpu: 'AMD Radeon RX 9060 XT 16GB',
+                price: '~1,000',
+                rationale: "This combination is engineered to maximize frames-per-dollar. The Core i5-13400F provides ample power for 1080p gaming, while the cost savings from the Intel platform are allocated to the GPU. The RX 9060 XT's 16GB of VRAM is its key advantage, ensuring the system can handle high-resolution textures in modern and future games, a critical edge over the 8GB VRAM on competing cards.",
+                upgradePath: "The Intel-based 'Value King' is on a mature platform (LGA 1700), meaning significant CPU upgrades are not possible without replacing the motherboard. Its primary upgrade path involves a GPU swap in two to three years.",
+                performance: {
+                    labels: ['Cyberpunk 2077', 'CoD: Black Ops 6', 'Star Wars Jedi: Survivor', 'Space Marine 2'],
+                    fps: [70, 150, 85, 110]
+                }
+            },
+            {
+                id: 'platform-play',
+                tier: '1080p',
+                name: 'The Platform Play',
+                useCase: '1080p High Refresh Rate / Esports',
+                cpu: 'AMD Ryzen 5 7600',
+                gpu: 'NVIDIA GeForce RTX 5060 Ti 16GB',
+                price: '~1,250',
+                rationale: "This build prioritizes a modern platform with a clear upgrade path. The Ryzen 5 7600 is on AMD's AM5 socket, which supports future CPUs, extending the platform's life. Its strong single-core performance is ideal for CPU-bound esports titles. The RTX 5060 Ti 16GB is a well-rounded GPU, addressing the VRAM weakness of the non-Ti model and granting access to NVIDIA's ecosystem features like DLSS and Reflex.",
+                upgradePath: "The AMD-based 'Platform Play' offers substantial longevity. A user can easily upgrade the Ryzen 5 7600 to a future Ryzen 7 or Ryzen 9 X3D processor on the same AM5 motherboard, providing a massive boost in gaming performance for a fraction of the cost of a new build.",
+                performance: {
+                    labels: ['Cyberpunk 2077', 'CoD: Black Ops 6', 'Valorant', 'CS2'],
+                    fps: [80, 160, 250, 300]
+                }
+            },
+            {
+                id: 'all-rounder',
+                tier: '1440p',
+                name: 'The All-Rounder',
+                useCase: 'Hybrid Gaming & Productivity',
+                cpu: 'Intel Core i5-14600K',
+                gpu: 'NVIDIA GeForce RTX 5070 Ti',
+                price: '~1,800',
+                rationale: "This pairing represents the quintessential 'do-it-all' high-performance PC. The Core i5-14600K's hybrid architecture excels in multi-threaded applications like streaming and content creation. This is complemented by the RTX 5070 Ti, whose CUDA cores provide significant acceleration in creative apps, making it ideal for a user who is both a gamer and a creator.",
+                upgradePath: "Built on the LGA 1700/1851 platform, it offers a solid foundation. Future upgrades could involve a next-generation Core i7/i9 or a top-tier GPU in a few years to extend its high-performance lifespan.",
+                performance: {
+                    labels: ['Cyberpunk 2077 (Raster)', 'Cyberpunk 2077 (RT Ultra)', 'CoD: Black Ops 6', 'A Plague Tale: Requiem'],
+                    fps: [115, 75, 160, 105]
+                }
+            },
+            {
+                id: 'pure-gamer',
+                tier: '1440p',
+                name: 'The Pure Gamer',
+                useCase: 'Max Frame Rates at 1440p',
+                cpu: 'AMD Ryzen 7 9800X3D',
+                gpu: 'AMD Radeon RX 9070 XT',
+                price: '~1,650',
+                rationale: "This build is uncompromisingly engineered for maximum gaming performance. The Ryzen 7 9800X3D is unequivocally the fastest gaming CPU due to its 3D V-Cache. Paired with the RX 9070 XT, which delivers outstanding rasterization performance that often rivals more expensive cards at native resolutions, this is a highly cost-effective combination for achieving the highest possible frame rates in 1440p.",
+                upgradePath: "The AM5 platform ensures an excellent upgrade path. While the 9800X3D is already a top-tier gaming CPU, a future GPU upgrade will be the most impactful way to boost performance, and the platform will easily support it.",
+                performance: {
+                    labels: ['Cyberpunk 2077 (Raster)', 'Cyberpunk 2077 (RT Ultra)', 'CoD: Black Ops 6', 'Warhammer 40k: SM2'],
+                    fps: [110, 60, 165, 135]
+                }
+            },
+            {
+                id: 'ultimate-gamer',
+                tier: '4k',
+                name: 'The Ultimate Gaming Machine',
+                useCase: 'Uncompromising 4K / 120Hz+',
+                cpu: 'AMD Ryzen 7 9800X3D',
+                gpu: 'NVIDIA GeForce RTX 5090',
+                price: '~3,500+',
+                rationale: "This pairing represents the zenith of 2025 PC gaming. It combines the fastest gaming CPU with the fastest gaming GPU. Even at 4K, the 9800X3D's large cache is vital for feeding the monstrous RTX 5090, ensuring incredibly stable and high 1% low frame rates. This delivers the smoothest possible 4K experience, pushing over 100 FPS in the most demanding titles with full ray tracing and DLSS 4.",
+                upgradePath: "This is the pinnacle. The upgrade path is simply waiting for the next generation of flagship components in several years. The underlying AM5 platform will likely support at least one more generation of CPUs.",
+                performance: {
+                    labels: ['Cyberpunk 2077 (4K RT Ultra + DLSS)', 'Alan Wake 2 (4K RT + DLSS)', 'CoD: Black Ops 6 (4K)', 'Starfield (4K)'],
+                    fps: [120, 110, 180, 130]
+                }
+            },
+            {
+                id: 'power-user',
+                tier: '4k',
+                name: 'The Power User\'s Rig',
+                useCase: '4K Gaming & Megatasking',
+                cpu: 'AMD Ryzen 9 9950X3D',
+                gpu: 'NVIDIA GeForce RTX 5080',
+                price: '~2,800',
+                rationale: "This build is for the enthusiast who does everything. The Ryzen 9 9950X3D's unique dual-CCD design handles heavy production workloads and elite gaming. It pairs perfectly with the RTX 5080, which offers exceptional 4K performance that is close enough to the flagship 5090 for most, but at a more accessible price. It's ideal for gaming, streaming, and editing 4K footage on one machine.",
+                upgradePath: "With a top-tier CPU and a near-flagship GPU on the AM5 platform, this build is set for years. The most logical upgrade would be to a future flagship GPU (e.g., RTX 6090) down the line to maintain its elite status.",
+                performance: {
+                    labels: ['Cyberpunk 2077 (4K RT Ultra + DLSS)', 'Premiere Pro (Render Score)', 'Blender (Benchmark)', 'CoD: Black Ops 6 (4K)'],
+                    fps: [100, 1450, 13000, 165]
+                }
+            }
+        ];
+
+        const buildsGrid = document.getElementById('builds-grid');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const detailsView = document.getElementById('details-view');
+        const detailsContent = document.getElementById('details-content');
+        const accordionButtons = document.querySelectorAll('.accordion-button');
+        let performanceChart = null;
+
+        function renderBuilds(filter = 'all') {
+            buildsGrid.innerHTML = '';
+            const filteredBuilds = filter === 'all' ? buildsData : buildsData.filter(build => build.tier === filter);
+
+            filteredBuilds.forEach(build => {
+                const card = document.createElement('div');
+                card.className = 'build-card bg-white rounded-xl shadow-md border border-slate-200 p-6 flex flex-col';
+                card.dataset.id = build.id;
+                card.innerHTML = `
+                    <div class="flex-grow">
+                        <span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-3">${build.useCase}</span>
+                        <h3 class="text-2xl font-bold text-slate-900">${build.name}</h3>
+                        <p class="text-slate-500 mb-4">Estimated Price: <span class="font-semibold text-slate-700">${build.price}</span></p>
+                        <div class="space-y-2 text-sm">
+                            <p><strong class="font-semibold text-slate-600">CPU:</strong> ${build.cpu}</p>
+                            <p><strong class="font-semibold text-slate-600">GPU:</strong> ${build.gpu}</p>
+                        </div>
+                    </div>
+                    <button class="view-details-btn mt-6 w-full bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors">View Details</button>
+                `;
+                buildsGrid.appendChild(card);
+            });
+        }
+
+        async function callGemini(prompt) {
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            
+            let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+            const payload = { contents: chatHistory };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`API request failed with status ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.candidates && result.candidates.length > 0 && result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts.length > 0) {
+                return result.candidates[0].content.parts[0].text;
+            } else {
+                throw new Error("The response from the AI was empty.");
+            }
+        }
+        
+        async function getAiSummary(build) {
+            const summaryContainer = document.getElementById('ai-summary-container');
+            if (!summaryContainer) return;
+            
+            summaryContainer.innerHTML = '<div class="loader"></div>';
+
+            const prompt = `You are a PC hardware expert. Explain why the following PC build is a good combination for its intended use case. Be concise and easy for a beginner to understand.
+            
+            Build Name: ${build.name}
+            CPU: ${build.cpu}
+            GPU: ${build.gpu}
+            Intended Use Case: ${build.useCase}
+            Expert Rationale: ${build.rationale}
+            
+            Provide a summary that simplifies the expert rationale.`;
+
+            try {
+                const text = await callGemini(prompt);
+                summaryContainer.innerHTML = `<p class="text-slate-600 text-left">${text.replace(/\n/g, '<br>')}</p>`;
+            } catch (error) {
+                console.error("Error fetching AI summary:", error);
+                summaryContainer.innerHTML = '<p class="text-red-500">Sorry, there was an error generating the summary. Please try again later.</p>';
+            }
+        }
+
+        async function getAiComponents(build) {
+            const componentsContainer = document.getElementById('ai-components-container');
+            if (!componentsContainer) return;
+
+            componentsContainer.innerHTML = '<div class="loader"></div>';
+
+            const prompt = `You are a PC hardware expert creating a compatible parts list for a gaming PC. Given the following CPU and GPU, suggest a balanced and compatible set of components.
+            
+            CPU: ${build.cpu}
+            GPU: ${build.gpu}
+            Target Use Case: ${build.useCase}
+
+            Please suggest one specific, well-regarded model for each of the following components:
+            - Motherboard (must be compatible with the CPU socket and chipset)
+            - RAM (suggest 32GB of DDR5, specifying a suitable speed like 6000MHz CL30)
+            - Storage (suggest a 2TB NVMe Gen4 SSD)
+            - Power Supply (PSU, suggest a reliable brand and a wattage that provides at least 200W of headroom over the estimated total system draw)
+            - CPU Cooler (if the CPU is a 'K' or 'X' model, suggest a suitable air or AIO cooler. If not, state that the stock cooler is sufficient).
+            
+            Format the output as a simple list. For example:
+            * **Motherboard:** MSI B760 TOMAHAWK WIFI
+            * **RAM:** G.Skill Trident Z5 Neo 32GB DDR5-6000 CL30
+            * **Storage:** Samsung 980 Pro 2TB NVMe SSD
+            * **Power Supply:** Corsair RM850e 850W 80+ Gold
+            * **CPU Cooler:** Thermalright Phantom Spirit 120 SE`;
+            
+            try {
+                const text = await callGemini(prompt);
+                const formattedText = text.replace(/\* /g, '<li class="mb-2">').replace(/\n/g, '</li>');
+                componentsContainer.innerHTML = `<ul class="text-slate-600 text-left list-none">${formattedText}</ul>`;
+            } catch (error) {
+                console.error("Error fetching AI components:", error);
+                componentsContainer.innerHTML = '<p class="text-red-500">Sorry, there was an error generating the component list. Please try again later.</p>';
+            }
+        }
+
+        function renderDetails(buildId) {
+            const build = buildsData.find(b => b.id === buildId);
+            if (!build) return;
+
+            detailsView.classList.remove('hidden');
+            detailsContent.innerHTML = `
+                <h2 class="text-3xl font-bold text-slate-900 mb-2">${build.name}</h2>
+                <p class="text-lg text-slate-600 mb-6">${build.useCase}</p>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 text-left">
+                    <div>
+                        <h4 class="text-xl font-semibold text-slate-800 mb-3">Component Rationale</h4>
+                        <p class="text-slate-600">${build.rationale}</p>
+                        <h4 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Upgrade Path & Future-Proofing</h4>
+                        <p class="text-slate-600">${build.upgradePath}</p>
+                    </div>
+                    <div>
+                        <h4 class="text-xl font-semibold text-slate-800 mb-3 text-center">Performance Projections (Avg. FPS)</h4>
+                        <div class="chart-container">
+                            <canvas id="perfChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 pt-6 border-t border-slate-200">
+                     <h3 class="text-2xl font-bold text-slate-900 mb-6 text-center">✨ AI Building Assistant ✨</h3>
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="ai-feature-card">
+                            <h4 class="text-lg font-semibold text-slate-800 mb-3">Easy-to-Understand Summary</h4>
+                            <div id="ai-summary-container" class="w-full">
+                                <button id="ai-summary-btn" class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-semibold py-2 px-5 rounded-lg hover:from-purple-600 hover:to-indigo-700 transition-all shadow-md">Get AI Summary</button>
+                            </div>
+                        </div>
+                        <div class="ai-feature-card">
+                            <h4 class="text-lg font-semibold text-slate-800 mb-3">Suggest Full Parts List</h4>
+                            <div id="ai-components-container" class="w-full">
+                                <button id="ai-components-btn" class="bg-gradient-to-r from-sky-500 to-cyan-500 text-white font-semibold py-2 px-5 rounded-lg hover:from-sky-600 hover:to-cyan-600 transition-all shadow-md">Suggest Components</button>
+                            </div>
+                        </div>
+                     </div>
+                </div>
+            `;
+            
+            if (performanceChart) {
+                performanceChart.destroy();
+            }
+
+            const ctx = document.getElementById('perfChart').getContext('2d');
+            performanceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: build.performance.labels,
+                    datasets: [{
+                        label: 'Average FPS',
+                        data: build.performance.fps,
+                        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                        borderColor: 'rgba(37, 99, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw} FPS`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Frames Per Second'
+                            }
+                        }
+                    }
+                }
+            });
+
+            document.getElementById('ai-summary-btn').addEventListener('click', () => getAiSummary(build));
+            document.getElementById('ai-components-btn').addEventListener('click', () => getAiComponents(build));
+            
+            detailsView.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                renderBuilds(button.dataset.filter);
+                detailsView.classList.add('hidden');
+            });
+        });
+
+        buildsGrid.addEventListener('click', (e) => {
+            if (e.target.classList.contains('view-details-btn')) {
+                const buildId = e.target.closest('.build-card').dataset.id;
+                renderDetails(buildId);
+            }
+        });
+        
+        accordionButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const icon = button.querySelector('.accordion-icon');
+                const wasActive = button.classList.contains('active');
+                
+                accordionButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.querySelector('.accordion-icon').style.transform = 'rotate(0deg)';
+                });
+
+                if (!wasActive) {
+                    button.classList.add('active');
+                    icon.style.transform = 'rotate(180deg)';
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderBuilds();
+        });
+
+    </script>
+
+  <section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+  
+</body>
+</html>
