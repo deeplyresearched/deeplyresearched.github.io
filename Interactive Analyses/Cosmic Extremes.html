@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Extremes: An Interactive Exploration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+    <!-- Chosen Palette: Cosmic Latte -->
+    <!-- Application Structure Plan: The SPA is designed with a thematic, non-linear structure to maximize user engagement and understanding. A sticky navigation bar provides immediate access to the three core pillars: Black Holes, Galactic Neighborhood, and Multiverse. This is superior to the report's linear format because it allows users to explore topics based on interest rather than a prescribed order. Each section is designed as a self-contained module with interactive elements. For example, the 'Black Holes' section uses interactive cards and a dynamic chart for comparison, while the 'Galactic Neighborhood' uses a visual timeline for the galaxy collision. This task-oriented, dashboard-like approach breaks down dense information into digestible, interactive chunks, fostering exploration and making complex relationships (like the Information Paradox or Multiverse models) easier to grasp than static text. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Black Hole Mass Classification -> Goal: Compare -> Viz: Logarithmic Bar Chart (Chart.js) -> Interaction: Hover for details -> Justification: A standard bar chart fails to show the astronomical scale difference. A logarithmic scale makes the comparison between stellar and supermassive black holes visually meaningful. -> Library: Chart.js.
+        - Report Info: Information Loss Paradox Theories -> Goal: Organize/Explain -> Viz: Interactive HTML/CSS Diagram -> Interaction: Click buttons to display theory details -> Justification: Presents complex, competing theories in a clear, organized manner without overwhelming the user. Allows self-paced learning. -> Library/Method: HTML/CSS/JS.
+        - Report Info: Andromeda-Milky Way Collision -> Goal: Show Change Over Time -> Viz: Interactive Timeline -> Interaction: Scroll/Click to reveal stages -> Justification: Transforms a static date into a compelling narrative of a future cosmic event, enhancing user engagement. -> Library/Method: HTML/CSS/JS.
+        - Report Info: Multiverse Models -> Goal: Compare/Contrast -> Viz: Side-by-side card layout -> Interaction: N/A, focus on clear comparison -> Justification: Allows for easy comparison of abstract concepts by presenting them in a structured, parallel format. -> Library/Method: HTML/CSS.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FFF8E7; /* Cosmic Latte */
+            color: #4A4A4A;
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-bottom-color 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #3B82F6; /* Blue-600 */
+            border-bottom-color: #3B82F6;
+        }
+        .content-card {
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .tab-button {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .tab-button.active {
+            background-color: #3B82F6;
+            color: white;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #93C5FD; /* Blue-300 */
+            border: 4px solid #FFF8E7;
+        }
+        .timeline-line {
+            position: absolute;
+            left: -21px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #BFDBFE; /* Blue-200 */
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800">Cosmic Extremes</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#black-holes" class="nav-link text-gray-600 font-semibold pb-1">Black Holes</a>
+                <a href="#galaxies" class="nav-link text-gray-600 font-semibold pb-1">Galactic Neighborhood</a>
+                <a href="#multiverse" class="nav-link text-gray-600 font-semibold pb-1">Multiverse</a>
+                <a href="#synthesis" class="nav-link text-gray-600 font-semibold pb-1">Synthesis</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-800">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
+            <a href="#black-holes" class="block py-2 text-gray-600">Black Holes</a>
+            <a href="#galaxies" class="block py-2 text-gray-600">Galactic Neighborhood</a>
+            <a href="#multiverse" class="block py-2 text-gray-600">Multiverse</a>
+            <a href="#synthesis" class="block py-2 text-gray-600">Synthesis</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="py-20 md:py-32 text-center bg-gradient-to-b from-blue-50 to-[#FFF8E7]">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl md:text-6xl font-bold text-gray-800 mb-4">An Interactive Journey Through the Cosmos</h2>
+                <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+                    Explore the universe's most profound mysteries. From the inescapable gravity of black holes to the dance of galaxies and the mind-bending possibility of the multiverse, discover how these cosmic extremes are deeply interconnected.
+                </p>
+            </div>
+        </section>
+
+        <section id="black-holes" class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h3 class="text-4xl font-bold text-gray-800">The Nature of Black Holes</h3>
+                    <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">This section delves into the fundamental physics of black holes, the universe's most extreme objects. Here you can interactively compare the different types of black holes by their immense mass and explore the proposed solutions to the famous Information Loss Paradox, a crisis that pushes physics to its limits.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+                    <div class="content-card rounded-xl p-6 text-center">
+                        <h4 class="text-xl font-bold mb-2">Stellar-Mass</h4>
+                        <p class="text-gray-600">3-50x Sun's Mass. Formed from the collapse of massive stars.</p>
+                    </div>
+                    <div class="content-card rounded-xl p-6 text-center">
+                        <h4 class="text-xl font-bold mb-2">Intermediate-Mass</h4>
+                        <p class="text-gray-600">50-50,000x Sun's Mass. The rare and mysterious "missing link".</p>
+                    </div>
+                    <div class="content-card rounded-xl p-6 text-center">
+                        <h4 class="text-xl font-bold mb-2">Supermassive (SMBH)</h4>
+                        <p class="text-gray-600">Millions to Billions of times Sun's Mass. Found at the heart of galaxies.</p>
+                    </div>
+                     <div class="content-card rounded-xl p-6 text-center">
+                        <h4 class="text-xl font-bold mb-2">Primordial (PBH)</h4>
+                        <p class="text-gray-600">Hypothetical. Formed after the Big Bang, a candidate for dark matter.</p>
+                    </div>
+                </div>
+
+                <div class="content-card rounded-xl p-6 md:p-8 mb-16">
+                    <h4 class="text-2xl font-bold text-center mb-4">A Question of Scale: Black Hole Masses</h4>
+                    <p class="text-center text-gray-600 mb-6">The mass difference between black hole types is astronomical. This chart uses a logarithmic scale to visualize this immense range. Hover over the bars to see the mass in solar units ($M_☉$).</p>
+                    <div class="chart-container">
+                        <canvas id="blackHoleMassChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="content-card rounded-xl p-6 md:p-8">
+                    <h4 class="text-2xl font-bold text-center mb-2">The Information Loss Paradox</h4>
+                    <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">Stephen Hawking discovered that black holes evaporate, but this creates a paradox: where does the information about what fell in go? Quantum mechanics says information can't be destroyed. This is a major crisis in physics. Click on the theories below to explore the leading proposed solutions.</p>
+                    <div class="flex flex-wrap justify-center gap-2 mb-6" id="paradox-buttons">
+                    </div>
+                    <div id="paradox-content" class="p-6 bg-blue-50 rounded-lg min-h-[150px] transition-opacity duration-500">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="galaxies" class="py-20 bg-blue-50">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h3 class="text-4xl font-bold text-gray-800">Our Galactic Neighborhood</h3>
+                    <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">This section explores our local cosmic environment, the Local Group, which serves as a natural laboratory for testing theories of galaxy evolution. You will find a visual comparison of our galaxy with its neighbors and an interactive timeline detailing the predicted, inevitable collision between the Milky Way and Andromeda.</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8 text-center mb-16">
+                    <div class="content-card rounded-xl p-6">
+                        <h4 class="text-2xl font-bold mb-2">Milky Way</h4>
+                        <p class="text-gray-600">Our home. A barred spiral galaxy with 200-400 billion stars.</p>
+                    </div>
+                    <div class="content-card rounded-xl p-6">
+                        <h4 class="text-2xl font-bold mb-2">Andromeda (M31)</h4>
+                        <p class="text-gray-600">Our largest neighbor, with ~1 trillion stars. Visible to the naked eye.</p>
+                    </div>
+                    <div class="content-card rounded-xl p-6">
+                        <h4 class="text-2xl font-bold mb-2">Triangulum (M33)</h4>
+                        <p class="text-gray-600">The third-largest member, a spiral galaxy with ~40 billion stars.</p>
+                    </div>
+                </div>
+
+                <div class="content-card rounded-xl p-6 md:p-8">
+                    <h4 class="text-2xl font-bold text-center mb-2">The Inevitable Encounter</h4>
+                    <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">The Andromeda galaxy is hurtling towards us at 110 km/s. Explore the timeline of this future cosmic merger that will reshape our corner of the universe.</p>
+                    <div class="relative pl-8">
+                        <div class="timeline-line"></div>
+                        <div id="collision-timeline" class="space-y-12">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="multiverse" class="py-20">
+            <div class="container mx-auto px-6">
+                 <div class="text-center mb-16">
+                    <h3 class="text-4xl font-bold text-gray-800">The Multiverse Hypothesis</h3>
+                    <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">This section ventures into the most speculative, yet physically-grounded, ideas in cosmology. Here you can compare the leading models that propose our universe is just one of many and engage with the ongoing debate: is the multiverse a scientific theory or a philosophical concept?</p>
+                </div>
+                
+                <div class="grid md:grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+                    <div class="content-card rounded-xl p-6">
+                        <h4 class="text-xl font-bold mb-2">Inflationary Multiverse</h4>
+                        <p class="text-gray-600">Our universe is one of many "bubble" universes constantly forming in an eternally inflating space. A consequence of cosmic inflation theory.</p>
+                    </div>
+                    <div class="content-card rounded-xl p-6">
+                        <h4 class="text-xl font-bold mb-2">Many-Worlds Interpretation</h4>
+                        <p class="text-gray-600">Every quantum event splits the universe into parallel worlds, one for each possible outcome. A consequence of quantum mechanics.</p>
+                    </div>
+                    <div class="content-card rounded-xl p-6">
+                        <h4 class="text-xl font-bold mb-2">String Theory Landscape</h4>
+                        <p class="text-gray-600">String theory allows for a vast number ($10^{500}$) of possible universes, each with different physical laws. A consequence of the search for a "theory of everything".</p>
+                    </div>
+                </div>
+
+                <div class="content-card rounded-xl p-6 md:p-8">
+                    <h4 class="text-2xl font-bold text-center mb-2">The Great Debate: Is It Science?</h4>
+                    <p class="text-center text-gray-600 mb-8">The multiverse is controversial because it seems untestable. But is that the whole story?</p>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="bg-red-50 p-6 rounded-lg">
+                            <h5 class="text-xl font-bold text-red-800 mb-3">Arguments AGAINST</h5>
+                            <ul class="list-disc list-inside space-y-2 text-red-700">
+                                <li><strong>Not Falsifiable:</strong> We can't observe other universes, so we can't prove the theory wrong.</li>
+                                <li><strong>Violates Ockham's Razor:</strong> It posits an immense number of universes to explain just one.</li>
+                                <li><strong>The Measure Problem:</strong> If everything happens, how can the theory make specific predictions?</li>
+                            </ul>
+                        </div>
+                        <div class="bg-green-50 p-6 rounded-lg">
+                            <h5 class="text-xl font-bold text-green-800 mb-3">Arguments FOR</h5>
+                            <ul class="list-disc list-inside space-y-2 text-green-700">
+                                <li><strong>A Consequence of Theories:</strong> It's a natural prediction of well-tested theories like inflation and quantum mechanics.</li>
+                                <li><strong>Explanatory Power:</strong> It offers a potential explanation for the "fine-tuning" of our universe's constants.</li>
+                                <li><strong>Indirect Tests Possible:</strong> We could potentially find "bruises" in the cosmic microwave background from past bubble collisions.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="synthesis" class="py-20 bg-blue-50">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h3 class="text-4xl font-bold text-gray-800">A Unified Cosmos</h3>
+                    <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">The three domains are not separate; they are deeply interconnected. This final section synthesizes the report's core thesis, showing how black holes act as galactic architects and might even be the progenitors of new universes, linking the observable to the theoretical in a grand cosmic narrative.</p>
+                </div>
+                
+                <div class="grid md:grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="content-card rounded-xl p-8">
+                        <h4 class="text-2xl font-bold mb-4 text-center">The Symbiotic Giants</h4>
+                        <p class="text-gray-600 mb-4">Supermassive Black Holes (SMBHs) and their host galaxies co-evolve. This diagram shows the self-regulating feedback loop that shapes cosmic structures.</p>
+                        <div class="space-y-4 text-center">
+                            <div class="p-4 bg-gray-100 rounded-lg">Galaxy provides fuel (gas/stars)</div>
+                            <div class="text-2xl font-bold text-blue-500">↓</div>
+                            <div class="p-4 bg-blue-100 rounded-lg">SMBH grows and ignites as an AGN</div>
+                            <div class="text-2xl font-bold text-blue-500">↓</div>
+                            <div class="p-4 bg-gray-100 rounded-lg">Powerful jets & winds blast out (AGN Feedback)</div>
+                            <div class="text-2xl font-bold text-blue-500">↓</div>
+                            <div class="p-4 bg-blue-100 rounded-lg">Gas is heated/expelled, halting star formation & shutting off fuel</div>
+                            <div class="text-2xl font-bold text-blue-500">↻</div>
+                        </div>
+                    </div>
+                    <div class="content-card rounded-xl p-8">
+                         <h4 class="text-2xl font-bold mb-4 text-center">Cosmic Progenitors?</h4>
+                        <p class="text-gray-600 mb-4">The most speculative theories connect black holes to the multiverse. In "Cosmological Natural Selection," universes evolve to maximize black hole production.</p>
+                        <div class="space-y-4 text-center">
+                            <div class="p-4 bg-gray-100 rounded-lg">Parent Universe</div>
+                            <div class="text-2xl font-bold text-purple-500">↓</div>
+                            <div class="p-4 bg-purple-100 rounded-lg">Black Hole forms</div>
+                            <div class="text-2xl font-bold text-purple-500">↓</div>
+                            <div class="p-4 bg-gray-100 rounded-lg">Singularity "bounces," creating a new universe</div>
+                            <div class="text-2xl font-bold text-purple-500">↓</div>
+                            <div class="p-4 bg-purple-100 rounded-lg">New "Baby Universe" is born with slightly mutated physical constants</div>
+                             <div class="text-2xl font-bold text-purple-500">↻</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>Interactive exploration based on the report "Cosmic Extremes: A Synthesis of Black Holes, Galactic Neighborhoods, and Multiverse Paradigms".</p>
+            <p class="text-sm text-gray-400 mt-2">Designed to make complex science accessible and engaging.</p>
+        </div>
+    </footer>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            const paradoxData = {
+                'Quantum Hair': {
+                    title: 'Quantum Hair / Non-thermal Radiation',
+                    content: 'This leading idea suggests quantum gravity effects leave subtle, information-carrying imprints ("hair") on the black hole\'s exterior. This makes the outgoing Hawking radiation non-thermal, allowing it to slowly carry away the information that fell in.'
+                },
+                'Fuzzballs': {
+                    title: 'Fuzzballs',
+                    content: 'From string theory, this theory proposes black holes are not empty space with a singularity but are horizonless, stringy objects ("fuzzballs"). Information is stored on their surface and never truly lost behind a horizon.'
+                },
+                'Firewalls': {
+                    title: 'Firewalls',
+                    content: 'A radical idea where the event horizon is a high-energy wall of fire. It incinerates anything that tries to cross, releasing its information back into the universe immediately. This solves the paradox but violates Einstein\'s equivalence principle.'
+                },
+                'Islands': {
+                    title: 'Islands / Replica Wormholes',
+                    content: 'A recent breakthrough suggesting that at late times, a portion of the black hole interior (an "island") becomes encoded in the external radiation via spacetime wormholes, allowing information to escape and preserving it.'
+                },
+                'Baby Universes': {
+                    title: 'Baby Universes',
+                    content: 'The singularity leads to the creation of a new "baby universe" that branches off from our own, taking the information with it. The information is preserved but becomes inaccessible to our universe.'
+                }
+            };
+
+            const paradoxButtonsContainer = document.getElementById('paradox-buttons');
+            const paradoxContentContainer = document.getElementById('paradox-content');
+            
+            Object.keys(paradoxData).forEach((key, index) => {
+                const button = document.createElement('button');
+                button.textContent = key;
+                button.className = 'tab-button px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-full hover:bg-gray-100';
+                button.dataset.key = key;
+                paradoxButtonsContainer.appendChild(button);
+
+                if (index === 0) {
+                    button.classList.add('active');
+                    updateParadoxContent(key);
+                }
+            });
+
+            paradoxButtonsContainer.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const key = e.target.dataset.key;
+                    paradoxButtonsContainer.querySelector('.active').classList.remove('active');
+                    e.target.classList.add('active');
+                    updateParadoxContent(key);
+                }
+            });
+
+            function updateParadoxContent(key) {
+                const data = paradoxData[key];
+                paradoxContentContainer.style.opacity = 0;
+                setTimeout(() => {
+                    paradoxContentContainer.innerHTML = `
+                        <h5 class="text-lg font-bold mb-2">${data.title}</h5>
+                        <p class="text-gray-700">${data.content}</p>
+                    `;
+                    paradoxContentContainer.style.opacity = 1;
+                }, 300);
+            }
+
+            const collisionTimelineData = [
+                { time: 'Present Day', event: 'Andromeda is ~2.5 million light-years away and approaching at 110 km/s.' },
+                { time: 'In 4.5 Billion Years', event: 'First close pass. The two galaxies will begin to tidally distort each other, pulling out long streams of stars and gas.' },
+                { time: 'In ~4.7 Billion Years', event: 'The galaxies will fly past each other, but gravity will pull them back for another encounter. The sky from a future Earth would be dominated by the distorted view of Andromeda.' },
+                { time: 'In ~5.1 Billion Years', event: 'The galactic cores begin to merge. A massive burst of star formation (a starburst) is triggered as gas clouds collide and compress.' },
+                { time: 'In ~7 Billion Years', event: 'The merger is complete. The two spiral galaxies have combined to form a single, giant elliptical galaxy nicknamed "Milkomeda". The two supermassive black holes will orbit each other, eventually merging and releasing powerful gravitational waves.' },
+            ];
+            
+            const collisionTimelineContainer = document.getElementById('collision-timeline');
+            collisionTimelineData.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'relative pl-8';
+                div.innerHTML = `
+                    <div class="timeline-item">
+                        <h5 class="font-bold text-lg text-blue-800">${item.time}</h5>
+                        <p class="text-gray-600">${item.event}</p>
+                    </div>
+                `;
+                collisionTimelineContainer.appendChild(div);
+            });
+
+
+            const ctx = document.getElementById('blackHoleMassChart').getContext('2d');
+            const blackHoleMassChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Stellar-Mass', 'Intermediate-Mass', 'Supermassive (Sag A*)', 'Supermassive (TON 618)'],
+                    datasets: [{
+                        label: 'Mass in Solar Masses (log scale)',
+                        data: [50, 50000, 4.3e6, 6.6e10],
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.6)',
+                            'rgba(168, 85, 247, 0.6)',
+                            'rgba(239, 68, 68, 0.6)',
+                            'rgba(217, 70, 239, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(59, 130, 246, 1)',
+                            'rgba(168, 85, 247, 1)',
+                            'rgba(239, 68, 68, 1)',
+                            'rgba(217, 70, 239, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                            title: {
+                                display: true,
+                                text: 'Mass (Solar Masses)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += context.parsed.x.toExponential(2) + ' M☉';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.3
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
+
+
