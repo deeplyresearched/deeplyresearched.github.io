@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sony WH-1000XM6 vs. XM5 | Interactive Comparison</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The application is designed as a user-centric, interactive dashboard to guide purchasing decisions, rather than a linear report. It begins with a hero section posing the central question, followed by an interactive "Decision Helper" quiz that directs users based on their primary motivation (Price, Sound, Portability, etc.). This leads into a detailed, tab-based "Feature Showdown" for direct side-by-side comparison of Design, Performance, and Tech Specs. The structure then visualizes the "Price vs. Value" trade-off with a chart and concludes with a "Final Verdict" section offering tailored recommendations for different user profiles. This thematic, task-oriented structure was chosen to empower users to find the information most relevant to them quickly and to make the core trade-offs of the decision tangible and easy to understand. -->
+    <!-- Visualization & Content Choices: Report Info: Price difference & value -> Goal: Compare cost -> Viz: Bar Chart (Chart.js) -> Interaction: Hover tooltips -> Justification: Clearly visualizes the significant price gap, which is central to the buying decision. Report Info: XM5's V-shaped vs. XM6's balanced sound -> Goal: Illustrate audio profiles -> Viz: Line Chart (Chart.js) -> Interaction: Hover tooltips -> Justification: Provides an immediate, intuitive visual representation of a complex audio concept. Report Info: Numerous feature differences (hinge, mics, battery) -> Goal: Organize & compare details -> Viz: Tabbed content sections with icons (HTML/Tailwind) -> Interaction: Clickable tabs -> Justification: Breaks down dense information into manageable, thematic chunks, preventing overwhelm and facilitating focused comparison. Report Info: User purchase motivation -> Goal: Guide user choice -> Viz: Interactive buttons ("Decision Helper") -> Interaction: Click to reveal recommendation -> Justification: Creates an engaging, personalized path through the content, directly answering the user's primary question. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4;
+            color: #333333;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .tab-active {
+            background-color: #5E81AC;
+            color: #FFFFFF;
+            font-weight: 600;
+        }
+        .tab-inactive {
+            background-color: #E0E7FF;
+            color: #4338CA;
+        }
+        .decision-btn {
+            transition: all 0.3s ease;
+        }
+        .decision-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .recommendation-card {
+            border-left: 4px solid #5E81AC;
+            background-color: #EFF6FF;
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="text-center py-12 px-4 bg-white shadow-md">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-800">The Successor's Gambit</h1>
+        <p class="mt-4 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">An Interactive Guide: Sony WH-1000XM6 vs. WH-1000XM5</p>
+    </header>
+
+    <main class="container mx-auto px-4 py-12">
+
+        <section id="decision-helper" class="text-center mb-16 p-8 bg-white rounded-xl shadow-lg">
+            <h2 class="text-3xl font-bold mb-4 text-gray-800">Which Sony Is Right For You?</h2>
+            <p class="max-w-2xl mx-auto mb-8 text-gray-600">This interactive guide helps you choose. Start by selecting what matters most to you in a pair of headphones. We'll highlight our recommendation based on your priority.</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <button data-focus="value" class="decision-btn px-6 py-3 bg-indigo-100 text-indigo-800 font-semibold rounded-lg shadow-sm">💰 Best Value for Money</button>
+                <button data-focus="portability" class="decision-btn px-6 py-3 bg-teal-100 text-teal-800 font-semibold rounded-lg shadow-sm">✈️ Portability & Durability</button>
+                <button data-focus="sound" class="decision-btn px-6 py-3 bg-rose-100 text-rose-800 font-semibold rounded-lg shadow-sm">🎶 Ultimate Sound Quality</button>
+                <button data-focus="tech" class="decision-btn px-6 py-3 bg-sky-100 text-sky-800 font-semibold rounded-lg shadow-sm">🚀 Future-Proof Tech</button>
+            </div>
+            <div id="recommendation-box" class="mt-8 p-6 recommendation-card rounded-lg text-left max-w-3xl mx-auto hidden">
+                <h3 id="recommendation-title" class="text-xl font-bold text-gray-800 mb-2"></h3>
+                <p id="recommendation-text" class="text-gray-700"></p>
+            </div>
+        </section>
+
+        <section id="showdown" class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">Feature Showdown</h2>
+            <p class="max-w-3xl mx-auto text-center mb-8 text-gray-600">While one model is the clear successor, the choice isn't simple. The older XM5 remains a top-tier performer at a compelling price. This section breaks down the key differences to help you understand the trade-offs between incremental excellence and outstanding value.</p>
+            <div class="max-w-5xl mx-auto">
+                <div class="mb-6 flex justify-center border-b border-gray-300">
+                    <button data-tab="design" class="tab-btn tab-active flex-1 py-3 px-2 text-center text-sm md:text-base font-medium rounded-t-lg">Design & Portability</button>
+                    <button data-tab="performance" class="tab-btn tab-inactive flex-1 py-3 px-2 text-center text-sm md:text-base font-medium rounded-t-lg">Sound & Performance</button>
+                    <button data-tab="tech-specs" class="tab-btn tab-inactive flex-1 py-3 px-2 text-center text-sm md:text-base font-medium rounded-t-lg">Tech & Features</button>
+                </div>
+
+                <div id="tab-content" class="bg-white p-6 md:p-8 rounded-b-xl rounded-t-lg shadow-lg">
+                    <div id="design-content" class="tab-pane">
+                        <div class="grid md:grid-cols-2 gap-8 items-start">
+                            <div>
+                                <h3 class="text-2xl font-bold mb-4 text-gray-800">WH-1000XM6</h3>
+                                <ul class="space-y-4 text-gray-700">
+                                    <li class="flex items-start"><span class="mr-3 text-xl">✅</span> <div><strong class="text-gray-900">Fully Foldable Design:</strong> A celebrated return to form. The new, robust metal hinge makes the XM6 significantly more compact and travel-friendly.</div></li>
+                                    <li class="flex items-start"><span class="mr-3 text-xl">🔧</span> <div><strong class="text-gray-900">Enhanced Durability:</strong> Engineered to address the hinge fragility issues reported on the XM5, offering better long-term reliability.</div></li>
+                                    <li class="flex items-start"><span class="mr-3 text-xl">👂</span> <div><strong class="text-gray-900">Detachable Earpads:</strong> Allows for easy cleaning and replacement, a major quality-of-life improvement for long-term ownership.</div></li>
+                                    <li class="flex items-start"><span class="mr-3 text-xl">👜</span> <div><strong class="text-gray-900">Compact Magnetic Case:</strong> A smaller, more premium case that's more convenient for daily carry compared to the XM5's bulky zippered case.</div></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold mb-4 text-gray-800">WH-1000XM5</h3>
+                                <ul class="space-y-4 text-gray-700">
+                                    <li class="flex items-start"><span class="mr-3 text-xl">❌</span> <div><strong class="text-gray-900">Non-Folding Design:</strong> The most significant drawback. The headphones only lay flat, making them bulkier and less convenient for travel.</div></li>
+                                    <li class="flex items-start"><span class="mr-3 text-xl">⚠️</span> <div><strong class="text-gray-900">Hinge Durability Concerns:</strong> Widespread user reports of the headband hinge being a point of failure over time.</div></li>
+                                    <li class="flex items-start"><span class="mr-3 text-xl">👍</span> <div><strong class="text-gray-900">Lighter Clamping Force:</strong> Some users may find the initial fit slightly more comfortable due to a less firm clamping force than the XM6.</div></li>
+                                    <li class="flex items-start"><span class="mr-3 text-xl"> roomy</span> <div><strong class="text-gray-900">Deeper Earcups:</strong> Less likely to cause irritation for users with larger ears, as the internal components are further from the ear.</div></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="performance-content" class="tab-pane hidden">
+                        <h4 class="text-xl font-bold text-center mb-4 text-gray-800">Sound Signature Comparison</h4>
+                        <p class="text-center text-gray-600 mb-6 max-w-2xl mx-auto">The XM6 offers a more balanced, neutral sound preferred by audiophiles, while the XM5 has an energetic "V-shaped" profile that boosts bass and treble, which can be exciting for pop and electronic music.</p>
+                        <div class="chart-container mb-12">
+                            <canvas id="soundChart"></canvas>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-8 items-start">
+                            <div>
+                                <h3 class="text-2xl font-bold mb-4 text-gray-800">WH-1000XM6</h3>
+                                <ul class="space-y-4 text-gray-700">
+                                    <li class="flex items-start"><span class="mr-3 text-xl">👑</span> <div><strong class="text-gray-900">Superior ANC:</strong> The new benchmark for noise cancellation. More effective at blocking a wider range of ambient sounds, especially mid-range and low rumbles.</div></li>
+                                    <li class="flex items-start"><span class="mr-3 text-xl">🎼</span> <div><strong class="text-gray-900">Refined, Balanced Sound:</strong> Tuned for accuracy and detail. Tames harsh treble and controls bass for a more natural, less fatiguing listening experience.</div></li>
+                                    <li class="flex items-start"><span class="mr-3 text-xl">🎤</span> <div><strong class="text-gray-900">Class-Leading Call Quality:</strong> A 6-microphone AI system provides spectacular voice isolation, making it ideal for important calls in noisy environments.</div></li>
+                                    <li class="flex items-start"><span class="mr-3 text-xl">🎚️</span> <div><strong class="text-gray-900">10-Band Equalizer:</strong> Offers significantly more granular control to fine-tune the sound to your exact preference via the companion app.</div></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold mb-4 text-gray-800">WH-1000XM5</h3>
+                                <ul class="space-y-4 text-gray-700">
+                                    <li class="flex items-start"><span class="mr-3 text-xl">🥈</span> <div><strong class="text-gray-900">Excellent ANC:</strong> While surpassed by the XM6, its noise cancellation remains top-tier and highly effective for most situations.</div></li>
+                                    <li class="flex items-start"><span class="mr-3 text-xl">💥</span> <div><strong class="text-gray-900">Energetic "V-Shaped" Sound:</strong> A fun, consumer-friendly sound with emphasized bass and treble that many users enjoy for popular music genres.</div></li>
+                                    <li class="flex items-start"><span class="mr-3 text-xl">📞</span> <div><strong class="text-gray-900">Clear Call Quality:</strong> While less advanced, its simpler system can sometimes sound more natural in extremely chaotic or windy conditions.</div></li>
+                                    <li class="flex items-start"><span class="mr-3 text-xl">🎚️</span> <div><strong class="text-gray-900">5-Band Equalizer:</strong> Provides basic sound customization, but with less precision than the XM6's 10-band EQ.</div></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tech-specs-content" class="tab-pane hidden">
+                        <div class="grid md:grid-cols-2 gap-8 items-start">
+                            <div>
+                                <h3 class="text-2xl font-bold mb-4 text-gray-800">WH-1000XM6</h3>
+                                <ul class="space-y-4 text-gray-700">
+                                    <li class="flex items-start"><span class="mr-3 text-xl">🧠</span> <div><strong class="text-gray-900">QN3 & V2 Processors:</strong> A massive leap in processing power (7x faster), enabling superior ANC, sound upscaling, and spatial audio.</div></li>
+                                    <li class="flex items-start"><span class="mr-3 text-xl">📡</span> <div><strong class="text-gray-900">Bluetooth 5.3 & Auracast:</strong> Future-proofed with the latest Bluetooth standard and support for LE Audio/Auracast, allowing connection to public audio broadcasts.</div></li>
+                                    <li class="flex items-start"><span class="mr-3 text-xl">🔋</span> <div><strong class="text-gray-900">Listen While Charging:</strong> A critical upgrade. You can now use the headphones wirelessly while they are plugged in and charging via USB-C.</div></li>
+                                    <li class="flex items-start"><span class="mr-3 text-xl">🎤</span> <div><strong class="text-gray-900">12-Microphone Array:</strong> Provides more data for the processor to analyze, resulting in more accurate noise cancellation and voice pickup.</div></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold mb-4 text-gray-800">WH-1000XM5</h3>
+                                <ul class="space-y-4 text-gray-700">
+                                    <li class="flex items-start"><span class="mr-3 text-xl">💡</span> <div><strong class="text-gray-900">QN1 & V1 Processors:</strong> Still highly capable processors that delivered industry-leading performance at the time of release.</div></li>
+                                    <li class="flex items-start"><span class="mr-3 text-xl">📶</span> <div><strong class="text-gray-900">Bluetooth 5.2:</strong> A stable and reliable connection, but lacks support for next-generation LE Audio features.</div></li>
+                                    <li class="flex items-start"><span class="mr-3 text-xl">⏳</span> <div><strong class="text-gray-900">No Listening While Charging:</strong> A significant limitation; the headphones cannot be used for wireless listening when charging.</div></li>
+                                    <li class="flex items-start"><span class="mr-3 text-xl">🎤</span> <div><strong class="text-gray-900">8-Microphone Array:</strong> An effective system, but with fewer data points for the ANC and call processing compared to the XM6.</div></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="price-value" class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-4 text-gray-800">The Price & Value Equation</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">The biggest competitor to the XM6 is a discounted XM5. The XM6 launched at a higher price, while the XM5 is frequently on sale, creating a significant price gap. This chart illustrates the core financial decision you need to make.</p>
+            <div class="chart-container">
+                <canvas id="priceChart"></canvas>
+            </div>
+        </section>
+
+        <section id="verdict" class="bg-white p-8 md:p-12 rounded-xl shadow-lg">
+            <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">The Final Verdict: Who Should Buy What?</h2>
+            <p class="max-w-3xl mx-auto text-center mb-10 text-gray-600">The choice between these two exceptional headphones comes down to your priorities and budget. The XM6 is a masterclass in refinement, correcting its predecessor's flaws, while the XM5 offers unbeatable value. Here are our final recommendations.</p>
+            <div class="grid md:grid-cols-3 gap-8 text-center">
+                <div class="p-6 bg-gray-50 rounded-lg border border-gray-200">
+                    <h3 class="text-xl font-bold mb-3 text-indigo-700">For the New Buyer</h3>
+                    <p class="text-gray-600">If you have a flexible budget and want the absolute best, the **WH-1000XM6** is the unequivocal choice. It's superior in every key metric and its durable, foldable design makes it a more reliable long-term investment.</p>
+                </div>
+                <div class="p-6 bg-gray-50 rounded-lg border border-gray-200">
+                    <h3 class="text-xl font-bold mb-3 text-teal-700">For the Value-Seeker</h3>
+                    <p class="text-gray-600">The **WH-1000XM5 (on sale)** is the smartest buy on the market. It delivers ~90% of the XM6's performance for a fraction of the cost, offering an elite experience at a mid-range price. This is an unbeatable value proposition.</p>
+                </div>
+                <div class="p-6 bg-gray-50 rounded-lg border border-gray-200">
+                    <h3 class="text-xl font-bold mb-3 text-rose-700">For the XM5 Owner</h3>
+                    <p class="text-gray-600">An upgrade is **not an urgent necessity**. Only consider the XM6 if you are genuinely frustrated by the non-folding design, concerned about hinge durability, or are an audiophile craving a more balanced sound.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+
+    <footer class="text-center py-8 mt-8 border-t border-gray-200">
+        <p class="text-gray-500">Interactive analysis based on the report "The Successor's Gambit".</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const data = {
+                recommendations: {
+                    value: {
+                        title: "Our Recommendation: Sony WH-1000XM5",
+                        text: "For the best value, the WH-1000XM5 is unmatched. Frequent and deep discounts mean you get top-tier noise cancellation and sound quality that was considered industry-leading just a short time ago, for a significantly lower price. It's the smartest financial choice without a major compromise in performance."
+                    },
+                    portability: {
+                        title: "Our Recommendation: Sony WH-1000XM6",
+                        text: "If portability and durability are your main concerns, the WH-1000XM6 is the clear winner. The return of the robust, folding metal hinge makes it far more compact for travel and addresses the primary physical weakness of the XM5. The smaller case is an added bonus."
+                    },
+                    sound: {
+                        title: "Our Recommendation: Sony WH-1000XM6",
+                        text: "For the ultimate listening experience, the WH-1000XM6 is superior. Its sound signature is more balanced, detailed, and accurate, providing a refined, non-fatiguing audio experience. The best-in-class ANC creates a quieter canvas for your music, and the 10-band EQ offers greater customization."
+                    },
+                    tech: {
+                        title: "Our Recommendation: Sony WH-1000XM6",
+                        text: "If you want the latest and greatest technology, the WH-1000XM6 is the only option. With a much faster processor, Bluetooth 5.3, and support for future-proof tech like Auracast, it's built for the next generation of wireless audio. The ability to listen while charging is a massive functional upgrade."
+                    }
+                }
+            };
+
+            const decisionButtons = document.querySelectorAll('.decision-btn');
+            const recommendationBox = document.getElementById('recommendation-box');
+            const recommendationTitle = document.getElementById('recommendation-title');
+            const recommendationText = document.getElementById('recommendation-text');
+
+            decisionButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const focus = button.dataset.focus;
+                    const recommendation = data.recommendations[focus];
+
+                    recommendationTitle.textContent = recommendation.title;
+                    recommendationText.textContent = recommendation.text;
+                    recommendationBox.classList.remove('hidden');
+                    
+                    let targetSectionId;
+                    if (focus === 'value') targetSectionId = 'price-value';
+                    else if (focus === 'portability') targetSectionId = 'design-content';
+                    else if (focus === 'sound') targetSectionId = 'performance-content';
+                    else if (focus === 'tech') targetSectionId = 'tech-specs-content';
+                    
+                    const targetSection = document.getElementById(targetSectionId);
+                    if(targetSection) {
+                         // If it's a tab, we need to switch to it first
+                        const tabContent = targetSection.closest('.tab-pane');
+                        if (tabContent && tabContent.id !== 'design-content') { // design is default
+                            const tabId = tabContent.id.replace('-content', '');
+                            document.querySelector(`button[data-tab="${tabId}"]`).click();
+                        }
+                        
+                        setTimeout(() => {
+                           targetSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 100); // Small delay to allow tab switching
+                    }
+                });
+            });
+
+            const tabs = document.querySelectorAll('.tab-btn');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => {
+                        t.classList.remove('tab-active');
+                        t.classList.add('tab-inactive');
+                    });
+                    tab.classList.add('tab-active');
+                    tab.classList.remove('tab-inactive');
+
+                    tabPanes.forEach(pane => {
+                        pane.classList.add('hidden');
+                    });
+
+                    const tabId = tab.dataset.tab;
+                    document.getElementById(`${tabId}-content`).classList.remove('hidden');
+                });
+            });
+
+            const soundCtx = document.getElementById('soundChart').getContext('2d');
+            new Chart(soundCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Low Bass', 'Bass', 'Midrange', 'Upper Mids', 'Treble', 'Air'],
+                    datasets: [{
+                        label: 'WH-1000XM6 (Balanced)',
+                        data: [5, 4, 4, 5, 4, 4.5],
+                        borderColor: '#5E81AC',
+                        backgroundColor: 'rgba(94, 129, 172, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: 'WH-1000XM5 (V-Shaped)',
+                        data: [7, 6, 3, 5, 7, 6],
+                        borderColor: '#BF616A',
+                        backgroundColor: 'rgba(191, 97, 106, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    label += 'Relative Emphasis';
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            display: false,
+                            suggestedMin: 0,
+                            suggestedMax: 10
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            const priceCtx = document.getElementById('priceChart').getContext('2d');
+            new Chart(priceCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['WH-1000XM6', 'WH-1000XM5'],
+                    datasets: [{
+                        label: 'Launch Price ($)',
+                        data: [449.99, 399.99],
+                        backgroundColor: '#81A1C1',
+                        borderColor: '#5E81AC',
+                        borderWidth: 1
+                    }, {
+                        label: 'Typical Sale Price ($)',
+                        data: [null, 329.00],
+                        backgroundColor: '#A3BE8C',
+                        borderColor: '#8FBC8F',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Price Comparison (USD)',
+                            font: { size: 16 },
+                            color: '#333333',
+                            padding: { bottom: 20 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.y !== null) {
+                                        label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
+
+
