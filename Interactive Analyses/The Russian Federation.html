@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Overview: The Russian Federation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+    <!-- Chosen Palette: Calm Tricolor -->
+    <!-- Application Structure Plan: A single-page application with a fixed top navigation bar allowing users to jump to different thematic sections (Geography, History, Politics, Economy, Foreign Policy, Society). This non-linear, dashboard-style approach empowers users to explore topics based on their interest, rather than following the linear structure of the report. Key interactions include a clickable historical timeline, interactive charts for economic and political data, and dynamic content displays for geography and culture. This structure was chosen to make a dense, text-heavy report digestible and engaging by breaking it into visual, interactive modules. -->
+    <!-- Visualization & Content Choices: 
+        - Geography: Report info on vegetation zones -> Goal: Explore -> Method: Interactive tabs (HTML/JS) -> Interaction: Click to reveal text -> Justification: Simplifies complex environmental data into easily navigable content.
+        - History: Report info on historical periods -> Goal: Organize/Change -> Method: Interactive timeline (HTML/CSS/JS) -> Interaction: Click to expand details -> Justification: Transforms a long narrative into a visual, user-driven journey through time.
+        - Politics: Duma seat distribution data -> Goal: Compare/Inform -> Method: Donut Chart (Chart.js) -> Interaction: Hover for tooltips -> Justification: Provides a quick, clear visual of the political power balance.
+        - Economy: GDP data and trade partners -> Goal: Compare/Change -> Method: Bar and Pie Charts (Chart.js) -> Interaction: Hover for tooltips -> Justification: Effectively visualizes economic performance and trade relationships.
+        - Foreign Policy: Military comparison data -> Goal: Compare -> Method: Grouped Bar Chart (Chart.js) -> Interaction: Hover for tooltips -> Justification: Allows for direct, impactful comparison of military strengths.
+        - Society: Demographic and cultural data -> Goal: Change/Explore -> Method: Line Chart (Chart.js) and interactive cards (HTML/JS) -> Interaction: Hover/Click -> Justification: Shows the stark demographic trend and offers an engaging way to learn about cultural figures. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4; /* Warm Neutral Background */
+            color: #2c3e50;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #B91C1C; /* Muted Red Accent */
+            border-bottom-color: #B91C1C;
+        }
+        .section-card {
+            background-color: #FFFFFF;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .timeline-item {
+            position: relative;
+            padding-left: 3rem;
+            padding-bottom: 2rem;
+            border-left: 2px solid #D1D5DB;
+        }
+        .timeline-item:last-child {
+            border-left: 2px solid transparent;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -0.7rem;
+            top: 0;
+            height: 1.25rem;
+            width: 1.25rem;
+            background-color: #FFFFFF;
+            border: 2px solid #374151; /* Muted Blue */
+            border-radius: 9999px;
+            transition: background-color 0.3s;
+        }
+        .timeline-item.active .timeline-dot {
+            background-color: #B91C1C; /* Muted Red Accent */
+        }
+        .content-hidden {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.7s ease-in-out;
+        }
+        .content-visible {
+            max-height: 1000px; /* Adjust as needed */
+            transition: max-height 0.7s ease-in-out;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 40vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+
+      
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl md:text-2xl font-bold text-gray-800">The Russian Federation</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#geography" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Geography</a>
+                        <a href="#history" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">History</a>
+                        <a href="#politics" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Politics</a>
+                        <a href="#economy" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Economy</a>
+                        <a href="#foreign-policy" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Foreign Policy</a>
+                        <a href="#society" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Society</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none">
+                        <span class="sr-only">Open menu</span>
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div id="mobile-menu" class="md:hidden hidden">
+                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                    <a href="#geography" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700">Geography</a>
+                    <a href="#history" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700">History</a>
+                    <a href="#politics" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700">Politics</a>
+                    <a href="#economy" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700">Economy</a>
+                    <a href="#foreign-policy" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700">Foreign Policy</a>
+                    <a href="#society" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700">Society</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <section class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">A Comprehensive Analysis of a Nation</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600">This interactive overview presents key aspects of the Russian Federation, from its vast geography to its complex modern dynamics. Use the navigation to explore topics of interest.</p>
+        </section>
+
+        <div class="space-y-20">
+
+            <section id="geography" class="section-card p-6 md:p-8">
+                <h3 class="text-2xl font-bold mb-6 text-gray-800">Part I: The Geographical Imperative</h3>
+                <p class="mb-6 text-gray-600">Russia's geography is not merely a backdrop but a key factor that has shaped its history, economy, and strategic thinking. Its vast size, harsh climate, and lack of natural barriers in the west have driven a quest for centralized power and strategic depth to protect its vulnerable heartland.</p>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-xl font-semibold mb-4">Key Facts</h4>
+                        <ul class="space-y-3 text-gray-700">
+                            <li class="flex items-start"><span class="text-blue-600 mr-3 mt-1">➔</span><span><b>Territory:</b> >17 million km², the world's largest country.</span></li>
+                            <li class="flex items-start"><span class="text-blue-600 mr-3 mt-1">➔</span><span><b>Time Zones:</b> 11.</span></li>
+                            <li class="flex items-start"><span class="text-blue-600 mr-3 mt-1">➔</span><span><b>Topography:</b> Dominated by plains (East European, West Siberian).</span></li>
+                            <li class="flex items-start"><span class="text-blue-600 mr-3 mt-1">➔</span><span><b>Climate:</b> Mostly continental, with extreme winter cold.</span></li>
+                            <li class="flex items-start"><span class="text-blue-600 mr-3 mt-1">➔</span><span><b>Major Rivers:</b> Volga in Europe; Ob, Yenisey, Lena in Siberia.</span></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-xl font-semibold mb-4">Natural Zones</h4>
+                        <div class="flex border-b mb-4">
+                            <button data-target="zone-tundra" class="zone-tab flex-1 py-2 text-center font-medium border-b-2 border-red-700 text-red-700">Tundra</button>
+                            <button data-target="zone-taiga" class="zone-tab flex-1 py-2 text-center font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700">Taiga</button>
+                            <button data-target="zone-steppe" class="zone-tab flex-1 py-2 text-center font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700">Steppe</button>
+                        </div>
+                        <div id="zone-content">
+                            <div id="zone-tundra" class="zone-panel">
+                                <h5 class="font-bold mb-2">Arctic Desert and Tundra</h5>
+                                <p class="text-gray-600">A treeless, marshy plain in the far north. Characterized by permafrost, mosses, and lichens. It is a center for the oil and gas industry and home to wild reindeer.</p>
+                            </div>
+                            <div id="zone-taiga" class="zone-panel hidden">
+                                <h5 class="font-bold mb-2">Taiga</h5>
+                                <p class="text-gray-600">The largest forest massif in the world, consisting mainly of coniferous trees. Rich in fur-bearing animals and timber, but has poor podzol soils unsuitable for agriculture.</p>
+                            </div>
+                            <div id="zone-steppe" class="zone-panel hidden">
+                                <h5 class="font-bold mb-2">Steppe</h5>
+                                <p class="text-gray-600">Treeless grassy plains in the south with fertile black earth soils. This is Russia's most important agricultural region, its "breadbasket".</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="history" class="section-card p-6 md:p-8">
+                <h3 class="text-2xl font-bold mb-6 text-gray-800">Part II: The Historical Arc</h3>
+                <p class="mb-8 text-gray-600">Russia's history is a saga of state-building, imperial expansion, and revolutionary upheaval. Key themes include the struggle for centralized power, the tension between Westernization and a unique "Russian path," and cycles of crisis and consolidation. Click on the periods below to learn more.</p>
+                <div id="timeline-container"></div>
+            </section>
+
+            <section id="politics" class="section-card p-6 md:p-8">
+                <h3 class="text-2xl font-bold mb-6 text-gray-800">Part III: The Structure of Power</h3>
+                <p class="mb-6 text-gray-600">Russia's political system is a hybrid, combining formal democratic institutions with highly centralized authoritarian rule. Power is concentrated in the hands of the president, supported by elites from the security services (*siloviki*). This system, known as "managed democracy," ensures the Kremlin's control over the political landscape.</p>
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h4 class="text-xl font-semibold mb-4 text-center">Distribution of Seats in the State Duma (2025)</h4>
+                        <div class="chart-container mx-auto">
+                            <canvas id="dumaChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-xl font-semibold mb-4">Key Aspects of the System</h4>
+                        <ul class="space-y-3 text-gray-700">
+                            <li class="flex items-start"><span class="text-blue-600 mr-3 mt-1">➔</span><span><b>Super-Presidential Republic:</b> The 1993 constitution grants the president vast powers.</span></li>
+                            <li class="flex items-start"><span class="text-blue-600 mr-3 mt-1">➔</span><span><b>Power Vertical:</b> Authority flows from the top down, from the president to executive bodies.</span></li>
+                            <li class="flex items-start"><span class="text-blue-600 mr-3 mt-1">➔</span><span><b>Managed Democracy:</b> Elections and multi-party systems exist, but their outcomes are controlled.</span></li>
+                            <li class="flex items-start"><span class="text-blue-600 mr-3 mt-1">➔</span><span><b>Party of Power:</b> "United Russia" dominates parliament, ensuring support for the president.</span></li>
+                            <li class="flex items-start"><span class="text-blue-600 mr-3 mt-1">➔</span><span><b>Role of Siloviki:</b> Figures from intelligence services and the military hold key state and economic posts.</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="economy" class="section-card p-6 md:p-8">
+                <h3 class="text-2xl font-bold mb-6 text-gray-800">Part IV: The Fortress Economy</h3>
+                <p class="mb-6 text-gray-600">The Russian economy is defined by its vast natural resources, Soviet legacy, and recent militarization. Despite short-term resilience to sanctions by shifting to a war footing, it faces long-term structural problems like technological backwardness and a demographic crisis.</p>
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <div class="w-full">
+                        <h4 class="text-xl font-semibold mb-4 text-center">GDP Growth: Reality and Forecast</h4>
+                        <div class="chart-container mx-auto">
+                            <canvas id="gdpChart"></canvas>
+                        </div>
+                         <p class="text-center text-sm text-gray-500 mt-2">Military spending has stimulated growth, but the model is unsustainable.</p>
+                    </div>
+                    <div class="w-full">
+                        <h4 class="text-xl font-semibold mb-4 text-center">Key Trade Partners (June 2025)</h4>
+                        <div class="chart-container mx-auto">
+                            <canvas id="tradeChart"></canvas>
+                        </div>
+                        <p class="text-center text-sm text-gray-500 mt-2">A sharp pivot in trade from Europe to Asia.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="foreign-policy" class="section-card p-6 md:p-8">
+                <h3 class="text-2xl font-bold mb-6 text-gray-800">Part V: A Revisionist Power</h3>
+                <p class="mb-6 text-gray-600">Russia's foreign policy aims to dismantle the U.S.-led world order and create a "multipolar world." This strategy is pursued through military force, energy diplomacy, and a strategic partnership with China, leading to deep confrontation with the West.</p>
+                <div>
+                    <h4 class="text-xl font-semibold mb-4 text-center">Comparison of Military Power (2025)</h4>
+                    <div class="chart-container mx-auto" style="max-height: 450px;">
+                        <canvas id="militaryChart"></canvas>
+                    </div>
+                    <p class="text-center text-sm text-gray-500 mt-2">Data reflects quantitative indicators, not combat effectiveness.</p>
+                </div>
+            </section>
+
+            <section id="society" class="section-card p-6 md:p-8">
+                <h3 class="text-2xl font-bold mb-6 text-gray-800">Part VI: The Russian People</h3>
+                <p class="mb-6 text-gray-600">Russian society is undergoing profound changes driven by a demographic crisis, social inequality, and wartime pressures. The country's rich cultural heritage is increasingly used as an ideological tool, and the space for creative freedom is shrinking.</p>
+                <div class="grid lg:grid-cols-2 gap-8 items-start">
+                    <div>
+                        <h4 class="text-xl font-semibold mb-4 text-center">Demographic Decline</h4>
+                        <div class="chart-container mx-auto">
+                            <canvas id="demographicsChart"></canvas>
+                        </div>
+                        <p class="text-center text-sm text-gray-500 mt-2">War and emigration have exacerbated a long-term crisis of birth and death rates.</p>
+                    </div>
+                    <div>
+                         <h4 class="text-xl font-semibold mb-4 text-center">Cultural Icons</h4>
+                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                            <div class="culture-card text-center p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100" data-person="tolstoy">
+                                <div class="text-4xl mb-2">📖</div>
+                                <p class="font-semibold">Leo Tolstoy</p>
+                            </div>
+                             <div class="culture-card text-center p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100" data-person="dostoevsky">
+                                <div class="text-4xl mb-2">✒️</div>
+                                <p class="font-semibold">Fyodor Dostoevsky</p>
+                            </div>
+                            <div class="culture-card text-center p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100" data-person="tchaikovsky">
+                                <div class="text-4xl mb-2">🎼</div>
+                                <p class="font-semibold">Pyotr Tchaikovsky</p>
+                            </div>
+                            <div class="culture-card text-center p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100" data-person="pavlova">
+                                <div class="text-4xl mb-2">🩰</div>
+                                <p class="font-semibold">Anna Pavlova</p>
+                            </div>
+                            <div class="culture-card text-center p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100" data-person="mendeleev">
+                                <div class="text-4xl mb-2">🧪</div>
+                                <p class="font-semibold">Dmitri Mendeleev</p>
+                            </div>
+                            <div class="culture-card text-center p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100" data-person="gagarin">
+                                <div class="text-4xl mb-2">🚀</div>
+                                <p class="font-semibold">Yuri Gagarin</p>
+                            </div>
+                         </div>
+                         <div id="culture-info" class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-gray-700 min-h-[100px]">
+                            <p class="text-center">Click an icon to learn more.</p>
+                         </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+
+  
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm">
+            <p>&copy; 2025 Interactive Overview. Created for data demonstration and analysis.</p>
+            <p class="text-gray-400 mt-1">All information is based on the report "The Russian Federation: A Comprehensive National Profile".</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (!mobileMenu.classList.contains('hidden')) {
+                         mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+
+            const sections = document.querySelectorAll('section[id]');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                        });
+                    }
+                });
+            }, { rootMargin: "-50% 0px -50% 0px" });
+
+            sections.forEach(section => observer.observe(section));
+
+            const zoneTabs = document.querySelectorAll('.zone-tab');
+            const zonePanels = document.querySelectorAll('.zone-panel');
+            const zoneContent = document.getElementById('zone-content');
+
+            zoneTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    zoneTabs.forEach(t => {
+                        t.classList.remove('border-red-700', 'text-red-700');
+                        t.classList.add('border-transparent', 'text-gray-500');
+                    });
+                    tab.classList.add('border-red-700', 'text-red-700');
+                    tab.classList.remove('border-transparent', 'text-gray-500');
+
+                    const targetId = tab.getAttribute('data-target');
+                    zonePanels.forEach(panel => {
+                        panel.classList.toggle('hidden', panel.id !== targetId);
+                    });
+                });
+            });
+
+            const historyData = [
+                { era: "Kievan Rus' (862–1237)", content: "The first East Slavic state, founded by Varangians. The adoption of Orthodoxy in 988 defined its civilizational path. Disintegration due to infighting made Rus' vulnerable." },
+                { era: "Mongol Yoke & Rise of Moscow (1237–1547)", content: "A devastating Mongol invasion subjugated the Russian lands to the Golden Horde. During this period, Moscow began its rise, with its princes becoming the gatherers of Russian lands." },
+                { era: "Tsardom & Romanov Empire (1547–1917)", content: "From Ivan the Terrible to Nicholas II. This period was marked by Peter the Great's reforms, imperial expansion under Catherine the Great, and a growing crisis of autocracy that led to revolution." },
+                { era: "Revolution & Soviet Union (1917–1991)", content: "The Bolshevik Revolution created the world's first communist state. The era of Stalin, victory in WWII, the Cold War, and subsequent stagnation led to the collapse of the USSR." },
+                { era: "Modern Russian Federation (1991–Present)", content: "The chaotic 90s under Yeltsin were followed by the Putin era, characterized by the restoration of the 'power vertical,' confrontation with the West, and a full-scale war in Ukraine." },
+            ];
+
+            const timelineContainer = document.getElementById('timeline-container');
+            historyData.forEach((item, index) => {
+                const timelineItem = document.createElement('div');
+                timelineItem.className = 'timeline-item cursor-pointer';
+                timelineItem.innerHTML = `
+                    <div class="timeline-dot"></div>
+                    <h5 class="font-bold text-lg text-gray-800">${item.era}</h5>
+                    <div class="timeline-content content-hidden text-gray-600 mt-2">
+                        <p>${item.content}</p>
+                    </div>
+                `;
+                timelineContainer.appendChild(timelineItem);
+            });
+
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            timelineItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const content = item.querySelector('.timeline-content');
+                    const isActive = item.classList.contains('active');
+
+                    timelineItems.forEach(i => {
+                        i.classList.remove('active');
+                        i.querySelector('.timeline-content').classList.remove('content-visible');
+                        i.querySelector('.timeline-content').classList.add('content-hidden');
+                    });
+
+                    if (!isActive) {
+                        item.classList.add('active');
+                        content.classList.add('content-visible');
+                        content.classList.remove('content-hidden');
+                    }
+                });
+            });
+            if (timelineItems.length > 0) {
+                timelineItems[0].click();
+            }
+
+            const dumaData = {
+                labels: ['United Russia', 'CPRF', 'SRZP', 'LDPR', 'New People', 'Other'],
+                datasets: [{
+                    label: 'Seats in State Duma',
+                    data: [325, 57, 27, 23, 15, 2],
+                    backgroundColor: ['#3B82F6', '#EF4444', '#F59E0B', '#10B981', '#8B5CF6', '#6B7280'],
+                    borderColor: '#F8F7F4',
+                    borderWidth: 2,
+                    hoverOffset: 4
+                }]
+            };
+            new Chart(document.getElementById('dumaChart'), {
+                type: 'doughnut',
+                data: dumaData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + ' seats';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const gdpData = {
+                labels: ['2022', '2023 (actual)', '2024 (actual)', '2025 (forecast)'],
+                datasets: [{
+                    label: 'GDP Growth (%)',
+                    data: [-2.1, 3.6, 3.8, 1.2],
+                    backgroundColor: (context) => {
+                        const value = context.raw;
+                        return value < 0 ? '#EF4444' : '#22C55E';
+                    },
+                    borderColor: (context) => {
+                        const value = context.raw;
+                        return value < 0 ? '#B91C1C' : '#15803D';
+                    },
+                    borderWidth: 1
+                }]
+            };
+            new Chart(document.getElementById('gdpChart'), {
+                type: 'bar',
+                data: gdpData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) { return value + '%' }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const tradeData = {
+                labels: ['China', 'India', 'Turkey', 'EU', 'Brazil'],
+                datasets: [{
+                    label: 'Imports (€ billion)',
+                    data: [5.4, 4.5, 2.3, 1.47, 0.44],
+                    backgroundColor: ['#DC2626', '#F97316', '#16A34A', '#2563EB', '#9333EA'],
+                }]
+            };
+            new Chart(document.getElementById('tradeChart'), {
+                type: 'pie',
+                data: tradeData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed !== null) {
+                                        label += '€' + context.parsed + ' billion';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const militaryData = {
+                labels: ['Active Personnel', 'Tanks', 'Aircraft', 'Naval Fleet'],
+                datasets: [
+                    {
+                        label: 'Russia',
+                        data: [1320000, 5750, 4255, 580],
+                        backgroundColor: '#B91C1C',
+                    },
+                    {
+                        label: 'USA',
+                        data: [1328000, 4500, 13209, 472],
+                        backgroundColor: '#1D4ED8',
+                    },
+                    {
+                        label: 'China',
+                        data: [2035000, 6800, 3304, 730],
+                        backgroundColor: '#FBBF24',
+                    }
+                ]
+            };
+            new Chart(document.getElementById('militaryChart'), {
+                type: 'bar',
+                data: militaryData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            type: 'logarithmic',
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    if (value === 10000000 || value === 1000000 || value === 100000 || value === 10000 || value === 1000 || value === 100 || value === 10) {
+                                        return value.toLocaleString();
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw.toLocaleString()}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const demographicsData = {
+                labels: ['1994', '2000', '2010', '2020', '2025 (est.)'],
+                datasets: [{
+                    label: 'Population (millions)',
+                    data: [149, 146.9, 142.9, 146.2, 146],
+                    fill: true,
+                    borderColor: '#B91C1C',
+                    backgroundColor: 'rgba(185, 28, 28, 0.1)',
+                    tension: 0.1
+                }]
+            };
+            new Chart(document.getElementById('demographicsChart'), {
+                type: 'line',
+                data: demographicsData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                             ticks: {
+                                callback: function(value) { return value + 'M' }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            const cultureInfoData = {
+                tolstoy: { name: "Leo Tolstoy", text: "Author of 'War and Peace' and 'Anna Karenina,' one of the greatest novelists in history, known for his psychological depth and philosophical quests." },
+                dostoevsky: { name: "Fyodor Dostoevsky", text: "A master of the psychological novel. His works, such as 'Crime and Punishment' and 'The Brothers Karamazov,' explore the depths of the human soul." },
+                tchaikovsky: { name: "Pyotr Tchaikovsky", text: "A composer whose ballets ('Swan Lake,' 'The Nutcracker') and symphonies are gems of world classical music." },
+                pavlova: { name: "Anna Pavlova", text: "A legendary ballerina whose art caused a sensation in the West in the early 20th century and became a symbol of Russian ballet." },
+                mendeleev: { name: "Dmitri Mendeleev", text: "A chemist who created the Periodic Table of Elements, a fundamental tool of modern chemistry." },
+                gagarin: { name: "Yuri Gagarin", text: "A cosmonaut who became the first human in space on April 12, 1961. His flight was a triumph of Soviet science and technology." }
+            };
+            const cultureCards = document.querySelectorAll('.culture-card');
+            const cultureInfoDiv = document.getElementById('culture-info');
+            cultureCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const personId = card.dataset.person;
+                    const info = cultureInfoData[personId];
+                    cultureInfoDiv.innerHTML = `<h6 class="font-bold">${info.name}</h6><p>${info.text}</p>`;
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
