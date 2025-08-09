@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Dashboard: A Portrait of India</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals (Saffron, Cream, Slate) -->
+    <!-- Application Structure Plan: A thematic, single-page dashboard. The structure moves from the present (key stats) to the foundational elements (people, economy), then to the narrative (history, culture), and finally to the future (ambitions). This non-linear, thematic approach is chosen over the report's linear structure to allow users to explore topics of interest freely. Key interactions include smooth-scrolling navigation, dynamic charts for data comparison, and clickable cards/timeline events to reveal information, making the dense report content digestible and engaging. -->
+    <!-- Visualization & Content Choices: 
+        - Demographics (Literacy): Goal: Compare. Viz: Grouped Bar Chart. Interaction: Tooltip on hover. Justification: Visually highlights gender/regional gaps more effectively than a table. Library: Chart.js.
+        - Economy (Sectors): Goal: Compare/Contrast. Viz: Grouped Bar Chart. Interaction: Tooltip on hover. Justification: Starkly illustrates the GVA vs. Employment paradox ("jobless growth") mentioned in the report. Library: Chart.js.
+        - Religion: Goal: Inform Proportion. Viz: Doughnut Chart. Interaction: Tooltip on hover. Justification: Clean, modern way to show composition. Library: Chart.js.
+        - History: Goal: Organize/Narrate. Viz: Interactive Timeline. Interaction: Click to show details. Justification: Makes historical progression easy to follow and less intimidating than a wall of text. Method: HTML/CSS/JS.
+        - Governance: Goal: Organize/Inform. Viz: Styled HTML Diagram. Justification: Simplifies the complex government structure into an easy-to-understand flow. Method: HTML/CSS.
+        - All other content (Industries, Tourism, S&T): Goal: Inform. Viz: Interactive Cards. Interaction: Hover effects. Justification: Breaks down information into scannable, visually appealing chunks. Method: HTML/CSS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF5;
+            color: #4A4A4A;
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-color 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #F97316;
+            border-bottom-color: #F97316;
+        }
+        .stat-card {
+            background-color: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .timeline-item {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .timeline-item.active {
+            background-color: #FFF7ED;
+            border-color: #F97316;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-gray-800">An Interactive Portrait of India</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link px-3 py-2 rounded-md text-sm font-semibold">Overview</a>
+                        <a href="#people" class="nav-link px-3 py-2 rounded-md text-sm font-semibold">People & Society</a>
+                        <a href="#economy" class="nav-link px-3 py-2 rounded-md text-sm font-semibold">Economy</a>
+                        <a href="#history" class="nav-link px-3 py-2 rounded-md text-sm font-semibold">History</a>
+                        <a href="#culture" class="nav-link px-3 py-2 rounded-md text-sm font-semibold">Culture & Tourism</a>
+                        <a href="#ambition" class="nav-link px-3 py-2 rounded-md text-sm font-semibold">Ambition</a>
+                    </div>
+                </div>
+                 <div class="md:hidden">
+                    <select id="mobile-nav" class="bg-gray-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5">
+                        <option value="#overview">Overview</option>
+                        <option value="#people">People & Society</option>
+                        <option value="#economy">Economy</option>
+                        <option value="#history">History</option>
+                        <option value="#culture">Culture & Tourism</option>
+                        <option value="#ambition">Ambition</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <section id="overview" class="text-center mb-16 md:mb-24">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">The World's Most Populous Democracy</h2>
+            <p class="max-w-3xl mx-auto text-gray-600 mb-8">
+                India is a nation of profound diversity and rapid transformation. From its ancient roots to its modern economic ascent, explore the key metrics that define this global powerhouse. These figures represent the scale and dynamism shaping India's journey in the 21st century.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="stat-card p-6 rounded-lg text-center">
+                    <div class="text-4xl font-bold text-orange-600 mb-2" id="population-stat">0</div>
+                    <p class="text-gray-700 font-semibold">Billion People (2025 Est.)</p>
+                    <p class="text-sm text-gray-500">The largest population globally.</p>
+                </div>
+                <div class="stat-card p-6 rounded-lg text-center">
+                    <div class="text-4xl font-bold text-green-600 mb-2" id="gdp-stat">0</div>
+                    <p class="text-gray-700 font-semibold">Trillion USD GDP (2023)</p>
+                    <p class="text-sm text-gray-500">5th largest economy by nominal GDP.</p>
+                </div>
+                <div class="stat-card p-6 rounded-lg text-center">
+                    <div class="text-4xl font-bold text-blue-600 mb-2" id="literacy-stat">0</div>
+                    <p class="text-gray-700 font-semibold">% Literacy Rate (7+)</p>
+                    <p class="text-sm text-gray-500">Significant progress since independence.</p>
+                </div>
+                <div class="stat-card p-6 rounded-lg text-center">
+                    <div class="text-4xl font-bold text-purple-600 mb-2" id="fertility-stat">0</div>
+                    <p class="text-gray-700 font-semibold">Total Fertility Rate</p>
+                    <p class="text-sm text-gray-500">Below replacement level of 2.1.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="people" class="mb-16 md:mb-24">
+            <h2 class="text-3xl font-bold text-center mb-4 text-gray-800">The Human Landscape</h2>
+             <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                India's greatest asset is its people. This section explores the demographic fabric of the nation, from literacy trends that show progress and persistent gaps, to the rich tapestry of religions that coexist across the subcontinent. These charts visualize the complexity of India's society.
+            </p>
+            <div class="grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold mb-4 text-center">Literacy Progress & Disparities (2023-24)</h3>
+                    <div class="chart-container">
+                        <canvas id="literacyChart"></canvas>
+                    </div>
+                     <p class="text-xs text-gray-500 mt-4 text-center">This chart compares literacy rates, highlighting the persistent gaps between genders and between urban and rural populations, a key challenge for equitable development.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold mb-4 text-center">Religious Composition (2011)</h3>
+                    <div class="chart-container">
+                        <canvas id="religionChart"></canvas>
+                    </div>
+                     <p class="text-xs text-gray-500 mt-4 text-center">India is the birthplace of four major world religions. This chart shows the demographic breakdown, reflecting the nation's constitutionally protected secularism and diversity.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="economy" class="mb-16 md:mb-24">
+            <h2 class="text-3xl font-bold text-center mb-4 text-gray-800">The Evolving Economic Engine</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                From one of the "Fragile Five" to the world's fastest-growing major economy, India's economic story is one of dramatic transformation. The following visualizations delve into this engine, showcasing the sectoral contributions to the economy versus employment, and highlighting key industries driving future growth.
+            </p>
+            <div class="grid md:grid-cols-5 gap-8 items-start">
+                <div class="md:col-span-3 bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold mb-4 text-center">The Economic Structure Paradox (FY 2023-24)</h3>
+                    <div class="chart-container h-96 max-h-[500px]">
+                        <canvas id="economySectorChart"></canvas>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-4 text-center">This chart reveals a core challenge: the high-productivity Services sector drives GDP but employs few, while low-productivity Agriculture employs the majority. Bridging this gap is key to inclusive growth.</p>
+                </div>
+                <div class="md:col-span-2 space-y-4">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h4 class="font-bold text-lg text-orange-600">Information Technology</h4>
+                        <p class="text-sm text-gray-600 mt-1">A global superpower in IT services, generating $253.9B in revenue (FY24) and employing 5.4 million people. Hubs like Bengaluru and Hyderabad lead this charge.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h4 class="font-bold text-lg text-green-600">Pharmaceuticals</h4>
+                        <p class="text-sm text-gray-600 mt-1">Known as the "pharmacy of the world," India is the largest provider of generic drugs globally, supplying over 60% of the world's vaccine demand.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h4 class="font-bold text-lg text-blue-600">Automotive</h4>
+                        <p class="text-sm text-gray-600 mt-1">The world's third-largest automobile market. Contributes over 7% to national GDP, with a strong government push towards Electric Vehicles (EVs).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="history" class="mb-16 md:mb-24">
+            <h2 class="text-3xl font-bold text-center mb-4 text-gray-800">A Journey Through Time</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                India's history is a vast, layered narrative of empires, synthesis, and resilience. This interactive timeline provides a glimpse into the major epochs that have shaped the subcontinent's identity. Click on each period to discover its significance.
+            </p>
+            <div class="flex flex-col md:flex-row bg-white p-6 rounded-lg shadow-md">
+                <div id="timeline-nav" class="flex md:flex-col overflow-x-auto md:overflow-x-visible md:border-r-2 border-gray-200 mb-4 md:mb-0 md:pr-4">
+                </div>
+                <div id="timeline-content" class="md:pl-6 flex-grow">
+                </div>
+            </div>
+        </section>
+
+        <section id="culture" class="mb-16 md:mb-24">
+            <h2 class="text-3xl font-bold text-center mb-4 text-gray-800">Cultural Kaleidoscope & Tourism</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                India's culture is a vibrant mosaic of arts, traditions, and flavors, which also forms the basis of its tourism. Explore some of the nation's most iconic cultural exports and popular tourist circuits that offer a journey through its rich heritage.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="stat-card rounded-lg overflow-hidden">
+                    <img src="https://placehold.co/600x400/FFF7ED/F97316?text=Golden+Triangle" alt="Golden Triangle" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-2">The Golden Triangle</h3>
+                        <p class="text-gray-600 text-sm">The quintessential Indian journey connecting Delhi (history), Agra (love, Taj Mahal), and Jaipur (royalty). It's a compact narrative of Mughal and Rajput grandeur.</p>
+                    </div>
+                </div>
+                <div class="stat-card rounded-lg overflow-hidden">
+                    <img src="https://placehold.co/600x400/EBF5FF/3B82F6?text=Bollywood+%26+Beyond" alt="Cinema" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-2">The Silver Screen</h3>
+                        <p class="text-gray-600 text-sm">India is the world's largest film producer. While Bollywood is famous, regional cinema (Tollywood, Kollywood) now rivals its box office, showcasing diverse stories to a global audience via streaming.</p>
+                    </div>
+                </div>
+                <div class="stat-card rounded-lg overflow-hidden">
+                    <img src="https://placehold.co/600x400/F0FDF4/22C55E?text=Classical+Arts" alt="Classical Dance" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-2">Timeless Performing Arts</h3>
+                        <p class="text-gray-600 text-sm">Home to ancient traditions like Hindustani & Carnatic music and eight classical dance forms such as Bharatanatyam and Kathak, each telling stories rooted in mythology and culture.</p>
+                    </div>
+                </div>
+                 <div class="stat-card rounded-lg overflow-hidden">
+                    <img src="https://placehold.co/600x400/FEF2F2/DC2626?text=Kerala+Backwaters" alt="Kerala Backwaters" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-2">Kerala Backwaters Circuit</h3>
+                        <p class="text-gray-600 text-sm">A serene journey through a network of lagoons, canals, and lakes in "God's Own Country." Explore Kochi, Alleppey, and Kumarakom by houseboat for a unique experience.</p>
+                    </div>
+                </div>
+                 <div class="stat-card rounded-lg overflow-hidden">
+                    <img src="https://placehold.co/600x400/F5F3FF/8B5CF6?text=Rajasthan+Desert" alt="Rajasthan Desert Circuit" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-2">The Desert Circuit</h3>
+                        <p class="text-gray-600 text-sm">Explore the heart of royal Rajasthan. This circuit links the majestic fort cities of Jodhpur (the Blue City), Jaisalmer (the Golden Fort), and Bikaner, showcasing desert life and Rajput valor.</p>
+                    </div>
+                </div>
+                 <div class="stat-card rounded-lg overflow-hidden">
+                    <img src="https://placehold.co/600x400/FFFBEB/F59E0B?text=Indian+Cuisine" alt="Indian Cuisine" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-2">A Taste of India</h3>
+                        <p class="text-gray-600 text-sm">A culinary journey as diverse as the land itself. From the tandoori dishes of the North to the coconut-based curries of the South, and the vegetarian thalis of the West to the fish delicacies of the East.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ambition" class="mb-16 md:mb-24">
+            <h2 class="text-3xl font-bold text-center mb-4 text-gray-800">Forging the Future</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                India is leveraging science and technology to cement its role as a leading global power. Its advancements in space, nuclear, and defense technology underpin a foreign policy of "strategic autonomy" and fuel its ambition to shape the 21st century.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-orange-500">
+                    <h3 class="font-bold text-xl mb-2">Reaching for the Stars (ISRO)</h3>
+                    <p class="text-gray-600 text-sm">From being the first to reach Mars' orbit on its first attempt (Mangalyaan) to the historic lunar south pole landing (Chandrayaan-3), ISRO is a world-class space agency. Future plans include a human spaceflight mission (Gaganyaan) and an Indian space station by 2035.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-green-500">
+                    <h3 class="font-bold text-xl mb-2">The Atomic Age</h3>
+                    <p class="text-gray-600 text-sm">India maintains a "credible minimum deterrence" and a "no first use" nuclear policy, with a complete nuclear triad. Its civilian program focuses on a unique three-stage plan to utilize its vast thorium reserves for long-term energy security.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-blue-500">
+                    <h3 class="font-bold text-xl mb-2">A Leading Power</h3>
+                    <p class="text-gray-600 text-sm">India's foreign policy has shifted from non-alignment to a multi-aligned approach. Through initiatives like "Neighbourhood First" and "Act East," and as a key member of the G-20 and BRICS, India is proactively shaping the global agenda.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white">
+        <div class="container mx-auto py-4 px-5 text-center">
+            <p class="text-sm">Interactive Report created from "India: A Comprehensive National Profile".</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const data = {
+                overviewStats: {
+                    population: 1.46,
+                    gdp: 3.57,
+                    literacy: 80.9,
+                    fertility: 1.9
+                },
+                literacy: {
+                    labels: ['Overall', 'Male', 'Female', 'Urban', 'Rural'],
+                    rates: [80.9, 87.2, 74.6, 88.9, 77.5]
+                },
+                religion: {
+                    labels: ['Hinduism', 'Islam', 'Christianity', 'Sikhism', 'Buddhism', 'Jainism', 'Other'],
+                    percentages: [79.8, 14.23, 2.3, 1.72, 0.7, 0.37, 0.88]
+                },
+                economySectors: {
+                    labels: ['Agriculture', 'Industry', 'Services'],
+                    gva: [17.7, 27.6, 54.7],
+                    employment: [45, 25, 30]
+                },
+                history: [
+                    { period: 'Indus Valley', timeline: 'c. 3300–1900 BCE', title: 'Indus Valley Civilization', description: 'One of the world\'s earliest urban civilizations, known for sophisticated urban planning, grid-like streets, and advanced drainage systems in cities like Mohenjo-daro.' },
+                    { period: 'Vedic', timeline: 'c. 1500–500 BCE', title: 'Vedic Period', description: 'Defined by the composition of the Vedas, the foundational texts of Hinduism. Saw the emergence of the early caste (*varna*) system and consolidation of kingdoms.' },
+                    { period: 'Mauryan', timeline: 'c. 322–185 BCE', title: 'Mauryan Empire', description: 'The first great pan-Indian empire. Under Emperor Ashoka, it was known for its centralized administration and the spread of Buddhism and principles of non-violence.' },
+                    { period: 'Gupta', timeline: 'c. 320–550 CE', title: 'Gupta Empire - "The Golden Age"', description: 'An era of major advancements in science, mathematics (including the concept of zero), art, and Sanskrit literature. A period of peace and prosperity.' },
+                    { period: 'Sultanate', timeline: '1206–1526 CE', title: 'Delhi Sultanate', description: 'Established a major Islamic political power in North India, introducing new administrative systems and a fusion of Indo-Islamic architectural styles.' },
+                    { period: 'Mughal', timeline: '1526–1857 CE', title: 'Mughal Empire', description: 'Unified most of the subcontinent, leading to a flourishing of Indo-Persian art and culture. The Taj Mahal is its most iconic architectural achievement.' },
+                    { period: 'British Raj', timeline: '1858–1947 CE', title: 'The British Raj', description: 'Direct British rule that unified India politically and introduced railways and Western legal systems, but also led to economic exploitation.' },
+                    { period: 'Independence', timeline: '1947 CE', title: 'Independence & Republic', description: 'India achieved freedom on Aug 15, 1947, after a long non-violent struggle led by Mahatma Gandhi. It became a Sovereign Democratic Republic on Jan 26, 1950.' }
+                ]
+            };
+
+            function animateValue(obj, start, end, duration, decimalPlaces = 1) {
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    const value = progress * (end - start) + start;
+                    obj.innerHTML = value.toFixed(decimalPlaces);
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+
+            animateValue(document.getElementById('population-stat'), 0, data.overviewStats.population, 1500, 2);
+            animateValue(document.getElementById('gdp-stat'), 0, data.overviewStats.gdp, 1500, 2);
+            animateValue(document.getElementById('literacy-stat'), 0, data.overviewStats.literacy, 1500, 1);
+            animateValue(document.getElementById('fertility-stat'), 0, data.overviewStats.fertility, 1500, 1);
+
+            const chartTooltip = {
+                callbacks: {
+                    label: function(context) {
+                        let label = context.dataset.label || '';
+                        if (label) {
+                            label += ': ';
+                        }
+                        if (context.parsed.y !== null) {
+                            label += context.parsed.y + '%';
+                        }
+                        return label;
+                    }
+                }
+            };
+            
+            const chartOptions = (tooltip) => ({
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: tooltip
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            });
+
+            const literacyCtx = document.getElementById('literacyChart').getContext('2d');
+            new Chart(literacyCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Overall', 'Male vs Female', 'Urban vs Rural'],
+                    datasets: [{
+                        label: 'Higher Rate',
+                        data: [data.literacy.rates[0], data.literacy.rates[1], data.literacy.rates[3]],
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Lower Rate',
+                        data: [null, data.literacy.rates[2], data.literacy.rates[4]],
+                        backgroundColor: 'rgba(249, 115, 22, 0.7)',
+                        borderColor: 'rgba(249, 115, 22, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: chartOptions(chartTooltip)
+            });
+
+            const religionCtx = document.getElementById('religionChart').getContext('2d');
+            new Chart(religionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.religion.labels,
+                    datasets: [{
+                        label: 'Population',
+                        data: data.religion.percentages,
+                        backgroundColor: [
+                            'rgba(249, 115, 22, 0.8)', 'rgba(34, 197, 94, 0.8)', 'rgba(59, 130, 246, 0.8)',
+                            'rgba(245, 158, 11, 0.8)', 'rgba(139, 92, 246, 0.8)', 'rgba(236, 72, 153, 0.8)',
+                            'rgba(107, 114, 128, 0.8)'
+                        ],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                boxWidth: 12,
+                                font: { size: 10 }
+                            }
+                        },
+                        tooltip: chartTooltip
+                    }
+                }
+            });
+
+            const economySectorCtx = document.getElementById('economySectorChart').getContext('2d');
+            new Chart(economySectorCtx, {
+                type: 'bar',
+                data: {
+                    labels: data.economySectors.labels,
+                    datasets: [{
+                        label: 'Contribution to GVA (%)',
+                        data: data.economySectors.gva,
+                        backgroundColor: 'rgba(22, 163, 74, 0.7)',
+                        borderColor: 'rgba(22, 163, 74, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Share of Employment (%)',
+                        data: data.economySectors.employment,
+                        backgroundColor: 'rgba(37, 99, 235, 0.7)',
+                        borderColor: 'rgba(37, 99, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: chartOptions(chartTooltip)
+            });
+
+            const timelineNav = document.getElementById('timeline-nav');
+            const timelineContent = document.getElementById('timeline-content');
+            data.history.forEach((item, index) => {
+                const navItem = document.createElement('button');
+                navItem.className = 'timeline-item w-full text-left p-3 my-1 border-l-4 border-transparent text-gray-700 font-semibold rounded-r-md';
+                navItem.textContent = item.period;
+                navItem.dataset.index = index;
+                timelineNav.appendChild(navItem);
+            });
+
+            function updateTimelineContent(index) {
+                const item = data.history[index];
+                timelineContent.innerHTML = `
+                    <h3 class="text-2xl font-bold text-orange-600 mb-2">${item.title}</h3>
+                    <p class="text-sm font-semibold text-gray-500 mb-4">${item.timeline}</p>
+                    <p class="text-gray-700 leading-relaxed">${item.description}</p>
+                `;
+                document.querySelectorAll('.timeline-item').forEach(btn => btn.classList.remove('active'));
+                document.querySelector(`.timeline-item[data-index='${index}']`).classList.add('active');
+            }
+
+            timelineNav.addEventListener('click', (e) => {
+                if (e.target.matches('.timeline-item')) {
+                    updateTimelineContent(e.target.dataset.index);
+                }
+            });
+            
+            updateTimelineContent(0);
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+            const mobileNav = document.getElementById('mobile-nav');
+
+            mobileNav.addEventListener('change', (e) => {
+                const targetId = e.target.value;
+                document.querySelector(targetId).scrollIntoView({ behavior: 'smooth' });
+            });
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 80) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                });
+                
+                if(mobileNav.value !== `#${current}`) {
+                    mobileNav.value = `#${current}`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
