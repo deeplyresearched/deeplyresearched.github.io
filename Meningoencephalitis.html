@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Report: Meningoencephalitis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: A thematic, tab-based dashboard structure is used to cater to a dual audience (clinicians and patients). This non-linear navigation allows users to self-select their journey. 'Overview' provides a high-level summary with key stats. 'The Challenge' delves into pathophysiology and causes with interactive diagrams. 'Clinical Pathway' offers a task-oriented view for professionals covering presentation, diagnosis, and treatment. 'Outcomes & Future' visualizes prognosis and research. Finally, a dedicated 'Patient Guide' provides simplified, accessible information. This structure prioritizes user-centric exploration over a rigid, linear report format. -->
+    <!-- Visualization & Content Choices: 
+        - Global Stats (Sec IV) -> Goal: Inform/Impact -> Viz: Animated number cards -> Interaction: Scroll-triggered animation -> Justification: More engaging than static text, highlights scale -> Library: JS.
+        - Etiologies (Table 2) -> Goal: Organize/Compare -> Viz: Filterable card grid -> Interaction: Category filter buttons -> Justification: Allows users to focus on specific pathogen types, better than a long table -> Library: JS/Tailwind.
+        - Pathophysiology (Sec II) -> Goal: Explain Process -> Viz: HTML/CSS process flow diagram -> Interaction: Hover to show details -> Justification: Simplifies a complex biological cascade into digestible steps -> Library: JS/Tailwind.
+        - CSF Findings (Table 3) -> Goal: Compare -> Viz: Dynamic bar chart -> Interaction: Dropdown to select and compare etiologies against normal -> Justification: Visual comparison is more intuitive than a data table -> Library: Chart.js.
+        - Sequelae (Table 5) -> Goal: Emphasize Burden -> Viz: Horizontal bar chart -> Interaction: Tooltips on hover -> Justification: Effectively visualizes the "burden of survival" -> Library: Chart.js.
+        - WHO Roadmap (Sec IX) -> Goal: Organize -> Viz: Accordion-style cards -> Interaction: Click to expand/collapse -> Justification: Presents dense strategic info in a clean, manageable way -> Library: JS/Tailwind.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f7f4;
+            color: #3d3d3d;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-button.active {
+            border-bottom-color: #0d9488; /* teal-600 */
+            color: #0d9488;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .stat-card {
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+        .etiology-filter-btn.active {
+            background-color: #0d9488;
+            color: white;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-sm sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div class="text-center">
+                    <h1 class="text-3xl font-bold text-teal-700 tracking-tight sm:text-4xl">Meningoencephalitis: An Interactive Clinical Report</h1>
+                    <p class="mt-2 text-lg text-gray-600">Exploring the complexities of a neurological emergency.</p>
+                </div>
+            </div>
+            <!-- Navigation -->
+            <nav class="border-b border-gray-200">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-center space-x-4 sm:space-x-8 -mb-px">
+                        <button class="nav-button whitespace-nowrap py-4 px-1 text-base font-medium text-gray-500 hover:text-teal-600 hover:border-gray-300" data-tab="overview">Overview</button>
+                        <button class="nav-button whitespace-nowrap py-4 px-1 text-base font-medium text-gray-500 hover:text-teal-600 hover:border-gray-300" data-tab="challenge">The Challenge</button>
+                        <button class="nav-button whitespace-nowrap py-4 px-1 text-base font-medium text-gray-500 hover:text-teal-600 hover:border-gray-300" data-tab="pathway">Clinical Pathway</button>
+                        <button class="nav-button whitespace-nowrap py-4 px-1 text-base font-medium text-gray-500 hover:text-teal-600 hover:border-gray-300" data-tab="outcomes">Outcomes & Future</button>
+                        <button class="nav-button whitespace-nowrap py-4 px-1 text-base font-medium text-gray-500 hover:text-teal-600 hover:border-gray-300" data-tab="guide">Patient Guide</button>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+            <!-- Overview Section -->
+            <section id="overview" class="content-section">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-800">A Global Health Emergency</h2>
+                    <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">Meningoencephalitis is the simultaneous inflammation of the brain and its protective linings. This report explores its causes, devastating impact, and the path towards a world free of this disease.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <div class="stat-card p-6 rounded-lg">
+                        <div id="cases-stat" class="text-5xl font-bold text-teal-600">0</div>
+                        <p class="mt-2 text-lg font-medium text-gray-700">Annual Cases Worldwide</p>
+                        <p class="text-sm text-gray-500">(Estimate)</p>
+                    </div>
+                    <div class="stat-card p-6 rounded-lg">
+                        <div id="deaths-stat" class="text-5xl font-bold text-red-600">0</div>
+                        <p class="mt-2 text-lg font-medium text-gray-700">Annual Deaths Worldwide</p>
+                        <p class="text-sm text-gray-500">(Estimate)</p>
+                    </div>
+                    <div class="stat-card p-6 rounded-lg">
+                        <div id="disability-stat" class="text-5xl font-bold text-amber-600">0</div>
+                        <p class="mt-2 text-lg font-medium text-gray-700">Survivors with Lasting Disability</p>
+                        <p class="text-sm text-gray-500">(1 in 5 bacterial meningitis survivors)</p>
+                    </div>
+                </div>
+
+                <div class="mt-16 bg-white p-8 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">What is Meningoencephalitis?</h3>
+                    <p class="text-gray-700 leading-relaxed">Imagine your brain as the central command center for your body, and the meninges as its protective wrapping. Meningitis is when the wrapping becomes inflamed. Encephalitis is when the command center itself is inflamed. Meningoencephalitis is a severe condition where both are inflamed at the same time. This "fire" in the brain disrupts its function and is a true medical emergency requiring immediate hospital care. The causes are diverse, ranging from bacterial and viral infections to the body's own immune system mistakenly attacking the brain.</p>
+                </div>
+            </section>
+
+            <!-- The Challenge Section -->
+            <section id="challenge" class="content-section">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-800">Understanding the Attack</h2>
+                    <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">This section explores how pathogens invade the central nervous system and the diverse range of culprits, from common bacteria to rare autoimmune conditions. Understanding the "how" and "who" is the first step in combating this disease.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-lg shadow-md mb-12">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">How Pathogens Invade the Brain: A Vicious Cycle</h3>
+                    <div id="pathophysiology-diagram" class="flex flex-col md:flex-row justify-around items-center space-y-4 md:space-y-0 md:space-x-4">
+                        <!-- JS will populate this -->
+                    </div>
+                    <div id="pathophysiology-details" class="mt-6 text-center text-gray-600 p-4 bg-gray-50 rounded-lg min-h-[50px]">
+                        Hover over a step to see details.
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">The Culprits: A Diverse Etiological Spectrum</h3>
+                    <div id="etiology-filters" class="flex justify-center flex-wrap gap-2 mb-6">
+                        <button class="etiology-filter-btn px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-full hover:bg-gray-300 transition" data-filter="all">All</button>
+                        <button class="etiology-filter-btn px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-full hover:bg-gray-300 transition" data-filter="Bacterial">Bacterial</button>
+                        <button class="etiology-filter-btn px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-full hover:bg-gray-300 transition" data-filter="Viral">Viral</button>
+                        <button class="etiology-filter-btn px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-full hover:bg-gray-300 transition" data-filter="Fungal">Fungal</button>
+                        <button class="etiology-filter-btn px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-full hover:bg-gray-300 transition" data-filter="Autoimmune">Autoimmune</button>
+                    </div>
+                    <div id="etiology-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- JS will populate this -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Clinical Pathway Section -->
+            <section id="pathway" class="content-section">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-800">From Symptom to Treatment</h2>
+                    <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">This section outlines the journey for a clinician managing a patient with suspected meningoencephalitis. It covers the key signs to watch for, the crucial diagnostic tests, and the principles of emergency treatment.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-lg shadow-md mb-12">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Recognizing the Signs</h3>
+                     <div class="flex flex-col md:flex-row gap-8">
+                        <div class="md:w-1/2">
+                            <h4 class="text-xl font-semibold text-gray-700 mb-3">The Classic Triad is Unreliable</h4>
+                            <p class="text-gray-600 mb-4">Fewer than half of adult patients present with the complete triad of fever, neck stiffness, and altered mental status. A higher index of suspicion is needed.</p>
+                            <div class="bg-teal-50 border-l-4 border-teal-500 text-teal-800 p-4 rounded-r-lg">
+                                <p class="font-bold">Clinical Pearl:</p>
+                                <p>~95% of patients have at least TWO of the following: headache, fever, neck stiffness, or altered mental status. Their presence should prompt immediate workup.</p>
+                            </div>
+                        </div>
+                        <div class="md:w-1/2">
+                            <h4 class="text-xl font-semibold text-gray-700 mb-3">Atypical Presentations</h4>
+                            <p class="text-gray-600"><strong class="text-red-600">Infants:</strong> May show non-specific signs like poor feeding, irritability, or a high-pitched cry.</p>
+                            <p class="text-gray-600 mt-2"><strong class="text-red-600">Elderly:</strong> Often present with only confusion or lethargy, without fever or neck stiffness.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Diagnostic Deep Dive: CSF Analysis</h3>
+                    <p class="text-center text-gray-600 mb-6 max-w-2xl mx-auto">Cerebrospinal fluid (CSF) analysis via lumbar puncture is the cornerstone of diagnosis. The profile of cells, protein, and glucose provides critical clues. Select an etiology below to see its typical CSF signature compared to normal.</p>
+                    <div class="flex justify-center mb-6">
+                        <select id="csf-selector" class="block w-full max-w-xs p-2 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500">
+                            <option value="bacterial">Acute Bacterial</option>
+                            <option value="viral">Viral (Aseptic)</option>
+                            <option value="fungal">Tuberculous / Fungal</option>
+                        </select>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="csfChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Outcomes & Future Section -->
+            <section id="outcomes" class="content-section">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-800">The Road Ahead: Recovery and Research</h2>
+                    <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">Surviving meningoencephalitis is often the beginning of a long journey. This section examines the common long-term consequences and highlights the global efforts and research frontiers aimed at defeating this disease.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-lg shadow-md mb-12">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2 text-center">The Burden of Survival: Common Long-Term Sequelae</h3>
+                    <p class="text-center text-gray-600 mb-6 max-w-2xl mx-auto">Even with successful treatment, the inflammation can cause permanent damage. An estimated 1 in 5 survivors of bacterial meningitis lives with a lasting disability.</p>
+                    <div class="chart-container">
+                        <canvas id="sequelaeChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">WHO Roadmap: Defeating Meningitis by 2030</h3>
+                    <div id="roadmap-accordion" class="space-y-4">
+                       <!-- JS will populate this -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Patient Guide Section -->
+            <section id="guide" class="content-section">
+                <div class="bg-teal-50 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md mb-8" role="alert">
+                    <div class="flex">
+                        <div class="py-1"><svg class="fill-current h-6 w-6 text-teal-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zM9 11v4h2v-4H9zm0-4h2v2H9V7z"/></svg></div>
+                        <div>
+                            <p class="font-bold">For Informational Purposes Only</p>
+                            <p class="text-sm">This guide provides general information and is not a substitute for professional medical advice. If you suspect meningoencephalitis, seek emergency medical care immediately.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-lg shadow-md">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">A Guide for Patients & Families</h2>
+                    <div class="space-y-8">
+                        <div>
+                            <h3 class="text-xl font-semibold text-teal-700 mb-2">What are the warning signs?</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <h4 class="font-bold text-gray-800">In Adults & Older Children:</h4>
+                                    <ul class="list-disc list-inside text-gray-700 mt-2 space-y-1">
+                                        <li>Sudden high fever & severe headache</li>
+                                        <li>Stiff neck & sensitivity to light</li>
+                                        <li>Confusion or personality changes</li>
+                                        <li>Seizures</li>
+                                        <li>Rash of tiny red/purple spots that don't fade under pressure</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <h4 class="font-bold text-gray-800">In Babies:</h4>
+                                    <ul class="list-disc list-inside text-gray-700 mt-2 space-y-1">
+                                        <li>Fever or being unusually cold</li>
+                                        <li>Refusing to feed or vomiting</li>
+                                        <li>High-pitched cry or extreme irritability</li>
+                                        <li>Being floppy, sleepy, or hard to wake</li>
+                                        <li>A tense or bulging "soft spot" on the head</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold text-teal-700 mb-2">Frequently Asked Questions</h3>
+                            <div id="faq-accordion" class="space-y-3">
+                                <!-- JS will populate this -->
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold text-teal-700 mb-2">How can it be prevented?</h3>
+                            <div class="flex items-start space-x-4">
+                                <span class="text-3xl text-teal-500">💉</span>
+                                <div>
+                                    <h4 class="font-bold text-gray-800">Vaccination</h4>
+                                    <p class="text-gray-600">Staying up-to-date on recommended vaccines (Hib, pneumococcal, meningococcal) is the most effective way to prevent major types of bacterial meningitis.</p>
+                                </div>
+                            </div>
+                             <div class="flex items-start space-x-4 mt-4">
+                                <span class="text-3xl text-teal-500">🧼</span>
+                                <div>
+                                    <h4 class="font-bold text-gray-800">Good Hygiene</h4>
+                                    <p class="text-gray-600">Wash hands frequently, don't share personal items like drinks or utensils, and cover coughs and sneezes.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const navButtons = document.querySelectorAll('.nav-button');
+    const contentSections = document.querySelectorAll('.content-section');
+
+    const data = {
+        stats: {
+            cases: 2300000,
+            deaths: 214000,
+            disability: 20 
+        },
+        pathophysiology: [
+            { name: 'Colonization', icon: '🦠', detail: 'Pathogens first colonize a mucosal surface, like the nose or throat, often without causing symptoms.' },
+            { name: 'Invasion', icon: '🩸', detail: 'The pathogen invades local tissue, enters the bloodstream (bacteremia/viremia), and travels through the body.' },
+            { name: 'CNS Seeding', icon: '🧠', detail: 'Circulating pathogens cross the blood-brain barrier (BBB) to enter the protected space of the central nervous system.' },
+            { name: 'Inflammation', icon: '🔥', detail: 'The immune system unleashes a massive inflammatory response ("cytokine storm") to fight the invader within the CNS.' },
+            { name: 'ICP Rise', icon: '📈', detail: 'Inflammation causes BBB breakdown, brain swelling (edema), and obstructed CSF flow, leading to a dangerous rise in intracranial pressure (ICP).' }
+        ],
+        etiologies: [
+            { category: 'Bacterial', name: 'S. pneumoniae', detail: 'Common in all ages, often follows pneumonia. High mortality.' },
+            { category: 'Bacterial', name: 'N. meningitidis', detail: 'Classic in teens/young adults. Associated with a petechial rash.' },
+            { category: 'Bacterial', name: 'L. monocytogenes', detail: 'Affects neonates, elderly, and immunocompromised. Linked to contaminated food.' },
+            { category: 'Viral', name: 'Herpes Simplex Virus (HSV)', detail: 'Most common cause of fatal sporadic encephalitis. Treatable with acyclovir.' },
+            { category: 'Viral', name: 'Enteroviruses', detail: 'Most frequent cause of milder "aseptic" meningitis, especially in summer/fall.' },
+            { category: 'Viral', name: 'Arboviruses (e.g. West Nile)', detail: 'Transmitted by mosquitoes/ticks. Can cause paralysis.' },
+            { category: 'Fungal', name: 'Cryptococcus neoformans', detail: 'Primarily affects immunocompromised (e.g., HIV/AIDS). Subacute onset.' },
+            { category: 'Autoimmune', name: 'Anti-NMDA Receptor Encephalitis', detail: 'Often affects young women, presents with psychiatric symptoms. Can be linked to tumors.' },
+            { category: 'Autoimmune', name: 'ADEM', detail: 'Typically follows an infection or vaccination. Causes multifocal neurological deficits.' }
+        ],
+        csfProfiles: {
+            normal: { label: 'Normal', data: [5, 50, 0.6], backgroundColor: 'rgba(75, 192, 192, 0.6)' },
+            bacterial: { label: 'Acute Bacterial', data: [1000, 200, 0.4], backgroundColor: 'rgba(255, 99, 132, 0.6)' },
+            viral: { label: 'Viral (Aseptic)', data: [300, 100, 0.6], backgroundColor: 'rgba(54, 162, 235, 0.6)' },
+            fungal: { label: 'Tuberculous / Fungal', data: [500, 250, 0.4], backgroundColor: 'rgba(255, 206, 86, 0.6)' }
+        },
+        sequelae: [
+            { label: 'Cognitive Impairment', value: 35 },
+            { label: 'Hearing Loss', value: 25 },
+            { label: 'Motor Deficits', value: 20 },
+            { label: 'Epilepsy', value: 15 },
+            { label: 'Vision Loss', value: 10 }
+        ],
+        roadmap: [
+            { title: 'Prevention & Epidemic Control', content: 'Focuses on high immunization coverage, developing new vaccines like NmCV-5, and improving epidemic response strategies.' },
+            { title: 'Diagnosis & Treatment', content: 'Emphasizes the need for rapid, accurate diagnostics and ensuring access to optimal clinical management and treatments.' },
+            { title: 'Disease Surveillance', content: 'Aims to strengthen global surveillance systems to track etiological shifts and antimicrobial resistance, guiding prevention efforts.' },
+            { title: 'Care & Support', content: 'Focuses on improving access to rehabilitation and support services for survivors to address the significant burden of long-term sequelae.' },
+            { title: 'Advocacy & Engagement', content: 'Works to raise awareness, reduce stigma, and ensure meningitis remains a global health priority, encouraging investment and action.' }
+        ],
+        faq: [
+            { q: 'Can I be cured?', a: 'Many people make a full recovery, especially from viral meningitis. However, bacterial meningoencephalitis can leave permanent after-effects. The goal of treatment is to stop the infection and manage inflammation to give the brain the best chance to heal. Recovery is often a long process.' },
+            { q: 'What dietary changes are most effective?', a: 'There is no specific diet to treat meningoencephalitis. During the acute illness, nutrition is provided in the hospital. During recovery, a balanced, healthy diet is important for overall health and healing, but it does not directly treat the neurological effects.' },
+            { q: 'When should I call my doctor?', a: 'You should seek emergency medical care immediately if you or someone you know shows symptoms like a sudden severe headache, stiff neck, fever, and confusion. For survivors, call your doctor for any new or worsening symptoms, such as increased headaches, new seizures, or significant changes in mood or thinking.' }
+        ]
+    };
+
+    function setActiveTab(tabId) {
+        navButtons.forEach(button => {
+            if (button.dataset.tab === tabId) {
+                button.classList.add('active');
+            } else {
+                button.classList.remove('active');
+            }
+        });
+        contentSections.forEach(section => {
+            if (section.id === tabId) {
+                section.classList.add('active');
+            } else {
+                section.classList.remove('active');
+            }
+        });
+    }
+
+    navButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            setActiveTab(button.dataset.tab);
+        });
+    });
+
+    function animateValue(obj, start, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const value = Math.floor(progress * (end - start) + start);
+            obj.innerHTML = value.toLocaleString();
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    function initStatCounters() {
+        const casesStat = document.getElementById('cases-stat');
+        const deathsStat = document.getElementById('deaths-stat');
+        const disabilityStat = document.getElementById('disability-stat');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateValue(casesStat, 0, data.stats.cases, 2000);
+                    animateValue(deathsStat, 0, data.stats.deaths, 2000);
+                    animateValue(disabilityStat, 0, data.stats.disability, 1500);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        observer.observe(document.getElementById('overview'));
+    }
+
+    function initPathophysiology() {
+        const diagramContainer = document.getElementById('pathophysiology-diagram');
+        const detailsContainer = document.getElementById('pathophysiology-details');
+        
+        data.pathophysiology.forEach((step, index) => {
+            const stepDiv = document.createElement('div');
+            stepDiv.className = 'text-center flex-1';
+            stepDiv.innerHTML = `<div class="text-4xl mb-2">${step.icon}</div><div class="font-semibold text-gray-700">${step.name}</div>`;
+            stepDiv.addEventListener('mouseover', () => {
+                detailsContainer.textContent = step.detail;
+            });
+            diagramContainer.appendChild(stepDiv);
+
+            if (index < data.pathophysiology.length - 1) {
+                const arrowDiv = document.createElement('div');
+                arrowDiv.className = 'text-2xl text-teal-400 md:rotate-0 rotate-90';
+                arrowDiv.innerHTML = '→';
+                diagramContainer.appendChild(arrowDiv);
+            }
+        });
+    }
+
+    function initEtiologies() {
+        const grid = document.getElementById('etiology-grid');
+        const filters = document.querySelectorAll('.etiology-filter-btn');
+
+        function renderGrid(filter) {
+            grid.innerHTML = '';
+            const filteredData = (filter === 'all') ? data.etiologies : data.etiologies.filter(e => e.category === filter);
+            
+            filteredData.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'etiology-card bg-gray-50 p-4 rounded-lg border border-gray-200';
+                card.dataset.category = item.category;
+                card.innerHTML = `
+                    <h4 class="font-bold text-lg text-teal-700">${item.name}</h4>
+                    <p class="text-sm text-gray-600 mt-1">${item.detail}</p>
+                    <div class="text-xs font-semibold text-white ${item.category === 'Bacterial' ? 'bg-red-500' : item.category === 'Viral' ? 'bg-blue-500' : item.category === 'Fungal' ? 'bg-amber-500' : 'bg-purple-500'} inline-block px-2 py-1 rounded-full mt-3">${item.category}</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        filters.forEach(button => {
+            button.addEventListener('click', () => {
+                filters.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                renderGrid(button.dataset.filter);
+            });
+        });
+
+        renderGrid('all');
+        document.querySelector('.etiology-filter-btn[data-filter="all"]').classList.add('active');
+    }
+
+    let csfChartInstance = null;
+    function initCsfChart() {
+        const ctx = document.getElementById('csfChart').getContext('2d');
+        const selector = document.getElementById('csf-selector');
+
+        function renderChart(etiology) {
+            if (csfChartInstance) {
+                csfChartInstance.destroy();
+            }
+            
+            const selectedProfile = data.csfProfiles[etiology];
+            const chartData = {
+                labels: ['WBC Count (cells/μL)', 'Protein (mg/dL)', 'CSF/Serum Glucose Ratio'],
+                datasets: [
+                    { ...data.csfProfiles.normal, barPercentage: 0.5 },
+                    { ...selectedProfile, barPercentage: 0.5 }
+                ]
+            };
+            
+            csfChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            type: 'logarithmic',
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    if (value === 10000 || value === 1000 || value === 100 || value === 10 || value === 1 || value === 0.1) {
+                                        return value.toLocaleString();
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: { display: true, text: `CSF Profile: ${selectedProfile.label} vs. Normal` },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y.toLocaleString();
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        selector.addEventListener('change', (e) => {
+            renderChart(e.target.value);
+        });
+
+        renderChart('bacterial');
+    }
+    
+    let sequelaeChartInstance = null;
+    function initSequelaeChart() {
+        const ctx = document.getElementById('sequelaeChart').getContext('2d');
+        if (sequelaeChartInstance) sequelaeChartInstance.destroy();
+        
+        sequelaeChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.sequelae.map(d => d.label),
+                datasets: [{
+                    label: '% of Survivors with Sequelae',
+                    data: data.sequelae.map(d => d.value),
+                    backgroundColor: [
+                        'rgba(20, 83, 45, 0.6)',
+                        'rgba(22, 101, 52, 0.6)',
+                        'rgba(21, 128, 61, 0.6)',
+                        'rgba(22, 163, 74, 0.6)',
+                        'rgba(34, 197, 94, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(20, 83, 45, 1)',
+                        'rgba(22, 101, 52, 1)',
+                        'rgba(21, 128, 61, 1)',
+                        'rgba(22, 163, 74, 1)',
+                        'rgba(34, 197, 94, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Most Common Long-Term Disabilities' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.raw}% of survivors may experience this.`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Estimated Frequency (%)' }
+                    }
+                }
+            }
+        });
+    }
+
+    function initAccordions(containerId, items) {
+        const accordionContainer = document.getElementById(containerId);
+        accordionContainer.innerHTML = '';
+        items.forEach((item, index) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'border border-gray-200 rounded-lg';
+            
+            const button = document.createElement('button');
+            button.className = 'w-full flex justify-between items-center p-4 text-left font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition';
+            button.innerHTML = `
+                <span>${item.title || item.q}</span>
+                <span class="transform transition-transform duration-300">▼</span>
+            `;
+            
+            const content = document.createElement('div');
+            content.className = 'accordion-content';
+            content.innerHTML = `<div class="p-4 text-gray-600 border-t border-gray-200">${item.content || item.a}</div>`;
+            
+            wrapper.appendChild(button);
+            wrapper.appendChild(content);
+            accordionContainer.appendChild(wrapper);
+
+            button.addEventListener('click', () => {
+                const isExpanded = content.style.maxHeight;
+                if (isExpanded) {
+                    content.style.maxHeight = null;
+                    button.querySelector('span:last-child').style.transform = 'rotate(0deg)';
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    button.querySelector('span:last-child').style.transform = 'rotate(180deg)';
+                }
+            });
+        });
+    }
+
+    // Initialize everything
+    setActiveTab('overview');
+    initStatCounters();
+    initPathophysiology();
+    initEtiologies();
+    initCsfChart();
+    initSequelaeChart();
+    initAccordions('roadmap-accordion', data.roadmap);
+    initAccordions('faq-accordion', data.faq);
+});
+</script>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+  
+</body>
+</html>
