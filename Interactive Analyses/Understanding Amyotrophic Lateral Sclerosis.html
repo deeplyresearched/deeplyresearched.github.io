@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Report: Understanding Amyotrophic Lateral Sclerosis (ALS)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Neutral Blue -->
+    <!-- Application Structure Plan: The application uses a thematic, single-page dashboard structure rather than mirroring the linear report. This design choice prioritizes user-driven exploration. Key sections include: 1) A high-level 'Overview' with key statistics, 2) An 'Understanding ALS' section with toggles for patient vs. clinician views, 3) An interactive 'Biology' section to simplify complex pathophysiology, 4) A task-oriented 'Diagnosis & Management' section, 5) A 'Prognosis' section with data visualizations, and 6) a 'Future Research' section. This non-linear structure allows users (patients, caregivers, or clinicians) to jump directly to the information most relevant to them, enhancing usability and comprehension of the dense source material. -->
+    <!-- Visualization & Content Choices: 
+        - Overview: Goal: Inform. Method: KPI cards and a Chart.js Bar Chart for 'Prevalence by Age' to provide a quick quantitative summary. Interaction: Hover tooltips.
+        - Understanding ALS: Goal: Organize/Compare. Method: HTML/CSS diagram for 'Disease Progression' and toggled content blocks for different audiences. Interaction: Click to reveal different content views.
+        - Biology: Goal: Simplify/Organize. Method: Chart.js Donut Chart for 'Genetic Causes' and an interactive HTML/CSS/JS diagram for 'Pathways' to break down complex science. Interaction: Click on pathway nodes to display explanations.
+        - Diagnosis & Management: Goal: Compare/Organize. Method: HTML table comparing diagnostic criteria and a Chart.js Bar Chart comparing survival benefits of 'NIV vs. Riluzole' to highlight the importance of supportive care. Interaction: Tabbed interface for management strategies.
+        - Prognosis: Goal: Change/Inform. Method: Chart.js Line Chart for 'Survival Probability' and interactive HTML cards for 'Prognostic Factors'. Interaction: Hover over factors to see their impact.
+        - Justification: These choices translate dense text into scannable, interactive visuals. Chart.js is used for all data charts for consistency. Interactive diagrams are built with HTML/CSS/JS to avoid external libraries and meet constraints. This approach makes the information more engaging and easier to digest than the original report format.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #1e293b; /* slate-800 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 384px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #0ea5e9; /* sky-500 */
+            border-bottom-color: #0ea5e9; /* sky-500 */
+        }
+        .tab-button.active {
+            background-color: #0ea5e9; /* sky-500 */
+            color: white;
+        }
+        .pathway-node.active {
+            background-color: #38bdf8; /* sky-400 */
+            color: white;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-slate-700">Understanding ALS</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 border-b-2 border-transparent">Overview</a>
+                        <a href="#understanding" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 border-b-2 border-transparent">The Disease</a>
+                        <a href="#biology" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 border-b-2 border-transparent">Biology</a>
+                        <a href="#diagnosis" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 border-b-2 border-transparent">Diagnosis & Care</a>
+                        <a href="#prognosis" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 border-b-2 border-transparent">Prognosis</a>
+                        <a href="#research" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 border-b-2 border-transparent">Research</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <section id="overview" class="scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Amyotrophic Lateral Sclerosis: An Interactive Overview</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">This application translates a comprehensive medical report on ALS into an explorable experience. Here, you can interact with key data, understand the disease from different perspectives, and explore the landscape of treatment and research.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+                    <p class="text-sm font-medium text-slate-500">Global Prevalence</p>
+                    <p class="mt-1 text-3xl font-semibold text-sky-600">2-3</p>
+                    <p class="text-sm text-slate-500">per 100,000 people</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+                    <p class="text-sm font-medium text-slate-500">Average Onset Age</p>
+                    <p class="mt-1 text-3xl font-semibold text-sky-600">58-63</p>
+                    <p class="text-sm text-slate-500">for sporadic ALS</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+                    <p class="text-sm font-medium text-slate-500">Median Survival</p>
+                    <p class="mt-1 text-3xl font-semibold text-sky-600">2-5</p>
+                    <p class="text-sm text-slate-500">years from onset</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+                    <p class="text-sm font-medium text-slate-500">Male-to-Female Ratio</p>
+                    <p class="mt-1 text-3xl font-semibold text-sky-600">~1.5 : 1</p>
+                    <p class="text-sm text-slate-500">higher risk in men</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                <h3 class="text-xl font-bold text-center text-slate-800 mb-2">Age is the Strongest Risk Factor</h3>
+                <p class="text-center text-slate-600 mb-6 max-w-2xl mx-auto">The risk of developing ALS increases significantly with age, peaking in the 70s. This chart illustrates the sharp rise in prevalence in older populations.</p>
+                <div class="chart-container">
+                    <canvas id="prevalenceByAgeChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-slate-200">
+
+        <section id="understanding" class="scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Understanding the Disease</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">ALS affects the motor neurons that control voluntary muscles. This section explores its clinical presentation, from initial symptoms to the underlying signs neurologists look for.</p>
+            </div>
+
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                <div class="flex justify-center mb-6">
+                    <div class="inline-flex rounded-md shadow-sm">
+                        <button id="patientViewBtn" class="view-toggle-btn active px-4 py-2 text-sm font-medium text-white bg-sky-600 border border-gray-200 rounded-l-lg hover:bg-sky-700 focus:z-10 focus:ring-2 focus:ring-sky-500">Patient View</button>
+                        <button id="clinicianViewBtn" class="view-toggle-btn px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-sky-700 focus:z-10 focus:ring-2 focus:ring-sky-500">Clinician View</button>
+                    </div>
+                </div>
+
+                <div id="patientViewContent">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">What Does ALS Feel Like?</h3>
+                    <p class="text-slate-600 mb-4">For patients, ALS is a progressive loss of control. It begins subtly and relentlessly worsens. An analogy often used is being trapped in a car with failing brakes, where the body gradually stops responding to the mind's commands.</p>
+                    <h4 class="font-semibold text-slate-700 mb-2">Common Initial Symptoms:</h4>
+                    <ul class="list-disc list-inside space-y-2 text-slate-600">
+                        <li><span class="font-semibold">Limb Onset (~67%):</span> Tripping or stumbling, dropping objects, weakness in a hand or leg, difficulty with fine motor tasks like buttoning a shirt.</li>
+                        <li><span class="font-semibold">Bulbar Onset (~25%):</span> Slurred or nasal-sounding speech (dysarthria), difficulty swallowing (dysphagia) or chewing.</li>
+                        <li><span class="font-semibold">Other Signs:</span> Muscle cramps, twitching (fasciculations), and unusual fatigue in the arms or legs.</li>
+                    </ul>
+                </div>
+
+                <div id="clinicianViewContent" class="hidden">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">Clinical Hallmarks: UMN & LMN Signs</h3>
+                    <p class="text-slate-600 mb-4">The diagnosis of ALS requires evidence of both Upper Motor Neuron (UMN) and Lower Motor Neuron (LMN) degeneration. The presence of both types of signs in the same body region is a key diagnostic feature.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="border border-red-200 bg-red-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-red-800 mb-2">Upper Motor Neuron (UMN) Signs</h4>
+                            <p class="text-sm text-red-700 mb-2">(Damage in the brain)</p>
+                            <ul class="list-disc list-inside space-y-1 text-red-700">
+                                <li>Spasticity (muscle stiffness)</li>
+                                <li>Hyperreflexia (overactive reflexes)</li>
+                                <li>Pathological reflexes (e.g., Babinski sign)</li>
+                                <li>Pseudobulbar affect (involuntary laughing/crying)</li>
+                            </ul>
+                        </div>
+                        <div class="border border-blue-200 bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-blue-800 mb-2">Lower Motor Neuron (LMN) Signs</h4>
+                            <p class="text-sm text-blue-700 mb-2">(Damage in the spinal cord/brainstem)</p>
+                            <ul class="list-disc list-inside space-y-1 text-blue-700">
+                                <li>Muscle weakness (paresis)</li>
+                                <li>Muscle atrophy (wasting)</li>
+                                <li>Fasciculations (twitching)</li>
+                                <li>Muscle cramps</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-slate-200">
+
+        <section id="biology" class="scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">The Biology of ALS</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">While the exact cause of ALS is unknown, research has identified key genetic factors and cellular pathways that contribute to motor neuron death. Explore the complex mechanisms underlying the disease.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                    <h3 class="text-xl font-bold text-center text-slate-800 mb-2">Genetic Landscape of ALS</h3>
+                    <p class="text-center text-slate-600 mb-6 max-w-2xl mx-auto">While most cases are sporadic (90-95%), a growing number of genes are linked to the disease. The C9orf72 and SOD1 mutations are the most common known genetic causes.</p>
+                    <div class="chart-container h-80 md:h-96">
+                        <canvas id="geneticCausesChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                    <h3 class="text-xl font-bold text-center text-slate-800 mb-4">Convergent Pathogenic Pathways</h3>
+                    <p class="text-center text-slate-600 mb-6">Different triggers appear to funnel into a few common cellular failure points. Click on a pathway below to learn more about its role in ALS.</p>
+                    <div class="space-y-3 mb-4">
+                        <div id="pathway-proteinopathy" class="pathway-node cursor-pointer p-3 bg-slate-100 rounded-lg shadow-sm transition-all duration-300 ease-in-out hover:bg-sky-100">
+                            <h4 class="font-semibold text-slate-700">1. Proteinopathy (TDP-43 Aggregation)</h4>
+                        </div>
+                        <div id="pathway-rna" class="pathway-node cursor-pointer p-3 bg-slate-100 rounded-lg shadow-sm transition-all duration-300 ease-in-out hover:bg-sky-100">
+                            <h4 class="font-semibold text-slate-700">2. RNA Dysregulation</h4>
+                        </div>
+                        <div id="pathway-excitotoxicity" class="pathway-node cursor-pointer p-3 bg-slate-100 rounded-lg shadow-sm transition-all duration-300 ease-in-out hover:bg-sky-100">
+                            <h4 class="font-semibold text-slate-700">3. Glutamate Excitotoxicity</h4>
+                        </div>
+                        <div id="pathway-inflammation" class="pathway-node cursor-pointer p-3 bg-slate-100 rounded-lg shadow-sm transition-all duration-300 ease-in-out hover:bg-sky-100">
+                            <h4 class="font-semibold text-slate-700">4. Neuroinflammation</h4>
+                        </div>
+                    </div>
+                    <div id="pathway-explanation" class="p-4 bg-sky-50 border-l-4 border-sky-400 text-slate-700 rounded-r-lg min-h-[100px]">
+                        <p>Select a pathway to see its description.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-slate-200">
+
+        <section id="diagnosis" class="scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Diagnosis and Care</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">Diagnosing ALS is a clinical process of exclusion, while management involves a multidisciplinary approach combining medication with vital supportive care to improve quality of life and survival.</p>
+            </div>
+            
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                <div class="mb-6">
+                    <div class="flex justify-center border-b border-gray-200">
+                        <button data-tab="management" class="tab-button active flex-1 sm:flex-none px-4 py-3 text-center font-medium text-slate-600 rounded-t-lg transition">Management Strategies</button>
+                        <button data-tab="criteria" class="tab-button flex-1 sm:flex-none px-4 py-3 text-center font-medium text-slate-600 rounded-t-lg transition">Diagnostic Criteria</button>
+                    </div>
+                </div>
+
+                <div id="managementContent" class="tab-content">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-800 mb-4">Therapeutic Approaches</h3>
+                            <p class="text-slate-600 mb-6">While there is no cure, several strategies can manage symptoms, slow progression, and improve quality of life. Supportive care, in particular, has a profound impact on survival.</p>
+                            <div class="space-y-4">
+                                <div class="p-4 border rounded-lg">
+                                    <h4 class="font-semibold text-lg text-sky-700">Pharmacological Therapy</h4>
+                                    <p class="text-slate-600 mt-1">Medications like Riluzole and Edaravone aim to slow disease progression by targeting excitotoxicity and oxidative stress. Gene-specific therapies like Tofersen are available for certain mutations.</p>
+                                </div>
+                                <div class="p-4 border rounded-lg">
+                                    <h4 class="font-semibold text-lg text-sky-700">Symptomatic Management</h4>
+                                    <p class="text-slate-600 mt-1">Focuses on treating symptoms like spasticity, cramps, excess saliva, and pseudobulbar affect to improve daily comfort and function.</p>
+                                </div>
+                                <div class="p-4 border rounded-lg bg-sky-50 border-sky-200">
+                                    <h4 class="font-semibold text-lg text-sky-800">Essential Supportive Care</h4>
+                                    <p class="text-slate-700 mt-1">The cornerstone of modern ALS care. Includes respiratory support with Non-Invasive Ventilation (NIV) and nutritional support via feeding tubes (PEG), both of which are proven to extend life.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-center text-slate-800 mb-2">Supportive Care Extends Life</h3>
+                            <p class="text-center text-slate-600 mb-6">The survival benefit from Non-Invasive Ventilation (NIV) is greater than that of first-line medication, highlighting the critical importance of proactive respiratory management.</p>
+                            <div class="chart-container">
+                                <canvas id="survivalBenefitChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="criteriaContent" class="tab-content hidden">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4 text-center">Comparing Diagnostic Criteria: El Escorial vs. Awaji</h3>
+                    <p class="text-center text-slate-600 mb-6 max-w-3xl mx-auto">The Awaji criteria were developed to increase diagnostic sensitivity, allowing for an earlier diagnosis by giving electrophysiological (EMG) findings equal weight to clinical signs.</p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full min-w-full text-sm text-left text-slate-500">
+                            <thead class="text-xs text-slate-700 uppercase bg-slate-100">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">Feature</th>
+                                    <th scope="col" class="px-6 py-3">El Escorial Criteria</th>
+                                    <th scope="col" class="px-6 py-3">Awaji Criteria</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="bg-white border-b">
+                                    <th scope="row" class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">Core Principle</th>
+                                    <td class="px-6 py-4">High specificity, lower sensitivity. Relies on clinical signs.</td>
+                                    <td class="px-6 py-4 font-semibold text-sky-700">Higher sensitivity for earlier diagnosis. Integrates clinical and EMG findings.</td>
+                                </tr>
+                                <tr class="bg-slate-50 border-b">
+                                    <th scope="row" class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">Role of EMG</th>
+                                    <td class="px-6 py-4">Confirmatory tool.</td>
+                                    <td class="px-6 py-4 font-semibold text-sky-700">Diagnostic tool. EMG evidence is equivalent to clinical LMN signs.</td>
+                                </tr>
+                                <tr class="bg-white border-b">
+                                    <th scope="row" class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">Fasciculations</th>
+                                    <td class="px-6 py-4">A clinical sign; EMG finding is only supportive.</td>
+                                    <td class="px-6 py-4 font-semibold text-sky-700">EMG fasciculations are considered evidence of active denervation.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-slate-200">
+
+        <section id="prognosis" class="scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Prognosis and Outlook</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">The disease course is variable, but certain factors can influence progression and survival. Understanding these factors is key to managing expectations and planning care.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <div class="lg:col-span-3 bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                    <h3 class="text-xl font-bold text-center text-slate-800 mb-2">Survival Probability Over Time</h3>
+                    <p class="text-center text-slate-600 mb-6 max-w-2xl mx-auto">While the average survival is 2-5 years, there is significant variability. Roughly half of patients live three years or more, and about 1 in 10 survive for a decade or longer.</p>
+                    <div class="chart-container">
+                        <canvas id="survivalProbabilityChart"></canvas>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">Key Prognostic Factors</h3>
+                    <p class="text-slate-600 mb-4">Hover over each factor to see its typical impact on prognosis.</p>
+                    <div class="space-y-3">
+                        <div class="prognosis-factor p-4 border rounded-lg transition-all duration-200" data-info="Younger age at symptom onset is generally associated with slower progression and longer survival.">
+                            <h4 class="font-semibold text-slate-700">Age at Onset</h4>
+                        </div>
+                        <div class="prognosis-factor p-4 border rounded-lg transition-all duration-200" data-info="Limb-onset disease typically has a better prognosis than bulbar-onset, which affects breathing and swallowing earlier.">
+                            <h4 class="font-semibold text-slate-700">Site of Onset</h4>
+                        </div>
+                        <div class="prognosis-factor p-4 border rounded-lg transition-all duration-200" data-info="Rapid weight loss and malnutrition are strong negative prognostic indicators. Proactive nutritional support is critical.">
+                            <h4 class="font-semibold text-slate-700">Nutritional Status</h4>
+                        </div>
+                        <div class="prognosis-factor p-4 border rounded-lg transition-all duration-200" data-info="A faster decline in Forced Vital Capacity (FVC) is a powerful predictor of shorter survival.">
+                            <h4 class="font-semibold text-slate-700">Respiratory Function</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-slate-200">
+
+        <section id="research" class="scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">The Future of Research</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">The field of ALS research is more active than ever, with promising new strategies targeting the core mechanisms of the disease. This section highlights key areas of innovation.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="font-bold text-lg text-sky-700 mb-2">Gene-Targeted Therapies</h3>
+                    <p class="text-slate-600">Following the success of Tofersen for SOD1-ALS, therapies like antisense oligonucleotides (ASOs) are being developed to "silence" other disease-causing genes like C9orf72.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="font-bold text-lg text-sky-700 mb-2">Targeting Neuroinflammation</h3>
+                    <p class="text-slate-600">New drugs aim to modulate the behavior of glial cells (astrocytes and microglia), shifting them from a toxic, pro-inflammatory state to a protective one.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="font-bold text-lg text-sky-700 mb-2">Biomarkers & AI</h3>
+                    <p class="text-slate-600">Developing biomarkers like Neurofilament Light Chain (NfL) for earlier diagnosis and using AI to analyze vast datasets are accelerating drug discovery and trial design.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="font-bold text-lg text-sky-700 mb-2">Stem Cell Approaches</h3>
+                    <p class="text-slate-600">Research is focused on using stem cells not to replace neurons, but to create a more supportive local environment that protects the remaining motor neurons from damage.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+            <p class="font-semibold mb-2">Disclaimer</p>
+            <p class="text-sm text-slate-400 max-w-3xl mx-auto">This information is for educational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chartColors = {
+                primary: 'rgba(14, 165, 233, 0.6)', // sky-500
+                primaryHover: 'rgba(14, 165, 233, 0.8)',
+                secondary: 'rgba(100, 116, 139, 0.6)', // slate-500
+                secondaryHover: 'rgba(100, 116, 139, 0.8)',
+                grid: 'rgba(226, 232, 240, 1)', // slate-200
+                text: '#334155' // slate-700
+            };
+
+            const defaultChartOptions = {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: chartColors.text
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 12
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: chartColors.grid
+                        },
+                        ticks: {
+                            color: chartColors.text
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: chartColors.text
+                        }
+                    }
+                }
+            };
+            
+            // Chart 1: Prevalence by Age
+            const prevalenceCtx = document.getElementById('prevalenceByAgeChart').getContext('2d');
+            new Chart(prevalenceCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['18-39', '40-49', '50-59', '60-69', '70-79', '80+'],
+                    datasets: [{
+                        label: 'Prevalence per 100,000',
+                        data: [1.2, 4.2, 10.5, 20.9, 29.8, 25.1],
+                        backgroundColor: chartColors.primary,
+                        borderColor: chartColors.primaryHover,
+                        borderWidth: 1,
+                        hoverBackgroundColor: chartColors.primaryHover
+                    }]
+                },
+                options: defaultChartOptions
+            });
+
+            // Chart 2: Genetic Causes
+            const geneticsCtx = document.getElementById('geneticCausesChart').getContext('2d');
+            new Chart(geneticsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Sporadic / Unknown', 'C9orf72', 'SOD1', 'TARDBP', 'FUS', 'Other'],
+                    datasets: [{
+                        label: 'Genetic Causes of ALS',
+                        data: [85, 7, 2, 1, 1, 4],
+                        backgroundColor: [
+                            'rgba(100, 116, 139, 0.6)', // slate
+                            'rgba(14, 165, 233, 0.7)',  // sky
+                            'rgba(56, 189, 248, 0.7)',  // sky-400
+                            'rgba(125, 211, 252, 0.7)', // sky-300
+                            'rgba(186, 230, 253, 0.7)', // sky-200
+                            'rgba(203, 213, 225, 0.6)'  // slate-300
+                        ],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: chartColors.text } },
+                        tooltip: defaultChartOptions.plugins.tooltip
+                    }
+                }
+            });
+
+            // Chart 3: Survival Benefit
+            const survivalBenefitCtx = document.getElementById('survivalBenefitChart').getContext('2d');
+            new Chart(survivalBenefitCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Riluzole', 'Non-Invasive Ventilation (NIV)'],
+                    datasets: [{
+                        label: 'Median Survival Benefit (Months)',
+                        data: [3, 10], // Approximate values for illustration
+                        backgroundColor: [chartColors.secondary, chartColors.primary],
+                        borderColor: [chartColors.secondaryHover, chartColors.primaryHover],
+                        borderWidth: 1,
+                        hoverBackgroundColor: [chartColors.secondaryHover, chartColors.primaryHover]
+                    }]
+                },
+                options: { ...defaultChartOptions, indexAxis: 'y' }
+            });
+
+            // Chart 4: Survival Probability
+            const survivalProbCtx = document.getElementById('survivalProbabilityChart').getContext('2d');
+            new Chart(survivalProbCtx, {
+                type: 'line',
+                data: {
+                    labels: ['0', '1', '2', '3', '4', '5', '10'],
+                    datasets: [{
+                        label: 'Survival Probability (%)',
+                        data: [100, 80, 60, 50, 40, 25, 10],
+                        fill: true,
+                        backgroundColor: 'rgba(14, 165, 233, 0.2)',
+                        borderColor: 'rgba(14, 165, 233, 1)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    ...defaultChartOptions,
+                    scales: {
+                        y: { ...defaultChartOptions.scales.y, max: 100, title: { display: true, text: '% Survival' } },
+                        x: { ...defaultChartOptions.scales.x, title: { display: true, text: 'Years After Diagnosis' } }
+                    }
+                }
+            });
+
+            // View Toggler Logic
+            const patientViewBtn = document.getElementById('patientViewBtn');
+            const clinicianViewBtn = document.getElementById('clinicianViewBtn');
+            const patientViewContent = document.getElementById('patientViewContent');
+            const clinicianViewContent = document.getElementById('clinicianViewContent');
+            const viewToggleBtns = document.querySelectorAll('.view-toggle-btn');
+            
+            patientViewBtn.addEventListener('click', () => {
+                patientViewContent.classList.remove('hidden');
+                clinicianViewContent.classList.add('hidden');
+                patientViewBtn.classList.add('active', 'bg-sky-600', 'text-white');
+                clinicianViewBtn.classList.remove('active', 'bg-sky-600', 'text-white');
+            });
+
+            clinicianViewBtn.addEventListener('click', () => {
+                clinicianViewContent.classList.remove('hidden');
+                patientViewContent.classList.add('hidden');
+                clinicianViewBtn.classList.add('active', 'bg-sky-600', 'text-white');
+                patientViewBtn.classList.remove('active', 'bg-sky-600', 'text-white');
+            });
+
+            // Pathway Interaction Logic
+            const pathwayNodes = document.querySelectorAll('.pathway-node');
+            const pathwayExplanation = document.getElementById('pathway-explanation');
+            const pathwayData = {
+                'pathway-proteinopathy': '<strong>Proteinopathy:</strong> A core feature of over 97% of ALS cases. The protein TDP-43 moves from the nucleus to the cytoplasm, where it misfolds and forms toxic clumps (aggregates). This disrupts cellular function and leads to a failure of protein quality control systems.',
+                'pathway-rna': '<strong>RNA Dysregulation:</strong> Many key ALS genes are involved in RNA processing. Their dysfunction leads to errors in gene splicing, transport, and translation, crippling the cell. Toxic RNA can also accumulate and trap essential proteins.',
+                'pathway-excitotoxicity': '<strong>Glutamate Excitotoxicity:</strong> Motor neurons are damaged by excessive stimulation from the neurotransmitter glutamate. This "hyperexcitable" state is thought to be a primary driver of neuron death and is the target of the drug Riluzole.',
+                'pathway-inflammation': '<strong>Neuroinflammation:</strong> Normally supportive glial cells (astrocytes and microglia) become activated and adopt a toxic, pro-inflammatory state. They release molecules that actively contribute to motor neuron injury and death.'
+            };
+
+            pathwayNodes.forEach(node => {
+                node.addEventListener('click', () => {
+                    pathwayNodes.forEach(n => n.classList.remove('active'));
+                    node.classList.add('active');
+                    pathwayExplanation.innerHTML = pathwayData[node.id];
+                });
+            });
+
+            // Diagnosis & Management Tabs
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    tabContents.forEach(content => {
+                        if (content.id === button.dataset.tab + 'Content') {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            // Prognosis Factor Hovers
+            const prognosisFactors = document.querySelectorAll('.prognosis-factor');
+            prognosisFactors.forEach(factor => {
+                const originalText = factor.innerHTML;
+                factor.addEventListener('mouseenter', () => {
+                    factor.innerHTML = `<p class="text-sm text-slate-600">${factor.dataset.info}</p>`;
+                    factor.classList.add('bg-sky-50');
+                });
+                factor.addEventListener('mouseleave', () => {
+                    factor.innerHTML = originalText;
+                    factor.classList.remove('bg-sky-50');
+                });
+            });
+
+            // Active Nav Link on Scroll
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 80) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
