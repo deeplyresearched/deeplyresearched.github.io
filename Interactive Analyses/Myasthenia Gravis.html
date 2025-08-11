@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Report: Myasthenia Gravis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Neutrals with Teal Accent -->
+    <!-- Application Structure Plan: A dual-pathway, single-page application designed for two distinct audiences: patients and clinicians. The structure is thematic and task-oriented, not linear like the source report. A top-level navigation allows users to self-select their path. The 'Patient Pathway' simplifies complex topics using analogies and focuses on symptoms and FAQs. The 'Clinician Pathway' uses a tabbed interface for deep dives into epidemiology, pathophysiology, diagnosis, and treatment. This structure was chosen to maximize usability by providing tailored content and interactivity for each user group, preventing information overload for patients while offering efficient data access for professionals. Key interactions include interactive charts, a dynamic pathophysiology diagram, and filtered treatment tables. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Epidemiology (Age/Sex Distribution) -> Goal: Compare -> Viz: Bar Chart -> Interaction: Hover for details -> Justification: Clearly shows the bimodal distribution mentioned in the report. -> Library: Chart.js.
+        - Report Info: Epidemiology (Antibody Prevalence) -> Goal: Inform (Proportions) -> Viz: Doughnut Chart -> Interaction: Hover for percentage -> Justification: Best for showing parts of a whole (serotypes). -> Library: Chart.js.
+        - Report Info: Pathophysiology (NMJ function/dysfunction) -> Goal: Organize/Explain -> Viz: Custom Interactive Diagram -> Interaction: Click buttons to change diagram state -> Justification: Dynamically visualizes the complex mechanisms (AChR vs. MuSK) for better comprehension than static text. -> Method: HTML/CSS/JS.
+        - Report Info: Diagnostic Process -> Goal: Organize/Guide -> Viz: Interactive Step-by-Step Cards -> Interaction: Click to expand details -> Justification: Breaks down the complex workflow into manageable, sequential steps. -> Method: HTML/CSS/JS.
+        - Report Info: Treatment Options -> Goal: Compare/Filter -> Viz: Interactive Table -> Interaction: Select antibody type to filter relevant drugs -> Justification: Allows clinicians to quickly find relevant therapies based on patient serotype, a key aspect of modern management. -> Method: HTML/CSS/JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f7f4; /* Warm Neutral Background */
+            color: #4a4a4a;
+        }
+        .nav-active {
+            color: #0d9488; /* Teal */
+            border-bottom: 2px solid #0d9488;
+        }
+        .nav-inactive {
+            color: #71717a;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-active {
+            background-color: #0d9488;
+            color: white;
+        }
+        .tab-inactive {
+            background-color: #e5e7eb;
+            color: #374151;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .pathophys-container {
+            border: 1px solid #e5e7eb;
+            background-color: #ffffff;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            min-height: 350px;
+        }
+        .neuron-terminal, .muscle-fiber {
+            transition: all 0.5s ease-in-out;
+        }
+        .synaptic-vesicle {
+            transition: all 0.5s ease-in-out;
+            width: 12px;
+            height: 12px;
+            background-color: #3b82f6;
+            border-radius: 50%;
+            position: absolute;
+        }
+        .receptor {
+            width: 10px;
+            height: 15px;
+            background-color: #10b981;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            transition: all 0.5s ease-in-out;
+        }
+        .antibody {
+            width: 8px;
+            height: 10px;
+            border: 2px solid #ef4444;
+            border-bottom: none;
+            border-radius: 4px 4px 0 0;
+            position: absolute;
+            bottom: 16px;
+            transition: all 0.5s ease-in-out;
+            opacity: 0;
+        }
+        .complement {
+             width: 6px;
+             height: 6px;
+             background-color: #f97316;
+             border-radius: 50%;
+             position: absolute;
+             bottom: 26px;
+             transition: all 0.5s ease-in-out;
+             opacity: 0;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="app" class="container mx-auto p-4 md:p-8">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-teal-800 mb-2">Myasthenia Gravis: An Interactive Guide</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">An exploration of the pathophysiology, diagnosis, and management of MG, designed for both patients and healthcare professionals.</p>
+        </header>
+
+        <nav class="flex justify-center border-b border-gray-200 mb-8">
+            <button id="nav-patient" class="nav-button nav-active text-lg font-semibold py-4 px-6 transition-colors duration-300">For Patients</button>
+            <button id="nav-clinician" class="nav-button nav-inactive text-lg font-semibold py-4 px-6 transition-colors duration-300">For Clinicians</button>
+        </nav>
+
+        <main id="content-area">
+            <!-- Patient View (Default) -->
+            <section id="patient-view">
+                <div class="space-y-12">
+                    
+                    <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+                        <h2 class="text-2xl font-bold text-teal-700 mb-4">What is Myasthenia Gravis? A Simple Guide</h2>
+                        <p class="mb-4 text-gray-700">This section provides a clear, easy-to-understand overview of Myasthenia Gravis, perfect for patients, family, and friends. We use a simple analogy to explain how MG affects the body and highlight the most common first symptoms to watch for.</p>
+                        <div class="grid md:grid-cols-2 gap-8 items-center">
+                            <div>
+                                <h3 class="font-semibold text-xl mb-2 text-gray-800">The "Pitcher & Catcher" Analogy</h3>
+                                <p class="text-gray-600 mb-4">Think of your nerves and muscles playing a game of catch. The nerve is the 'pitcher' throwing a chemical 'baseball' called acetylcholine. The muscle is the 'catcher' with special 'gloves' called receptors. When the ball is caught, the muscle moves.</p>
+                                <p class="text-gray-600">In Myasthenia Gravis, the body's immune system mistakenly attacks and damages these catcher's gloves. With fewer gloves, the muscle struggles to catch the signals, leading to weakness that gets worse with use. This is why rest is so important—it gives the catcher a chance to recover.</p>
+                            </div>
+                            <div class="bg-teal-50 p-6 rounded-lg border border-teal-200">
+                                <h3 class="font-semibold text-xl mb-3 text-gray-800">Common First Symptoms</h3>
+                                <ul class="space-y-3 text-gray-700">
+                                    <li class="flex items-start"><span class="text-teal-600 mr-3 text-2xl">👁️</span> <div><strong>Drooping Eyelids (Ptosis):</strong> One or both eyelids may droop.</div></li>
+                                    <li class="flex items-start"><span class="text-teal-600 mr-3 text-2xl">👓</span> <div><strong>Double or Blurry Vision (Diplopia):</strong> Vision may become doubled, often improving if one eye is covered.</div></li>
+                                    <li class="flex items-start"><span class="text-teal-600 mr-3 text-2xl">🗣️</span> <div><strong>Changes in Speech:</strong> Voice may become soft, slurred, or sound nasal.</div></li>
+                                    <li class="flex items-start"><span class="text-teal-600 mr-3 text-2xl">🍔</span> <div><strong>Trouble Chewing/Swallowing:</strong> Jaw may tire during a meal, or you might choke easily.</div></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+                        <h2 class="text-2xl font-bold text-teal-700 mb-4">Frequently Asked Questions (FAQs)</h2>
+                         <p class="mb-6 text-gray-700">Here are answers to some of the most common questions patients have about living with Myasthenia Gravis. This information is for educational purposes and should not replace advice from your doctor.</p>
+                        <div class="space-y-4">
+                            <div class="border-b border-gray-200 pb-4">
+                                <h3 class="font-semibold text-lg text-gray-800">Can I be cured?</h3>
+                                <p class="text-gray-600 mt-1">Currently, there is no cure, but MG is a very treatable, manageable lifelong condition. The goal is to control symptoms so you can live a full, active life. Many people achieve remission, where symptoms disappear.</p>
+                            </div>
+                            <div class="border-b border-gray-200 pb-4">
+                                <h3 class="font-semibold text-lg text-gray-800">What dietary changes are most effective?</h3>
+                                <p class="text-gray-600 mt-1">There is no special "MG diet." A balanced diet is best. If you have trouble chewing or swallowing, eat softer foods and smaller, more frequent meals. Taking your medication (pyridostigmine) 30-60 minutes before eating can help maximize your strength.</p>
+                            </div>
+                            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                                <h3 class="font-semibold text-lg text-red-800">When should I go to the Emergency Room?</h3>
+                                <p class="text-red-700 mt-1">Call 911 or go to the ER immediately if you have **severe difficulty breathing**, **severe trouble swallowing** where you are choking on saliva, or a very weak cough. These are signs of a "myasthenic crisis," which is a medical emergency.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Clinician View (Hidden by default) -->
+            <section id="clinician-view" class="hidden">
+                 <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-100">
+                    <div class="mb-6">
+                        <div class="flex border-b border-gray-200">
+                            <button data-tab="epi" class="clinician-tab tab-active flex-1 sm:flex-none text-sm md:text-base font-medium p-3 md:px-4 rounded-t-lg transition">Epidemiology</button>
+                            <button data-tab="patho" class="clinician-tab tab-inactive flex-1 sm:flex-none text-sm md:text-base font-medium p-3 md:px-4 rounded-t-lg transition">Pathophysiology</button>
+                            <button data-tab="dx" class="clinician-tab tab-inactive flex-1 sm:flex-none text-sm md:text-base font-medium p-3 md:px-4 rounded-t-lg transition">Diagnosis</button>
+                            <button data-tab="tx" class="clinician-tab tab-inactive flex-1 sm:flex-none text-sm md:text-base font-medium p-3 md:px-4 rounded-t-lg transition">Treatment</button>
+                        </div>
+                    </div>
+
+                    <div id="tab-content">
+                        <div id="epi-content" class="tab-pane">
+                            <h2 class="text-2xl font-bold text-teal-700 mb-4">Epidemiology of Myasthenia Gravis</h2>
+                            <p class="mb-8 text-gray-700">This section provides a visual summary of the key epidemiological characteristics of MG. The charts below illustrate the bimodal age distribution of the disease and the prevalence of the main autoantibody subtypes, which are critical for understanding patient demographics and guiding diagnostic strategy.</p>
+                            <div class="grid md:grid-cols-2 gap-8 items-start">
+                                <div class="w-full">
+                                    <h3 class="text-xl font-semibold text-center mb-2 text-gray-800">Bimodal Age Distribution</h3>
+                                    <div class="chart-container">
+                                        <canvas id="ageDistributionChart"></canvas>
+                                    </div>
+                                    <p class="text-center text-sm text-gray-600 mt-2">MG incidence peaks in women <40 and men >60.</p>
+                                </div>
+                                <div class="w-full">
+                                    <h3 class="text-xl font-semibold text-center mb-2 text-gray-800">Autoantibody Prevalence (Generalized MG)</h3>
+                                    <div class="chart-container">
+                                        <canvas id="antibodyPrevalenceChart"></canvas>
+                                    </div>
+                                     <p class="text-center text-sm text-gray-600 mt-2">Prevalence of key autoantibodies in gMG patients.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="patho-content" class="tab-pane hidden">
+                            <h2 class="text-2xl font-bold text-teal-700 mb-4">Interactive Pathophysiology of the NMJ</h2>
+                            <p class="mb-6 text-gray-700">This interactive diagram visualizes the complex events at the neuromuscular junction (NMJ). Select a state to see how normal transmission works and how different autoantibodies in Myasthenia Gravis disrupt this process. This tool is designed to clarify the distinct mechanisms underlying AChR-positive and MuSK-positive MG.</p>
+                            <div class="flex justify-center space-x-2 mb-6">
+                                <button data-patho="normal" class="patho-btn bg-blue-500 text-white px-4 py-2 rounded-md shadow">Normal Function</button>
+                                <button data-patho="achr" class="patho-btn bg-gray-300 text-gray-800 px-4 py-2 rounded-md">AChR-MG</button>
+                                <button data-patho="musk" class="patho-btn bg-gray-300 text-gray-800 px-4 py-2 rounded-md">MuSK-MG</button>
+                            </div>
+                            <div class="pathophys-container flex flex-col justify-between">
+                                <div id="neuron-terminal" class="neuron-terminal bg-blue-100 p-4 rounded-lg h-24 relative">
+                                    <span class="font-semibold">Presynaptic Neuron Terminal</span>
+                                    <div id="vesicle1" class="synaptic-vesicle" style="top: 15px; left: 30%;"></div>
+                                    <div id="vesicle2" class="synaptic-vesicle" style="top: 25px; left: 50%;"></div>
+                                    <div id="vesicle3" class="synaptic-vesicle" style="top: 15px; left: 70%;"></div>
+                                </div>
+                                <div class="h-16 flex items-center justify-center text-gray-500">Synaptic Cleft</div>
+                                <div id="muscle-fiber" class="muscle-fiber bg-green-100 p-4 rounded-lg h-24 relative flex justify-around items-end">
+                                    <span class="absolute top-2 left-4 font-semibold">Postsynaptic Muscle Fiber</span>
+                                    <div class="receptor-site relative h-full flex items-end" data-receptor-id="1"><div class="receptor"></div></div>
+                                    <div class="receptor-site relative h-full flex items-end" data-receptor-id="2"><div class="receptor"></div></div>
+                                    <div class="receptor-site relative h-full flex items-end" data-receptor-id="3"><div class="receptor"></div></div>
+                                    <div class="receptor-site relative h-full flex items-end" data-receptor-id="4"><div class="receptor"></div></div>
+                                    <div class="receptor-site relative h-full flex items-end" data-receptor-id="5"><div class="receptor"></div></div>
+                                    <div class="receptor-site relative h-full flex items-end" data-receptor-id="6"><div class="receptor"></div></div>
+                                </div>
+                            </div>
+                             <div id="patho-explanation" class="mt-4 p-4 bg-gray-100 rounded-lg text-gray-700">Select a state above to see the explanation.</div>
+                        </div>
+
+                        <div id="dx-content" class="tab-pane hidden">
+                             <h2 class="text-2xl font-bold text-teal-700 mb-4">Diagnostic Workup Pathway</h2>
+                             <p class="mb-8 text-gray-700">The diagnosis of MG is a systematic process combining clinical evaluation with confirmatory tests. This guide outlines the typical steps, from initial suspicion to definitive diagnosis. Click on each step to reveal key considerations, tests, and hallmark findings that are essential for an accurate workup.</p>
+                             <div class="space-y-4">
+                                 <div class="dx-step" data-step="1">
+                                     <button class="w-full text-left p-4 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold text-lg flex justify-between items-center">
+                                         <span>Step 1: Clinical History & Physical Exam</span>
+                                         <span class="transform transition-transform duration-300">▼</span>
+                                     </button>
+                                     <div class="dx-content hidden p-4 bg-white border rounded-b-lg">
+                                         <p><strong>History:</strong> Elicit hallmark fluctuating, fatigable weakness. Ask about diurnal patterns, improvement with rest, and specific triggers.</p>
+                                         <p><strong>Physical Exam:</strong> Objectively demonstrate fatigability with tests like sustained upgaze (for ptosis) or counting aloud (for dysarthria). The Ice Pack Test is highly specific for ocular MG.</p>
+                                     </div>
+                                 </div>
+                                 <div class="dx-step" data-step="2">
+                                     <button class="w-full text-left p-4 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold text-lg flex justify-between items-center">
+                                         <span>Step 2: Serological Testing</span>
+                                          <span class="transform transition-transform duration-300">▼</span>
+                                     </button>
+                                     <div class="dx-content hidden p-4 bg-white border rounded-b-lg">
+                                         <p><strong>First Line:</strong> AChR-Ab panel (Binding, Blocking, Modulating). Positive in ~85% of gMG.</p>
+                                         <p><strong>Second Line (if AChR-Ab negative):</strong> MuSK-Ab test. Positive in ~40% of AChR-negative gMG.</p>
+                                         <p><strong>Third Line (if double-negative):</strong> LRP4-Ab test.</p>
+                                         <p><strong>For Thymoma Risk:</strong> Striated Muscle (Str) antibody test.</p>
+                                     </div>
+                                 </div>
+                                 <div class="dx-step" data-step="3">
+                                     <button class="w-full text-left p-4 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold text-lg flex justify-between items-center">
+                                         <span>Step 3: Electrodiagnostic Studies</span>
+                                          <span class="transform transition-transform duration-300">▼</span>
+                                     </button>
+                                     <div class="dx-content hidden p-4 bg-white border rounded-b-lg">
+                                         <p><strong>Repetitive Nerve Stimulation (RNS):</strong> Looks for a >10% decremental response in CMAP amplitude with low-frequency stimulation. Confirms NMJ defect.</p>
+                                         <p><strong>Single-Fiber EMG (SFEMG):</strong> The most sensitive test. Measures "jitter" and "blocking" between two muscle fibers from the same motor unit. Can be positive even in clinically unaffected muscles.</p>
+                                     </div>
+                                 </div>
+                                 <div class="dx-step" data-step="4">
+                                     <button class="w-full text-left p-4 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold text-lg flex justify-between items-center">
+                                         <span>Step 4: Chest Imaging</span>
+                                          <span class="transform transition-transform duration-300">▼</span>
+                                     </button>
+                                     <div class="dx-content hidden p-4 bg-white border rounded-b-lg">
+                                         <p><strong>Mandatory for all patients:</strong> Chest CT or MRI with contrast is required to screen for thymoma or thymic hyperplasia, which are strongly associated with AChR-positive MG.</p>
+                                     </div>
+                                 </div>
+                             </div>
+                        </div>
+                        
+                        <div id="tx-content" class="tab-pane hidden">
+                            <h2 class="text-2xl font-bold text-teal-700 mb-4">Personalized Treatment Strategies</h2>
+                            <p class="mb-6 text-gray-700">Modern MG management is highly personalized based on antibody status. Use the filter below to see the common therapeutic pathways for different MG subtypes. This tool highlights first-line, second-line, and emerging targeted therapies, reflecting the stratified approach recommended in current guidelines.</p>
+                            <div class="mb-6">
+                                <label for="tx-filter" class="font-semibold mr-2">Filter by Antibody Status:</label>
+                                <select id="tx-filter" class="p-2 border rounded-md">
+                                    <option value="all">Show All</option>
+                                    <option value="achr">AChR-Positive</option>
+                                    <option value="musk">MuSK-Positive</option>
+                                </select>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="bg-gray-100">
+                                            <th class="p-3 font-semibold">Drug Class</th>
+                                            <th class="p-3 font-semibold">Example</th>
+                                            <th class="p-3 font-semibold">Primary Use Case</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tx-table-body">
+                                        <!-- Rows will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                 </div>
+            </section>
+        </main>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navPatient = document.getElementById('nav-patient');
+            const navClinician = document.getElementById('nav-clinician');
+            const patientView = document.getElementById('patient-view');
+            const clinicianView = document.getElementById('clinician-view');
+            const clinicianTabs = document.querySelectorAll('.clinician-tab');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+
+            const ageDistData = {
+                labels: ['<40', '>60'],
+                datasets: [
+                    {
+                        label: 'Women',
+                        data: [65, 35],
+                        backgroundColor: 'rgba(20, 184, 166, 0.6)',
+                        borderColor: 'rgba(13, 148, 136, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Men',
+                        data: [20, 80],
+                        backgroundColor: 'rgba(8, 145, 178, 0.6)',
+                        borderColor: 'rgba(6, 182, 212, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            };
+
+            const antibodyPrevData = {
+                labels: ['AChR-Ab Positive', 'MuSK-Ab Positive', 'LRP4-Ab / Seronegative'],
+                datasets: [{
+                    label: 'Prevalence in gMG',
+                    data: [85, 8, 7],
+                    backgroundColor: [
+                        'rgba(13, 148, 136, 0.7)',
+                        'rgba(8, 145, 178, 0.7)',
+                        'rgba(156, 163, 175, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(13, 148, 136, 1)',
+                        'rgba(8, 145, 178, 1)',
+                        'rgba(156, 163, 175, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+            
+            const treatmentData = [
+                { class: 'AChE Inhibitors', example: 'Pyridostigmine', use: 'First-line symptomatic for mild MG', type: ['achr', 'musk'] },
+                { class: 'Corticosteroids', example: 'Prednisone', use: 'First-line immunosuppression for gMG', type: ['achr', 'musk'] },
+                { class: 'Conventional IS', example: 'Azathioprine, Mycophenolate', use: 'Steroid-sparing agents for long-term control', type: ['achr', 'musk'] },
+                { class: 'Rapid Therapies', example: 'IVIg, PLEX', use: 'Crisis, exacerbations, bridging therapy', type: ['achr', 'musk'] },
+                { class: 'Thymectomy', example: 'Surgical Removal', use: 'For thymoma; option for gMG <65yrs', type: ['achr'] },
+                { class: 'B-Cell Depletion', example: 'Rituximab', use: 'Highly effective for refractory MuSK-MG', type: ['musk', 'achr'] },
+                { class: 'Complement Inhibitors', example: 'Eculizumab, Ravulizumab', use: 'Targeted therapy for refractory gMG', type: ['achr'] },
+                { class: 'FcRn Blockers', example: 'Efgartigimod, Rozanolixizumab', use: 'Broadly effective for refractory gMG', type: ['achr', 'musk'] },
+            ];
+
+            let ageChart, antibodyChart;
+
+            function renderTreatmentTable(filter = 'all') {
+                const tableBody = document.getElementById('tx-table-body');
+                tableBody.innerHTML = '';
+                const filteredData = filter === 'all' 
+                    ? treatmentData 
+                    : treatmentData.filter(tx => tx.type.includes(filter));
+
+                filteredData.forEach(tx => {
+                    const row = document.createElement('tr');
+                    row.className = 'border-b border-gray-200 hover:bg-gray-50';
+                    row.innerHTML = `
+                        <td class="p-3">${tx.class}</td>
+                        <td class="p-3">${tx.example}</td>
+                        <td class="p-3">${tx.use}</td>
+                    `;
+                    if ( (filter === 'achr' && tx.class === 'Complement Inhibitors') || (filter === 'musk' && tx.class === 'B-Cell Depletion') ) {
+                         row.classList.add('bg-teal-50', 'font-semibold');
+                    }
+                    tableBody.appendChild(row);
+                });
+            }
+
+            function switchNavView(isPatient) {
+                if (isPatient) {
+                    navPatient.classList.add('nav-active');
+                    navPatient.classList.remove('nav-inactive');
+                    navClinician.classList.remove('nav-active');
+                    navClinician.classList.add('nav-inactive');
+                    patientView.classList.remove('hidden');
+                    clinicianView.classList.add('hidden');
+                } else {
+                    navClinician.classList.add('nav-active');
+                    navClinician.classList.remove('nav-inactive');
+                    navPatient.classList.remove('nav-active');
+                    navPatient.classList.add('nav-inactive');
+                    clinicianView.classList.remove('hidden');
+                    patientView.classList.add('hidden');
+                    
+                    if (!ageChart) {
+                        const ageCtx = document.getElementById('ageDistributionChart').getContext('2d');
+                        ageChart = new Chart(ageCtx, {
+                            type: 'bar',
+                            data: ageDistData,
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: { y: { beginAtZero: true, stacked: true, ticks: { callback: value => value + '%' } }, x: { stacked: true } },
+                                plugins: { tooltip: { callbacks: { label: (context) => `${context.dataset.label}: ${context.raw}%` } } }
+                            }
+                        });
+                    }
+                    if (!antibodyChart) {
+                        const antibodyCtx = document.getElementById('antibodyPrevalenceChart').getContext('2d');
+                        antibodyChart = new Chart(antibodyCtx, {
+                            type: 'doughnut',
+                            data: antibodyPrevData,
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: (context) => `${context.label}: ${context.raw}%` } } }
+                            }
+                        });
+                    }
+                    renderTreatmentTable();
+                }
+            }
+
+            navPatient.addEventListener('click', () => switchNavView(true));
+            navClinician.addEventListener('click', () => switchNavView(false));
+
+            clinicianTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetTab = tab.dataset.tab;
+
+                    clinicianTabs.forEach(t => {
+                        t.classList.remove('tab-active');
+                        t.classList.add('tab-inactive');
+                    });
+                    tab.classList.add('tab-active');
+                    tab.classList.remove('tab-inactive');
+
+                    tabPanes.forEach(pane => {
+                        if (pane.id === `${targetTab}-content`) {
+                            pane.classList.remove('hidden');
+                        } else {
+                            pane.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+            
+            document.querySelectorAll('.dx-step button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const content = button.nextElementSibling;
+                    const icon = button.querySelector('span:last-child');
+                    content.classList.toggle('hidden');
+                    icon.classList.toggle('rotate-180');
+                });
+            });
+
+            document.getElementById('tx-filter').addEventListener('change', (e) => {
+                renderTreatmentTable(e.target.value);
+            });
+
+            const pathoExplanations = {
+                normal: '<strong>Normal Function:</strong> The nerve releases acetylcholine (ACh), which binds to many ACh receptors (AChRs) on the muscle. This creates a strong signal (end-plate potential) that easily triggers muscle contraction. The system has a high "safety factor."',
+                achr: '<strong>AChR-MG:</strong> Autoantibodies (red Y-shapes) attack the AChRs. They block ACh from binding, cause the receptors to be removed (antigenic modulation), and activate complement (orange dots), which destroys the muscle membrane. The result is a weak signal and failed muscle contraction.',
+                musk: '<strong>MuSK-MG:</strong> Autoantibodies attack Muscle-Specific Kinase (MuSK), a protein essential for organizing AChRs into tight clusters. This disrupts the structure of the neuromuscular junction, causing the receptors to disperse. Even though the receptors are present, they are not clustered properly, leading to inefficient signaling and weakness.'
+            };
+
+            const muscleFiber = document.getElementById('muscle-fiber');
+            const explanationDiv = document.getElementById('patho-explanation');
+            document.querySelectorAll('.patho-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const state = btn.dataset.patho;
+                    
+                    document.querySelectorAll('.patho-btn').forEach(b => b.classList.replace('bg-blue-500','bg-gray-300').replace('text-white','text-gray-800'));
+                    btn.classList.replace('bg-gray-300','bg-blue-500');
+                    btn.classList.replace('text-gray-800','text-white');
+
+                    explanationDiv.innerHTML = pathoExplanations[state];
+                    
+                    // Reset state
+                    muscleFiber.innerHTML = `<span class="absolute top-2 left-4 font-semibold">Postsynaptic Muscle Fiber</span>`;
+                    for (let i = 1; i <= 6; i++) {
+                        const receptorSite = document.createElement('div');
+                        receptorSite.className = 'receptor-site relative h-full flex items-end';
+                        receptorSite.dataset.receptorId = i;
+                        const receptor = document.createElement('div');
+                        receptor.className = 'receptor';
+                        receptorSite.appendChild(receptor);
+                        muscleFiber.appendChild(receptorSite);
+                    }
+                    muscleFiber.style.backgroundColor = '#dcfce7'; // green-100
+
+                    if (state === 'achr') {
+                        muscleFiber.style.backgroundColor = '#fee2e2'; // red-100
+                        document.querySelectorAll('.receptor-site').forEach((site, index) => {
+                            if (index < 4) { // Affect 4 out of 6 receptors
+                                site.querySelector('.receptor').style.opacity = '0.3';
+                                const antibody = document.createElement('div');
+                                antibody.className = 'antibody';
+                                antibody.style.opacity = '1';
+                                site.appendChild(antibody);
+                                if (index < 2) { // Add complement to 2
+                                     const complement = document.createElement('div');
+                                     complement.className = 'complement';
+                                     complement.style.opacity = '1';
+                                     site.appendChild(complement);
+                                }
+                            }
+                        });
+                    } else if (state === 'musk') {
+                        muscleFiber.style.backgroundColor = '#fef3c7'; // amber-100
+                        document.querySelectorAll('.receptor-site').forEach(site => {
+                           const receptor = site.querySelector('.receptor');
+                           receptor.style.transform = `translateX(${(Math.random() - 0.5) * 40}px) scale(0.8)`;
+                           receptor.style.backgroundColor = '#6ee7b7'; // a duller green
+                        });
+                    }
+                });
+            });
+            
+            // Initial state
+            switchNavView(true);
+            document.querySelector('.patho-btn[data-patho="normal"]').click();
+
+        });
+    </script>
+
+</body>
+</html>
