@@ -1,0 +1,428 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Guide to Anemia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (Beige, Slate, Muted Teal, Soft White) -->
+    <!-- Application Structure Plan: A tab-based, single-page application is chosen to manage the report's complexity. This structure allows users (both clinicians and patients) to navigate directly to their area of interest without overwhelming vertical scrolling. The core interaction is the 'Types of Anemia' filter, which enables direct comparison of different anemia etiologies—a key task not easily performed with a linear document. The flow moves from a general Overview, to a deep dive into Types, then to practical application in Diagnosis and Treatment, and finally to a dedicated Patient Center. This architecture prioritizes user-directed exploration and comparative learning. -->
+    <!-- Visualization & Content Choices: 
+        - Epidemiology Data -> Goal: Show Scale -> Viz: Doughnut Chart (Chart.js) -> Interaction: Hover for details -> Justification: Immediately conveys the vast global impact of anemia in a simple, digestible format.
+        - Anemia Types (Pathophysiology, Symptoms) -> Goal: Compare & Detail -> Presentation: Filterable Content Blocks -> Interaction: Click buttons to dynamically update displayed text -> Justification: This is the app's core, turning dense text into an interactive encyclopedia for easy comparison.
+        - Diagnostic Workup -> Goal: Organize Process -> Presentation: HTML/CSS Flowchart -> Interaction: Static visual guide -> Justification: A visual representation of the diagnostic algorithm is more intuitive and faster to parse than descriptive text.
+        - Treatment Table -> Goal: Organize & Find -> Presentation: Searchable HTML Table -> Interaction: Real-time text search -> Justification: Provides quick, targeted access to specific treatment information, a critical use case for clinicians.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF7; /* Soft Beige */
+            color: #4A5568; /* Slate Gray */
+        }
+        .nav-btn {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-btn.active {
+            color: #319795; /* Muted Teal */
+            border-bottom-color: #319795;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .type-btn {
+            transition: all 0.3s ease;
+        }
+        .type-btn.active {
+            background-color: #319795;
+            color: white;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .flowchart-step {
+            border: 1px solid #E2E8F0;
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+        .flowchart-arrow {
+            position: relative;
+            text-align: center;
+            font-size: 2rem;
+            color: #A0AEC0;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="min-h-screen">
+        <header class="bg-white shadow-sm sticky top-0 z-10">
+            <div class="container mx-auto px-4 py-4">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Interactive Guide to Anemia</h1>
+                <p class="text-sm text-gray-500">An evidence-based exploration of causes, diagnosis, and treatment.</p>
+            </div>
+            <nav class="bg-gray-50 border-b border-gray-200">
+                <div class="container mx-auto px-4">
+                    <div class="flex space-x-4 sm:space-x-8 -mb-px">
+                        <button class="nav-btn py-3 px-1 text-sm sm:text-base font-medium active" data-tab="overview">Overview</button>
+                        <button class="nav-btn py-3 px-1 text-sm sm:text-base font-medium" data-tab="types">Types of Anemia</button>
+                        <button class="nav-btn py-3 px-1 text-sm sm:text-base font-medium" data-tab="diagnosis">Diagnosis</button>
+                        <button class="nav-btn py-3 px-1 text-sm sm:text-base font-medium" data-tab="treatments">Treatments</button>
+                        <button class="nav-btn py-3 px-1 text-sm sm:text-base font-medium" data-tab="patient-center">Patient Center</button>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <main class="container mx-auto p-4 md:p-8">
+            <!-- Overview Section -->
+            <section id="overview" class="content-section active">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">What is Anemia? A Patient's Guide</h2>
+                    <p class="mb-4">This section provides a high-level introduction to anemia, designed for easy understanding. It uses an analogy to explain what anemia is, highlights its importance, and visualizes its global impact. This is the starting point for understanding why this condition is a significant global health concern.</p>
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div>
+                            <p class="mb-4">Imagine your body is a bustling country, and your blood is a vital nationwide delivery service. The red blood cells are the delivery trucks, carrying essential oxygen from your lungs to every organ, tissue, and cell.</p>
+                            <p class="mb-4">Inside each truck is a protein called **hemoglobin**—the cargo container for oxygen. Anemia occurs when there's a problem with this delivery service: not enough trucks, faulty trucks, or trucks with too-small cargo containers.</p>
+                            <p class="font-semibold text-gray-700">Why is it important?</p>
+                            <p>Without enough oxygen, your body can't work at full capacity. This is why anemia often causes persistent fatigue, weakness, and shortness of breath. It's a critical sign that something is wrong, and left untreated, it can strain your heart and lead to serious health issues.</p>
+                        </div>
+                        <div class="text-center">
+                             <h3 class="text-xl font-semibold text-gray-800 mb-2">A Global Health Issue</h3>
+                            <p class="text-sm text-gray-600 mb-4">Anemia affects nearly a quarter of the world's population, making it one of the most common health conditions globally.</p>
+                            <div class="chart-container">
+                                <canvas id="prevalenceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Types of Anemia Section -->
+            <section id="types" class="content-section">
+                 <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Exploring the Types of Anemia</h2>
+                    <p class="mb-6">Anemia is not a single disease but a group of conditions with different causes. This section allows you to explore the major categories of anemia. Click on a type below to dynamically load its specific details, including its underlying cause (pathophysiology), common symptoms, and key diagnostic features. This interactive format is designed to help you easily compare and contrast the different forms of anemia.</p>
+                    <div class="flex flex-wrap gap-2 mb-6 border-b pb-4">
+                        <button class="type-btn active px-4 py-2 text-sm font-medium rounded-full border border-gray-300 bg-white text-gray-700" data-type="ida">Iron Deficiency</button>
+                        <button class="type-btn px-4 py-2 text-sm font-medium rounded-full border border-gray-300 bg-white text-gray-700" data-type="b12">Vitamin B12 Deficiency</button>
+                        <button class="type-btn px-4 py-2 text-sm font-medium rounded-full border border-gray-300 bg-white text-gray-700" data-type="acd">Chronic Disease</button>
+                        <button class="type-btn px-4 py-2 text-sm font-medium rounded-full border border-gray-300 bg-white text-gray-700" data-type="hemolytic">Hemolytic Anemia</button>
+                        <button class="type-btn px-4 py-2 text-sm font-medium rounded-full border border-gray-300 bg-white text-gray-700" data-type="aplastic">Aplastic Anemia</button>
+                    </div>
+                    <div id="anemia-type-content">
+                        <!-- Content will be dynamically inserted here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Diagnosis Section -->
+            <section id="diagnosis" class="content-section">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">The Diagnostic Pathway</h2>
+                    <p class="mb-6">Diagnosing the specific cause of anemia is a systematic process that starts with a simple blood test and branches out based on the results. This visual flowchart illustrates the typical diagnostic journey a clinician takes. It begins with the Complete Blood Count (CBC) and uses the Mean Corpuscular Volume (MCV) to classify the anemia, guiding all subsequent tests. This visual approach helps clarify the logical steps involved in reaching a precise diagnosis.</p>
+                    <div class="space-y-4">
+                        <div class="flowchart-step">
+                            <h3 class="font-semibold text-lg">Start: Patient Presents with Symptoms</h3>
+                            <p class="text-sm text-gray-600">e.g., Fatigue, Pallor, Shortness of Breath</p>
+                        </div>
+                        <div class="flowchart-arrow">↓</div>
+                        <div class="flowchart-step bg-teal-50 border-teal-200">
+                            <h3 class="font-semibold text-lg">Initial Lab Test: Complete Blood Count (CBC)</h3>
+                            <p class="text-sm text-gray-600">Confirm low Hemoglobin/Hematocrit. Then, check RBC indices.</p>
+                        </div>
+                        <div class="flowchart-arrow">↓</div>
+                        <div class="flowchart-step">
+                            <h3 class="font-semibold text-lg">Key Decision Point: Mean Corpuscular Volume (MCV)</h3>
+                            <p class="text-sm text-gray-600">What is the average size of the red blood cells?</p>
+                        </div>
+                        <div class="grid md:grid-cols-3 gap-4 mt-4">
+                            <div class="flowchart-arrow hidden md:block" style="grid-column: 1 / span 3; margin-top: -1.5rem;">
+                                <div class="w-full border-t-2 border-gray-300"></div>
+                                <div class="flex justify-around -mt-3">
+                                    <div class="w-2 h-2 border-l-2 border-b-2 border-gray-300 transform rotate-45"></div>
+                                    <div class="w-2 h-2 border-l-2 border-b-2 border-gray-300 transform rotate-45"></div>
+                                    <div class="w-2 h-2 border-l-2 border-b-2 border-gray-300 transform rotate-45"></div>
+                                </div>
+                            </div>
+                            <div class="flowchart-step bg-blue-50 border-blue-200">
+                                <h4 class="font-semibold">Microcytic (MCV &lt; 80)</h4>
+                                <p class="text-xs text-gray-500 mt-2">Think: Iron Deficiency, Thalassemia, Anemia of Chronic Disease (late).</p>
+                                <p class="text-sm font-medium mt-2 text-blue-700">Next: Iron Studies, Hemoglobin Electrophoresis</p>
+                            </div>
+                             <div class="flowchart-step bg-green-50 border-green-200">
+                                <h4 class="font-semibold">Normocytic (MCV 80-100)</h4>
+                                <p class="text-xs text-gray-500 mt-2">Think: Acute Blood Loss, Hemolysis, Chronic Disease, Bone Marrow Failure.</p>
+                                <p class="text-sm font-medium mt-2 text-green-700">Next: Reticulocyte Count</p>
+                            </div>
+                            <div class="flowchart-step bg-yellow-50 border-yellow-200">
+                                <h4 class="font-semibold">Macrocytic (MCV &gt; 100)</h4>
+                                <p class="text-xs text-gray-500 mt-2">Think: B12/Folate Deficiency, Liver Disease, Alcoholism, MDS.</p>
+                                <p class="text-sm font-medium mt-2 text-yellow-700">Next: B12/Folate Levels, MMA, Smear</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Treatments Section -->
+            <section id="treatments" class="content-section">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Anemia Management & Therapies</h2>
+                    <p class="mb-6">Treatment for anemia is highly specific to its underlying cause. This section provides a searchable overview of common pharmacological agents used in management. You can type in the search box to filter the table by drug name or the condition it treats. This tool is designed for quick reference to understand the various therapeutic options available.</p>
+                    <input type="text" id="treatment-search" placeholder="Search treatments by drug or condition..." class="w-full p-3 border border-gray-300 rounded-lg mb-6 focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Drug/Agent</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Indication</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mechanism</th>
+                                </tr>
+                            </thead>
+                            <tbody id="treatment-table-body" class="bg-white divide-y divide-gray-200">
+                                <!-- Table rows will be dynamically inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Patient Center Section -->
+            <section id="patient-center" class="content-section">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Patient Center: FAQs & Glossary</h2>
+                    <p class="mb-6">This section is dedicated to patients and caregivers, providing clear, non-technical answers to common questions about living with anemia. It also includes a glossary to help demystify some of the medical terms you may hear from your healthcare team. The goal is to empower you with knowledge and actionable advice for managing your health.</p>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-3">Frequently Asked Questions</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="font-semibold">Can my anemia be cured?</p>
+                                    <p class="text-sm">It depends on the cause. Anemia from nutritional deficiencies is often curable. Anemia from chronic or inherited conditions is managed long-term. For severe cases like aplastic anemia, a stem cell transplant can be a cure.</p>
+                                </div>
+                                <div>
+                                    <p class="font-semibold">What dietary changes are most effective?</p>
+                                    <p class="text-sm">For iron, eat lean meats or plant sources like lentils and spinach with vitamin C. For B12, consume animal products or fortified foods if you are vegan. For folate, eat leafy green vegetables and fortified grains.</p>
+                                </div>
+                                <div>
+                                    <p class="font-semibold">When should I call my doctor?</p>
+                                    <p class="text-sm">Call immediately for severe shortness of breath, chest pain, dizziness, a very fast heartbeat, or any signs of active bleeding.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-3">Glossary of Key Terms</h3>
+                            <ul class="space-y-3 text-sm">
+                                <li><strong class="text-gray-700">Erythropoiesis:</strong> The process of making new red blood cells, which happens in your bone marrow.</li>
+                                <li><strong class="text-gray-700">Hemolysis:</strong> The breakdown or destruction of red blood cells.</li>
+                                <li><strong class="text-gray-700">Hepcidin:</strong> A hormone that acts as the main controller of iron in your body.</li>
+                                <li><strong class="text-gray-700">Mean Corpuscular Volume (MCV):</strong> A blood test result that tells you the average size of your red blood cells.</li>
+                                <li><strong class="text-gray-700">Ferritin:</strong> A protein that stores iron in your body. A low level indicates iron deficiency.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mt-8 pt-6 border-t border-gray-200 text-xs text-gray-500">
+                        <p><strong>Disclaimer:</strong> This information is for educational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+<script>
+const anemiaData = {
+    ida: {
+        title: 'Iron Deficiency Anemia (IDA)',
+        pathophysiology: 'This is the most common type of anemia. It occurs when your body doesn\'t have enough iron to produce adequate amounts of hemoglobin. Iron is a crucial building block for the heme molecule in hemoglobin. This can be caused by blood loss (like heavy menstruation or GI bleeding), poor dietary intake, or an inability to absorb iron.',
+        symptoms: 'In addition to general anemic symptoms, specific signs can include **Pica** (craving non-food items like ice), **Koilonychia** (spoon-shaped nails), a smooth, sore tongue, and cracks at the corners of the mouth.',
+        diagnostics: 'Characterized by **Microcytic** (small) red blood cells with a low MCV. Lab tests show a **low serum ferritin** (the most specific marker), low serum iron, low transferrin saturation (TSAT), and a high total iron-binding capacity (TIBC).'
+    },
+    b12: {
+        title: 'Vitamin B12 Deficiency Anemia',
+        pathophysiology: 'This is a type of megaloblastic anemia caused by a lack of vitamin B12. This vitamin is essential for DNA synthesis. Without it, red blood cells cannot divide properly in the bone marrow, leading to the production of large, fragile, and dysfunctional cells (megaloblasts). Causes include pernicious anemia (an autoimmune condition), vegan diets without supplementation, or malabsorption from GI surgery or diseases like Crohn\'s.',
+        symptoms: 'The hallmark is **neurological symptoms**, which can occur even without anemia. These include numbness or tingling in the hands and feet, difficulty with balance, memory loss, and confusion. A sore tongue (glossitis) is also common.',
+        diagnostics: 'Characterized by **Macrocytic** (large) red blood cells with a high MCV. A peripheral smear may show hypersegmented neutrophils. Lab tests show a **low serum B12 level** and, more specifically, elevated levels of **methylmalonic acid (MMA)** and homocysteine.'
+    },
+    acd: {
+        title: 'Anemia of Chronic Disease/Inflammation (ACD/AI)',
+        pathophysiology: 'This anemia develops in people with long-term medical conditions involving inflammation, such as chronic infections, autoimmune diseases (like rheumatoid arthritis), or cancer. Inflammatory signals cause the liver to produce high levels of a hormone called **hepcidin**. Hepcidin blocks iron from being released from storage and absorbed from the gut, creating a "functional" iron deficiency where iron is present in the body but unavailable for use.',
+        symptoms: 'Symptoms are often those of the underlying chronic disease, combined with the general symptoms of mild to moderate anemia like fatigue and weakness.',
+        diagnostics: 'Typically presents as **Normocytic** (normal-sized) red blood cells, though it can become microcytic over time. The key lab finding is a **normal or high serum ferritin** (since iron stores are adequate) but low serum iron and low TIBC, reflecting the trapped iron.'
+    },
+    hemolytic: {
+        title: 'Hemolytic Anemia',
+        pathophysiology: 'This group of anemias is caused by the premature destruction of red blood cells (hemolysis) at a rate faster than the bone marrow can replace them. This can be due to intrinsic defects within the red blood cell itself (e.g., hereditary spherocytosis, sickle cell disease, G6PD deficiency) or extrinsic factors that attack the cells (e.g., autoimmune antibodies, mechanical damage from artificial heart valves).',
+        symptoms: 'In addition to general anemic symptoms, signs of rapid cell breakdown are common: **jaundice** (yellowing of the skin and eyes), dark urine, and an enlarged spleen (splenomegaly).',
+        diagnostics: 'The bone marrow tries to compensate, leading to a **high reticulocyte count**. Lab tests show signs of cell destruction: high lactate dehydrogenase (LDH), high indirect bilirubin, and low haptoglobin. A **Direct Coombs Test** is positive in autoimmune causes.'
+    },
+    aplastic: {
+        title: 'Aplastic Anemia',
+        pathophysiology: 'This is a rare but serious condition where the bone marrow fails to produce enough of all three types of blood cells: red cells, white cells, and platelets. In most cases, it\'s an autoimmune disorder where the body\'s own T-cells attack and destroy the hematopoietic stem cells in the bone marrow. This results in an "empty" or aplastic marrow.',
+        symptoms: 'Patients present with symptoms from all three deficient cell lines: **anemia** (fatigue, weakness), **leukopenia** (frequent or severe infections), and **thrombocytopenia** (easy bruising, bleeding gums, petechiae).',
+        diagnostics: 'The CBC shows **pancytopenia** (low levels of all blood cells). The reticulocyte count is very low, indicating a production failure. The definitive diagnosis is made with a **bone marrow biopsy**, which shows a profoundly hypocellular or "empty" marrow replaced by fat.'
+    }
+};
+
+const treatmentData = [
+    { drug: 'Ferrous Sulfate', indication: 'Iron Deficiency Anemia (IDA)', mechanism: 'Oral iron supplement to replete iron stores.' },
+    { drug: 'IV Iron (Iron Sucrose)', indication: 'Severe IDA, malabsorption', mechanism: 'Delivers iron directly into circulation, bypassing the gut.' },
+    { drug: 'Vitamin B12 (Cyanocobalamin)', indication: 'B12 Deficiency', mechanism: 'Replaces deficient vitamin, restoring DNA synthesis.' },
+    { drug: 'Folic Acid', indication: 'Folate Deficiency', mechanism: 'Replaces deficient folate for DNA synthesis.' },
+    { drug: 'Erythropoiesis-Stimulating Agents (ESAs)', indication: 'Anemia of CKD, Chemo-induced', mechanism: 'Hormone that stimulates red blood cell production.' },
+    { drug: 'Prednisone', indication: 'Warm Autoimmune Hemolytic Anemia', mechanism: 'Corticosteroid that suppresses the immune system.' },
+    { drug: 'Rituximab', indication: 'Refractory Autoimmune Hemolysis', mechanism: 'Monoclonal antibody that targets B-cells.' },
+    { drug: 'Hydroxyurea', indication: 'Sickle Cell Disease (SCD)', mechanism: 'Increases fetal hemoglobin (HbF) to prevent sickling.' },
+    { drug: 'Luspatercept', indication: 'Beta-Thalassemia', mechanism: 'Promotes maturation of red blood cell precursors.' },
+    { drug: 'Stem Cell Transplant', indication: 'Aplastic Anemia, Thalassemia Major', mechanism: 'Replaces defective bone marrow with healthy donor cells.' }
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const contentSections = document.querySelectorAll('.content-section');
+    const typeButtons = document.querySelectorAll('.type-btn');
+    const anemiaContentDiv = document.getElementById('anemia-type-content');
+    const treatmentTableBody = document.getElementById('treatment-table-body');
+    const treatmentSearch = document.getElementById('treatment-search');
+
+    function updateAnemiaContent(type) {
+        const data = anemiaData[type];
+        if (!data) return;
+        anemiaContentDiv.innerHTML = `
+            <h3 class="text-xl font-bold text-teal-700 mb-3">${data.title}</h3>
+            <div class="space-y-4">
+                <div>
+                    <h4 class="font-semibold text-gray-800">What's Happening? (Pathophysiology)</h4>
+                    <p class="text-sm text-gray-600">${data.pathophysiology}</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800">Specific Symptoms to Watch For</h4>
+                    <p class="text-sm text-gray-600">${data.symptoms}</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800">Key Diagnostic Clues</h4>
+                    <p class="text-sm text-gray-600">${data.diagnostics}</p>
+                </div>
+            </div>
+        `;
+    }
+
+    function populateTreatmentTable(filter = '') {
+        treatmentTableBody.innerHTML = '';
+        const lowercasedFilter = filter.toLowerCase();
+        const filteredData = treatmentData.filter(item => 
+            item.drug.toLowerCase().includes(lowercasedFilter) || 
+            item.indication.toLowerCase().includes(lowercasedFilter)
+        );
+
+        if (filteredData.length === 0) {
+            treatmentTableBody.innerHTML = `<tr><td colspan="3" class="text-center py-4">No treatments found.</td></tr>`;
+            return;
+        }
+
+        filteredData.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.drug}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.indication}</td>
+                <td class="px-6 py-4 text-sm text-gray-500">${item.mechanism}</td>
+            `;
+            treatmentTableBody.appendChild(row);
+        });
+    }
+
+    navButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            
+            contentSections.forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(button.dataset.tab).classList.add('active');
+        });
+    });
+
+    typeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            typeButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            updateAnemiaContent(button.dataset.type);
+        });
+    });
+
+    treatmentSearch.addEventListener('input', (e) => {
+        populateTreatmentTable(e.target.value);
+    });
+
+    const ctx = document.getElementById('prevalenceChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Affected by Anemia', 'Not Affected'],
+            datasets: [{
+                label: 'Global Population',
+                data: [25, 75],
+                backgroundColor: [
+                    '#319795', // Muted Teal
+                    '#E2E8F0'  // Light Gray
+                ],
+                borderColor: [
+                    '#FDFBF7',
+                    '#FDFBF7'
+                ],
+                borderWidth: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 20,
+                        padding: 20
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.label}: ${context.raw}%`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    updateAnemiaContent('ida');
+    populateTreatmentTable();
+});
+</script>
+
+</body>
+</html>
