@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Report: Prolactinoma & Acromegaly</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+
+  
+    <!-- Chosen Palette: Calm Harmony Neutrals -->
+    <!-- Application Structure Plan: A dual-pathway, comparative dashboard. A top-level navigation allows users to select either "Prolactinoma" or "Acromegaly", which acts as a global filter for the entire page. The structure is thematic, not linear, focusing on comparing the two conditions across key areas: Overview, Demographics, Symptoms, Diagnostics, and Treatment. This structure was chosen to facilitate direct comparison and highlight the critical differences between the two disorders, which is a primary goal for both clinical and patient education. The user flow is designed to be exploratory rather than sequential. -->
+    <!-- Visualization & Content Choices: 
+        - Key Stats (Prevalence, Incidence): HTML/CSS dynamic cards. Goal: Inform. Justification: Quick, high-impact data presentation.
+        - Demographics Chart: Chart.js Bar Chart. Goal: Compare. Interaction: Dynamically updates data on condition selection. Justification: Ideal for comparing gender/age distributions.
+        - Symptoms Diagram: HTML/CSS with JS hover. Goal: Organize/Inform. Interaction: Hovering on icons reveals symptoms. Justification: Visually engaging and intuitive way to explore clinical presentations.
+        - Diagnostic/Treatment Flowcharts: HTML/CSS Flexbox with JS click-to-reveal. Goal: Explain Process. Interaction: Clicking a step shows details. Justification: Simplifies complex clinical pathways into understandable steps.
+        - Comparison Table: Static HTML table. Goal: Compare. Justification: Direct, clear summary of key differences.
+        - Library/Method: Chart.js for charts, Vanilla JS for all interactions and state management.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4;
+            color: #4a4a4a;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        .nav-button.active {
+            background-color: #3B82F6;
+            color: white;
+            box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);
+        }
+        .nav-button:not(.active):hover {
+            background-color: #DBEAFE;
+        }
+        .card {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .symptom-icon {
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .symptom-icon:hover {
+            transform: scale(1.1);
+            background-color: #EFF6FF;
+            border-color: #3B82F6;
+        }
+        .flow-step {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #E5E7EB;
+        }
+        .flow-step:hover, .flow-step.active {
+            border-color: #3B82F6;
+            background-color: #EFF6FF;
+            transform: translateY(-3px);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 640px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+      
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="min-h-screen container mx-auto px-4 py-8 md:py-12">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">Pituitary Adenomas</h1>
+            <p class="text-lg text-gray-600">An Interactive Guide to Prolactinoma & Acromegaly</p>
+        </header>
+
+        <nav class="flex justify-center mb-12">
+            <div class="flex space-x-2 bg-gray-200 p-2 rounded-full">
+                <button id="btn-prolactinoma" class="nav-button active text-lg font-semibold py-3 px-6 rounded-full">Prolactinoma</button>
+                <button id="btn-acromegaly" class="nav-button text-lg font-semibold py-3 px-6 rounded-full">Acromegaly</button>
+            </div>
+        </nav>
+
+        <main id="content-area">
+            
+            <section id="overview" class="mb-16">
+                <div class="text-center mb-8">
+                    <h2 id="overview-title" class="text-3xl font-bold text-gray-800 mb-2"></h2>
+                    <p id="overview-intro" class="max-w-3xl mx-auto text-gray-600"></p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div class="card p-6">
+                        <h3 class="text-lg font-semibold text-gray-500 mb-2">Relative Frequency</h3>
+                        <p id="stat-frequency" class="text-4xl font-bold text-blue-500"></p>
+                        <p class="text-sm text-gray-500">of all pituitary adenomas</p>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-lg font-semibold text-gray-500 mb-2">Global Prevalence</h3>
+                        <p id="stat-prevalence" class="text-4xl font-bold text-blue-500"></p>
+                        <p class="text-sm text-gray-500">per 100,000 people</p>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-lg font-semibold text-gray-500 mb-2">Peak Age of Onset</h3>
+                        <p id="stat-age" class="text-4xl font-bold text-blue-500"></p>
+                        <p class="text-sm text-gray-500">years old</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="demographics" class="mb-16">
+                 <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Who is Affected?</h2>
+                    <p id="demographics-intro" class="max-w-3xl mx-auto text-gray-600">This section illustrates the typical demographic profile for the selected condition. Notice the significant differences in gender predominance and age at diagnosis between Prolactinoma and Acromegaly, which has major implications for clinical presentation.</p>
+                </div>
+                <div class="card p-4 md:p-8">
+                    <div class="chart-container">
+                        <canvas id="demographicsChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section id="symptoms" class="mb-16">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Clinical Presentation & Symptoms</h2>
+                    <p id="symptoms-intro" class="max-w-3xl mx-auto text-gray-600">Hover over the icons below to explore the common symptoms. The manifestations of these conditions are driven by two factors: the effects of hormone overproduction and the physical "mass effect" of the tumor pressing on surrounding brain structures.</p>
+                </div>
+                <div class="card p-6 md:p-8">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                        <div class="symptom-icon p-4 rounded-lg flex flex-col items-center" data-symptom="hormonal">
+                            <span class="text-5xl mb-2">🧬</span>
+                            <h4 class="font-semibold">Hormonal Effects</h4>
+                        </div>
+                        <div class="symptom-icon p-4 rounded-lg flex flex-col items-center" data-symptom="neurological">
+                            <span class="text-5xl mb-2">🧠</span>
+                            <h4 class="font-semibold">Neurological</h4>
+                        </div>
+                        <div class="symptom-icon p-4 rounded-lg flex flex-col items-center" data-symptom="physical">
+                            <span class="text-5xl mb-2">🖐️</span>
+                            <h4 class="font-semibold">Physical Changes</h4>
+                        </div>
+                        <div class="symptom-icon p-4 rounded-lg flex flex-col items-center" data-symptom="systemic">
+                            <span class="text-5xl mb-2">❤️</span>
+                            <h4 class="font-semibold">Systemic Issues</h4>
+                        </div>
+                    </div>
+                    <div id="symptom-details" class="mt-6 p-4 bg-blue-50 rounded-lg min-h-[100px] flex items-center justify-center">
+                        <p class="text-gray-700 text-center">Hover over an icon to see detailed symptoms.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="diagnosis" class="mb-16">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">The Diagnostic Journey</h2>
+                    <p class="max-w-3xl mx-auto text-gray-600">Diagnosing these conditions follows a clear, step-by-step process. It begins with suspicion based on symptoms, moves to biochemical confirmation through blood tests, and finishes with imaging to locate the tumor. Click each step to learn more.</p>
+                </div>
+                 <div class="card p-6 md:p-8">
+                    <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4 mb-6">
+                        <div id="diag-step-1" class="flow-step p-4 rounded-lg w-full md:w-1/3 text-center">
+                            <h4 class="font-bold">Step 1: Clinical Suspicion</h4>
+                        </div>
+                        <div class="text-2xl text-gray-400 hidden md:block">&rarr;</div>
+                        <div id="diag-step-2" class="flow-step p-4 rounded-lg w-full md:w-1/3 text-center">
+                            <h4 class="font-bold">Step 2: Biochemical Confirmation</h4>
+                        </div>
+                        <div class="text-2xl text-gray-400 hidden md:block">&rarr;</div>
+                        <div id="diag-step-3" class="flow-step p-4 rounded-lg w-full md:w-1/3 text-center">
+                            <h4 class="font-bold">Step 3: Imaging</h4>
+                        </div>
+                    </div>
+                    <div id="diagnosis-details" class="mt-4 p-4 bg-gray-100 rounded-lg min-h-[120px]">
+                        <p class="text-gray-700 text-center">Click a step to see details.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="treatment" class="mb-16">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Treatment Pathways</h2>
+                    <p class="max-w-3xl mx-auto text-gray-600">Treatment strategies differ significantly. Prolactinomas are unique in that medication is the primary choice, while surgery is the first-line therapy for Acromegaly. Click each treatment line to see the rationale and options.</p>
+                </div>
+                <div class="card p-6 md:p-8">
+                    <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4 mb-6">
+                        <div id="treat-step-1" class="flow-step p-4 rounded-lg w-full md:w-1/3 text-center">
+                            <h4 class="font-bold">First-Line Therapy</h4>
+                        </div>
+                        <div id="treat-step-2" class="flow-step p-4 rounded-lg w-full md:w-1/3 text-center">
+                            <h4 class="font-bold">Second-Line Therapy</h4>
+                        </div>
+                        <div id="treat-step-3" class="flow-step p-4 rounded-lg w-full md:w-1/3 text-center">
+                            <h4 class="font-bold">Third-Line Therapy</h4>
+                        </div>
+                    </div>
+                    <div id="treatment-details" class="mt-4 p-4 bg-gray-100 rounded-lg min-h-[120px]">
+                         <p class="text-gray-700 text-center">Click a treatment line to see details.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+      
+        <footer class="text-center mt-16 pt-8 border-t border-gray-200">
+            <p class="text-sm text-gray-500">This interactive guide is for educational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.</p>
+        </footer>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    
+    const appData = {
+        prolactinoma: {
+            title: "Understanding Prolactinoma",
+            intro: "Prolactinomas are the most common type of hormone-producing pituitary tumor. They arise from lactotroph cells and secrete excess prolactin, leading to hormonal imbalances.",
+            stats: {
+                frequency: "40-57%",
+                prevalence: "10-62",
+                age: "25-34",
+            },
+            demographics: {
+                labels: ['Female', 'Male'],
+                data: [90, 10],
+                backgroundColor: ['rgba(236, 72, 153, 0.6)', 'rgba(59, 130, 246, 0.6)'],
+                borderColor: ['rgb(236, 72, 153)', 'rgb(59, 130, 246)'],
+                description: "There is a strong female predominance, especially in premenopausal women. Women are typically diagnosed with smaller tumors (microadenomas) due to noticeable symptoms like menstrual changes."
+            },
+            symptoms: {
+                hormonal: "<b>Women:</b> Irregular/absent periods, milky nipple discharge (galactorrhea), infertility, low libido. <br><b>Men:</b> Decreased libido, erectile dysfunction, infertility, breast enlargement (gynecomastia).",
+                neurological: "<b>Headaches</b> are common with larger tumors. Superior growth can compress the optic chiasm, causing <b>loss of peripheral vision</b> (bitemporal hemianopsia).",
+                physical: "Physical changes are less dramatic than in acromegaly. Long-term hormonal effects can lead to reduced bone density (osteoporosis).",
+                systemic: "Primarily related to hypogonadism (low sex hormones). Can cause anxiety and depression. A rare emergency called pituitary apoplexy (sudden bleed) can occur."
+            },
+            diagnosis: {
+                step1: "<b>Clinical Suspicion:</b> Based on symptoms like menstrual irregularities and galactorrhea in women, or sexual dysfunction in men. Headaches or vision changes may be the first sign with large tumors.",
+                step2: "<b>Biochemical Confirmation:</b> A simple blood test to measure the <b>serum prolactin level</b>. A level >200 ng/mL is highly suggestive. Other pituitary hormones are also checked.",
+                step3: "<b>Imaging:</b> A <b>pituitary MRI with contrast</b> is the gold standard to visualize the adenoma, determine its size, and see its relationship to surrounding structures like the optic chiasm."
+            },
+            treatment: {
+                step1: "<b>Pharmacotherapy (Dopamine Agonists):</b> Medication (Cabergoline is preferred) is the first-line treatment. It is highly effective at normalizing prolactin levels and shrinking the tumor in over 80% of patients.",
+                step2: "<b>Transsphenoidal Surgery:</b> Reserved for patients who are resistant or intolerant to medication, or who have acute complications like pituitary apoplexy. It is a minimally invasive procedure through the nose.",
+                step3: "<b>Radiotherapy:</b> A third-line option for rare, aggressive tumors that do not respond to medication or surgery. Its effects are slow and it carries a high risk of damaging the healthy pituitary gland over time."
+            }
+        },
+        acromegaly: {
+            title: "Understanding Acromegaly",
+            intro: "Acromegaly is a rare, insidious disorder caused by a pituitary adenoma that produces excess growth hormone (GH). This leads to somatic overgrowth and significant systemic complications.",
+            stats: {
+                frequency: "11-13%",
+                prevalence: "2.8-13.7",
+                age: "40-50",
+            },
+            demographics: {
+                labels: ['Female', 'Male'],
+                data: [50, 50],
+                backgroundColor: ['rgba(236, 72, 153, 0.6)', 'rgba(59, 130, 246, 0.6)'],
+                borderColor: ['rgb(236, 72, 153)', 'rgb(59, 130, 246)'],
+                description: "Acromegaly affects men and women equally. The onset is slow and insidious, leading to a significant delay in diagnosis, typically occurring in middle age."
+            },
+            symptoms: {
+                hormonal: "Excess Growth Hormone (GH) leads to excess Insulin-like Growth Factor-1 (IGF-1), which drives most of the physical changes and systemic problems.",
+                neurological: "<b>Headaches</b> and <b>vision loss</b> (bitemporal hemianopsia) are common due to the large size of the tumor at diagnosis. Carpal tunnel syndrome is also frequent.",
+                physical: "<b>Acral Enlargement:</b> Enlarged hands and feet (change in ring/shoe size).<br><b>Coarsening Facial Features:</b> Enlarged jaw, nose, and brow.<br><b>Skin Changes:</b> Thick, oily skin, excessive sweating, skin tags.",
+                systemic: "<b>Cardiovascular:</b> High blood pressure, enlarged heart (cardiomyopathy).<br><b>Metabolic:</b> Insulin resistance, Type 2 Diabetes.<br><b>Musculoskeletal:</b> Debilitating arthritis.<br><b>Respiratory:</b> Obstructive sleep apnea."
+            },
+            diagnosis: {
+                step1: "<b>Clinical Suspicion:</b> Based on the gradual physical changes. Often suspected by comparing current appearance to old photographs. Symptoms like joint pain, snoring, or diabetes may also be clues.",
+                step2: "<b>Biochemical Confirmation:</b> The initial test is a blood test for <b>IGF-1</b> (stable and reliable). This is confirmed with an <b>Oral Glucose Tolerance Test (OGTT)</b>, where GH levels fail to suppress after a sugar drink.",
+                step3: "<b>Imaging:</b> A <b>pituitary MRI with contrast</b> is performed after biochemical confirmation to locate the GH-secreting adenoma. A full workup for comorbidities (heart, colon, etc.) is also essential."
+            },
+            treatment: {
+                step1: "<b>Transsphenoidal Surgery:</b> This is the first-line treatment for most patients, offering the best chance for a cure by removing the tumor. The goal is complete and safe resection.",
+                step2: "<b>Pharmacotherapy:</b> Used for patients not cured by surgery. Options include Somatostatin Receptor Ligands (SRLs, e.g., Octreotide) to block GH secretion, or a GH Receptor Antagonist (Pegvisomant) to block GH action.",
+                step3: "<b>Radiotherapy:</b> A third-line option for persistent disease despite surgery and medication. Stereotactic radiosurgery is preferred, but effects are slow and risk of pituitary damage is high."
+            }
+        }
+    };
+
+    let currentState = 'prolactinoma';
+    let chart;
+
+    const elements = {
+        btnProlactinoma: document.getElementById('btn-prolactinoma'),
+        btnAcromegaly: document.getElementById('btn-acromegaly'),
+        overviewTitle: document.getElementById('overview-title'),
+        overviewIntro: document.getElementById('overview-intro'),
+        statFrequency: document.getElementById('stat-frequency'),
+        statPrevalence: document.getElementById('stat-prevalence'),
+        statAge: document.getElementById('stat-age'),
+        symptomsIntro: document.getElementById('symptoms-intro'),
+        symptomDetails: document.getElementById('symptom-details'),
+        symptomIcons: document.querySelectorAll('.symptom-icon'),
+        diagnosisDetails: document.getElementById('diagnosis-details'),
+        diagSteps: [document.getElementById('diag-step-1'), document.getElementById('diag-step-2'), document.getElementById('diag-step-3')],
+        treatmentDetails: document.getElementById('treatment-details'),
+        treatSteps: [document.getElementById('treat-step-1'), document.getElementById('treat-step-2'), document.getElementById('treat-step-3')],
+        demographicsIntro: document.getElementById('demographics-intro'),
+    };
+
+    function renderContent() {
+        const data = appData[currentState];
+
+        elements.overviewTitle.textContent = data.title;
+        elements.overviewIntro.textContent = data.intro;
+        elements.statFrequency.textContent = data.stats.frequency;
+        elements.statPrevalence.textContent = data.stats.prevalence;
+        elements.statAge.textContent = data.stats.age;
+        elements.symptomsIntro.textContent = `Hover over the icons below to explore the common symptoms for ${currentState === 'prolactinoma' ? 'Prolactinoma' : 'Acromegaly'}. The manifestations of these conditions are driven by two factors: the effects of hormone overproduction and the physical "mass effect" of the tumor pressing on surrounding brain structures.`;
+        elements.demographicsIntro.innerHTML = data.demographics.description;
+
+        updateChart();
+        resetInteractiveSections();
+    }
+    
+    function resetInteractiveSections() {
+        elements.symptomDetails.innerHTML = `<p class="text-gray-700 text-center">Hover over an icon to see detailed symptoms.</p>`;
+        elements.diagnosisDetails.innerHTML = `<p class="text-gray-700 text-center">Click a step to see details.</p>`;
+        elements.treatmentDetails.innerHTML = `<p class="text-gray-700 text-center">Click a treatment line to see details.</p>`;
+        
+        elements.diagSteps.forEach(el => el.classList.remove('active'));
+        elements.treatSteps.forEach(el => el.classList.remove('active'));
+    }
+
+    function createChart() {
+        const ctx = document.getElementById('demographicsChart').getContext('2d');
+        const data = appData[currentState].demographics;
+        chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Gender Predominance',
+                    data: data.data,
+                    backgroundColor: data.backgroundColor,
+                    borderColor: data.borderColor,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.raw}%`;
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Gender Distribution at Diagnosis',
+                        font: {
+                            size: 16
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + "%"
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function updateChart() {
+        if (!chart) {
+            createChart();
+        } else {
+            const data = appData[currentState].demographics;
+            chart.data.datasets[0].data = data.data;
+            chart.update();
+        }
+    }
+
+    function handleNavClick(state) {
+        currentState = state;
+        elements.btnProlactinoma.classList.toggle('active', state === 'prolactinoma');
+        elements.btnAcromegaly.classList.toggle('active', state === 'acromegaly');
+        renderContent();
+    }
+
+    elements.btnProlactinoma.addEventListener('click', () => handleNavClick('prolactinoma'));
+    elements.btnAcromegaly.addEventListener('click', () => handleNavClick('acromegaly'));
+
+    elements.symptomIcons.forEach(icon => {
+        icon.addEventListener('mouseenter', () => {
+            const symptomType = icon.dataset.symptom;
+            elements.symptomDetails.innerHTML = appData[currentState].symptoms[symptomType];
+        });
+        icon.addEventListener('mouseleave', () => {
+             elements.symptomDetails.innerHTML = `<p class="text-gray-700 text-center">Hover over an icon to see detailed symptoms.</p>`;
+        });
+    });
+
+    elements.diagSteps.forEach((step, index) => {
+        step.addEventListener('click', () => {
+            elements.diagSteps.forEach(el => el.classList.remove('active'));
+            step.classList.add('active');
+            elements.diagnosisDetails.innerHTML = appData[currentState].diagnosis[`step${index + 1}`];
+        });
+    });
+    
+    elements.treatSteps.forEach((step, index) => {
+        step.addEventListener('click', () => {
+            elements.treatSteps.forEach(el => el.classList.remove('active'));
+            step.classList.add('active');
+            elements.treatmentDetails.innerHTML = appData[currentState].treatment[`step${index + 1}`];
+        });
+    });
+
+    handleNavClick('prolactinoma');
+});
+</script>
+
+</body>
+</html>
