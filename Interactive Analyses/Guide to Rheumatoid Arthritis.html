@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Guide to Rheumatoid Arthritis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+  
+    <!-- Chosen Palette: Warm Neutrals with Clinical Teal -->
+    <!-- Application Structure Plan: A thematic, non-linear single-page application designed for exploration. The structure starts with a high-level overview (RA vs. OA), then allows users to dive into specific topics like Risk Factors, Symptoms, Treatments, and the critical Systemic Impact. This user-centric flow prioritizes understanding key concepts over following the report's linear order. Interactive elements like toggles, charts, and clickable diagrams are used to engage the user and simplify complex information, such as the diagnostic pathway and multi-organ complications. The goal is to transform a dense report into an accessible educational tool. -->
+    <!-- Visualization & Content Choices: 
+        - RA vs. OA Comparison: Report Info -> Differentiating RA/OA. Goal -> Compare. Viz -> Interactive toggle with cards. Interaction -> Click to switch views. Justification -> More engaging than a static table. Library -> HTML/CSS/JS.
+        - Risk Factors: Report Info -> Age, sex, genetics, smoking, obesity. Goal -> Inform/Compare. Viz -> Donut chart for sex disparity, bar chart for age onset, info cards for modifiable/non-modifiable factors. Interaction -> Hover on charts for tooltips. Justification -> Visualizes key demographic data effectively. Library -> Chart.js.
+        - Symptoms: Report Info -> Symmetrical joint involvement, systemic symptoms. Goal -> Organize/Inform. Viz -> HTML/CSS human body diagram with hotspots. Interaction -> Hover on hotspots to see affected areas. Justification -> Provides an intuitive spatial understanding of the disease's reach. Library -> HTML/CSS/JS.
+        - Treatments: Report Info -> DMARD classes. Goal -> Organize. Viz -> Tabbed interface. Interaction -> Click tabs to view different drug classes. Justification -> Neatly organizes a large amount of categorized information. Library -> HTML/CSS/JS.
+        - Systemic Impact: Report Info -> Multi-organ complications, especially CVD. Goal -> Explore Relationships. Viz -> Clickable body diagram linked to a detail panel. Bar chart for CVD risk. Interaction -> Click hotspots to update details; hover chart. Justification -> Visually connects the systemic nature of RA to specific organs and highlights the most critical mortality risk (CVD) with a powerful chart. Library -> Chart.js, HTML/CSS/JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f7f4;
+            color: #3d405b;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-color 0.3s;
+        }
+        .nav-link.active {
+            color: #1a936f;
+            border-bottom-color: #1a936f;
+        }
+        .nav-link:hover {
+            color: #1a936f;
+        }
+        .human-body {
+            position: relative;
+            width: 150px;
+            height: 400px;
+            margin: 0 auto;
+        }
+        .hotspot {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: rgba(26, 147, 111, 0.6);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hotspot:hover {
+            transform: scale(1.5);
+            background-color: rgba(242, 132, 130, 1);
+        }
+        .hotspot-pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(26, 147, 111, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(26, 147, 111, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(26, 147, 111, 0); }
+        }
+        .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s;
+            position: absolute;
+            background-color: #3d405b;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            z-index: 10;
+            width: 150px;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -75px;
+        }
+        .hotspot:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="bg-stone-50 text-gray-800">
+
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <h1 class="text-xl md:text-2xl font-bold text-[#1a936f]">Understanding Rheumatoid Arthritis</h1>
+                <div class="hidden md:flex space-x-6">
+                    <a href="#overview" class="nav-link text-gray-600 font-semibold border-b-2 border-transparent pb-1">Overview</a>
+                    <a href="#risk" class="nav-link text-gray-600 font-semibold border-b-2 border-transparent pb-1">Risk Factors</a>
+                    <a href="#symptoms" class="nav-link text-gray-600 font-semibold border-b-2 border-transparent pb-1">Symptoms</a>
+                    <a href="#treatments" class="nav-link text-gray-600 font-semibold border-b-2 border-transparent pb-1">Treatments</a>
+                    <a href="#impact" class="nav-link text-gray-600 font-semibold border-b-2 border-transparent pb-1">Systemic Impact</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <section id="overview" class="mb-16 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-center mb-4 text-[#3d405b]">A Systemic Autoimmune Disease</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-8">
+                Rheumatoid Arthritis (RA) is more than just joint pain. It's a chronic autoimmune disease where the body's immune system mistakenly attacks its own healthy tissues, primarily the lining of the joints. This interactive guide explores the nature of RA, how it's diagnosed and treated, and its impact on the entire body. A crucial first step is distinguishing it from Osteoarthritis (OA), a "wear-and-tear" condition.
+            </p>
+            <div class="bg-white p-6 rounded-xl shadow-lg max-w-4xl mx-auto">
+                <div class="flex justify-center mb-6">
+                    <div class="inline-flex rounded-lg shadow-md">
+                        <button id="ra-btn" class="px-6 py-2 font-semibold rounded-l-lg transition-colors duration-300">Rheumatoid Arthritis</button>
+                        <button id="oa-btn" class="px-6 py-2 font-semibold rounded-r-lg transition-colors duration-300">Osteoarthritis</button>
+                    </div>
+                </div>
+                <div id="comparison-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                </div>
+            </div>
+        </section>
+
+        <section id="risk" class="mb-16 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-center mb-4 text-[#3d405b]">Who is at Risk?</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                The development of RA is a complex interplay between genetics and environmental factors. While some factors like age and family history are unchangeable, others related to lifestyle can be modified to reduce risk. Understanding these factors is key to grasping the disease's origins.
+            </p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="font-bold text-xl mb-4 text-center text-[#1a936f]">Key Demographics</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-semibold text-center mb-2">Prevalence by Sex</h4>
+                            <div class="chart-container h-64 max-h-64">
+                                <canvas id="sex-chart"></canvas>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-center mb-2">Peak Age of Onset</h4>
+                            <div class="chart-container h-64 max-h-64">
+                                <canvas id="age-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="font-bold text-xl mb-3 text-[#3d405b]">Non-Modifiable Factors</h3>
+                        <ul class="space-y-2 text-gray-700">
+                            <li class="flex items-start"><span class="text-[#1a936f] mr-2 text-xl">♀</span> <strong>Sex:</strong> Women are 2-3 times more likely to develop RA than men.</li>
+                            <li class="flex items-start"><span class="text-[#1a936f] mr-2 text-xl">⧗</span> <strong>Age:</strong> Onset is most common between ages 30 and 60.</li>
+                            <li class="flex items-start"><span class="text-[#1a936f] mr-2 text-xl">🧬</span> <strong>Genetics:</strong> A family history of RA significantly increases risk.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="font-bold text-xl mb-3 text-[#e63946]">Modifiable Factors</h3>
+                        <ul class="space-y-2 text-gray-700">
+                            <li class="flex items-start"><span class="text-[#e63946] mr-2 text-xl">🚬</span> <strong>Smoking:</strong> The single most significant modifiable risk factor.</li>
+                            <li class="flex items-start"><span class="text-[#e63946] mr-2 text-xl">⚖️</span> <strong>Obesity:</strong> Excess weight contributes to systemic inflammation.</li>
+                            <li class="flex items-start"><span class="text-[#e63946] mr-2 text-xl">🦷</span> <strong>Oral Health:</strong> Periodontal disease is linked to RA development.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="symptoms" class="mb-16 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-center mb-4 text-[#3d405b]">Symptoms & Diagnosis</h2>
+             <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                RA typically manifests with joint-related (articular) symptoms and body-wide (extra-articular) signs. Early diagnosis is a race against time, as prompt treatment can prevent irreversible damage. The process involves clinical evaluation, blood tests, and imaging. Hover over the hotspots on the diagram to see commonly affected joints.
+            </p>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg flex flex-col items-center justify-center">
+                    <h3 class="font-bold text-xl mb-4 text-center text-[#1a936f]">Commonly Affected Joints</h3>
+                    <div class="human-body">
+                        <div class="hotspot hotspot-pulse" style="top: 20%; left: 10%;"><div class="tooltip">Shoulders</div></div>
+                        <div class="hotspot" style="top: 20%; right: 10%;"><div class="tooltip">Shoulders</div></div>
+                        <div class="hotspot" style="top: 30%; left: 20%;"><div class="tooltip">Elbows</div></div>
+                        <div class="hotspot" style="top: 30%; right: 20%;"><div class="tooltip">Elbows</div></div>
+                        <div class="hotspot hotspot-pulse" style="top: 40%; left: 30%;"><div class="tooltip">Wrists</div></div>
+                        <div class="hotspot" style="top: 40%; right: 30%;"><div class="tooltip">Wrists</div></div>
+                        <div class="hotspot" style="top: 48%; left: 35%;"><div class="tooltip">Hands</div></div>
+                        <div class="hotspot hotspot-pulse" style="top: 48%; right: 35%;"><div class="tooltip">Hands</div></div>
+                        <div class="hotspot" style="top: 55%; left: 25%;"><div class="tooltip">Hips</div></div>
+                        <div class="hotspot" style="top: 55%; right: 25%;"><div class="tooltip">Hips</div></div>
+                        <div class="hotspot hotspot-pulse" style="top: 70%; left: 30%;"><div class="tooltip">Knees</div></div>
+                        <div class="hotspot" style="top: 70%; right: 30%;"><div class="tooltip">Knees</div></div>
+                        <div class="hotspot" style="top: 85%; left: 35%;"><div class="tooltip">Ankles</div></div>
+                        <div class="hotspot hotspot-pulse" style="top: 85%; right: 35%;"><div class="tooltip">Ankles</div></div>
+                        <div class="hotspot" style="top: 92%; left: 40%;"><div class="tooltip">Feet</div></div>
+                        <div class="hotspot" style="top: 92%; right: 40%;"><div class="tooltip">Feet</div></div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="font-bold text-xl mb-3 text-[#3d405b]">Key Symptoms</h3>
+                            <ul class="space-y-3">
+                                <li class="p-3 bg-stone-100 rounded-lg"><strong>Symmetrical Swelling:</strong> Affects the same joints on both sides of the body.</li>
+                                <li class="p-3 bg-stone-100 rounded-lg"><strong>Prolonged Stiffness:</strong> Morning stiffness lasting over 45 minutes.</li>
+                                <li class="p-3 bg-stone-100 rounded-lg"><strong>Systemic Fatigue:</strong> Profound lack of energy, often with low-grade fever.</li>
+                                <li class="p-3 bg-stone-100 rounded-lg"><strong>Pain and Warmth:</strong> Affected joints are painful, swollen, and warm to the touch.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl mb-3 text-[#3d405b]">Diagnostic Clues</h3>
+                            <ul class="space-y-3">
+                                <li class="p-3 bg-stone-100 rounded-lg"><strong>Blood Tests:</strong> Look for Rheumatoid Factor (RF) and highly specific anti-CCP antibodies.</li>
+                                <li class="p-3 bg-stone-100 rounded-lg"><strong>Inflammatory Markers:</strong> Elevated ESR and CRP levels indicate active inflammation.</li>
+                                <li class="p-3 bg-stone-100 rounded-lg"><strong>Imaging:</strong> Ultrasound and MRI can detect early inflammation, while X-rays show later-stage bone erosion.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="treatments" class="mb-16 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-center mb-4 text-[#3d405b]">Modern Treatment Strategies</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-8">
+                The goal of modern RA management is to achieve remission or low disease activity through a "Treat-to-Target" approach. This involves using Disease-Modifying Antirheumatic Drugs (DMARDs) to control the underlying disease process, not just the symptoms. Explore the major classes of these powerful medications.
+            </p>
+            <div class="bg-white p-6 rounded-xl shadow-lg max-w-5xl mx-auto">
+                <div class="border-b border-gray-200 mb-6">
+                    <nav class="-mb-px flex space-x-4 overflow-x-auto" aria-label="Tabs">
+                        <button class="tab-btn whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm" data-tab="csdmards">csDMARDs</button>
+                        <button class="tab-btn whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm" data-tab="b_tnf">bDMARDs (TNF)</button>
+                        <button class="tab-btn whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm" data-tab="b_other">Other bDMARDs</button>
+                        <button class="tab-btn whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm" data-tab="tsdmards">tsDMARDs (JAKi)</button>
+                    </nav>
+                </div>
+                <div id="treatment-content">
+                </div>
+            </div>
+        </section>
+
+        <section id="impact" class="mb-16 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-center mb-4 text-[#3d405b]">The Systemic Impact of RA</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                RA is not just a joint disease. The chronic inflammation can affect multiple organ systems throughout the body, leading to serious complications. The most significant of these is an accelerated risk of cardiovascular disease. Click the hotspots to learn about the impact on different organs.
+            </p>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg flex flex-col items-center justify-center">
+                    <h3 class="font-bold text-xl mb-4 text-center text-[#1a936f]">Extra-Articular Complications</h3>
+                    <div class="human-body">
+                        <div class="impact-hotspot" data-impact="cardio" style="top: 28%; left: 40%;"><div class="tooltip">Heart</div></div>
+                        <div class="impact-hotspot" data-impact="pulmonary" style="top: 25%; left: 20%;"><div class="tooltip">Lungs</div></div>
+                        <div class="impact-hotspot" data-impact="pulmonary" style="top: 25%; right: 20%;"><div class="tooltip">Lungs</div></div>
+                        <div class="impact-hotspot" data-impact="ocular" style="top: 8%; left: 35%;"><div class="tooltip">Eyes</div></div>
+                        <div class="impact-hotspot" data-impact="skeletal" style="top: 65%; left: 25%;"><div class="tooltip">Bones</div></div>
+                        <div class="impact-hotspot" data-impact="neuro" style="top: 12%; left: 40%;"><div class="tooltip">Nerves</div></div>
+                        <div class="impact-hotspot" data-impact="skin" style="top: 45%; left: 15%;"><div class="tooltip">Skin</div></div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 space-y-6">
+                    <div id="impact-details" class="bg-white p-6 rounded-xl shadow-lg min-h-[250px] transition-all duration-500">
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="font-bold text-xl mb-4 text-center text-[#e63946]">The Cardiovascular Connection</h3>
+                        <p class="text-center text-gray-600 mb-4">RA is an independent risk factor for heart attack and stroke, on par with type 2 diabetes. Controlling RA inflammation is critical for protecting the heart.</p>
+                        <div class="chart-container h-64 max-h-64">
+                            <canvas id="cvd-risk-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+  
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto p-6 text-center">
+            <p>This interactive guide is for informational purposes only and is based on the provided clinical review. It is not a substitute for professional medical advice.</p>
+            <p class="text-sm text-gray-400 mt-2">Content synthesized from "A Comprehensive Clinical Review of Rheumatoid Arthritis".</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const raOaData = {
+        ra: [
+            { title: 'Etiology', content: 'Autoimmune response where the immune system attacks the joint lining (synovium).' },
+            { title: 'Onset', content: 'Can be rapid over weeks or gradual.' },
+            { title: 'Pattern', content: 'Typically symmetrical, affecting joints on both sides of the body.' },
+            { title: 'Morning Stiffness', content: 'Prolonged, lasting more than 45 minutes.' },
+            { title: 'Systemic Symptoms', content: 'Common, including fatigue, fever, and potential organ involvement.' },
+            { title: 'Key Markers', content: 'Often positive for RF and anti-CCP antibodies.' }
+        ],
+        oa: [
+            { title: 'Etiology', content: 'Mechanical "wear and tear" that breaks down cartilage over time.' },
+            { title: 'Onset', content: 'Very gradual, developing over many years.' },
+            { title: 'Pattern', content: 'Often asymmetrical, affecting one joint or one side first.' },
+            { title: 'Morning Stiffness', content: 'Brief, usually resolving within 30 minutes.' },
+            { title: 'Systemic Symptoms', content: 'Absent; the disease is localized to the joints.' },
+            { title: 'Key Markers', content: 'Blood tests are not used for diagnosis.' }
+        ]
+    };
+
+    const treatmentData = {
+        csdmards: {
+            title: 'Conventional Synthetic DMARDs (csDMARDs)',
+            description: 'These are broad, non-targeted immunosuppressants that form the foundation of RA treatment. Methotrexate is the most common "anchor drug".',
+            details: 'Requires regular monitoring for potential liver, bone marrow, and lung side effects.',
+            examples: 'Methotrexate, Leflunomide, Hydroxychloroquine'
+        },
+        b_tnf: {
+            title: 'Biologic DMARDs (TNF Inhibitors)',
+            description: 'These drugs are engineered proteins that specifically block Tumor Necrosis Factor (TNF-alpha), a key molecule driving inflammation.',
+            details: 'Highly effective, but increase the risk of serious infections. Requires screening for latent TB. Administered by injection or infusion.',
+            examples: 'Adalimumab (Humira), Etanercept (Enbrel), Infliximab (Remicade)'
+        },
+        b_other: {
+            title: 'Other Biologic DMARDs',
+            description: 'This group of biologics targets other specific parts of the immune system, such as different inflammatory signals (like IL-6) or immune cells (like B-cells or T-cells).',
+            details: 'Used when TNF inhibitors are not effective. Each has a unique mechanism and risk profile, but all carry a risk of infection.',
+            examples: 'Tocilizumab (IL-6), Abatacept (T-Cell), Rituximab (B-Cell)'
+        },
+        tsdmards: {
+            title: 'Targeted Synthetic DMARDs (tsDMARDs / JAK Inhibitors)',
+            description: 'These are small molecule drugs taken orally. They work inside the cell to block Janus Kinase (JAK) enzymes, interrupting multiple inflammatory signals at once.',
+            details: 'Offer convenience as an oral pill but carry a boxed warning for increased risk of serious infections, blood clots, cardiovascular events, and malignancy.',
+            examples: 'Tofacitinib (Xeljanz), Baricitinib (Olumiant), Upadacitinib (Rinvoq)'
+        }
+    };
+
+    const impactData = {
+        cardio: {
+            title: 'Cardiovascular System',
+            icon: '❤️',
+            content: 'Chronic inflammation accelerates atherosclerosis (plaque buildup in arteries), significantly increasing the risk of heart attack and stroke. It can also cause inflammation of the heart lining (pericarditis) and muscle (myocarditis).'
+        },
+        pulmonary: {
+            title: 'Pulmonary System',
+            icon: '🫁',
+            content: 'Inflammation can cause scarring of the lung tissue (interstitial lung disease), leading to progressive shortness of breath and a dry cough. This is a serious complication and a significant cause of mortality in RA.'
+        },
+        skeletal: {
+            title: 'Skeletal System',
+            icon: '🦴',
+            content: 'Chronic inflammation and corticosteroid use disrupt bone metabolism, leading to osteoporosis. This makes bones fragile and significantly increases the risk of fractures, especially in the hip and spine.'
+        },
+        ocular: {
+            title: 'Ocular System',
+            icon: '👁️',
+            content: 'RA can cause severe dry eyes (Sjögren\'s syndrome) and painful, vision-threatening inflammation of the white part of the eye (scleritis). Prompt treatment is needed to prevent permanent damage.'
+        },
+        neuro: {
+            title: 'Neurological System',
+            icon: '🧠',
+            content: 'Swelling in the wrist can compress the median nerve, causing Carpal Tunnel Syndrome (numbness and tingling in the hand). Inflammation in the neck can lead to instability and, in severe cases, spinal cord compression.'
+        },
+        skin: {
+            title: 'Integumentary System',
+            icon: '🖐️',
+            content: 'Firm lumps called rheumatoid nodules can form under the skin, usually over pressure points like the elbows. In rare cases, inflammation of blood vessels (vasculitis) can cause skin rashes or ulcers.'
+        }
+    };
+
+    const raBtn = document.getElementById('ra-btn');
+    const oaBtn = document.getElementById('oa-btn');
+    const comparisonContent = document.getElementById('comparison-content');
+    const treatmentTabs = document.querySelectorAll('.tab-btn');
+    const treatmentContent = document.getElementById('treatment-content');
+    const impactHotspots = document.querySelectorAll('.impact-hotspot');
+    const impactDetails = document.getElementById('impact-details');
+
+    function updateComparisonView(type) {
+        comparisonContent.innerHTML = '';
+        raOaData[type].forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'p-4 bg-stone-100 rounded-lg';
+            card.innerHTML = `<h4 class="font-bold text-lg mb-1 text-[#3d405b]">${item.title}</h4><p class="text-gray-600">${item.content}</p>`;
+            comparisonContent.appendChild(card);
+        });
+
+        if (type === 'ra') {
+            raBtn.classList.add('bg-[#1a936f]', 'text-white');
+            raBtn.classList.remove('bg-gray-200', 'text-gray-700');
+            oaBtn.classList.add('bg-gray-200', 'text-gray-700');
+            oaBtn.classList.remove('bg-[#1a936f]', 'text-white');
+        } else {
+            oaBtn.classList.add('bg-[#1a936f]', 'text-white');
+            oaBtn.classList.remove('bg-gray-200', 'text-gray-700');
+            raBtn.classList.add('bg-gray-200', 'text-gray-700');
+            raBtn.classList.remove('bg-[#1a936f]', 'text-white');
+        }
+    }
+
+    function updateTreatmentView(tabKey) {
+        treatmentTabs.forEach(tab => {
+            if (tab.dataset.tab === tabKey) {
+                tab.classList.add('border-[#1a936f]', 'text-[#1a936f]');
+                tab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+            } else {
+                tab.classList.remove('border-[#1a936f]', 'text-[#1a936f]');
+                tab.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+            }
+        });
+
+        const data = treatmentData[tabKey];
+        treatmentContent.innerHTML = `
+            <h3 class="text-2xl font-bold text-[#3d405b] mb-2">${data.title}</h3>
+            <p class="text-gray-600 mb-4">${data.description}</p>
+            <div class="bg-stone-100 p-4 rounded-lg">
+                <p class="mb-2"><strong>Key Considerations:</strong> ${data.details}</p>
+                <p><strong>Examples:</strong> <span class="font-mono text-sm bg-gray-200 px-2 py-1 rounded">${data.examples}</span></p>
+            </div>
+        `;
+    }
+
+    function updateImpactView(impactKey) {
+        const data = impactData[impactKey];
+        impactDetails.innerHTML = `
+            <h3 class="text-2xl font-bold text-[#3d405b] mb-3 flex items-center">
+                <span class="text-3xl mr-3">${data.icon}</span>
+                ${data.title}
+            </h3>
+            <p class="text-gray-600">${data.content}</p>
+        `;
+        impactHotspots.forEach(spot => {
+            spot.classList.remove('ring-2', 'ring-offset-2', 'ring-[#e63946]');
+            if(spot.dataset.impact === impactKey) {
+                spot.classList.add('ring-2', 'ring-offset-2', 'ring-[#e63946]');
+            }
+        });
+    }
+
+    raBtn.addEventListener('click', () => updateComparisonView('ra'));
+    oaBtn.addEventListener('click', () => updateComparisonView('oa'));
+
+    treatmentTabs.forEach(tab => {
+        tab.addEventListener('click', () => updateTreatmentView(tab.dataset.tab));
+    });
+
+    impactHotspots.forEach(spot => {
+        spot.addEventListener('click', () => updateImpactView(spot.dataset.impact));
+    });
+
+    updateComparisonView('ra');
+    updateTreatmentView('csdmards');
+    updateImpactView('cardio');
+
+    new Chart(document.getElementById('sex-chart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Women', 'Men'],
+            datasets: [{
+                data: [70, 30],
+                backgroundColor: ['#1a936f', '#83c5be'],
+                borderColor: '#f8f7f4',
+                borderWidth: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: { callbacks: { label: (c) => `${c.label}: ~${c.raw}%` } }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('age-chart'), {
+        type: 'bar',
+        data: {
+            labels: ['<30', '30-45', '45-60', '>60'],
+            datasets: [{
+                label: 'Age of Onset',
+                data: [15, 45, 35, 5],
+                backgroundColor: '#83c5be',
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true, ticks: { callback: (v) => v + '%' } } },
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: (c) => `~${c.raw}% of cases` } }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('cvd-risk-chart'), {
+        type: 'bar',
+        data: {
+            labels: ['General Population', 'Type 2 Diabetes', 'Rheumatoid Arthritis'],
+            datasets: [{
+                label: 'Relative Risk of Heart Attack/Stroke',
+                data: [1.0, 1.8, 2.0],
+                backgroundColor: ['#83c5be', '#f28482', '#e63946'],
+                borderRadius: 4
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { x: { beginAtZero: true, title: { display: true, text: 'Relative Risk (x)' } } },
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('section');
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (pageYOffset >= sectionTop - 120) {
+                current = section.getAttribute('id');
+            }
+        });
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').includes(current)) {
+                link.classList.add('active');
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>
