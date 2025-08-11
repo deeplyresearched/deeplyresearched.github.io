@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Endocrine Emergencies Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+  
+    <!-- Chosen Palette: Calm Neutrals with Clinical Accents -->
+    <!-- Application Structure Plan: A comparative dashboard structure was chosen over a linear report to directly address the primary clinical need: differentiating between these three emergencies. The user flow is centered on a main navigation that filters the entire view by condition ('Myxedema Coma', 'Thyroid Storm', 'Pheocrisis') or shows a 'Compare All' view. This active exploration model is more usable in a clinical setting. Content is organized into collapsible accordions to manage complexity, allowing users to drill down from high-level comparisons to specific management protocols. This architecture prioritizes rapid access to actionable information and visual comparison over passive reading. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Key distinguishing clinical features (Temp, HR, BP, Mental Status). Goal: Compare. Viz: Radar Chart (Chart.js). Interaction: Filtered by main nav buttons. Justification: Provides an immediate visual "signature" for each crisis, aiding rapid differentiation.
+        - Report Info: Mortality & Incidence rates. Goal: Quantify. Viz: Bar Charts (Chart.js). Interaction: Hover tooltips. Justification: More impactful visualization of statistics than plain text.
+        - Report Info: Detailed management protocols. Goal: Organize/Inform. Presentation: Sequenced, styled HTML/Tailwind cards. Interaction: None needed; clarity is paramount. Justification: Critical sequences (e.g., 'Alpha then Beta') are visually emphasized for safety, which is superior to dense text.
+        - Report Info: Pathophysiology, Diagnosis, etc. Goal: Inform (Deep Dive). Presentation: Collapsible accordions using HTML/JS. Interaction: Click to expand/collapse. Justification: Reduces initial information overload while keeping detailed information accessible.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        .nav-button.active {
+            background-color: #007bff;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .content-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        .accordion-header {
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .accordion-header:hover {
+            background-color: #f1f5f9;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .critical-step {
+            border-left: 4px solid #dc3545;
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .important-step {
+            border-left: 4px solid #ffc107;
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="min-h-screen container mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800">Endocrine Emergencies</h1>
+            <p class="mt-2 text-lg text-gray-600">An Interactive Clinical Dashboard for Comparison and Management</p>
+        </header>
+
+        <nav class="flex flex-wrap justify-center gap-2 sm:gap-4 mb-8">
+            <button id="btn-compare" class="nav-button active font-semibold py-2 px-4 rounded-full shadow-sm bg-white" onclick="updateView('compare')">Compare All</button>
+            <button id="btn-myxedema" class="nav-button font-semibold py-2 px-4 rounded-full shadow-sm bg-white" onclick="updateView('myxedema')">Myxedema Coma</button>
+            <button id="btn-thyroid" class="nav-button font-semibold py-2 px-4 rounded-full shadow-sm bg-white" onclick="updateView('thyroid')">Thyroid Storm</button>
+            <button id="btn-pheo" class="nav-button font-semibold py-2 px-4 rounded-full shadow-sm bg-white" onclick="updateView('pheo')">Pheocrisis</button>
+        </nav>
+
+        <main id="main-content">
+            <!-- Content will be dynamically populated here -->
+        </main>
+
+        <footer class="text-center mt-12 text-sm text-gray-500">
+            <p>This tool is for educational purposes only and is not a substitute for professional medical advice. All data derived from the source report.</p>
+            <p class="mt-1">Designed to facilitate rapid comparison and review of critical endocrine conditions.</p>
+        </footer>
+    </div>
+
+    <script>
+        const appData = {
+            myxedema: {
+                title: "Myxedema Coma",
+                theme: { bg: 'bg-blue-50', border: 'border-blue-500', text: 'text-blue-800' },
+                overview: "A life-threatening manifestation of severe, decompensated hypothyroidism, characterized by a profound state of systemic hypometabolism. It represents a complete failure of the body's adaptive mechanisms to thyroid hormone deficiency.",
+                stats: {
+                    mortality: { value: [6.8, 60], label: "Mortality Rate (%)" },
+                    incidence: { value: 0.22, label: "Incidence (per million/year)" }
+                },
+                clinical: {
+                    radar: [1, 1, 2, 1], // Temp, HR, BP, Mental Status (1=low, 2=normal/variable, 3=high)
+                    features: [
+                        { icon: '🌡️', name: 'Profound Hypothermia', desc: 'Core temp <35.5°C (95.9°F). A cardinal sign.' },
+                        { icon: '❤️', name: 'Severe Bradycardia', desc: 'Heart rate often <60 bpm.' },
+                        { icon: '🧠', name: 'Altered Mental Status', desc: 'Progresses from lethargy to coma. "Myxedema madness" can occur.' },
+                        { icon: '💨', name: 'Hypoventilation', desc: 'Leads to respiratory acidosis (hypercapnia).' },
+                        { icon: '💧', name: 'Myxedema', desc: 'Cool, pale, doughy skin with non-pitting edema.' }
+                    ]
+                },
+                diagnosis: {
+                    labs: "Low free T4, Markedly HIGH TSH (primary), Hyponatremia, Hypoglycemia, High CK.",
+                    imaging: "Chest X-ray (cardiomegaly, effusions), Head CT (rule out other causes), ECG (low voltage, bradycardia).",
+                    criteria: "Primarily a clinical diagnosis. Supported by scoring systems like Popoveniuc et al. (score ≥60)."
+                },
+                management: [
+                    { step: 1, title: "ICU Admission & Supportive Care", content: "Secure airway (intubation often needed), passive rewarming ONLY (no active warming), cautious fluid resuscitation, and treat precipitating cause (e.g., empiric antibiotics for sepsis)." },
+                    { step: 2, title: "Administer Glucocorticoids FIRST", content: "Hydrocortisone 100 mg IV q8h. This is a CRITICAL first step to prevent iatrogenic adrenal crisis.", class: "critical-step" },
+                    { step: 3, title: "Thyroid Hormone Replacement", content: "IV Levothyroxine (T4) is preferred. Loading dose: 200-400 mcg IV. Maintenance: 50-100 mcg IV daily. Use lower doses in elderly/cardiac patients.", class: "important-step" },
+                    { step: 4, title: "Consider Adjunctive T3", content: "IV Liothyronine (T3) is controversial due to cardiotoxicity risk. May be considered in severe cases unresponsive to T4. Dose: 5-20 mcg IV load, then 2.5-10 mcg IV q8h." }
+                ]
+            },
+            thyroid: {
+                title: "Thyroid Storm",
+                theme: { bg: 'bg-red-50', border: 'border-red-500', text: 'text-red-800' },
+                overview: "A life-threatening manifestation of decompensated thyrotoxicosis, characterized by extreme hypermetabolism and multi-organ dysfunction. It's an exaggerated response to excess thyroid hormone.",
+                stats: {
+                    mortality: { value: [10, 30], label: "Mortality Rate (%)" },
+                    incidence: { value: 6.5, label: "Incidence (per million/year)" }
+                },
+                clinical: {
+                    radar: [3, 3, 3, 3],
+                    features: [
+                        { icon: '🌡️', name: 'High Fever', desc: 'Temperature >38.5°C (101.3°F), often >40°C (104°F).' },
+                        { icon: '❤️', name: 'Extreme Tachycardia', desc: 'Heart rate >140 bpm, often with atrial fibrillation.' },
+                        { icon: '🧠', name: 'Severe CNS Dysfunction', desc: 'Agitation, delirium, psychosis, progressing to coma.' },
+                        { icon: '💧', name: 'Profuse Sweating', desc: 'Warm, moist skin with diaphoresis.' },
+                        { icon: '🤢', name: 'GI-Hepatic Dysfunction', desc: 'Nausea, vomiting, diarrhea. Jaundice is an ominous sign.' }
+                    ]
+                },
+                diagnosis: {
+                    labs: "Suppressed TSH, High free T4/T3. Hyperglycemia, hypercalcemia, abnormal LFTs.",
+                    imaging: "Chest X-ray (pulmonary edema), ECG (sinus tachycardia, atrial fibrillation).",
+                    criteria: "Clinical diagnosis using Burch-Wartofsky Point Scale (BWPS). Score ≥45 is highly suggestive."
+                },
+                management: [
+                    { step: 1, title: "Beta-Blockade", content: "Propranolol (PO/IV) or Esmolol (IV infusion) to control adrenergic symptoms. Propranolol also reduces T4 to T3 conversion.", class: "important-step" },
+                    { step: 2, title: "Thionamide Therapy", content: "Blocks new hormone synthesis. PTU (500-1000mg load) or Methimazole (20mg q4-6h). Give immediately with beta-blockers." },
+                    { step: 3, title: "Iodine Solution", content: "SSKI or Lugol's solution. Blocks release of stored hormone. MUST be given AT LEAST 1 HOUR AFTER thionamide.", class: "critical-step" },
+                    { step: 4, title: "Glucocorticoid Therapy", content: "Hydrocortisone 100 mg IV q8h. Reduces T4 to T3 conversion and treats relative adrenal insufficiency." },
+                    { step: 5, title: "Supportive Care & Cooling", content: "Active cooling for hyperthermia (acetaminophen, cooling blankets). Avoid aspirin. Treat precipitating cause." }
+                ]
+            },
+            pheo: {
+                title: "Pheochromocytoma Crisis",
+                theme: { bg: 'bg-yellow-50', border: 'border-yellow-500', text: 'text-yellow-800' },
+                overview: "A life-threatening adrenergic storm caused by the massive, unregulated release of catecholamines (adrenaline, noradrenaline) from a neuroendocrine tumor (pheochromocytoma).",
+                stats: {
+                    mortality: { value: [15, 25], label: "Crisis Mortality Rate (%)" }, // Estimated
+                    incidence: { value: 5.5, label: "Tumor Incidence (per million/year)" }
+                },
+                clinical: {
+                    radar: [2, 3, 3, 2],
+                    features: [
+                        { icon: '🤯', name: 'Severe Paroxysmal Headache', desc: 'Sudden, throbbing headache is a classic symptom.' },
+                        { icon: '💧', name: 'Profuse Diaphoresis', desc: 'Drenching sweats with no apparent cause.' },
+                        { icon: '❤️', name: 'Palpitations & Tachycardia', desc: 'Forceful, racing heartbeat.' },
+                        { icon: ' hypertensive crisis.' },
+                        { icon: '😨', name: 'Sense of Impending Doom', desc: 'Profound anxiety and panic-like symptoms.' }
+                    ]
+                },
+                diagnosis: {
+                    labs: "Dramatically elevated plasma or urinary metanephrines. Hyperglycemia, lactic acidosis.",
+                    imaging: "Abdominal CT or MRI to locate tumor AFTER patient is stabilized. Functional imaging (PET/MIBG) for metastasis.",
+                    criteria: "Clinical diagnosis of adrenergic crisis + biochemical confirmation of catecholamine excess."
+                },
+                management: [
+                    { step: 1, title: "ALPHA-Adrenergic Blockade FIRST", content: "IV Phentolamine (1-5mg bolus, then infusion). Controls severe hypertension. THIS IS THE CARDINAL RULE OF MANAGEMENT.", class: "critical-step" },
+                    { step: 2, title: "Beta-Adrenergic Blockade", content: "IV Metoprolol or Esmolol. ONLY initiate AFTER adequate alpha-blockade is achieved to control reflex tachycardia.", class: "important-step" },
+                    { step: 3, title: "Volume Resuscitation", content: "Patients are often volume-depleted. Cautious IV fluids are necessary after initial blood pressure control." },
+                    { step:4, title: "Definitive Treatment", content: "Medical stabilization for 10-14 days with oral alpha-blockers (e.g., Phenoxybenzamine) followed by elective surgical resection of the tumor." }
+                ]
+            }
+        };
+
+        let charts = {};
+
+        function createSingleView(conditionKey) {
+            const data = appData[conditionKey];
+            return `
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="content-card p-6 ${data.theme.bg}">
+                        <h2 class="text-3xl font-bold ${data.theme.text}">${data.title}</h2>
+                        <p class="mt-4 text-gray-700">${data.overview}</p>
+                        
+                        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="text-center p-4 bg-white rounded-lg shadow-inner">
+                                <h3 class="font-semibold text-gray-600">${data.stats.mortality.label}</h3>
+                                <p class="text-3xl font-bold ${data.theme.text}">${data.stats.mortality.value[0]}-${data.stats.mortality.value[1]}%</p>
+                                <p class="text-xs text-gray-500">Recent vs. Historical</p>
+                            </div>
+                            <div class="text-center p-4 bg-white rounded-lg shadow-inner">
+                                <h3 class="font-semibold text-gray-600">${data.stats.incidence.label}</h3>
+                                <p class="text-3xl font-bold ${data.theme.text}">${data.stats.incidence.value}</p>
+                                <p class="text-xs text-gray-500">Cases per million/year</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-card p-6">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Key Clinical Features</h3>
+                        <ul class="space-y-4">
+                            ${data.clinical.features.map(f => `
+                                <li class="flex items-start">
+                                    <span class="text-2xl mr-4">${f.icon}</span>
+                                    <div>
+                                        <p class="font-semibold text-gray-800">${f.name}</p>
+                                        <p class="text-gray-600">${f.desc}</p>
+                                    </div>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-8 content-card">
+                    <div class="accordion">
+                        <div class="accordion-header p-4 border-b" onclick="toggleAccordion(this)">
+                            <h3 class="text-xl font-semibold flex justify-between items-center">
+                                <span>Diagnosis</span>
+                                <span class="transform transition-transform duration-300">▼</span>
+                            </h3>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="p-6 border-b">
+                                <h4 class="font-bold text-gray-700">Key Lab Findings:</h4>
+                                <p class="mt-1 text-gray-600">${data.diagnosis.labs}</p>
+                            </div>
+                            <div class="p-6 border-b">
+                                <h4 class="font-bold text-gray-700">Imaging:</h4>
+                                <p class="mt-1 text-gray-600">${data.diagnosis.imaging}</p>
+                            </div>
+                            <div class="p-6">
+                                <h4 class="font-bold text-gray-700">Diagnostic Criteria:</h4>
+                                <p class="mt-1 text-gray-600">${data.diagnosis.criteria}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion">
+                        <div class="accordion-header p-4 border-b" onclick="toggleAccordion(this)">
+                            <h3 class="text-xl font-semibold flex justify-between items-center">
+                                <span>Management Protocol</span>
+                                <span class="transform transition-transform duration-300">▼</span>
+                            </h3>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="p-6 space-y-4">
+                                ${data.management.map(m => `
+                                    <div class="p-4 rounded-lg ${m.class || ''}">
+                                        <p class="font-bold text-lg">${m.step}. ${m.title}</p>
+                                        <p class="mt-1">${m.content}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function createCompareView() {
+            return `
+                <div class="content-card p-6 mb-8">
+                     <h2 class="text-2xl font-bold text-gray-800 text-center mb-2">At-a-Glance: Clinical Signatures</h2>
+                     <p class="text-center text-gray-600 mb-4">This chart provides a rapid visual comparison of the typical presentation for each emergency across key vital signs and mental status. Use it to quickly form a differential diagnosis based on the patient's initial presentation.</p>
+                     <div class="chart-container">
+                        <canvas id="radarChart"></canvas>
+                     </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    ${Object.keys(appData).map(key => {
+                        const data = appData[key];
+                        return `
+                            <div class="content-card flex flex-col">
+                                <div class="p-6 border-b ${data.theme.border} ${data.theme.bg}">
+                                    <h3 class="text-2xl font-bold ${data.theme.text}">${data.title}</h3>
+                                </div>
+                                <div class="p-6 flex-grow">
+                                    <h4 class="font-bold mb-2">Key Features:</h4>
+                                    <ul class="space-y-3 text-sm">
+                                        ${data.clinical.features.slice(0, 4).map(f => `
+                                            <li class="flex items-start">
+                                                <span class="text-lg mr-3">${f.icon}</span>
+                                                <span class="text-gray-700">${f.name}</span>
+                                            </li>
+                                        `).join('')}
+                                    </ul>
+                                </div>
+                                <div class="p-6 border-t mt-auto">
+                                    <h4 class="font-bold mb-2">Critical Management Step:</h4>
+                                    <div class="p-3 rounded-md text-sm ${data.management[1].class || data.management[0].class}">
+                                        <p class="font-semibold">${data.management.find(s => s.class === 'critical-step')?.title || data.management[0].title}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+
+                <div class="content-card p-6 mt-8">
+                    <h2 class="text-2xl font-bold text-gray-800 text-center mb-4">Mortality Rate Comparison</h2>
+                    <div class="chart-container" style="max-width: 800px;">
+                        <canvas id="mortalityChart"></canvas>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateView(condition) {
+            const mainContent = document.getElementById('main-content');
+            const buttons = document.querySelectorAll('.nav-button');
+
+            buttons.forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${condition.split(' ')[0].toLowerCase()}`).classList.add('active');
+
+            Object.values(charts).forEach(chart => chart.destroy());
+            charts = {};
+
+            if (condition === 'compare') {
+                mainContent.innerHTML = createCompareView();
+                createRadarChart();
+                createMortalityChart();
+            } else {
+                mainContent.innerHTML = createSingleView(condition);
+            }
+        }
+
+        function createRadarChart() {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            charts.radar = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Temperature', 'Heart Rate', 'Blood Pressure', 'Mental Status'],
+                    datasets: [
+                        {
+                            label: 'Myxedema Coma',
+                            data: appData.myxedema.clinical.radar,
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                        },
+                        {
+                            label: 'Thyroid Storm',
+                            data: appData.thyroid.clinical.radar,
+                            backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                            borderColor: 'rgba(239, 68, 68, 1)',
+                            pointBackgroundColor: 'rgba(239, 68, 68, 1)',
+                        },
+                        {
+                            label: 'Pheocrisis',
+                            data: appData.pheo.clinical.radar,
+                            backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                            borderColor: 'rgba(245, 158, 11, 1)',
+                            pointBackgroundColor: 'rgba(245, 158, 11, 1)',
+                        }
+                    ]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { display: true },
+                            suggestedMin: 0,
+                            suggestedMax: 3.5,
+                            pointLabels: { font: { size: 14 } },
+                            ticks: {
+                                stepSize: 1,
+                                backdropColor: 'rgba(255, 255, 255, 0.7)',
+                                callback: function(value) {
+                                    if (value === 1) return 'Low';
+                                    if (value === 2) return 'Variable';
+                                    if (value === 3) return 'High';
+                                    return '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    const value = context.raw;
+                                    if (value === 1) label += 'Low';
+                                    if (value === 2) label += 'Variable/Normal';
+                                    if (value === 3) label += 'High';
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createMortalityChart() {
+            const ctx = document.getElementById('mortalityChart').getContext('2d');
+            charts.mortality = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [appData.myxedema.title, appData.thyroid.title, appData.pheo.title],
+                    datasets: [{
+                        label: 'Mortality Rate (%)',
+                        data: [
+                            (appData.myxedema.stats.mortality.value[0] + appData.myxedema.stats.mortality.value[1]) / 2,
+                            (appData.thyroid.stats.mortality.value[0] + appData.thyroid.stats.mortality.value[1]) / 2,
+                            (appData.pheo.stats.mortality.value[0] + appData.pheo.stats.mortality.value[1]) / 2
+                        ],
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.6)',
+                            'rgba(239, 68, 68, 0.6)',
+                            'rgba(245, 158, 11, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(59, 130, 246, 1)',
+                            'rgba(239, 68, 68, 1)',
+                            'rgba(245, 158, 11, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Mortality Rate (%)' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    let range;
+                                    if (context.label === appData.myxedema.title) range = appData.myxedema.stats.mortality.value;
+                                    if (context.label === appData.thyroid.title) range = appData.thyroid.stats.mortality.value;
+                                    if (context.label === appData.pheo.title) range = appData.pheo.stats.mortality.value;
+                                    label += `${range[0]}-${range[1]}%`;
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function toggleAccordion(header) {
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('span:last-child');
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                // Close other accordions in the same group
+                const group = header.closest('.content-card');
+                group.querySelectorAll('.accordion-content').forEach(item => {
+                    item.style.maxHeight = null;
+                    item.previousElementSibling.querySelector('span:last-child').style.transform = 'rotate(0deg)';
+                });
+                content.style.maxHeight = content.scrollHeight + "px";
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        window.onload = () => {
+            updateView('compare');
+        };
+    </script>
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+</body>
+</html>
