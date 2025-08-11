@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Guide to Myocardial Infarction</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+  
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: A thematic, single-page dashboard structure is used to transform the linear report into an explorable experience. The navigation bar allows users to jump to key topics: Overview, Pathophysiology, Risk Factors, Symptoms, Diagnosis, Treatment, and Global Impact. This non-linear approach enhances usability by letting users focus on their areas of interest, such as recognizing symptoms or understanding risks, without needing to read the entire document sequentially. Interactive cards, tabs, and charts are used to present complex information in a digestible format, promoting engagement and understanding over passive reading. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Global CVD deaths. Goal: Inform. Viz: Donut Chart (Chart.js). Interaction: Hover for details. Justification: Quickly shows the scale of the problem.
+        - Report Info: STEMI vs NSTEMI (Table 1). Goal: Compare. Viz: Styled HTML table. Interaction: None. Justification: Clear, direct comparison of key features.
+        - Report Info: Atherosclerosis process. Goal: Explain Change. Viz: Horizontal HTML/CSS timeline. Interaction: Scroll-based highlighting (future enhancement). Justification: Visualizes a complex process sequentially.
+        - Report Info: Risk Factors. Goal: Organize/Inform. Viz: Interactive HTML cards. Interaction: Click to reveal details. Justification: Allows users to explore factors at their own pace.
+        - Report Info: Atypical Symptoms (Table 3). Goal: Compare. Viz: Tabbed content area (HTML/JS). Interaction: Click tabs to switch views. Justification: Effectively compares symptoms across demographics without cluttering the UI.
+        - Report Info: Biomarker kinetics (Table 2). Goal: Show Change. Viz: Line Chart (Chart.js). Interaction: Hover for tooltips. Justification: Visualizes the time-sensitive nature of diagnostic markers.
+        - Report Info: Long-term medications (Table 4). Goal: Inform/Organize. Viz: Grid of HTML cards. Interaction: None. Justification: Presents essential medication info clearly.
+        - Report Info: CVD death rates (India vs. Global). Goal: Compare. Viz: Bar Chart (Chart.js). Interaction: Hover for tooltips. Justification: Highlights the specific epidemiological burden in India.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #007bff;
+            border-bottom-color: #007bff;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .tab-btn.active {
+            background-color: #007bff;
+            color: white;
+        }
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-gray-800">Myocardial Infarction</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">Overview</a>
+                        <a href="#pathophysiology" class="nav-link text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">The Process</a>
+                        <a href="#risk-factors" class="nav-link text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">Risk Factors</a>
+                        <a href="#symptoms" class="nav-link text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">Symptoms</a>
+                        <a href="#diagnosis" class="nav-link text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">Diagnosis</a>
+                        <a href="#treatment" class="nav-link text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">Treatment</a>
+                        <a href="#impact" class="nav-link text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">Global Impact</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <section id="overview" class="scroll-mt-20 mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Understanding Myocardial Infarction (Heart Attack)</h2>
+            <p class="text-lg text-gray-600 mb-8">
+                A myocardial infarction (MI), or heart attack, is a medical emergency where heart muscle tissue dies due to a lack of blood flow. This interactive guide explores the complete journey of an MI, from its underlying causes and risk factors to diagnosis, treatment, and its profound global impact. The goal is to make this complex topic understandable and navigable.
+            </p>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-3">A Global Health Crisis</h3>
+                    <p class="text-gray-600 mb-4">Cardiovascular diseases (CVDs), primarily heart attacks and strokes, are the leading cause of death worldwide. They represent a significant portion of all global fatalities, highlighting the urgent need for prevention and effective treatment.</p>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <p class="text-4xl font-bold text-blue-600">~32%</p>
+                        <p class="text-gray-700 font-medium">of all global deaths are from CVDs.</p>
+                    </div>
+                     <div class="bg-white p-4 rounded-lg shadow mt-4">
+                        <p class="text-4xl font-bold text-red-600">>85%</p>
+                        <p class="text-gray-700 font-medium">of CVD deaths are due to heart attacks & strokes.</p>
+                    </div>
+                </div>
+                <div class="chart-container h-64 md:h-80">
+                    <canvas id="globalDeathsChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-gray-200">
+
+        <section id="pathophysiology" class="scroll-mt-20 mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4 text-center">The Process: From Healthy Artery to Heart Attack</h2>
+            <p class="text-lg text-gray-600 mb-12 max-w-3xl mx-auto text-center">A heart attack is the final, acute event in a long process of disease. It begins with atherosclerosis—the gradual buildup of plaque in the arteries—which can eventually lead to a sudden, life-threatening blockage. This section visualizes that critical progression.</p>
+            <div class="relative wrap overflow-hidden p-10 h-full">
+                <div class="border-2-2 absolute border-opacity-20 border-gray-700 h-full border" style="left: 50%"></div>
+                <div class="mb-8 flex justify-between items-center w-full right-timeline">
+                    <div class="order-1 w-5/12"></div>
+                    <div class="z-20 flex items-center order-1 bg-gray-800 shadow-xl w-8 h-8 rounded-full">
+                        <h1 class="mx-auto font-semibold text-lg text-white">1</h1>
+                    </div>
+                    <div class="order-1 bg-white rounded-lg shadow-xl w-5/12 px-6 py-4">
+                        <h3 class="font-bold text-gray-800 text-xl">Healthy Artery</h3>
+                        <p class="text-sm leading-snug tracking-wide text-gray-600">The endothelium, the inner lining of the artery, is smooth and intact, allowing blood to flow freely.</p>
+                    </div>
+                </div>
+                <div class="mb-8 flex justify-between flex-row-reverse items-center w-full left-timeline">
+                    <div class="order-1 w-5/12"></div>
+                    <div class="z-20 flex items-center order-1 bg-gray-800 shadow-xl w-8 h-8 rounded-full">
+                        <h1 class="mx-auto text-white font-semibold text-lg">2</h1>
+                    </div>
+                    <div class="order-1 bg-white rounded-lg shadow-xl w-5/12 px-6 py-4">
+                        <h3 class="font-bold text-gray-800 text-xl">Atherosclerosis Begins</h3>
+                        <p class="text-sm leading-snug tracking-wide text-gray-600">Risk factors damage the endothelium. LDL ("bad") cholesterol enters the artery wall, triggering inflammation and forming a "fatty streak."</p>
+                    </div>
+                </div>
+                <div class="mb-8 flex justify-between items-center w-full right-timeline">
+                    <div class="order-1 w-5/12"></div>
+                    <div class="z-20 flex items-center order-1 bg-gray-800 shadow-xl w-8 h-8 rounded-full">
+                        <h1 class="mx-auto font-semibold text-lg text-white">3</h1>
+                    </div>
+                    <div class="order-1 bg-white rounded-lg shadow-xl w-5/12 px-6 py-4">
+                        <h3 class="font-bold text-gray-800 text-xl">Plaque Growth</h3>
+                        <p class="text-sm leading-snug tracking-wide text-gray-600">Over years, the plaque grows. A fibrous cap forms over a lipid core. A "vulnerable" plaque develops a thin cap and a large, inflamed core.</p>
+                    </div>
+                </div>
+                <div class="mb-8 flex justify-between flex-row-reverse items-center w-full left-timeline">
+                    <div class="order-1 w-5/12"></div>
+                    <div class="z-20 flex items-center order-1 bg-red-500 shadow-xl w-8 h-8 rounded-full">
+                        <h1 class="mx-auto text-white font-semibold text-lg">4</h1>
+                    </div>
+                    <div class="order-1 bg-red-50 border-l-4 border-red-500 rounded-lg shadow-xl w-5/12 px-6 py-4">
+                        <h3 class="font-bold text-red-800 text-xl">Plaque Rupture & Thrombosis</h3>
+                        <p class="text-sm leading-snug tracking-wide text-gray-700">The vulnerable plaque ruptures, exposing its core. Platelets and clotting factors rush to the site, rapidly forming a blood clot (thrombus) that blocks the artery.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-gray-200">
+
+        <section id="risk-factors" class="scroll-mt-20 mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4 text-center">Who is at Risk?</h2>
+            <p class="text-lg text-gray-600 mb-12 max-w-3xl mx-auto text-center">Heart attack risk is influenced by a combination of factors you cannot change and lifestyle choices you can control. Understanding your personal risk profile is the first step toward prevention. Click on each factor to learn more.</p>
+            
+            <div class="mb-12">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Non-Modifiable Risk Factors (Cannot be changed)</h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="risk-card bg-white p-6 rounded-lg shadow cursor-pointer hover:shadow-lg transition-shadow">
+                        <h4 class="font-bold text-lg text-gray-800">Age</h4>
+                        <p class="text-sm text-gray-600">Risk increases with age.</p>
+                        <div class="details hidden mt-2 text-sm text-gray-700">Majority of events occur in men >45 and women >55.</div>
+                    </div>
+                    <div class="risk-card bg-white p-6 rounded-lg shadow cursor-pointer hover:shadow-lg transition-shadow">
+                        <h4 class="font-bold text-lg text-gray-800">Sex</h4>
+                        <p class="text-sm text-gray-600">Men are at higher risk at a younger age.</p>
+                        <div class="details hidden mt-2 text-sm text-gray-700">Women's risk increases significantly after menopause, and they often have worse outcomes.</div>
+                    </div>
+                    <div class="risk-card bg-white p-6 rounded-lg shadow cursor-pointer hover:shadow-lg transition-shadow">
+                        <h4 class="font-bold text-lg text-gray-800">Family History</h4>
+                        <p class="text-sm text-gray-600">Genetics play a strong role.</p>
+                        <div class="details hidden mt-2 text-sm text-gray-700">Risk is high if a father/brother had heart disease <55, or mother/sister <65.</div>
+                    </div>
+                    <div class="risk-card bg-white p-6 rounded-lg shadow cursor-pointer hover:shadow-lg transition-shadow">
+                        <h4 class="font-bold text-lg text-gray-800">Race/Ethnicity</h4>
+                        <p class="text-sm text-gray-600">Some groups have higher risk.</p>
+                        <div class="details hidden mt-2 text-sm text-gray-700">African Americans and people from the Indian subcontinent have a higher predisposition.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Modifiable Risk Factors (Can be controlled)</h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="risk-card bg-white p-6 rounded-lg shadow cursor-pointer hover:shadow-lg transition-shadow border-l-4 border-blue-500">
+                        <h4 class="font-bold text-lg text-blue-800">Hypertension</h4>
+                        <p class="text-sm text-gray-600">High blood pressure.</p>
+                        <div class="details hidden mt-2 text-sm text-gray-700">Damages artery walls and increases the heart's workload, accelerating atherosclerosis.</div>
+                    </div>
+                    <div class="risk-card bg-white p-6 rounded-lg shadow cursor-pointer hover:shadow-lg transition-shadow border-l-4 border-blue-500">
+                        <h4 class="font-bold text-lg text-blue-800">Dyslipidemia</h4>
+                        <p class="text-sm text-gray-600">High "bad" cholesterol (LDL).</p>
+                        <div class="details hidden mt-2 text-sm text-gray-700">High LDL is a primary driver of plaque buildup. Low HDL ("good" cholesterol) is also a risk.</div>
+                    </div>
+                    <div class="risk-card bg-white p-6 rounded-lg shadow cursor-pointer hover:shadow-lg transition-shadow border-l-4 border-blue-500">
+                        <h4 class="font-bold text-lg text-blue-800">Diabetes Mellitus</h4>
+                        <p class="text-sm text-gray-600">High blood sugar.</p>
+                        <div class="details hidden mt-2 text-sm text-gray-700">A powerful risk factor that promotes inflammation, endothelial damage, and a pro-clotting state.</div>
+                    </div>
+                    <div class="risk-card bg-white p-6 rounded-lg shadow cursor-pointer hover:shadow-lg transition-shadow border-l-4 border-blue-500">
+                        <h4 class="font-bold text-lg text-blue-800">Tobacco Use</h4>
+                        <p class="text-sm text-gray-600">Smoking or chewing tobacco.</p>
+                        <div class="details hidden mt-2 text-sm text-gray-700">Directly damages arteries, promotes clots, raises blood pressure, and worsens cholesterol.</div>
+                    </div>
+                    <div class="risk-card bg-white p-6 rounded-lg shadow cursor-pointer hover:shadow-lg transition-shadow border-l-4 border-blue-500">
+                        <h4 class="font-bold text-lg text-blue-800">Obesity & Inactivity</h4>
+                        <p class="text-sm text-gray-600">Overweight and sedentary lifestyle.</p>
+                        <div class="details hidden mt-2 text-sm text-gray-700">Contributes to hypertension, diabetes, and dyslipidemia. Regular activity is protective.</div>
+                    </div>
+                    <div class="risk-card bg-white p-6 rounded-lg shadow cursor-pointer hover:shadow-lg transition-shadow border-l-4 border-blue-500">
+                        <h4 class="font-bold text-lg text-blue-800">Unhealthy Diet & Stress</h4>
+                        <p class="text-sm text-gray-600">Poor diet and psychosocial factors.</p>
+                        <div class="details hidden mt-2 text-sm text-gray-700">Diets high in saturated fat and sodium are harmful. Chronic stress and depression are independent risk factors.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-gray-200">
+
+        <section id="symptoms" class="scroll-mt-20 mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4 text-center">Recognizing the Signs</h2>
+            <p class="text-lg text-gray-600 mb-8 max-w-3xl mx-auto text-center">Symptoms of a heart attack can vary dramatically. While classic chest pain is common, many people, especially women, the elderly, and diabetics, experience "atypical" symptoms. Recognizing this full spectrum of signs is crucial for seeking timely help.</p>
+            
+            <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                <div class="mb-6 flex flex-wrap justify-center gap-2">
+                    <button class="tab-btn px-4 py-2 text-sm font-semibold rounded-full transition active" data-tab="classic">Classic MI</button>
+                    <button class="tab-btn px-4 py-2 text-sm font-semibold rounded-full transition" data-tab="women">In Women</button>
+                    <button class="tab-btn px-4 py-2 text-sm font-semibold rounded-full transition" data-tab="elderly">In the Elderly</button>
+                    <button class="tab-btn px-4 py-2 text-sm font-semibold rounded-full transition" data-tab="diabetics">In Diabetics</button>
+                </div>
+                
+                <div id="symptoms-content">
+                    <!-- Content will be injected by JS -->
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-gray-200">
+
+        <section id="diagnosis" class="scroll-mt-20 mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4 text-center">How a Heart Attack is Diagnosed</h2>
+            <p class="text-lg text-gray-600 mb-12 max-w-3xl mx-auto text-center">Diagnosing an MI is a time-sensitive process that combines information from the patient's symptoms, an electrocardiogram (ECG), and blood tests for cardiac biomarkers. Each tool provides a critical piece of the puzzle.</p>
+            
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-3">The Role of Biomarkers</h3>
+                    <p class="text-gray-600 mb-4">When heart muscle cells die, they release proteins into the bloodstream. Measuring the levels of these biomarkers, especially high-sensitivity troponin, is the gold standard for confirming that a heart attack has occurred. The chart shows how different biomarker levels change over time after an MI begins.</p>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center"><span class="h-2 w-2 rounded-full bg-blue-500 mr-2"></span><strong class="w-28">hs-Troponin:</strong> Most sensitive and specific. Stays elevated for up to 14 days.</li>
+                        <li class="flex items-center"><span class="h-2 w-2 rounded-full bg-green-500 mr-2"></span><strong class="w-28">CK-MB:</strong> Less specific. Returns to normal in 2-3 days, useful for detecting a second MI.</li>
+                        <li class="flex items-center"><span class="h-2 w-2 rounded-full bg-yellow-500 mr-2"></span><strong class="w-28">Myoglobin:</strong> Rises very early but is not specific to the heart.</li>
+                    </ul>
+                </div>
+                <div class="chart-container">
+                    <canvas id="biomarkerChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-gray-200">
+
+        <section id="treatment" class="scroll-mt-20 mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4 text-center">The Road to Recovery</h2>
+            <p class="text-lg text-gray-600 mb-12 max-w-3xl mx-auto text-center">MI management is a continuum of care, from immediate, life-saving interventions to long-term strategies that prevent future events and preserve heart function. The principle "time is muscle" guides all acute treatment decisions.</p>
+
+            <div class="grid lg:grid-cols-2 gap-12">
+                <div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Acute Treatment: Restoring Blood Flow</h3>
+                    <div class="space-y-6">
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <h4 class="font-bold text-lg text-blue-700">Primary PCI (Preferred)</h4>
+                            <p class="text-sm text-gray-600">The gold standard. An emergency procedure where a catheter is used to place a stent and open the blocked artery. Goal is a "door-to-balloon" time of <90 minutes.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <h4 class="font-bold text-lg text-blue-700">Fibrinolytic Therapy</h4>
+                            <p class="text-sm text-gray-600">"Clot-busting" medication used if PCI is not available in a timely manner (within 120 mins). Most effective within the first few hours.</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Long-Term Prevention: Lifelong Management</h3>
+                    <p class="text-center text-gray-600 mb-6">Surviving an MI requires a lifelong commitment to medication and lifestyle changes to manage the underlying disease.</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-semibold text-center">Antiplatelets</h4></div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-semibold text-center">Beta-Blockers</h4></div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-semibold text-center">ACE Inhibitors/ARBs</h4></div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-semibold text-center">Statins</h4></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-gray-200">
+
+        <section id="impact" class="scroll-mt-20 mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4 text-center">The Global Impact of Heart Disease</h2>
+            <p class="text-lg text-gray-600 mb-12 max-w-3xl mx-auto text-center">The burden of cardiovascular disease is felt worldwide, but its impact is disproportionately severe in low- and middle-income countries. India, in particular, faces an accelerating epidemic with unique challenges.</p>
+            
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="chart-container">
+                    <canvas id="indiaImpactChart"></canvas>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-3">The Epidemic in India</h3>
+                    <p class="text-gray-600 mb-4">India has become a global epicenter for coronary artery disease, characterized by higher death rates and a much earlier age of onset compared to Western nations.</p>
+                    <ul class="space-y-3">
+                        <li class="bg-white p-4 rounded-lg shadow-sm">
+                            <p class="font-bold text-blue-700">Premature Onset</p>
+                            <p class="text-sm text-gray-600">52% of CVD deaths in India occur in people under 70, compared to 23% in the West.</p>
+                        </li>
+                        <li class="bg-white p-4 rounded-lg shadow-sm">
+                            <p class="font-bold text-blue-700">Socioeconomic Shift</p>
+                            <p class="text-sm text-gray-600">The burden is increasingly affecting lower socioeconomic groups who lack access to optimal care.</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+                          
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm">
+            <p>This interactive guide is for informational purposes only and does not constitute medical advice. Data synthesized from a comprehensive clinical review on Myocardial Infarction.</p>
+            <p>&copy; 2025 Interactive Health Guides. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const globalDeathsData = {
+                labels: ['Cardiovascular Diseases', 'Other Causes'],
+                datasets: [{
+                    data: [32, 68],
+                    backgroundColor: ['#ef4444', '#e5e7eb'],
+                    hoverBackgroundColor: ['#dc2626', '#d1d5db'],
+                    borderColor: '#f8f9fa',
+                    borderWidth: 2
+                }]
+            };
+            const globalDeathsCtx = document.getElementById('globalDeathsChart').getContext('2d');
+            new Chart(globalDeathsCtx, {
+                type: 'doughnut',
+                data: globalDeathsData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Global Deaths by Cause (2022)',
+                            font: { size: 16 }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+
+            const biomarkerData = {
+                labels: ['0h', '3h', '6h', '12h', '24h', '48h', '72h', '7d', '14d'],
+                datasets: [
+                    {
+                        label: 'hs-Troponin',
+                        data: [0, 15, 50, 90, 100, 80, 70, 40, 10],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'CK-MB',
+                        data: [0, 10, 40, 80, 100, 30, 5, 0, 0],
+                        borderColor: '#22c55e',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Myoglobin',
+                        data: [0, 30, 80, 100, 40, 5, 0, 0, 0],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }
+                ]
+            };
+            const biomarkerCtx = document.getElementById('biomarkerChart').getContext('2d');
+            new Chart(biomarkerCtx, {
+                type: 'line',
+                data: biomarkerData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Cardiac Biomarker Levels Over Time (Relative)',
+                            font: { size: 16 }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Relative Concentration' }
+                        },
+                        x: {
+                            title: { display: true, text: 'Time Since Onset' }
+                        }
+                    }
+                }
+            });
+
+            const indiaImpactData = {
+                labels: ['India', 'Global Average'],
+                datasets: [{
+                    label: 'Age-Standardized CVD Death Rate per 100,000',
+                    data: [272, 235],
+                    backgroundColor: ['#ef4444', '#6b7280'],
+                    borderColor: ['#dc2626', '#4b5563'],
+                    borderWidth: 1
+                }]
+            };
+            const indiaImpactCtx = document.getElementById('indiaImpactChart').getContext('2d');
+            new Chart(indiaImpactCtx, {
+                type: 'bar',
+                data: indiaImpactData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'CVD Death Rate Comparison',
+                            font: { size: 16 }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Deaths per 100,000 Population' }
+                        }
+                    }
+                }
+            });
+
+            const riskCards = document.querySelectorAll('.risk-card');
+            riskCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const details = card.querySelector('.details');
+                    details.classList.toggle('hidden');
+                });
+            });
+
+            const symptomsData = {
+                classic: {
+                    title: "Classic MI Symptoms",
+                    items: [
+                        "**Chest Discomfort:** Retrosternal pressure, squeezing, tightness, or heaviness.",
+                        "**Radiation:** Pain spreads to left arm, shoulder, neck, or jaw.",
+                        "**Associated Signs:** Profuse sweating (diaphoresis), shortness of breath, nausea.",
+                        "**Other:** Feeling of 'impending doom', not relieved by rest."
+                    ]
+                },
+                women: {
+                    title: "Common Atypical Symptoms in Women",
+                    items: [
+                        "**Chest Pain:** Still most common, but may be less prominent.",
+                        "**Key Atypical Symptoms:** Profound/unusual fatigue, shortness of breath, nausea/vomiting.",
+                        "**Pain Location:** Isolated pain in the upper back, neck, or jaw.",
+                        "**Prodromal Signs:** Some report flu-like symptoms for weeks prior."
+                    ]
+                },
+                elderly: {
+                    title: "Common Atypical Symptoms in the Elderly",
+                    items: [
+                        "**Chest Pain:** Often absent or described as a dull ache or indigestion.",
+                        "**Primary Complaint:** Shortness of breath is a very common chief complaint.",
+                        "**Neurological:** Sudden onset of confusion or syncope (fainting).",
+                        "**Other:** Unexplained generalized weakness, isolated nausea/vomiting."
+                    ]
+                },
+                diabetics: {
+                    title: "Common Atypical Symptoms in Diabetics",
+                    items: [
+                        "**Chest Pain:** Frequently absent due to nerve damage ('silent' ischemia).",
+                        "**Dominant Symptom:** Profound shortness of breath is often the main complaint.",
+                        "**Other Common Signs:** Unexplained weakness, fatigue, nausea, or epigastric discomfort.",
+                        "**Sweating:** Diaphoresis is often less frequent or absent."
+                    ]
+                }
+            };
+
+            const symptomsContent = document.getElementById('symptoms-content');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+
+            function renderSymptoms(tab) {
+                const data = symptomsData[tab];
+                let html = `<h3 class="text-xl font-bold text-gray-800 mb-4">${data.title}</h3><ul class="space-y-3 list-disc list-inside text-gray-700">`;
+                data.items.forEach(item => {
+                    html += `<li>${item.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')}</li>`;
+                });
+                html += `</ul>`;
+                symptomsContent.innerHTML = html;
+            }
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    renderSymptoms(button.dataset.tab);
+                });
+            });
+
+            renderSymptoms('classic');
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+            
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 80) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active', 'text-blue-600', 'border-blue-600');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active', 'text-blue-600', 'border-blue-600');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
