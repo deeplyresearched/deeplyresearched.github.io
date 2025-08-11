@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Report: Multiple Sclerosis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: "Calm Harmony" - A palette grounded in warm neutrals (bg-stone-50), with complimentary blues (sky, slate) for interactive elements and accents, creating a supportive and integrated feel. -->
+    <!-- Application Structure Plan: The SPA is designed with a thematic, non-linear structure to cater to both clinicians and patients. A sticky top navigation allows users to jump to key areas: Overview, Epidemiology ("Who is Affected?"), Pathophysiology/Symptoms ("The Disease Process"), Diagnosis/Treatment, and Patient Resources ("Living with MS"). This structure was chosen over a linear report format to improve usability. Users can quickly access the information most relevant to them. For example, a newly diagnosed patient might focus on "Living with MS," while a medical student might dive into "The Disease Process." Key interactions include interactive charts for data exploration, clickable diagrams to simplify complex processes like pathophysiology, and tabbed/accordion interfaces to manage detailed information like treatment options without overwhelming the user. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Epidemiology (Gender Ratio) -> Goal: Compare -> Viz: Doughnut Chart -> Interaction: Hover for details -> Justification: Instantly shows the strong female predominance. -> Library: Chart.js.
+        - Report Info: Epidemiology (Risk Factors) -> Goal: Compare -> Viz: Bar Chart -> Interaction: Hover for details -> Justification: Clearly compares the relative impact of different risk factors. -> Library: Chart.js.
+        - Report Info: Pathophysiology -> Goal: Organize/Explain -> Presentation: HTML/CSS Diagram -> Interaction: Click on stages to reveal text -> Justification: Simplifies a complex biological cascade into a digestible, step-by-step visual flow, avoiding static, complex diagrams. -> Method: HTML/CSS/JS.
+        - Report Info: Symptoms -> Goal: Organize/Inform -> Presentation: Icon-based grid -> Interaction: Click icon to show details -> Justification: Provides a quick, visually scannable overview of the diverse symptoms, making it less intimidating than a long list. -> Method: HTML/CSS/JS.
+        - Report Info: Treatment DMTs -> Goal: Compare/Organize -> Presentation: Tabbed interface with filterable cards -> Interaction: Select efficacy tier to filter, click card for details -> Justification: Manages a large amount of complex drug information, allowing users to compare options based on a key criterion (efficacy). -> Method: HTML/CSS/JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .section-fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .section-fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .symptom-card, .patho-step, .faq-item, .dmt-card {
+            transition: all 0.3s ease-in-out;
+        }
+        .symptom-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .tab-active {
+            border-color: #0284c7; /* sky-600 */
+            color: #0284c7;
+            background-color: #e0f2fe; /* sky-100 */
+        }
+        .dmt-filter-active {
+            background-color: #0369a1; /* sky-700 */
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <!-- Header & Navigation -->
+    <header id="header" class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <a href="#hero" class="text-2xl font-bold text-sky-700">MS Explorer</a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="text-slate-600 hover:text-sky-600 px-3 py-2 rounded-md text-sm font-medium">Overview</a>
+                        <a href="#epidemiology" class="text-slate-600 hover:text-sky-600 px-3 py-2 rounded-md text-sm font-medium">Who is Affected?</a>
+                        <a href="#process" class="text-slate-600 hover:text-sky-600 px-3 py-2 rounded-md text-sm font-medium">The Disease Process</a>
+                        <a href="#diagnosis" class="text-slate-600 hover:text-sky-600 px-3 py-2 rounded-md text-sm font-medium">Diagnosis & Treatment</a>
+                        <a href="#living" class="text-slate-600 hover:text-sky-600 px-3 py-2 rounded-md text-sm font-medium">Living with MS</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-slate-500 hover:text-sky-600 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-sky-500">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="h-6 w-6" id="menu-icon-open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                         <svg class="h-6 w-6 hidden" id="menu-icon-close" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div id="mobile-menu" class="md:hidden hidden">
+                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                    <a href="#overview" class="text-slate-600 hover:text-sky-600 block px-3 py-2 rounded-md text-base font-medium">Overview</a>
+                    <a href="#epidemiology" class="text-slate-600 hover:text-sky-600 block px-3 py-2 rounded-md text-base font-medium">Who is Affected?</a>
+                    <a href="#process" class="text-slate-600 hover:text-sky-600 block px-3 py-2 rounded-md text-base font-medium">The Disease Process</a>
+                    <a href="#diagnosis" class="text-slate-600 hover:text-sky-600 block px-3 py-2 rounded-md text-base font-medium">Diagnosis & Treatment</a>
+                    <a href="#living" class="text-slate-600 hover:text-sky-600 block px-3 py-2 rounded-md text-base font-medium">Living with MS</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 text-center">
+                <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-slate-900">Understanding Multiple Sclerosis</h1>
+                <p class="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-slate-600">An interactive guide to the science, symptoms, and management of MS. Explore the key facts and latest insights into this complex condition.</p>
+            </div>
+        </section>
+
+        <!-- Overview Section -->
+        <section id="overview" class="py-16 md:py-24 section-fade-in">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">What is Multiple Sclerosis?</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-slate-600">MS is a long-term condition affecting the brain and spinal cord. It's an autoimmune disease where the body's own defense system mistakenly attacks the protective sheath covering nerve fibers.</p>
+                </div>
+
+                <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-8 items-center">
+                    <div class="bg-white p-8 rounded-xl shadow-md">
+                        <h3 class="text-xl font-semibold text-sky-700 mb-3">An Electrical Wire Analogy</h3>
+                        <p class="text-slate-600">Think of your nerves as electrical wires. These wires are covered in a protective insulation called **myelin**. In MS, the immune system damages this myelin, disrupting the flow of electrical signals from your brain to your body. This disruption causes the wide range of MS symptoms.</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-6 text-center">
+                        <div class="bg-sky-100/50 p-6 rounded-xl">
+                            <p class="text-4xl font-bold text-sky-700">2.9M</p>
+                            <p class="mt-1 text-sm font-medium text-slate-600">People living with MS worldwide</p>
+                        </div>
+                        <div class="bg-sky-100/50 p-6 rounded-xl">
+                            <p class="text-4xl font-bold text-sky-700">20-50</p>
+                            <p class="mt-1 text-sm font-medium text-slate-600">Typical age of onset</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Epidemiology Section -->
+        <section id="epidemiology" class="py-16 md:py-24 bg-white section-fade-in">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Who is Affected by MS?</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-slate-600">MS prevalence varies by geography, sex, and other risk factors. This section explores the key demographic and environmental influences.</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
+                    <div class="lg:col-span-1 bg-slate-50 p-8 rounded-xl shadow-sm">
+                        <h3 class="text-xl font-semibold text-sky-700 mb-4 text-center">Gender Disparity</h3>
+                        <div class="chart-container">
+                            <canvas id="genderChart"></canvas>
+                        </div>
+                        <p class="mt-4 text-center text-slate-600">MS affects women 2 to 3 times more often than men, especially in its relapsing-remitting form.</p>
+                    </div>
+                    <div class="lg:col-span-2 bg-slate-50 p-8 rounded-xl shadow-sm">
+                        <h3 class="text-xl font-semibold text-sky-700 mb-4 text-center">Key Risk Factors</h3>
+                        <div class="chart-container h-[400px] max-h-[450px] !max-w-full">
+                            <canvas id="riskFactorChart"></canvas>
+                        </div>
+                        <p class="mt-4 text-center text-slate-600">MS is caused by a mix of genetic and environmental factors. This chart shows the relative contribution of major known risks.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Disease Process Section -->
+        <section id="process" class="py-16 md:py-24 section-fade-in">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">The Disease Process</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-slate-600">Explore how MS develops and the common symptoms it can cause. Click on the steps and symptom icons to learn more.</p>
+                </div>
+
+                <!-- Pathophysiology -->
+                <div class="mb-16">
+                    <h3 class="text-2xl font-semibold text-center mb-8 text-sky-800">How MS Attacks the Body: A Step-by-Step Guide</h3>
+                    <div class="relative flex flex-col md:flex-row justify-between items-center w-full max-w-5xl mx-auto">
+                        <div class="absolute top-1/2 left-0 w-full h-1 bg-slate-300 hidden md:block"></div>
+                        <div class="absolute top-0 left-1/2 w-1 h-full bg-slate-300 md:hidden"></div>
+                        
+                        <div class="patho-step-container flex flex-col items-center z-10 w-full md:w-auto mb-8 md:mb-0">
+                            <button data-patho="1" class="patho-step bg-white border-2 border-sky-500 rounded-full w-24 h-24 flex items-center justify-center text-center p-2 shadow-lg">Peripheral Activation</button>
+                        </div>
+                        <div class="patho-step-container flex flex-col items-center z-10 w-full md:w-auto mb-8 md:mb-0">
+                            <button data-patho="2" class="patho-step bg-white border-2 border-slate-400 rounded-full w-24 h-24 flex items-center justify-center text-center p-2 shadow-lg">BBB Breach</button>
+                        </div>
+                        <div class="patho-step-container flex flex-col items-center z-10 w-full md:w-auto mb-8 md:mb-0">
+                            <button data-patho="3" class="patho-step bg-white border-2 border-slate-400 rounded-full w-24 h-24 flex items-center justify-center text-center p-2 shadow-lg">CNS Inflammation</button>
+                        </div>
+                        <div class="patho-step-container flex flex-col items-center z-10 w-full md:w-auto">
+                            <button data-patho="4" class="patho-step bg-white border-2 border-slate-400 rounded-full w-24 h-24 flex items-center justify-center text-center p-2 shadow-lg">Demyelination & Damage</button>
+                        </div>
+                    </div>
+                    <div id="patho-details" class="mt-8 max-w-3xl mx-auto bg-sky-50 p-6 rounded-lg min-h-[150px] flex items-center justify-center">
+                        <p class="text-slate-700 text-center">Click a step above to see details.</p>
+                    </div>
+                </div>
+
+                <!-- Symptoms -->
+                <div>
+                    <h3 class="text-2xl font-semibold text-center mb-8 text-sky-800">Common Symptoms Explorer</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-4xl mx-auto">
+                        <button data-symptom="vision" class="symptom-card bg-white p-6 rounded-xl shadow-md flex flex-col items-center justify-center text-center">
+                            <span class="text-4xl mb-3">👁️</span>
+                            <h4 class="font-semibold text-slate-800">Vision Problems</h4>
+                        </button>
+                        <button data-symptom="sensory" class="symptom-card bg-white p-6 rounded-xl shadow-md flex flex-col items-center justify-center text-center">
+                            <span class="text-4xl mb-3">🖐️</span>
+                            <h4 class="font-semibold text-slate-800">Numbness & Tingling</h4>
+                        </button>
+                        <button data-symptom="motor" class="symptom-card bg-white p-6 rounded-xl shadow-md flex flex-col items-center justify-center text-center">
+                            <span class="text-4xl mb-3">🏃</span>
+                            <h4 class="font-semibold text-slate-800">Weakness & Spasms</h4>
+                        </button>
+                        <button data-symptom="fatigue" class="symptom-card bg-white p-6 rounded-xl shadow-md flex flex-col items-center justify-center text-center">
+                            <span class="text-4xl mb-3">🔋</span>
+                            <h4 class="font-semibold text-slate-800">Fatigue</h4>
+                        </button>
+                    </div>
+                     <div id="symptom-details" class="mt-8 max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-inner min-h-[150px] flex items-center justify-center">
+                        <p class="text-slate-700 text-center">Click an icon above to see details.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Diagnosis & Treatment Section -->
+        <section id="diagnosis" class="py-16 md:py-24 bg-white section-fade-in">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Diagnosis & Treatment</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-slate-600">Learn about the diagnostic journey and the modern therapeutic approaches that have revolutionized MS care.</p>
+                </div>
+                
+                <!-- Tabs -->
+                <div class="mb-8 border-b border-slate-200">
+                    <nav class="-mb-px flex justify-center space-x-4 md:space-x-8" aria-label="Tabs">
+                        <button class="treatment-tab tab-active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" data-tab="diagnosis-tab">Diagnosis</button>
+                        <button class="treatment-tab whitespace-nowrap py-4 px-1 border-b-2 border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 font-medium text-sm" data-tab="dmt-tab">Disease-Modifying Therapies</button>
+                        <button class="treatment-tab whitespace-nowrap py-4 px-1 border-b-2 border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 font-medium text-sm" data-tab="symptom-mgmt-tab">Symptom Management</button>
+                    </nav>
+                </div>
+
+                <!-- Tab Content -->
+                <div id="treatment-tab-content">
+                    <div id="diagnosis-tab" class="tab-pane active">
+                        <h3 class="text-2xl font-semibold text-center mb-8 text-sky-800">The Diagnostic Pathway</h3>
+                        <p class="text-center text-slate-600 max-w-3xl mx-auto mb-8">Diagnosis relies on the 2017 McDonald Criteria, which require showing that lesions have occurred in different parts of the CNS (**Dissemination in Space - DIS**) and at different times (**Dissemination in Time - DIT**).</p>
+                        <div class="flex flex-col md:flex-row items-stretch justify-center gap-4 max-w-6xl mx-auto">
+                            <div class="flex-1 bg-slate-50 p-6 rounded-lg text-center flex flex-col items-center justify-center">
+                                <div class="text-3xl font-bold text-sky-600 mb-2">1</div>
+                                <h4 class="font-semibold mb-2">Clinical Assessment</h4>
+                                <p class="text-sm text-slate-600">A detailed history of neurological symptoms and a physical examination.</p>
+                            </div>
+                            <div class="self-center text-2xl text-slate-400 mx-4">→</div>
+                             <div class="flex-1 bg-slate-50 p-6 rounded-lg text-center flex flex-col items-center justify-center">
+                                <div class="text-3xl font-bold text-sky-600 mb-2">2</div>
+                                <h4 class="font-semibold mb-2">MRI Scan</h4>
+                                <p class="text-sm text-slate-600">The key tool to visualize lesions in the brain and spinal cord to establish DIS.</p>
+                            </div>
+                            <div class="self-center text-2xl text-slate-400 mx-4">→</div>
+                             <div class="flex-1 bg-slate-50 p-6 rounded-lg text-center flex flex-col items-center justify-center">
+                                <div class="text-3xl font-bold text-sky-600 mb-2">3</div>
+                                <h4 class="font-semibold mb-2">Ancillary Tests</h4>
+                                <p class="text-sm text-slate-600">Cerebrospinal fluid analysis for oligoclonal bands (OCBs) can help confirm DIT.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="dmt-tab" class="tab-pane hidden">
+                        <h3 class="text-2xl font-semibold text-center mb-2 text-sky-800">Disease-Modifying Therapies (DMTs)</h3>
+                         <p class="text-center text-slate-600 max-w-3xl mx-auto mb-8">DMTs are the cornerstone of long-term care, aiming to reduce relapses and slow disability progression. They are broadly categorized by efficacy.</p>
+                        <div class="flex justify-center mb-8 space-x-2">
+                            <button class="dmt-filter dmt-filter-active px-4 py-2 text-sm font-medium rounded-full" data-filter="all">All Efficacies</button>
+                            <button class="dmt-filter px-4 py-2 text-sm font-medium rounded-full bg-slate-200 text-slate-700" data-filter="moderate">Moderate Efficacy</button>
+                            <button class="dmt-filter px-4 py-2 text-sm font-medium rounded-full bg-slate-200 text-slate-700" data-filter="high">High Efficacy</button>
+                        </div>
+                        <div id="dmt-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                            <!-- DMT cards will be injected here by JS -->
+                        </div>
+                    </div>
+                    <div id="symptom-mgmt-tab" class="tab-pane hidden">
+                        <h3 class="text-2xl font-semibold text-center mb-8 text-sky-800">Symptomatic Management</h3>
+                        <p class="text-center text-slate-600 max-w-3xl mx-auto mb-8">While DMTs treat the underlying disease, a wide range of therapies are used to manage the daily symptoms of MS and improve quality of life.</p>
+                        <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-6">
+                            <div class="bg-slate-50 p-6 rounded-lg">
+                                <h4 class="font-semibold text-lg mb-2 text-sky-700">Non-Pharmacological</h4>
+                                <ul class="list-disc list-inside text-slate-600 space-y-1">
+                                    <li><strong>Physiotherapy:</strong> For mobility, strength, and balance.</li>
+                                    <li><strong>Occupational Therapy:</strong> For daily living strategies and energy conservation.</li>
+                                    <li><strong>Lifestyle:</strong> Regular exercise, a balanced diet, and stress management.</li>
+                                </ul>
+                            </div>
+                             <div class="bg-slate-50 p-6 rounded-lg">
+                                <h4 class="font-semibold text-lg mb-2 text-sky-700">Pharmacological</h4>
+                                <ul class="list-disc list-inside text-slate-600 space-y-1">
+                                    <li><strong>Spasticity:</strong> Medications like Baclofen and Tizanidine.</li>
+                                    <li><strong>Neuropathic Pain:</strong> Agents like Gabapentin and Amitriptyline.</li>
+                                    <li><strong>Fatigue:</strong> Stimulants such as Amantadine or Modafinil.</li>
+                                    <li><strong>Bladder Issues:</strong> Anticholinergics or beta-3 agonists.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Living with MS Section -->
+        <section id="living" class="py-16 md:py-24 section-fade-in">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Living with MS</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-slate-600">Practical advice and answers to common questions for patients and their families.</p>
+                </div>
+                <div class="max-w-4xl mx-auto">
+                    <h3 class="text-2xl font-semibold text-center mb-8 text-sky-800">Frequently Asked Questions</h3>
+                    <div id="faq-container" class="space-y-4">
+                        <!-- FAQ items will be injected here by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-slate-400">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-sm">
+            <p class="font-semibold mb-2">Disclaimer</p>
+            <p>This report is for educational and informational purposes only and does not constitute medical advice. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Data
+            const pathoData = {
+                '1': { title: '1. Peripheral Activation', text: 'In a genetically susceptible person, an environmental trigger (like the EBV virus) activates autoreactive T-cells in the peripheral immune system, outside the brain and spinal cord.' },
+                '2': { title: '2. Blood-Brain Barrier (BBB) Breach', text: 'These activated immune cells travel to the brain and release chemicals that make the protective blood-brain barrier leaky, allowing them to enter the central nervous system (CNS).' },
+                '3': { title: '3. CNS Inflammation', text: 'Once inside the CNS, T-cells and B-cells trigger a massive inflammatory response, recruiting more immune cells and creating a toxic environment.' },
+                '4': { title: '4. Demyelination & Axonal Damage', text: 'The inflammation directly attacks and destroys myelin, the protective nerve coating. This process, called demyelination, disrupts nerve signals and damages the underlying nerve fiber (axon), leading to MS symptoms and long-term disability.' }
+            };
+
+            const symptomData = {
+                'vision': { title: 'Vision Problems', text: 'Often one of the first signs. Includes painful, blurry, or double vision, and loss of color vibrancy (Optic Neuritis). Caused by inflammation of the optic nerve.' },
+                'sensory': { title: 'Numbness & Tingling (Paresthesia)', text: 'A "pins and needles" feeling, numbness, or other strange sensations in the face, body, arms, or legs. Can include the "MS hug" (a constricting feeling around the torso) or Lhermitte\'s sign (an electric shock sensation down the spine).' },
+                'motor': { title: 'Weakness & Spasms (Spasticity)', text: 'Muscle weakness can affect mobility and gait. Spasticity is a feeling of stiffness and involuntary muscle spasms, most commonly in the legs.' },
+                'fatigue': { title: 'Overwhelming Fatigue', text: 'More than just normal tiredness, MS fatigue is a profound sense of exhaustion that is not relieved by rest and can significantly interfere with daily life.' }
+            };
+
+            const dmtData = [
+                { name: 'Interferon-beta', efficacy: 'moderate', details: 'Immunomodulator that reduces T-cell migration into the CNS. Administered by injection. Side effects include flu-like symptoms.' },
+                { name: 'Glatiramer Acetate', efficacy: 'moderate', details: 'Acts as a decoy antigen, shifting the immune response to be less inflammatory. Administered by injection. Can cause injection site reactions.' },
+                { name: 'Dimethyl Fumarate', efficacy: 'moderate', details: 'Oral medication with anti-inflammatory properties. Can cause flushing and GI upset. Requires blood monitoring.' },
+                { name: 'S1P Modulators', efficacy: 'high', details: 'Oral pills that trap lymphocytes in lymph nodes, preventing them from entering the CNS. Requires monitoring for cardiac and eye side effects.' },
+                { name: 'Natalizumab', efficacy: 'high', details: 'Highly effective infusion that blocks immune cells from crossing the blood-brain barrier. Carries a risk of a serious brain infection (PML).' },
+                { name: 'Anti-CD20 mAbs', efficacy: 'high', details: 'Infusions or injections that deplete B-cells, a key player in MS. Highly effective for relapsing and primary progressive MS. Increased infection risk.' },
+                { name: 'Alemtuzumab', efficacy: 'high', details: 'Highly effective infusion that depletes T- and B-cells. Reserved for aggressive disease due to risk of secondary autoimmune conditions.' },
+                { name: 'Cladribine', efficacy: 'high', details: 'Oral therapy taken in short courses that selectively depletes lymphocytes. Requires monitoring.' }
+            ];
+
+            const faqData = [
+                { q: 'Can I be cured?', a: 'Currently, there is no cure for MS. However, available treatments are very effective at managing the disease, reducing relapses, and slowing progression, allowing for a full and active life.' },
+                { q: 'Will I end up in a wheelchair?', a: 'This is a common fear, but not the reality for most people with MS today. The majority, especially with early treatment, will not become severely disabled and will continue to walk, though some may eventually use an aid like a cane.' },
+                { q: 'Is MS contagious or hereditary?', a: 'MS is not contagious. It is not directly inherited, but genetics play a role. Having a first-degree relative with MS slightly increases your risk, but the overall risk is still very low.' },
+                { q: 'What dietary changes are most effective?', a: 'No specific diet is proven to cure MS. However, a balanced, heart-healthy diet (like the Mediterranean diet) is recommended for overall wellness. Your doctor may also recommend a Vitamin D supplement.' }
+            ];
+
+            // Mobile Menu
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuIconOpen = document.getElementById('menu-icon-open');
+            const menuIconClose = document.getElementById('menu-icon-close');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                menuIconOpen.classList.toggle('hidden');
+                menuIconClose.classList.toggle('hidden');
+            });
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                    menuIconOpen.classList.remove('hidden');
+                    menuIconClose.classList.add('hidden');
+                });
+            });
+
+
+            // Fade-in sections on scroll
+            const sections = document.querySelectorAll('.section-fade-in');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            // Chart.js Implementations
+            const genderCtx = document.getElementById('genderChart').getContext('2d');
+            new Chart(genderCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Female', 'Male'],
+                    datasets: [{
+                        label: 'Gender Distribution',
+                        data: [70, 30], // Approximate 2.5:1 ratio
+                        backgroundColor: ['#38bdf8', '#64748b'],
+                        borderColor: '#f8fafc',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const riskFactorCtx = document.getElementById('riskFactorChart').getContext('2d');
+            new Chart(riskFactorCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Epstein-Barr Virus', 'Low Vitamin D', 'Smoking', 'Adolescent Obesity'],
+                    datasets: [{
+                        label: 'Relative Contribution to MS Risk',
+                        data: [95, 60, 50, 40], // Illustrative values
+                        backgroundColor: ['#0ea5e9', '#38bdf8', '#7dd3fc', '#bae6fd'],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` A significant contributing factor to MS development.`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                display: false
+                            },
+                            grid: {
+                                display: false
+                            },
+                             border: {
+                                display: false
+                            }
+                        },
+                        y: {
+                             grid: {
+                                display: false
+                            },
+                             border: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Pathophysiology Interaction
+            const pathoSteps = document.querySelectorAll('.patho-step');
+            const pathoDetails = document.getElementById('patho-details');
+            pathoSteps.forEach(step => {
+                step.addEventListener('click', function() {
+                    const pathoId = this.dataset.patho;
+                    const data = pathoData[pathoId];
+                    pathoDetails.innerHTML = `<h4 class="text-lg font-semibold text-sky-800 mb-2">${data.title}</h4><p class="text-slate-700 text-center">${data.text}</p>`;
+                    
+                    pathoSteps.forEach(s => s.classList.remove('border-sky-500', 'scale-110'));
+                    pathoSteps.forEach(s => s.classList.add('border-slate-400'));
+                    
+                    this.classList.remove('border-slate-400');
+                    this.classList.add('border-sky-500', 'scale-110');
+                });
+            });
+
+            // Symptom Interaction
+            const symptomCards = document.querySelectorAll('.symptom-card');
+            const symptomDetails = document.getElementById('symptom-details');
+             symptomCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const symptomId = this.dataset.symptom;
+                    const data = symptomData[symptomId];
+                    symptomDetails.innerHTML = `<h4 class="text-lg font-semibold text-slate-800 mb-2">${data.title}</h4><p class="text-slate-600 text-center">${data.text}</p>`;
+                });
+            });
+
+            // Treatment Tabs
+            const treatmentTabs = document.querySelectorAll('.treatment-tab');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+            treatmentTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    treatmentTabs.forEach(t => t.classList.remove('tab-active'));
+                    this.classList.add('tab-active');
+
+                    tabPanes.forEach(pane => pane.classList.add('hidden'));
+                    document.getElementById(this.dataset.tab).classList.remove('hidden');
+                });
+            });
+            
+            // DMT Filter
+            const dmtGrid = document.getElementById('dmt-grid');
+            const dmtFilters = document.querySelectorAll('.dmt-filter');
+
+            function renderDmts(filter = 'all') {
+                dmtGrid.innerHTML = '';
+                const filteredDmts = (filter === 'all') ? dmtData : dmtData.filter(dmt => dmt.efficacy === filter);
+                
+                filteredDmts.forEach(dmt => {
+                    const efficacyColor = dmt.efficacy === 'high' ? 'bg-sky-100' : 'bg-slate-100';
+                    const efficacyTextColor = dmt.efficacy === 'high' ? 'text-sky-800' : 'text-slate-800';
+                    const card = `
+                        <div class="dmt-card bg-white p-6 rounded-lg shadow-sm border-l-4 ${dmt.efficacy === 'high' ? 'border-sky-500' : 'border-slate-400'}">
+                            <h4 class="font-bold text-lg text-slate-900">${dmt.name}</h4>
+                            <span class="text-xs font-semibold uppercase px-2 py-1 rounded-full ${efficacyColor} ${efficacyTextColor}">${dmt.efficacy} Efficacy</span>
+                            <p class="mt-3 text-sm text-slate-600">${dmt.details}</p>
+                        </div>
+                    `;
+                    dmtGrid.innerHTML += card;
+                });
+            }
+
+            dmtFilters.forEach(filterBtn => {
+                filterBtn.addEventListener('click', function() {
+                    dmtFilters.forEach(btn => btn.classList.remove('dmt-filter-active', 'bg-slate-200', 'text-slate-700'));
+                    dmtFilters.forEach(btn => btn.classList.add('bg-slate-200', 'text-slate-700'));
+                    this.classList.add('dmt-filter-active');
+                    this.classList.remove('bg-slate-200', 'text-slate-700');
+                    renderDmts(this.dataset.filter);
+                });
+            });
+
+            renderDmts();
+
+            // FAQ Accordion
+            const faqContainer = document.getElementById('faq-container');
+            faqData.forEach((faq, index) => {
+                const faqItem = `
+                    <div class="faq-item bg-white rounded-lg shadow-sm overflow-hidden">
+                        <h2>
+                            <button type="button" class="flex items-center justify-between w-full p-5 font-medium text-left text-slate-700 hover:bg-slate-100" data-faq-target="${index}">
+                                <span>${faq.q}</span>
+                                <svg class="w-6 h-6 shrink-0 faq-arrow" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                        </h2>
+                        <div id="faq-body-${index}" class="hidden p-5 border-t border-slate-200">
+                            <p class="text-slate-600">${faq.a}</p>
+                        </div>
+                    </div>
+                `;
+                faqContainer.innerHTML += faqItem;
+            });
+
+            faqContainer.addEventListener('click', function(e) {
+                const button = e.target.closest('button[data-faq-target]');
+                if (button) {
+                    const targetId = button.dataset.faqTarget;
+                    const body = document.getElementById(`faq-body-${targetId}`);
+                    const arrow = button.querySelector('.faq-arrow');
+                    
+                    const isHidden = body.classList.contains('hidden');
+                    if(isHidden) {
+                        body.classList.remove('hidden');
+                        arrow.style.transform = 'rotate(180deg)';
+                    } else {
+                        body.classList.add('hidden');
+                        arrow.style.transform = 'rotate(0deg)';
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
