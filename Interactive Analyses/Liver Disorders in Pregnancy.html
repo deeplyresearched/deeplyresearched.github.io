@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Report: Liver Disorders in Pregnancy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+
+  
+    <!-- Chosen Palette: Serene Neutrals & Soft Medical Tones -->
+    <!-- Application Structure Plan: A thematic, dual-pathway SPA. It starts with an audience gateway (Clinician/Patient) to tailor the initial view. The structure includes: 1. Patient Guide (symptoms, FAQs), 2. Clinician's Dashboard (interactive comparison table, key differentiator charts), 3. Deep Dive sections for each disorder (ICP, HELLP, AFLP) with pathophysiology diagrams and management protocols, 4. Epidemiology visualisations, and 5. Prognosis summaries. This non-linear, task-oriented design prioritizes usability, allowing clinicians to quickly access critical data while providing a guided, supportive experience for patients, making the dense report content highly consumable for both audiences. -->
+    <!-- Visualization & Content Choices: 1. Epidemiology: Goal=Compare prevalence. Viz=Bar Chart (Chart.js) to show relative frequency of disorders. Interaction=Tooltips on hover. Justification=Quickly contextualizes how common each condition is. 2. Disorder Comparison: Goal=Differentiate syndromes. Viz=Interactive HTML table + Bar Chart (Chart.js). Interaction=Table hover highlights, chart shows key lab value differences. Justification=Allows rapid, side-by-side comparison for diagnosis, which is a core clinical task. 3. Pathophysiology: Goal=Explain mechanisms. Viz=HTML/CSS diagrams. Interaction=Hover reveals text. Justification=Visually simplifies complex biological processes without needing static images. 4. Patient FAQs: Goal=Inform/reassure. Viz=Accordion (HTML/JS). Interaction=Click to expand/collapse. Justification=Organizes information cleanly and prevents overwhelming the user. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f7f4;
+            color: #4a4a4a;
+        }
+        .bg-primary { background-color: #f8f7f4; }
+        .bg-secondary { background-color: #ffffff; }
+        .bg-accent { background-color: #e3dcd2; }
+        .text-header { color: #385273; }
+        .text-body { color: #5a5a5a; }
+        .text-accent { color: #8c7b70; }
+        .border-accent { border-color: #d1c7bc; }
+        .btn {
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-color 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #385273;
+            border-bottom-color: #385273;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .faq-item .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .faq-item.open .faq-answer {
+            max-height: 500px; 
+        }
+        .faq-item .faq-arrow {
+            transition: transform 0.3s ease;
+        }
+        .faq-item.open .faq-arrow {
+            transform: rotate(180deg);
+        }
+        .patho-diagram {
+            border: 1px solid #e3dcd2;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            background-color: #fdfcfb;
+        }
+        .patho-box {
+            border: 1px solid #d1c7bc;
+            background-color: #fff;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            text-align: center;
+            position: relative;
+        }
+        .patho-arrow {
+            position: absolute;
+            color: #8c7b70;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+      
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+    </style>
+</head>
+<body class="bg-primary">
+
+    <nav id="navbar" class="bg-secondary/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-header">Liver Disorders in Pregnancy</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#gateway" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-body">Home</a>
+                        <a href="#patient-guide" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-body">Patient Guide</a>
+                        <a href="#clinician-dashboard" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-body">Clinician Dashboard</a>
+                        <a href="#deep-dive" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-body">Disorder Details</a>
+                        <a href="#epidemiology" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-body">Epidemiology</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Section 1: Landing & Audience Gateway -->
+        <section id="gateway" class="py-16 md:py-24 bg-secondary">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold text-header mb-4">An Interactive Clinical & Patient Guide</h2>
+                <p class="max-w-3xl mx-auto text-lg text-body mb-10">This resource translates a comprehensive medical report into an accessible, interactive format for both healthcare professionals and patients. Please select your starting point to tailor your experience.</p>
+                <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-6">
+                    <a href="#patient-guide" class="btn bg-accent text-header font-semibold py-3 px-8 rounded-lg shadow-md w-full md:w-auto">
+                        For Patients & Families
+                    </a>
+                    <a href="#clinician-dashboard" class="btn bg-header text-white font-semibold py-3 px-8 rounded-lg shadow-md w-full md:w-auto">
+                        For Clinicians
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: The Patient & Family Guide -->
+        <section id="patient-guide" class="py-16 md:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-header">A Guide for Patients & Families</h2>
+                    <p class="mt-4 text-lg text-body max-w-2xl mx-auto">Understanding what's happening can feel overwhelming. This section explains these conditions in simple terms.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="bg-secondary p-8 rounded-lg shadow-lg">
+                        <h3 class="text-2xl font-semibold text-header mb-4">What's Happening to My Liver?</h3>
+                        <p class="text-body mb-4">Think of your liver as your body's sophisticated processing plant. During pregnancy, this factory works overtime to support both you and your growing baby. Sometimes, the combination of pregnancy hormones and this increased workload can overwhelm the system, causing a liver disorder.</p>
+                        <p class="text-body">These issues range from a temporary "plumbing problem" with bile flow causing intense itching (ICP), to a more serious "factory-wide emergency" affecting your blood and blood pressure (HELLP syndrome or AFLP). Early recognition is key to managing these conditions safely.</p>
+                    </div>
+                    <div class="bg-secondary p-8 rounded-lg shadow-lg">
+                        <h3 class="text-2xl font-semibold text-header mb-4">Key Warning Signs to Watch For</h3>
+                        <p class="text-body mb-4">Do not dismiss these symptoms as "normal" parts of pregnancy. Contact your doctor or midwife right away if you experience:</p>
+                        <ul id="symptom-list" class="space-y-3">
+                            <!-- Symptoms will be injected here by JS -->
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-16">
+                    <h3 class="text-2xl font-semibold text-header text-center mb-8">Frequently Asked Questions</h3>
+                    <div id="faq-container" class="max-w-3xl mx-auto bg-secondary rounded-lg shadow-lg p-4">
+                        <!-- FAQs will be injected here by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <hr class="border-t-2 border-accent my-12 container mx-auto">
+
+        <!-- Section 3: The Clinician's Dashboard -->
+        <section id="clinician-dashboard" class="py-16 md:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-header">Clinician's Dashboard: At-a-Glance Comparison</h2>
+                    <p class="mt-4 text-lg text-body max-w-2xl mx-auto">Rapidly differentiate between the major pregnancy-specific liver disorders using key clinical and laboratory findings.</p>
+                </div>
+
+                <div class="bg-secondary rounded-lg shadow-lg p-6 overflow-x-auto mb-12">
+                    <h3 class="text-xl font-semibold text-header mb-4">Comparative Features of ICP, HELLP, and AFLP</h3>
+                    <table class="w-full text-left text-sm text-body">
+                        <thead class="bg-gray-50 text-xs text-gray-700 uppercase">
+                            <tr>
+                                <th class="px-4 py-3">Feature</th>
+                                <th class="px-4 py-3 bg-red-50">ICP</th>
+                                <th class="px-4 py-3 bg-blue-50">HELLP Syndrome</th>
+                                <th class="px-4 py-3 bg-yellow-50">AFLP</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparison-table-body">
+                           <!-- Table content will be injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-secondary p-6 rounded-lg shadow-lg">
+                        <h3 class="text-xl font-semibold text-header text-center mb-4">Key Laboratory Differentiators</h3>
+                        <p class="text-center text-sm text-body mb-4">This chart highlights the most distinct laboratory findings that help distinguish between these three critical conditions.</p>
+                        <div class="chart-container">
+                            <canvas id="differentiatorChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-secondary p-6 rounded-lg shadow-lg">
+                        <h3 class="text-xl font-semibold text-header text-center mb-4">Maternal & Fetal Risk Profile</h3>
+                         <p class="text-center text-sm text-body mb-4">A summary of primary risks associated with each disorder, guiding management priorities.</p>
+                        <div id="risk-profile-content">
+                            <!-- Risk profiles will be injected by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="border-t-2 border-accent my-12 container mx-auto">
+
+        <!-- Section 4: Deep Dive - The Disorders -->
+        <section id="deep-dive" class="py-16 md:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-header">Deep Dive: Disorder Details</h2>
+                    <p class="mt-4 text-lg text-body max-w-2xl mx-auto">Explore detailed pathophysiology, diagnostic criteria, and evidence-based management for each condition.</p>
+                </div>
+                <div class="flex justify-center mb-8">
+                    <div id="disorder-tabs" class="flex space-x-1 bg-accent p-1 rounded-lg">
+                        <!-- Tabs will be injected here by JS -->
+                    </div>
+                </div>
+                <div id="disorder-content" class="bg-secondary p-6 md:p-8 rounded-lg shadow-lg">
+                    <!-- Content for selected disorder will be shown here -->
+                </div>
+            </div>
+        </section>
+
+        <hr class="border-t-2 border-accent my-12 container mx-auto">
+
+        <!-- Section 5: Epidemiology -->
+        <section id="epidemiology" class="py-16 md:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-header">Epidemiology: A Global View</h2>
+                    <p class="mt-4 text-lg text-body max-w-2xl mx-auto">Understanding the prevalence of these disorders provides context for clinical suspicion and risk assessment.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                     <div class="bg-secondary p-6 rounded-lg shadow-lg">
+                        <h3 class="text-xl font-semibold text-header text-center mb-4">Estimated Incidence per 100,000 Pregnancies</h3>
+                        <p class="text-center text-sm text-body mb-4">This chart illustrates the vast difference in how frequently these conditions occur, highlighting the rarity of AFLP.</p>
+                        <div class="chart-container">
+                            <canvas id="epidemiologyChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-secondary p-8 rounded-lg shadow-lg">
+                        <h3 class="text-xl font-semibold text-header mb-4">Key Risk Factors</h3>
+                        <div id="risk-factor-content">
+                            <!-- Risk factors will be injected by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+  
+    <footer class="bg-secondary mt-20">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-body">
+            <p class="text-sm font-semibold text-header mb-2">Disclaimer</p>
+            <p class="text-xs max-w-4xl mx-auto">This interactive report is for educational and informational purposes only and does not constitute medical advice. The information provided is not a substitute for professional medical consultation, diagnosis, or treatment. Always seek the advice of a qualified healthcare provider with any questions you may have regarding a medical condition.</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    const data = {
+        symptoms: [
+            { icon: '🖐️', title: 'Intense Itching', text: 'Often severe, worst on palms and soles, and usually without a rash. A key sign of ICP.' },
+            { icon: ' живота ', title: 'Upper Belly Pain', text: 'Pain or tenderness on the upper right side or middle of your abdomen. A warning sign for HELLP and AFLP.' },
+            { icon: '🤢', title: 'Feeling Unwell', text: 'Severe nausea, vomiting, extreme fatigue, or a persistent headache. Can feel like a bad flu.' },
+            { icon: '👁️', title: 'Vision Changes', text: 'Blurriness, flashing lights, or seeing double. Can be a sign of pre-eclampsia and HELLP.' },
+            { icon: '🟡', title: 'Yellow Skin/Eyes (Jaundice)', text: 'A clear signal the liver is struggling. Requires immediate medical attention.' }
+        ],
+        faqs: [
+            { q: 'Can I be cured?', a: 'For pregnancy-specific liver problems (ICP, HELLP, AFLP), the "cure" is giving birth. Once the baby and placenta are delivered, your body begins to recover, and most women have a complete return to normal liver function.' },
+            { q: 'What caused this? Was it something I did?', a: 'No. These are complex medical conditions and are not your fault. They are related to genetics, pregnancy hormones, and how the placenta develops. They are not caused by your diet or lifestyle.' },
+            { q: 'What dietary changes are most effective?', a: 'For most of these disorders, no specific diet can treat or cure the condition. Following your doctor\'s medical plan is the most important thing. A balanced diet is always good for pregnancy but is not a substitute for medical care.' },
+            { q: 'Will this happen again in a future pregnancy?', a: 'The risk of recurrence depends on the condition. ICP has a high risk (45-90%). HELLP has a lower risk (2-19%). AFLP recurrence is generally low. It is crucial to discuss future pregnancy plans with a high-risk specialist.' },
+            { q: 'When should I call my doctor?', a: 'Call your doctor or go to the hospital immediately if you experience any of the key warning signs: severe itching, severe upper belly pain, a bad headache, vision changes, or if you just feel very sick. It is always better to be safe.' }
+        ],
+        comparison: [
+            { feature: 'Key Symptom', icp: 'Intense Pruritus', hellp: 'RUQ/Epigastric Pain', aflp: 'Nausea/Vomiting, RUQ Pain' },
+            { feature: 'Hypertension', icp: 'Absent', hellp: 'Present (~85%)', aflp: 'Present (~50%)' },
+            { feature: 'Bile Acids', icp: 'Markedly Elevated', hellp: 'Normal/Mildly Elevated', aflp: 'Normal/Mildly Elevated' },
+            { feature: 'Platelets', icp: 'Normal', hellp: 'Low (<100k)', aflp: 'Mild-Moderate Decrease' },
+            { feature: 'Coagulation (PT/INR)', icp: 'Normal', hellp: 'Normal (unless DIC)', aflp: 'Markedly Abnormal' },
+            { feature: 'Glucose', icp: 'Normal', hellp: 'Normal', aflp: 'Low (Hypoglycemia)' },
+        ],
+        disorders: {
+            icp: {
+                name: 'ICP',
+                fullName: 'Intrahepatic Cholestasis of Pregnancy',
+                color: 'bg-red-500',
+                pathoDiagram: `
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center relative">
+                        <div class="patho-box"><strong>Genetic<br>Susceptibility</strong><br>(e.g., ABCB4/ABCB11 mutations)</div>
+                        <div class="patho-arrow" style="top: 50%; left: 30%; transform: translateY(-50%);">→</div>
+                        <div class="patho-box"><strong>Hormonal Trigger</strong><br>(High Estrogen/Progesterone)</div>
+                        <div class="patho-arrow" style="top: 50%; right: 30%; transform: translateY(-50%);">→</div>
+                        <div class="patho-box"><strong>Impaired Bile Flow</strong><br>(Cholestasis)</div>
+                    </div>
+                    <div class="flex justify-center mt-4">
+                        <div class="patho-arrow" style="transform: rotate(90deg);">↓</div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+                         <div class="patho-box bg-red-100"><strong>Maternal Effect:</strong><br>Bile acids in skin → Intense Pruritus</div>
+                         <div class="patho-box bg-blue-100"><strong>Fetal Effect:</strong><br>Bile acids cross placenta → Fetal Risk</div>
+                    </div>`,
+                management: `
+                    <h4 class="font-semibold text-lg mb-2 text-header">Management Principles</h4>
+                    <ul class="list-disc list-inside space-y-2 text-body">
+                        <li><strong>Symptom Control:</strong> First-line therapy is Ursodeoxycholic Acid (UDCA) to relieve pruritus and improve LFTs.</li>
+                        <li><strong>Fetal Monitoring:</strong> Risk of stillbirth is tied to peak bile acid levels.</li>
+                        <li><strong>Timed Delivery:</strong> Delivery timing is stratified by bile acid severity. For severe ICP (bile acids ≥100 µmol/L), delivery at 36 weeks is recommended to mitigate fetal risk.</li>
+                    </ul>`
+            },
+            hellp: {
+                name: 'HELLP',
+                fullName: 'HELLP Syndrome',
+                color: 'bg-blue-500',
+                pathoDiagram: `
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center relative">
+                        <div class="patho-box"><strong>Abnormal Placentation</strong></div>
+                        <div class="patho-arrow" style="top: 50%; left: 30%; transform: translateY(-50%);">→</div>
+                        <div class="patho-box"><strong>Systemic Endothelial Injury</strong></div>
+                        <div class="patho-arrow" style="top: 50%; right: 30%; transform: translateY(-50%);">→</div>
+                        <div class="patho-box"><strong>Platelet Activation & Fibrin Deposition</strong></div>
+                    </div>
+                    <div class="flex justify-center mt-4">
+                        <div class="patho-arrow" style="transform: rotate(90deg);">↓</div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+                         <div class="patho-box bg-red-100"><strong>H: Hemolysis</strong><br>(RBC fragmentation)</div>
+                         <div class="patho-box bg-yellow-100"><strong>EL: Elevated Liver Enzymes</strong><br>(Hepatic necrosis)</div>
+                         <div class="patho-box bg-blue-100"><strong>LP: Low Platelets</strong><br>(Platelet consumption)</div>
+                    </div>`,
+                management: `
+                    <h4 class="font-semibold text-lg mb-2 text-header">Management Principles</h4>
+                    <ul class="list-disc list-inside space-y-2 text-body">
+                        <li><strong>This is an obstetric emergency.</strong></li>
+                        <li><strong>Maternal Stabilization:</strong> IV magnesium sulfate for seizure prophylaxis and IV antihypertensives (Labetalol, Hydralazine) for BP control.</li>
+                        <li><strong>Definitive Treatment:</strong> Prompt delivery of the fetus and placenta is the only cure.</li>
+                        <li><strong>Corticosteroids:</strong> Recommended for fetal lung maturity if <34 weeks, but not for maternal benefit.</li>
+                    </ul>`
+            },
+            aflp: {
+                name: 'AFLP',
+                fullName: 'Acute Fatty Liver of Pregnancy',
+                color: 'bg-yellow-500',
+                pathoDiagram: `
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center relative">
+                        <div class="patho-box"><strong>Fetal Genetic Defect</strong><br>(e.g., LCHAD deficiency)</div>
+                        <div class="patho-arrow" style="top: 50%; left: 30%; transform: translateY(-50%);">→</div>
+                        <div class="patho-box"><strong>Toxic Metabolites Cross Placenta</strong></div>
+                        <div class="patho-arrow" style="top: 50%; right: 30%; transform: translateY(-50%);">→</div>
+                        <div class="patho-box"><strong>Maternal Liver Overwhelmed</strong><br>(Mitochondrial dysfunction)</div>
+                    </div>
+                    <div class="flex justify-center mt-4">
+                        <div class="patho-arrow" style="transform: rotate(90deg);">↓</div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+                         <div class="patho-box bg-yellow-100"><strong>Microvesicular Steatosis</strong><br>(Fatty infiltration)</div>
+                         <div class="patho-box bg-red-100"><strong>Acute Liver Failure</strong><br>(Hypoglycemia, Coagulopathy, Encephalopathy)</div>
+                    </div>`,
+                management: `
+                    <h4 class="font-semibold text-lg mb-2 text-header">Management Principles</h4>
+                    <ul class="list-disc list-inside space-y-2 text-body">
+                        <li><strong>This is a medical and obstetric emergency requiring ICU care.</strong></li>
+                        <li><strong>Aggressive Supportive Care:</strong> Correct hypoglycemia with IV dextrose, and reverse coagulopathy with FFP and cryoprecipitate.</li>
+                        <li><strong>Definitive Treatment:</strong> Emergent delivery is indicated upon diagnosis, regardless of gestational age.</li>
+                        <li><strong>Postnatal Screening:</strong> Newborn must be tested for the underlying fatty acid oxidation defect.</li>
+                    </ul>`
+            }
+        },
+        riskProfiles: [
+            { disorder: 'ICP', maternal: 'Excellent prognosis. Pruritus resolves post-delivery. High recurrence risk (45-90%).', fetal: 'Stillbirth risk correlates with bile acid levels (>3% if >100 µmol/L). Also risk of preterm birth & NICU admission.' },
+            { disorder: 'HELLP', maternal: 'Mortality <1% with care, but high morbidity (stroke, renal failure, DIC). Long-term cardiovascular risk.', fetal: 'High perinatal mortality (7-60%) due to prematurity and placental insufficiency.' },
+            { disorder: 'AFLP', maternal: 'Mortality reduced to <5-18% with modern care. Risk of fulminant liver failure. Liver function typically recovers fully.', fetal: 'Mortality remains high (9-23%). Surviving infants need screening for genetic defects.' }
+        ],
+        riskFactors: [
+            { disorder: 'ICP', factors: 'Personal or family history of ICP, multiple gestations, IVF, advanced maternal age, certain ethnicities (e.g., Latina, Scandinavian).' },
+            { disorder: 'HELLP', factors: 'History of pre-eclampsia or HELLP, maternal age >35, Caucasian ethnicity, multiparity.' },
+            { disorder: 'AFLP', factors: 'First pregnancy (nulliparity), multiple gestations, male fetus, fetal LCHAD deficiency.' }
+        ]
+    };
+
+    function populateSymptoms() {
+        const container = document.getElementById('symptom-list');
+        if (!container) return;
+        container.innerHTML = data.symptoms.map(symptom => `
+            <li class="flex items-start">
+                <span class="text-2xl mr-4 mt-1">${symptom.icon}</span>
+                <div>
+                    <h4 class="font-semibold text-header">${symptom.title}</h4>
+                    <p class="text-sm text-body">${symptom.text}</p>
+                </div>
+            </li>
+        `).join('');
+    }
+
+    function populateFAQs() {
+        const container = document.getElementById('faq-container');
+        if (!container) return;
+        container.innerHTML = data.faqs.map((faq, index) => `
+            <div class="faq-item border-b border-accent">
+                <button class="faq-question w-full flex justify-between items-center text-left py-4 px-2">
+                    <span class="font-semibold text-header">${faq.q}</span>
+                    <span class="faq-arrow text-header text-xl">↓</span>
+                </button>
+                <div class="faq-answer px-2 pb-4 text-body">
+                    <p>${faq.a}</p>
+                </div>
+            </div>
+        `).join('');
+
+        container.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', () => {
+                const item = button.parentElement;
+                item.classList.toggle('open');
+            });
+        });
+    }
+    
+    function populateComparisonTable() {
+        const tbody = document.getElementById('comparison-table-body');
+        if (!tbody) return;
+        tbody.innerHTML = data.comparison.map(row => `
+            <tr class="border-b border-gray-200">
+                <td class="px-4 py-3 font-medium text-gray-900">${row.feature}</td>
+                <td class="px-4 py-3 bg-red-50">${row.icp}</td>
+                <td class="px-4 py-3 bg-blue-50">${row.hellp}</td>
+                <td class="px-4 py-3 bg-yellow-50">${row.aflp}</td>
+            </tr>
+        `).join('');
+    }
+
+    function createDifferentiatorChart() {
+        const ctx = document.getElementById('differentiatorChart');
+        if (!ctx) return;
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['ICP', 'HELLP', 'AFLP'],
+                datasets: [
+                    {
+                        label: 'Bile Acids',
+                        data: [3, 0, 0],
+                        backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                        borderColor: 'rgba(239, 68, 68, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Platelet Count',
+                        data: [0, -3, -1],
+                        backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Coagulation / Glucose',
+                        data: [0, 0, -3],
+                        backgroundColor: 'rgba(234, 179, 8, 0.6)',
+                        borderColor: 'rgba(234, 179, 8, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.dataset.label || '';
+                                let valueText = '';
+                                if (label === 'Bile Acids') valueText = 'Markedly Elevated';
+                                else if (label === 'Platelet Count') valueText = 'Severely Decreased';
+                                else if (label === 'Coagulation / Glucose') valueText = 'Abnormal (Low)';
+                                return `${label}: ${valueText}`;
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'bottom',
+                    },
+                },
+                scales: {
+                    y: {
+                        display: false,
+                        ticks: { display: false },
+                        grid: { display: false },
+                        min: -4,
+                        max: 4
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+    
+    function populateRiskProfiles() {
+        const container = document.getElementById('risk-profile-content');
+        if(!container) return;
+        container.innerHTML = data.riskProfiles.map(p => `
+            <div class="mb-4 p-3 rounded-md bg-gray-50 border-l-4 ${p.disorder === 'ICP' ? 'border-red-500' : p.disorder === 'HELLP' ? 'border-blue-500' : 'border-yellow-500'}">
+                <h4 class="font-bold text-md text-header">${p.disorder}</h4>
+                <p class="text-sm mt-1"><strong class="font-semibold">Maternal Risk:</strong> ${p.maternal}</p>
+                <p class="text-sm mt-1"><strong class="font-semibold">Fetal Risk:</strong> ${p.fetal}</p>
+            </div>
+        `).join('');
+    }
+
+    function setupDisorderTabs() {
+        const tabsContainer = document.getElementById('disorder-tabs');
+        const contentContainer = document.getElementById('disorder-content');
+        if (!tabsContainer || !contentContainer) return;
+
+        tabsContainer.innerHTML = Object.keys(data.disorders).map(key => `
+            <button class="disorder-tab px-4 py-2 text-sm font-semibold rounded-md transition" data-disorder="${key}">
+                ${data.disorders[key].name}
+            </button>
+        `).join('');
+
+        const tabs = tabsContainer.querySelectorAll('.disorder-tab');
+        
+        function switchTab(disorderKey) {
+            const disorder = data.disorders[disorderKey];
+            
+            tabs.forEach(t => {
+                if (t.dataset.disorder === disorderKey) {
+                    t.classList.add('bg-header', 'text-white');
+                    t.classList.remove('text-body');
+                } else {
+                    t.classList.remove('bg-header', 'text-white');
+                    t.classList.add('text-body');
+                }
+            });
+
+            contentContainer.innerHTML = `
+                <h3 class="text-2xl font-bold text-header mb-4">${disorder.fullName}</h3>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-semibold text-lg mb-2 text-header">Core Pathophysiology</h4>
+                        <div class="patho-diagram">${disorder.pathoDiagram}</div>
+                    </div>
+                    <div>
+                        ${disorder.management}
+                    </div>
+                </div>
+            `;
+        }
+
+        tabsContainer.addEventListener('click', (e) => {
+            if (e.target.matches('.disorder-tab')) {
+                switchTab(e.target.dataset.disorder);
+            }
+        });
+
+        switchTab('icp');
+    }
+
+    function createEpidemiologyChart() {
+        const ctx = document.getElementById('epidemiologyChart');
+        if (!ctx) return;
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['ICP', 'HELLP Syndrome', 'AFLP'],
+                datasets: [{
+                    label: 'Cases per 100,000 Pregnancies (Log Scale)',
+                    data: [2900, 700, 10], // Using 2.9% for ICP, 0.7% for HELLP, 1 in 10,000 for AFLP
+                    backgroundColor: [
+                        'rgba(239, 68, 68, 0.6)',
+                        'rgba(59, 130, 246, 0.6)',
+                        'rgba(234, 179, 8, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(239, 68, 68, 1)',
+                        'rgba(59, 130, 246, 1)',
+                        'rgba(234, 179, 8, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        type: 'logarithmic',
+                        min: 1,
+                        max: 10000,
+                        title: {
+                            display: true,
+                            text: 'Cases per 100,000 (Logarithmic Scale)'
+                        }
+                    },
+                    y: {
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let val = context.raw;
+                                if (val >= 1000) return `${val/1000}%`;
+                                if (val >= 100) return `${val/1000}%`;
+                                return `~${val} cases / 100k`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    function populateRiskFactors() {
+        const container = document.getElementById('risk-factor-content');
+        if(!container) return;
+        container.innerHTML = data.riskFactors.map(p => `
+            <div class="mb-4">
+                <h4 class="font-bold text-md text-header">${p.disorder}</h4>
+                <p class="text-sm mt-1 text-body">${p.factors}</p>
+            </div>
+        `).join('');
+    }
+
+    function setupNavScroll() {
+        const navbar = document.getElementById('navbar');
+        const navLinks = navbar.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('section');
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.4
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    navLinks.forEach(link => {
+                        link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => observer.observe(section));
+
+        navLinks.forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    }
+
+
+    populateSymptoms();
+    populateFAQs();
+    populateComparisonTable();
+    createDifferentiatorChart();
+    populateRiskProfiles();
+    setupDisorderTabs();
+    createEpidemiologyChart();
+    populateRiskFactors();
+    setupNavScroll();
+});
+</script>
+</body>
+</html>
