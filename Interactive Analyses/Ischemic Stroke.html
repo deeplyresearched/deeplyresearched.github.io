@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Report: Ischemic Stroke</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: A dual-pathway, single-page application. The initial screen directs users to one of two paths: a "Patient & Family View" or a "Clinician View". This structure was chosen to immediately tailor the content complexity to the user's needs, preventing overwhelm for patients and providing efficient access for professionals. The patient view uses simple language, analogies, and clear, actionable steps (BE FAST, ABCDEs of prevention). The clinician view provides a data-rich dashboard with deep dives into pathophysiology, diagnostics, and treatment, using interactive elements like tabbed interfaces and sortable tables to manage complex information. A persistent navigation bar allows easy movement within the chosen path. This user-centric design prioritizes clarity and usability over rigidly following the source report's linear structure. -->
+    <!-- Visualization & Content Choices: 
+        - Global Burden (Doughnut Chart): Goal: Inform/Compare. Method: Chart.js. Interaction: Hover for tooltips. Justification: Visually represents the high proportion of ischemic strokes vs. other types.
+        - Risk Factors (Bar Chart): Goal: Compare. Method: Chart.js. Interaction: Hover for tooltips. Justification: Clearly shows the relative impact of major risk factors.
+        - Ischemic Cascade (Interactive Diagram): Goal: Organize/Explain. Method: HTML/CSS/JS. Interaction: Click buttons to reveal detailed text for each stage. Justification: Breaks down a complex process into digestible steps, preventing information overload.
+        - BE FAST (Interactive Acronym): Goal: Educate/Inform. Method: HTML/CSS/JS. Interaction: Hover over letters to see descriptions. Justification: A highly engaging and memorable way to teach critical stroke symptoms.
+        - Landmark Trials (Sortable Table): Goal: Organize/Compare. Method: HTML/JS. Interaction: Click headers to sort. Justification: Allows clinicians to quickly find and compare key trial data.
+        - All visualizations use Canvas-based Chart.js or structured HTML/CSS, adhering to the NO SVG/Mermaid constraint. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F9FA;
+            color: #343A40;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #0056b3;
+            border-bottom-color: #0056b3;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .btn {
+            transition: all 0.3s ease;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+        }
+        .btn-primary {
+            background-color: #007BFF;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-secondary {
+            background-color: #6C757D;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .section-title {
+            color: #212529;
+            font-weight: 700;
+            font-size: 2.25rem;
+            line-height: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .section-subtitle {
+            color: #495057;
+            font-size: 1.125rem;
+            line-height: 1.75rem;
+            max-width: 48rem;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 3rem;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+                max-height: 400px;
+            }
+        }
+        .tab-button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            color: #495057;
+            background-color: #E9ECEF;
+            transition: all 0.3s ease;
+        }
+        .tab-button.active, .tab-button:hover {
+            background-color: #007BFF;
+            color: white;
+        }
+        .cascade-button {
+            width: 100%;
+            text-align: left;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background-color: #E9ECEF;
+            font-weight: 600;
+            color: #343A40;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        .cascade-button.active, .cascade-button:hover {
+            background-color: #D6E4FF;
+            border-left-color: #007BFF;
+            color: #0056b3;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Main Container -->
+    <div id="app-container">
+
+        <!-- Initial View Selector -->
+        <section id="view-selector" class="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+            <div class="text-center max-w-4xl mx-auto">
+                <div class="mb-8">
+                    <span class="text-5xl md:text-6xl">🧠</span>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Understanding Ischemic Stroke</h1>
+                <p class="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">This interactive report provides information for both patients and healthcare professionals. Please select the view that's right for you.</p>
+                <div class="flex flex-col md:flex-row gap-4 justify-center">
+                    <button id="show-patient-view" class="btn btn-primary">
+                        For Patients & Families
+                    </button>
+                    <button id="show-clinician-view" class="btn btn-secondary">
+                        For Healthcare Professionals
+                    </button>
+                </div>
+                <p class="text-xs text-gray-400 mt-12">This tool is for informational purposes only and is not a substitute for professional medical advice.</p>
+            </div>
+        </section>
+
+        <!-- Patient View -->
+        <main id="patient-view" class="hidden">
+            <!-- Header -->
+            <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+                <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
+                    <div class="font-bold text-xl text-blue-700">Stroke Info: Patient Guide</div>
+                    <div class="hidden md:flex items-center space-x-6">
+                        <a href="#patient-what-is" class="nav-link">What is a Stroke?</a>
+                        <a href="#patient-symptoms" class="nav-link">Symptoms</a>
+                        <a href="#patient-prevention" class="nav-link">Prevention</a>
+                        <a href="#patient-faq" class="nav-link">FAQ</a>
+                    </div>
+                    <button id="back-to-selector-1" class="text-sm text-gray-600 hover:text-blue-700">Change View</button>
+                </nav>
+            </header>
+
+            <!-- What is a Stroke? -->
+            <section id="patient-what-is" class="py-16 md:py-24 bg-white">
+                <div class="container mx-auto px-4 text-center">
+                    <h2 class="section-title">What is an Ischemic Stroke?</h2>
+                    <p class="section-subtitle">Let's break down what happens during a "brain attack" in simple terms.</p>
+                    <div class="grid md:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
+                        <div class="text-left p-6">
+                            <h3 class="text-2xl font-bold mb-4 text-gray-800">A Clog in the Brain's Plumbing</h3>
+                            <p class="text-gray-600 mb-4">Imagine your brain's blood vessels are like pipes delivering essential fuel (oxygen-rich blood). An ischemic stroke happens when a clog—usually a blood clot—blocks one of these pipes. When the blood flow is cut off, brain cells are starved of oxygen and begin to die within minutes. This is why a stroke is a medical emergency.</p>
+                            <p class="text-gray-600">The effects depend on which part of the brain is affected. This might cause trouble with speaking, moving one side of the body, or seeing clearly.</p>
+                        </div>
+                        <div class="p-6">
+                            <div class="chart-container">
+                                <canvas id="strokeTypeChart"></canvas>
+                            </div>
+                            <p class="text-center mt-4 text-sm text-gray-500">Ischemic strokes (clogs) are the most common type, accounting for about 87% of all strokes.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Symptoms: BE FAST -->
+            <section id="patient-symptoms" class="py-16 md:py-24">
+                <div class="container mx-auto px-4 text-center">
+                    <h2 class="section-title">Recognize the Signs: B.E. F.A.S.T.</h2>
+                    <p class="section-subtitle">Knowing these signs and acting quickly can save a life and improve recovery. If you see any of these signs, call 911 immediately. Time is Brain!</p>
+                    <div id="be-fast-interactive" class="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- BE FAST cards will be generated here by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Prevention -->
+            <section id="patient-prevention" class="py-16 md:py-24 bg-white">
+                <div class="container mx-auto px-4 text-center">
+                    <h2 class="section-title">Preventing Another Stroke</h2>
+                    <p class="section-subtitle">Up to 80% of strokes are preventable. You have the power to lower your risk by managing your health with these key steps.</p>
+                    <div class="grid md:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
+                        <div class="p-6 order-2 md:order-1">
+                            <div class="chart-container">
+                                <canvas id="riskFactorChart"></canvas>
+                            </div>
+                             <p class="text-center mt-4 text-sm text-gray-500">Managing risk factors like high blood pressure is crucial for stroke prevention.</p>
+                        </div>
+                        <div class="text-left p-6 order-1 md:order-2">
+                             <h3 class="text-2xl font-bold mb-4 text-gray-800">Your "ABCDEs" for Prevention</h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start"><span class="font-bold text-blue-600 text-xl mr-3">A</span><span><b>Aspirin/Antiplatelets:</b> Take your prescribed medication to prevent clots.</span></li>
+                                <li class="flex items-start"><span class="font-bold text-blue-600 text-xl mr-3">B</span><span><b>Blood Pressure:</b> Work with your doctor to keep it below 130/80 mmHg.</span></li>
+                                <li class="flex items-start"><span class="font-bold text-blue-600 text-xl mr-3">C</span><span><b>Cholesterol & Cigarettes:</b> Manage cholesterol with diet and medication. Quitting smoking is essential.</span></li>
+                                <li class="flex items-start"><span class="font-bold text-blue-600 text-xl mr-3">D</span><span><b>Diet & Diabetes:</b> Eat a healthy diet and control your blood sugar if you have diabetes.</span></li>
+                                <li class="flex items-start"><span class="font-bold text-blue-600 text-xl mr-3">E</span><span><b>Exercise:</b> Aim for regular physical activity as approved by your doctor.</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FAQ -->
+            <section id="patient-faq" class="py-16 md:py-24">
+                <div class="container mx-auto px-4 max-w-3xl">
+                    <h2 class="section-title text-center">Frequently Asked Questions</h2>
+                    <div id="faq-container" class="space-y-4">
+                        <!-- FAQs will be generated here by JS -->
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Clinician View -->
+        <main id="clinician-view" class="hidden">
+            <!-- Header -->
+            <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+                <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
+                    <div class="font-bold text-xl text-red-700">Stroke Intel: Clinician View</div>
+                    <div class="hidden md:flex items-center space-x-6">
+                        <a href="#clinician-dashboard" class="nav-link">Dashboard</a>
+                        <a href="#clinician-patho" class="nav-link">Pathophysiology</a>
+                        <a href="#clinician-dx" class="nav-link">Diagnosis</a>
+                        <a href="#clinician-mgmt" class="nav-link">Management</a>
+                    </div>
+                    <button id="back-to-selector-2" class="text-sm text-gray-600 hover:text-red-700">Change View</button>
+                </nav>
+            </header>
+
+            <!-- Dashboard -->
+            <section id="clinician-dashboard" class="py-16 md:py-24 bg-gray-100">
+                <div class="container mx-auto px-4">
+                    <h2 class="section-title text-center">Ischemic Stroke: At a Glance</h2>
+                    <p class="section-subtitle">A summary of key epidemiological data and clinical insights from the comprehensive report.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-center max-w-7xl mx-auto">
+                        <div class="card p-6">
+                            <p class="text-4xl font-bold text-blue-600">87%</p>
+                            <p class="text-gray-600 mt-2">of all strokes are ischemic</p>
+                        </div>
+                        <div class="card p-6">
+                            <p class="text-4xl font-bold text-blue-600">1 in 4</p>
+                            <p class="text-gray-600 mt-2">Lifetime risk over age 25</p>
+                        </div>
+                        <div class="card p-6">
+                            <p class="text-4xl font-bold text-blue-600">~12.2M</p>
+                            <p class="text-gray-600 mt-2">New strokes globally each year</p>
+                        </div>
+                        <div class="card p-6">
+                            <p class="text-4xl font-bold text-red-600">Time is Brain</p>
+                            <p class="text-gray-600 mt-2">Rapid reperfusion is paramount</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pathophysiology -->
+            <section id="clinician-patho" class="py-16 md:py-24">
+                <div class="container mx-auto px-4">
+                    <h2 class="section-title text-center">The Ischemic Cascade</h2>
+                    <p class="section-subtitle">An interactive exploration of the molecular events following cerebral artery occlusion, from energy failure to cellular destruction.</p>
+                    <div class="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+                        <div class="lg:col-span-1">
+                            <h3 class="text-xl font-bold mb-4">Stages of Injury</h3>
+                            <div id="cascade-buttons" class="space-y-2">
+                                <!-- Cascade buttons generated by JS -->
+                            </div>
+                        </div>
+                        <div class="lg:col-span-2">
+                            <div id="cascade-content" class="card p-6 min-h-[300px]">
+                                <!-- Cascade content displayed here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Diagnosis -->
+            <section id="clinician-dx" class="py-16 md:py-24 bg-gray-100">
+                <div class="container mx-auto px-4">
+                    <h2 class="section-title text-center">Diagnostic Pathway</h2>
+                    <p class="section-subtitle">A streamlined overview of the essential steps in the diagnostic workup, from clinical assessment to advanced neuroimaging.</p>
+                    <div class="max-w-5xl mx-auto">
+                        <div class="flex justify-center space-x-2 mb-8" id="dx-tabs">
+                           <button class="tab-button active" data-tab="dx-workup">Workup</button>
+                           <button class="tab-button" data-tab="dx-mimics">Mimics</button>
+                           <button class="tab-button" data-tab="dx-imaging">Imaging</button>
+                        </div>
+                        <div id="dx-content" class="card p-6 md:p-8">
+                            <!-- Dx content displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Management -->
+            <section id="clinician-mgmt" class="py-16 md:py-24">
+                <div class="container mx-auto px-4">
+                    <h2 class="section-title text-center">Management & Treatment</h2>
+                    <p class="section-subtitle">Evidence-based strategies for acute reperfusion, supportive care, and long-term secondary prevention.</p>
+                    <div class="max-w-5xl mx-auto">
+                        <div class="flex justify-center space-x-2 mb-8" id="mgmt-tabs">
+                           <button class="tab-button active" data-tab="mgmt-reperfusion">Reperfusion</button>
+                           <button class="tab-button" data-tab="mgmt-prevention">Secondary Prevention</button>
+                           <button class="tab-button" data-tab="mgmt-trials">Landmark Trials</button>
+                        </div>
+                        <div id="mgmt-content" class="card p-6 md:p-8">
+                            <!-- Management content displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // View selection
+            const viewSelector = document.getElementById('view-selector');
+            const patientView = document.getElementById('patient-view');
+            const clinicianView = document.getElementById('clinician-view');
+            const showPatientBtn = document.getElementById('show-patient-view');
+            const showClinicianBtn = document.getElementById('show-clinician-view');
+            const backBtn1 = document.getElementById('back-to-selector-1');
+            const backBtn2 = document.getElementById('back-to-selector-2');
+
+            const showView = (viewToShow) => {
+                patientView.classList.add('hidden');
+                clinicianView.classList.add('hidden');
+                viewSelector.classList.add('hidden');
+                viewToShow.classList.remove('hidden');
+                window.scrollTo(0, 0);
+            };
+
+            showPatientBtn.addEventListener('click', () => showView(patientView));
+            showClinicianBtn.addEventListener('click', () => showView(clinicianView));
+            backBtn1.addEventListener('click', () => showView(viewSelector));
+            backBtn2.addEventListener('click', () => showView(viewSelector));
+
+            // Smooth scroll for nav links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+            
+            // Data
+            const patientData = {
+                beFast: [
+                    { letter: 'B', title: 'Balance', desc: 'Sudden loss of balance or coordination.', icon: '🚶' },
+                    { letter: 'E', title: 'Eyes', desc: 'Sudden trouble seeing in one or both eyes.', icon: '👁️' },
+                    { letter: 'F', title: 'Face', desc: 'Does one side of the face droop? Ask them to smile.', icon: '😊' },
+                    { letter: 'A', title: 'Arms', desc: 'Is one arm weak or numb? Ask to raise both arms.', icon: '🙌' },
+                    { letter: 'S', title: 'Speech', desc: 'Is speech slurred? Are they hard to understand?', icon: '🗣️' },
+                    { letter: 'T', title: 'Time', desc: 'Call 911 immediately if you see any of these signs.', icon: '⏰' }
+                ],
+                faqs: [
+                    { q: "Why do I need so many new medications?", a: "Each medication has a specific job. Some prevent clots (aspirin), some lower cholesterol (statins), and others control blood pressure. Taking them all as prescribed is your best defense against another stroke." },
+                    { q: "Will I ever feel 'normal' again?", a: "Recovery is different for everyone. Many people make remarkable progress. It's common to feel tired or sad (post-stroke depression), which is a real medical consequence of the brain injury. Talk to your doctor about all your symptoms, both physical and emotional." },
+                    { q: "Is it safe for me to exercise?", a: "For most survivors, yes! Exercise is crucial for prevention. However, you must talk to your doctor and physical therapist first to create a safe plan tailored to your abilities." },
+                    { q: "What are the warning signs of another stroke?", a: "The signs are the same: BE FAST. Sudden trouble with Balance, Eyes, Face, Arms, or Speech means it's Time to call 911. Don't wait, even if symptoms seem to improve." }
+                ]
+            };
+
+            const clinicianData = {
+                cascade: [
+                    { title: "Energy Failure & Ionic Imbalance", content: "The immediate consequence of ischemia is ATP depletion. This causes failure of the Na+/K+-ATPase pump, leading to an influx of Na+, Cl−, and water (cytotoxic edema), and widespread cellular depolarization." },
+                    { title: "Excitotoxicity", content: "Sustained depolarization triggers a massive release of the neurotransmitter glutamate. This overstimulates NMDA and AMPA receptors, a central mechanism of neuronal death known as excitotoxicity." },
+                    { title: "Calcium Overload", content: "NMDA receptor overstimulation allows a massive, uncontrolled influx of Ca2+ into the neuron. This calcium overload activates degradative enzymes like proteases, lipases, and nucleases that destroy cellular structures." },
+                    { title: "Oxidative Stress & Reperfusion Injury", content: "The ischemic cascade and subsequent reperfusion generate a surge of reactive oxygen species (ROS). These free radicals damage lipids, proteins, and DNA. Reperfusion injury occurs when re-oxygenation causes a second burst of ROS, worsening the damage." },
+                    { title: "Inflammation & BBB Breakdown", content: "Ischemia activates microglia, which release pro-inflammatory cytokines. This, along with ROS damage, leads to the breakdown of the blood-brain barrier (BBB), allowing infiltration of peripheral immune cells and amplifying the inflammatory damage." }
+                ],
+                dxTabs: {
+                    "dx-workup": `
+                        <h3 class="text-xl font-bold mb-4">Initial Workup</h3>
+                        <ul class="space-y-3 list-disc list-inside text-gray-700">
+                            <li><b>Time of Onset:</b> Establish "last known well" time. This is the most critical historical data point.</li>
+                            <li><b>NIHSS Score:</b> Perform a rapid neurological exam using the National Institutes ofHealth Stroke Scale to quantify deficit severity.</li>
+                            <li><b>Blood Glucose:</b> Mandatory point-of-care test to rule out hypoglycemia, a key stroke mimic.</li>
+                            <li><b>Neuroimaging:</b> Immediate Non-Contrast CT (NCCT) to rule out hemorrhage. This is the primary goal of initial imaging.</li>
+                            <li><b>Cardiac Evaluation:</b> Initial 12-lead ECG and continuous telemetry to screen for atrial fibrillation.</li>
+                        </ul>`,
+                    "dx-mimics": `
+                        <h3 class="text-xl font-bold mb-4">Common Stroke Mimics</h3>
+                        <p class="mb-4 text-gray-700">Conditions that present with sudden focal deficits but are not caused by vascular occlusion. Accurate differentiation is critical.</p>
+                        <ul class="space-y-2 list-disc list-inside text-gray-700">
+                            <li><b>Seizure with Todd's Paralysis:</b> Postictal state with transient focal weakness. History of epilepsy is a key clue.</li>
+                            <li><b>Migraine with Aura:</b> Typically has a gradual "march" of symptoms and preceding visual phenomena.</li>
+                            <li><b>Hypoglycemia:</b> Can cause diverse focal deficits; rapidly reverses with glucose administration.</li>
+                            <li><b>Conversion Disorder:</b> Non-anatomic pattern of deficits, often with inconsistent findings on exam.</li>
+                            <li><b>Brain Tumor:</b> Usually subacute onset, but can present acutely due to seizure or hemorrhage.</li>
+                        </ul>`,
+                    "dx-imaging": `
+                        <h3 class="text-xl font-bold mb-4">The Role of Neuroimaging</h3>
+                        <ul class="space-y-4 text-gray-700">
+                            <li><b>Non-Contrast CT (NCCT):</b> The workhorse. Fast, available, and excellent for detecting acute hemorrhage (hyperdense). Early ischemic signs (e.g., dense MCA sign, loss of insular ribbon) may be subtle.</li>
+                            <li><b>CT Angiography (CTA):</b> Rapidly visualizes major head and neck arteries to identify Large Vessel Occlusion (LVO) for thrombectomy candidacy.</li>
+                            <li><b>CT Perfusion (CTP):</b> Provides physiological maps to identify the ischemic core vs. the salvageable penumbra. Key for selecting patients in the extended (6-24h) window.</li>
+                            <li><b>MRI (DWI/FLAIR):</b> DWI is the most sensitive sequence for acute infarct, visible within minutes. A DWI-FLAIR mismatch suggests onset within ~4.5 hours, useful for wake-up strokes.</li>
+                        </ul>`
+                },
+                mgmtTabs: {
+                    "mgmt-reperfusion": `
+                        <h3 class="text-xl font-bold mb-4">Acute Reperfusion Therapy</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-semibold text-lg">Intravenous Thrombolysis</h4>
+                                <p class="text-gray-700">Goal is to dissolve the thrombus. Standard of care is <b>Alteplase</b> (0.9 mg/kg) within a 3-4.5 hour window. <b>Tenecteplase</b> (0.25 mg/kg single bolus) is emerging as a non-inferior/superior alternative with logistical benefits.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg">Endovascular Thrombectomy (EVT)</h4>
+                                <p class="text-gray-700">Physical removal of a Large Vessel Occlusion (LVO) using a stent retriever or aspiration. Standard of care for anterior circulation LVO within 6 hours. The window can be extended up to 24 hours in select patients with a favorable tissue profile on perfusion imaging (DAWN/DEFUSE 3 trials).</p>
+                            </div>
+                        </div>`,
+                    "mgmt-prevention": `
+                        <h3 class="text-xl font-bold mb-4">Secondary Prevention Strategy</h3>
+                        <p class="mb-4 text-gray-700">A multifactorial approach initiated promptly to reduce the high risk of recurrence.</p>
+                        <ul class="space-y-3 text-gray-700">
+                            <li><b>Blood Pressure:</b> Target <130/80 mmHg. ACEi/ARBs or thiazides are preferred.</li>
+                            <li><b>Lipids:</b> High-intensity statin therapy (e.g., Atorvastatin 80mg) for all atherosclerotic strokes. Target LDL-C <70 mg/dL.</li>
+                            <li><b>Antiplatelet (Non-cardioembolic):</b> Aspirin, Clopidogrel, or Aspirin/Dipyridamole. Short-term DAPT for minor stroke/TIA.</li>
+                            <li><b>Anticoagulation (Cardioembolic/AFib):</b> DOACs (Apixaban, Rivaroxaban, etc.) are preferred over Warfarin.</li>
+                            <li><b>Diabetes:</b> Target HbA1c <7.0%.</li>
+                        </ul>`,
+                    "mgmt-trials": `
+                        <h3 class="text-xl font-bold mb-4">Landmark Reperfusion Trials</h3>
+                        <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm" id="trials-table">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="p-2 cursor-pointer" data-sort="trial">Trial ▾</th>
+                                    <th class="p-2 cursor-pointer" data-sort="year">Year ▾</th>
+                                    <th class="p-2">Intervention</th>
+                                    <th class="p-2">Key Finding</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b">
+                                    <td class="p-2 font-semibold">NINDS</td><td class="p-2">1995</td><td>IV Alteplase</td><td>Established benefit of tPA within 3 hours.</td>
+                                </tr>
+                                <tr class="border-b">
+                                    <td class="p-2 font-semibold">ECASS III</td><td class="p-2">2008</td><td>IV Alteplase</td><td>Extended the tPA window to 4.5 hours.</td>
+                                </tr>
+                                <tr class="border-b">
+                                    <td class="p-2 font-semibold">MR CLEAN</td><td class="p-2">2015</td><td>EVT</td><td>First trial to definitively show benefit of thrombectomy within 6 hours.</td>
+                                </tr>
+                                <tr class="border-b">
+                                    <td class="p-2 font-semibold">DAWN</td><td class="p-2">2018</td><td>EVT</td><td>Extended EVT window to 24h for patients selected by core/clinical mismatch.</td>
+                                </tr>
+                                <tr class="border-b">
+                                    <td class="p-2 font-semibold">DEFUSE 3</td><td class="p-2">2018</td><td>EVT</td><td>Extended EVT window to 16h for patients selected by perfusion imaging.</td>
+                                </tr>
+                                <tr class="border-b">
+                                    <td class="p-2 font-semibold">AcT</td><td class="p-2">2022</td><td>IV Tenecteplase</td><td>Showed Tenecteplase is non-inferior to Alteplase with logistical benefits.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        </div>`
+                }
+            };
+
+            // Patient View Initializers
+            const beFastContainer = document.getElementById('be-fast-interactive');
+            patientData.beFast.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card p-6 text-center';
+                card.innerHTML = `
+                    <div class="text-5xl mb-4">${item.icon}</div>
+                    <h3 class="text-3xl font-bold text-blue-600 mb-2">${item.letter} - ${item.title}</h3>
+                    <p class="text-gray-600">${item.desc}</p>
+                `;
+                beFastContainer.appendChild(card);
+            });
+
+            const faqContainer = document.getElementById('faq-container');
+            patientData.faqs.forEach(faq => {
+                const div = document.createElement('div');
+                div.className = 'bg-white border border-gray-200 rounded-lg';
+                div.innerHTML = `
+                    <button class="w-full text-left p-4 font-semibold text-gray-800 flex justify-between items-center focus:outline-none">
+                        <span>${faq.q}</span>
+                        <span class="transform transition-transform duration-300">▼</span>
+                    </button>
+                    <div class="p-4 pt-0 text-gray-600 hidden">
+                        ${faq.a}
+                    </div>
+                `;
+                faqContainer.appendChild(div);
+            });
+
+            faqContainer.addEventListener('click', (e) => {
+                const button = e.target.closest('button');
+                if (button) {
+                    const content = button.nextElementSibling;
+                    const arrow = button.querySelector('span:last-child');
+                    content.classList.toggle('hidden');
+                    arrow.classList.toggle('rotate-180');
+                }
+            });
+
+            // Clinician View Initializers
+            const cascadeButtonsContainer = document.getElementById('cascade-buttons');
+            const cascadeContentContainer = document.getElementById('cascade-content');
+            
+            clinicianData.cascade.forEach((item, index) => {
+                const button = document.createElement('button');
+                button.className = 'cascade-button';
+                button.textContent = item.title;
+                button.dataset.index = index;
+                if (index === 0) button.classList.add('active');
+                cascadeButtonsContainer.appendChild(button);
+            });
+
+            const updateCascadeContent = (index) => {
+                const item = clinicianData.cascade[index];
+                cascadeContentContainer.innerHTML = `
+                    <h4 class="text-xl font-bold mb-3 text-blue-700">${item.title}</h4>
+                    <p class="text-gray-700">${item.content}</p>
+                `;
+                document.querySelectorAll('#cascade-buttons .cascade-button').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.index == index);
+                });
+            };
+
+            cascadeButtonsContainer.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    updateCascadeContent(e.target.dataset.index);
+                }
+            });
+            updateCascadeContent(0);
+
+            // Generic Tab Logic
+            const setupTabs = (tabsId, contentId, data) => {
+                const tabsContainer = document.getElementById(tabsId);
+                const contentContainer = document.getElementById(contentId);
+
+                const updateTabContent = (tabKey) => {
+                    contentContainer.innerHTML = data[tabKey];
+                    tabsContainer.querySelectorAll('.tab-button').forEach(btn => {
+                        btn.classList.toggle('active', btn.dataset.tab === tabKey);
+                    });
+                };
+                
+                tabsContainer.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('tab-button')) {
+                        updateTabContent(e.target.dataset.tab);
+                    }
+                });
+                
+                // Initial load
+                updateTabContent(tabsContainer.querySelector('.tab-button.active').dataset.tab);
+            };
+
+            setupTabs('dx-tabs', 'dx-content', clinicianData.dxTabs);
+            setupTabs('mgmt-tabs', 'mgmt-content', clinicianData.mgmtTabs);
+
+            // Table sorting logic
+            document.getElementById('mgmt-content').addEventListener('click', e => {
+                if(e.target.closest('#trials-table thead th')) {
+                    const th = e.target.closest('th');
+                    const sortKey = th.dataset.sort;
+                    if (!sortKey) return;
+
+                    const table = th.closest('table');
+                    const tbody = table.querySelector('tbody');
+                    const rows = Array.from(tbody.querySelectorAll('tr'));
+                    
+                    const isAsc = th.classList.contains('asc');
+                    
+                    rows.sort((a, b) => {
+                        let valA = a.children[th.cellIndex].textContent;
+                        let valB = b.children[th.cellIndex].textContent;
+                        if (sortKey === 'year') {
+                           valA = parseInt(valA);
+                           valB = parseInt(valB);
+                        }
+                        if (valA < valB) return isAsc ? 1 : -1;
+                        if (valA > valB) return isAsc ? -1 : 1;
+                        return 0;
+                    });
+                    
+                    rows.forEach(row => tbody.appendChild(row));
+                    
+                    table.querySelectorAll('th').forEach(h => h.classList.remove('asc', 'desc'));
+                    th.classList.add(isAsc ? 'desc' : 'asc');
+                    th.textContent = `${th.textContent.replace(/[▾▴]/g, '').trim()} ${isAsc ? '▾' : '▴'}`;
+                }
+            });
+
+
+            // Chart.js Initializers
+            const initCharts = () => {
+                const strokeTypeCtx = document.getElementById('strokeTypeChart')?.getContext('2d');
+                if (strokeTypeCtx) {
+                    new Chart(strokeTypeCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Ischemic Stroke', 'Hemorrhagic Stroke'],
+                            datasets: [{
+                                data: [87, 13],
+                                backgroundColor: ['#007BFF', '#6C757D'],
+                                borderColor: '#F8F9FA',
+                                borderWidth: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'bottom' },
+                                title: { display: true, text: 'Proportion of Stroke Types' }
+                            }
+                        }
+                    });
+                }
+
+                const riskFactorCtx = document.getElementById('riskFactorChart')?.getContext('2d');
+                if (riskFactorCtx) {
+                    new Chart(riskFactorCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Hypertension', 'High Cholesterol', 'Smoking', 'Obesity', 'Diabetes'],
+                            datasets: [{
+                                label: 'Contribution to Stroke Risk',
+                                data: [77, 43, 36, 25, 20],
+                                backgroundColor: '#007BFF',
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                title: { display: true, text: 'Key Modifiable Risk Factors (%)' }
+                            },
+                            scales: {
+                                x: { suggestedMax: 100 }
+                            }
+                        }
+                    });
+                }
+            };
+            
+            // Use an observer to initialize charts only when they become visible
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        initCharts();
+                        observer.unobserve(patientView); // Stop observing once initialized
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            if (patientView) {
+                observer.observe(patientView);
+            }
+        });
+    </script>
+</body>
+</html>
