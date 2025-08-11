@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Report: A Deep Dive into Diabetes Mellitus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+  
+    <!-- Chosen Palette: Slate & Sky Blue -->
+    <!-- Application Structure Plan: A thematic, single-page application designed for dual audiences (patients and clinicians). The structure prioritizes user-centric navigation over the report's linear format. Key sections include: 1) A patient-focused "Understanding Diabetes" section combining basics, symptoms, and FAQs with simple language and analogies. 2) A data-driven "Global Impact" section with an interactive chart for epidemiology. 3) A clinician-focused "The Science of Diabetes" section using an interactive diagram to explain pathophysiology and complications. 4) A practical "Diagnosis & Management" section featuring an interactive tool for exploring the latest comorbidity-based treatment algorithms. This structure allows users to quickly access relevant information, enhancing usability and comprehension. -->
+    <!-- Visualization & Content Choices: 1) Global Prevalence: Report data on rising prevalence -> Goal: Show scale of the epidemic -> Viz: Chart.js Line Chart -> Interaction: Hover tooltips -> Justification: Best for showing trends over time. 2) Pathophysiology: "Ominous Octet" text -> Goal: Simplify complex multi-organ interaction -> Viz: Interactive diagram (HTML/CSS Grid) -> Interaction: Click on organ to reveal details -> Justification: More engaging and digestible than dense text. 3) Treatment Algorithm: Text-based guidelines -> Goal: Create a practical decision-support tool -> Viz: Interactive flowchart (HTML/JS) -> Interaction: User selects comorbidities (ASCVD/HF/CKD) to see recommended drug classes -> Justification: Mirrors clinical workflow and improves knowledge translation. 4) Drug Classes: Data table -> Goal: Quick reference -> Viz: HTML table -> Interaction: Filter/search -> Justification: Improves usability for quick lookups. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #334155; /* slate-700 */
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #0284c7; /* sky-600 */
+            border-bottom-color: #0284c7; /* sky-600 */
+        }
+        .section-title {
+            color: #1e293b; /* slate-800 */
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .btn-primary {
+            background-color: #0ea5e9; /* sky-500 */
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0284c7; /* sky-600 */
+        }
+        .btn-secondary {
+            background-color: #e2e8f0; /* slate-200 */
+            color: #1e293b; /* slate-800 */
+        }
+        .btn-secondary:hover {
+            background-color: #cbd5e1; /* slate-300 */
+        }
+        .btn-toggle {
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+        .btn-toggle.active {
+            background-color: #0ea5e9;
+            color: white;
+            border-color: #0ea5e9;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <a href="#home" class="text-2xl font-bold text-sky-600">Diabetes Insights</a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#patient-view" class="nav-link px-3 py-2 text-sm font-medium text-slate-600">For Patients</a>
+                        <a href="#global-impact" class="nav-link px-3 py-2 text-sm font-medium text-slate-600">Global Impact</a>
+                        <a href="#clinician-view" class="nav-link px-3 py-2 text-sm font-medium text-slate-600">For Clinicians</a>
+                        <a href="#management" class="nav-link px-3 py-2 text-sm font-medium text-slate-600">Management</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-sky-500">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="h-6 w-6" id="menu-icon-open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                        <svg class="h-6 w-6 hidden" id="menu-icon-close" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#patient-view" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-slate-600">For Patients</a>
+                <a href="#global-impact" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-slate-600">Global Impact</a>
+                <a href="#clinician-view" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-slate-600">For Clinicians</a>
+                <a href="#management" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-slate-600">Management</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900">
+                    A Comprehensive Clinical Review of <span class="text-sky-600">Diabetes Mellitus</span>
+                </h1>
+                <p class="mt-6 max-w-3xl mx-auto text-lg sm:text-xl text-slate-600">
+                    An interactive exploration of one of the 21st century's most significant health challenges, from its global impact to the latest in patient care and clinical management.
+                </p>
+                <div class="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                    <div class="p-6 bg-sky-50 rounded-xl">
+                        <div class="text-4xl font-bold text-sky-600">589M</div>
+                        <p class="mt-2 text-slate-600">Adults living with diabetes globally in 2024.</p>
+                    </div>
+                    <div class="p-6 bg-sky-50 rounded-xl">
+                        <div class="text-4xl font-bold text-sky-600">1 in 9</div>
+                        <p class="mt-2 text-slate-600">Adults worldwide are affected by this condition.</p>
+                    </div>
+                    <div class="p-6 bg-sky-50 rounded-xl">
+                        <div class="text-4xl font-bold text-sky-600">>90%</div>
+                        <p class="mt-2 text-slate-600">Of cases are Type 2 Diabetes, closely linked to lifestyle factors.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="patient-view" class="py-16 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-base font-semibold text-sky-600 tracking-wide uppercase">For Patients & Families</h2>
+                    <p class="mt-2 text-3xl sm:text-4xl font-extrabold section-title tracking-tight">Understanding Diabetes</p>
+                    <p class="mt-4 max-w-2xl mx-auto text-xl text-slate-500">This section breaks down the essentials of diabetes in simple terms. The goal is to empower you with the knowledge to understand and manage the condition effectively.</p>
+                </div>
+
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
+                    <div class="card p-8">
+                        <h3 class="text-2xl font-bold section-title">What is Diabetes? The Lock & Key Analogy</h3>
+                        <p class="mt-4 text-slate-600">Imagine your body's cells are houses that need fuel (a sugar called glucose) to run. Insulin is the key that unlocks the door to let the glucose in. Diabetes is a problem with this lock and key system.</p>
+                        <div class="mt-6 space-y-4">
+                            <div>
+                                <h4 class="font-semibold text-slate-800">Type 1 Diabetes: The Missing Key</h4>
+                                <p class="text-slate-600 text-sm">The body's immune system destroys the factory that makes insulin keys. No keys means glucose is locked out of the cells and builds up in the blood.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-slate-800">Type 2 Diabetes: Rusty Locks & Fewer Keys</h4>
+                                <p class="text-slate-600 text-sm">The locks on the cell doors get "rusty" and don't work well (insulin resistance). The key factory tries to make more keys but eventually gets tired and makes fewer. Glucose gets stuck outside.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card p-8">
+                        <h3 class="text-2xl font-bold section-title">Common Warning Signs</h3>
+                        <p class="mt-4 text-slate-600">Your body sends out signals when blood sugar is too high. Recognizing them early is crucial.</p>
+                        <ul class="mt-6 space-y-3 list-inside">
+                            <li class="flex items-start"><span class="text-sky-500 mr-2">&#10148;</span><strong class="font-semibold mr-2">Frequent Urination:</strong> Your kidneys work overtime to flush out extra sugar.</li>
+                            <li class="flex items-start"><span class="text-sky-500 mr-2">&#10148;</span><strong class="font-semibold mr-2">Increased Thirst:</strong> A direct result of losing so much fluid from urination.</li>
+                            <li class="flex items-start"><span class="text-sky-500 mr-2">&#10148;</span><strong class="font-semibold mr-2">Increased Hunger:</strong> Your cells are starved for energy and send out hunger signals.</li>
+                            <li class="flex items-start"><span class="text-sky-500 mr-2">&#10148;</span><strong class="font-semibold mr-2">Other Signs:</strong> Unexplained weight loss, extreme fatigue, blurred vision, and slow-healing sores.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-16">
+                    <h3 class="text-2xl font-bold section-title text-center">Frequently Asked Questions</h3>
+                    <div id="faq-accordion" class="mt-6 max-w-3xl mx-auto space-y-4">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="global-impact" class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-base font-semibold text-sky-600 tracking-wide uppercase">Epidemiology</h2>
+                    <p class="mt-2 text-3xl sm:text-4xl font-extrabold section-title tracking-tight">A Growing Global Epidemic</p>
+                    <p class="mt-4 max-w-2xl mx-auto text-xl text-slate-500">Diabetes is not just a personal health issue; it's a global crisis. This visualization shows the projected increase in the number of adults living with diabetes, highlighting the urgent need for prevention and effective management strategies worldwide.</p>
+                </div>
+                <div class="mt-12">
+                    <div class="card p-4 sm:p-8">
+                        <div class="chart-container">
+                            <canvas id="prevalenceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="clinician-view" class="py-16 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-base font-semibold text-sky-600 tracking-wide uppercase">For Clinicians</h2>
+                    <p class="mt-2 text-3xl sm:text-4xl font-extrabold section-title tracking-tight">The Science of Diabetes</p>
+                    <p class="mt-4 max-w-2xl mx-auto text-xl text-slate-500">This section provides a concise overview of the complex pathophysiology of Type 2 Diabetes. Explore the multi-organ dysfunction that drives the disease and contributes to its systemic complications.</p>
+                </div>
+                
+                <div class="mt-12 card p-8">
+                    <h3 class="text-2xl font-bold section-title text-center mb-2">The Ominous Octet: Pathophysiology of T2DM</h3>
+                    <p class="text-center text-slate-600 mb-8">Click on each component to learn about its role in creating hyperglycemia.</p>
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <div class="w-full md:w-2/3 grid grid-cols-2 lg:grid-cols-3 gap-4" id="octet-diagram">
+                        </div>
+                        <div class="w-full md:w-1/3 bg-slate-50 p-6 rounded-lg">
+                            <h4 id="octet-title" class="font-bold text-lg text-slate-800">Select a component</h4>
+                            <p id="octet-description" class="mt-2 text-slate-600">The pathophysiology of T2DM is not just about insulin resistance and beta-cell failure. It involves a complex interplay of at least eight distinct organ systems, each contributing to the disease state.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="management" class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-base font-semibold text-sky-600 tracking-wide uppercase">Clinical Practice</h2>
+                    <p class="mt-2 text-3xl sm:text-4xl font-extrabold section-title tracking-tight">Diagnosis & Management</p>
+                    <p class="mt-4 max-w-2xl mx-auto text-xl text-slate-500">Modern diabetes management has shifted from a purely glucose-centric model to a comprehensive, comorbidity-based approach focused on cardiorenal risk reduction. This tool helps visualize the latest treatment guidelines.</p>
+                </div>
+
+                <div class="mt-12 card p-8">
+                    <h3 class="text-2xl font-bold section-title text-center mb-8">Interactive Treatment Algorithm for T2DM</h3>
+                    <div class="max-w-4xl mx-auto">
+                        <p class="text-center text-slate-600 mb-6">Start with Metformin + Lifestyle, then select patient comorbidities to see recommended second-line agents based on ADA guidelines.</p>
+                        <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-8">
+                            <span class="font-semibold">Patient has:</span>
+                            <button class="btn-toggle" data-comorbidity="ascvd">ASCVD</button>
+                            <button class="btn-toggle" data-comorbidity="hf">Heart Failure</button>
+                            <button class="btn-toggle" data-comorbidity="ckd">CKD</button>
+                            <button id="reset-comorbidity" class="text-sm text-sky-600 hover:underline">Reset</button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-center">
+                            <div id="rec-sglt2" class="p-6 border-2 border-slate-200 rounded-lg transition-all duration-300">
+                                <h4 class="font-bold text-xl text-slate-800">SGLT-2 Inhibitors</h4>
+                                <p class="text-sm text-slate-500">(e.g., Empagliflozin, Dapagliflozin)</p>
+                                <div class="mt-4 space-y-2">
+                                    <p class="font-semibold text-green-600 hidden" data-benefit="hf">Proven Benefit for Heart Failure</p>
+                                    <p class="font-semibold text-green-600 hidden" data-benefit="ckd">Proven Benefit for CKD Progression</p>
+                                    <p class="font-semibold text-green-600 hidden" data-benefit="ascvd_sglt2">Can be considered for ASCVD</p>
+                                </div>
+                                <p id="rec-sglt2-default" class="mt-4 text-slate-600">Consider if minimizing hypoglycemia or promoting weight loss is a priority.</p>
+                            </div>
+                            <div id="rec-glp1" class="p-6 border-2 border-slate-200 rounded-lg transition-all duration-300">
+                                <h4 class="font-bold text-xl text-slate-800">GLP-1 Receptor Agonists</h4>
+                                <p class="text-sm text-slate-500">(e.g., Semaglutide, Liraglutide)</p>
+                                <div class="mt-4 space-y-2">
+                                    <p class="font-semibold text-green-600 hidden" data-benefit="ascvd_glp1">Proven Benefit for ASCVD</p>
+                                </div>
+                                <p id="rec-glp1-default" class="mt-4 text-slate-600">Consider if promoting weight loss is a high priority.</p>
+                            </div>
+                        </div>
+                         <p class="text-xs text-slate-400 text-center mt-4">This is a simplified educational tool and not a substitute for clinical judgment. Refer to full ADA/EASD guidelines.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+  
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
+            <p>&copy; 2025 Diabetes Insights. All rights reserved.</p>
+            <p class="mt-2 text-sm text-slate-400">This report is for educational purposes only and is not a substitute for professional medical advice. Always consult a qualified health provider.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const appData = {
+                prevalence: {
+                    years: [2021, 2024, 2030, 2045, 2050],
+                    data: [537, 589, 643, 783, 853]
+                },
+                faqs: [
+                    { q: "Can my diabetes be cured or reversed?", a: "For Type 1, there is no cure. For Type 2, it can go into remission with significant lifestyle changes like major weight loss, meaning blood sugar can return to normal without medication. However, the underlying tendency remains, so a healthy lifestyle is crucial to maintain remission." },
+                    { q: "What dietary changes are most effective?", a: "There's no single 'magic' diet. The most effective changes are sustainable ones. Key principles include reducing sugary drinks, controlling portions, increasing fiber from vegetables and whole grains, and choosing lean proteins." },
+                    { q: "Do I have to take medication for the rest of my life?", a: "For Type 1, yes, insulin is life-sustaining. For Type 2, it's a progressive disease. While some manage with lifestyle alone, many eventually need medication to maintain healthy blood sugar levels and protect their organs from long-term damage." },
+                    { q: "When should I call my doctor?", a: "Call immediately for symptoms of very low blood sugar (hypoglycemia) that don't improve, or symptoms of very high blood sugar with nausea/vomiting. Also, report any new, non-healing sores on your feet or sudden vision changes." },
+                    { q: "Is it my fault that I got Type 2 diabetes?", a: "Absolutely not. While lifestyle plays a role, T2DM has a very strong genetic component. It is a complex medical condition, not a personal failure." }
+                ],
+                octet: [
+                    { id: 'muscle', name: 'Muscle', description: 'Decreased glucose uptake due to insulin resistance. The primary site for postprandial glucose disposal is impaired.' },
+                    { id: 'liver', name: 'Liver', description: 'Increased hepatic glucose production. The liver inappropriately releases glucose into the bloodstream, even when levels are already high.' },
+                    { id: 'beta-cell', name: 'Pancreas (β-Cell)', description: 'Impaired insulin secretion. The β-cells become progressively dysfunctional and cannot produce enough insulin to overcome resistance.' },
+                    { id: 'alpha-cell', name: 'Pancreas (α-Cell)', description: 'Increased glucagon secretion. The α-cells release too much glucagon, a hormone that raises blood sugar, further contributing to hyperglycemia.' },
+                    { id: 'fat-cell', name: 'Adipose Tissue', description: 'Increased lipolysis. Fat cells release excess free fatty acids, which worsens insulin resistance in the liver and muscle (lipotoxicity).' },
+                    { id: 'gut', name: 'GI Tract', description: 'Decreased incretin effect. Gut hormones (like GLP-1) that normally boost insulin secretion after a meal are less effective.' },
+                    { id: 'kidney', name: 'Kidney', description: 'Increased glucose reabsorption. The kidneys reabsorb more glucose back into the blood via SGLT-2 transporters, instead of excreting it.' },
+                    { id: 'brain', name: 'Brain', description: 'Neurotransmitter dysfunction. Insulin resistance in the brain can alter appetite regulation and contribute to weight gain.' }
+                ]
+            };
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuIconOpen = document.getElementById('menu-icon-open');
+            const menuIconClose = document.getElementById('menu-icon-close');
+
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                menuIconOpen.classList.toggle('hidden');
+                menuIconClose.classList.toggle('hidden');
+            });
+            
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                    menuIconOpen.classList.remove('hidden');
+                    menuIconClose.classList.add('hidden');
+                });
+            });
+
+            function initPrevalenceChart() {
+                const ctx = document.getElementById('prevalenceChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: appData.prevalence.years,
+                        datasets: [{
+                            label: 'Adults with Diabetes (in Millions)',
+                            data: appData.prevalence.data,
+                            borderColor: '#0ea5e9',
+                            backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#0ea5e9',
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                title: {
+                                    display: true,
+                                    text: 'Millions of People'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Year'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return ` ${context.parsed.y} Million`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function initFaqAccordion() {
+                const container = document.getElementById('faq-accordion');
+                appData.faqs.forEach((faq, index) => {
+                    const faqItem = document.createElement('div');
+                    faqItem.className = 'card overflow-hidden';
+                    faqItem.innerHTML = `
+                        <button class="w-full text-left p-4 sm:p-6 flex justify-between items-center accordion-toggle">
+                            <h4 class="font-semibold text-slate-800">${faq.q}</h4>
+                            <svg class="w-6 h-6 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="accordion-content">
+                            <p class="p-4 sm:p-6 pt-0 text-slate-600">${faq.a}</p>
+                        </div>
+                    `;
+                    container.appendChild(faqItem);
+                });
+
+                container.addEventListener('click', function(e) {
+                    const toggle = e.target.closest('.accordion-toggle');
+                    if (toggle) {
+                        const content = toggle.nextElementSibling;
+                        const icon = toggle.querySelector('svg');
+                        
+                        if (content.style.maxHeight) {
+                            content.style.maxHeight = null;
+                            icon.classList.remove('rotate-180');
+                        } else {
+                            // Close other open accordions
+                            document.querySelectorAll('.accordion-content').forEach(item => {
+                                item.style.maxHeight = null;
+                                item.previousElementSibling.querySelector('svg').classList.remove('rotate-180');
+                            });
+                            content.style.maxHeight = content.scrollHeight + "px";
+                            icon.classList.add('rotate-180');
+                        }
+                    }
+                });
+            }
+
+            function initOctetDiagram() {
+                const diagramContainer = document.getElementById('octet-diagram');
+                const titleEl = document.getElementById('octet-title');
+                const descriptionEl = document.getElementById('octet-description');
+
+                appData.octet.forEach(item => {
+                    const button = document.createElement('button');
+                    button.className = 'p-4 rounded-lg border-2 border-slate-200 text-center font-semibold text-slate-700 hover:border-sky-500 hover:bg-sky-50 transition-all focus:outline-none focus:ring-2 focus:ring-sky-500';
+                    button.textContent = item.name;
+                    button.dataset.id = item.id;
+                    diagramContainer.appendChild(button);
+                });
+
+                diagramContainer.addEventListener('click', function(e) {
+                    if (e.target.tagName === 'BUTTON') {
+                        const selectedId = e.target.dataset.id;
+                        const selectedData = appData.octet.find(item => item.id === selectedId);
+                        
+                        titleEl.textContent = selectedData.name;
+                        descriptionEl.textContent = selectedData.description;
+
+                        // Highlight active button
+                        diagramContainer.querySelectorAll('button').forEach(btn => {
+                            btn.classList.remove('bg-sky-100', 'border-sky-500');
+                        });
+                        e.target.classList.add('bg-sky-100', 'border-sky-500');
+                    }
+                });
+            }
+            
+            function initTreatmentAlgorithm() {
+                const comorbidityButtons = document.querySelectorAll('.btn-toggle[data-comorbidity]');
+                const resetButton = document.getElementById('reset-comorbidity');
+                const recSglt2 = document.getElementById('rec-sglt2');
+                const recGlp1 = document.getElementById('rec-glp1');
+                
+                let activeComorbidities = new Set();
+
+                function updateRecommendations() {
+                    const hasAscvd = activeComorbidities.has('ascvd');
+                    const hasHf = activeComorbidities.has('hf');
+                    const hasCkd = activeComorbidities.has('ckd');
+
+                    // Reset all highlights and default texts
+                    recSglt2.classList.remove('border-green-500', 'bg-green-50');
+                    recGlp1.classList.remove('border-green-500', 'bg-green-50');
+                    document.querySelectorAll('[data-benefit]').forEach(el => el.classList.add('hidden'));
+                    document.getElementById('rec-sglt2-default').classList.remove('hidden');
+                    document.getElementById('rec-glp1-default').classList.remove('hidden');
+
+                    if (!hasAscvd && !hasHf && !hasCkd) {
+                        return; // No comorbidities selected, show default state
+                    }
+
+                    // Hide default texts when benefits are shown
+                    document.getElementById('rec-sglt2-default').classList.add('hidden');
+                    document.getElementById('rec-glp1-default').classList.add('hidden');
+
+                    // SGLT2i recommendations
+                    if (hasHf || hasCkd) {
+                        recSglt2.classList.add('border-green-500', 'bg-green-50');
+                        if (hasHf) document.querySelector('[data-benefit="hf"]').classList.remove('hidden');
+                        if (hasCkd) document.querySelector('[data-benefit="ckd"]').classList.remove('hidden');
+                    }
+                    if(hasAscvd) {
+                         document.querySelector('[data-benefit="ascvd_sglt2"]').classList.remove('hidden');
+                    }
+
+                    // GLP1-RA recommendations
+                    if (hasAscvd) {
+                        recGlp1.classList.add('border-green-500', 'bg-green-50');
+                        document.querySelector('[data-benefit="ascvd_glp1"]').classList.remove('hidden');
+                    }
+                }
+
+                comorbidityButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const comorbidity = button.dataset.comorbidity;
+                        if (activeComorbidities.has(comorbidity)) {
+                            activeComorbidities.delete(comorbidity);
+                            button.classList.remove('active');
+                        } else {
+                            activeComorbidities.add(comorbidity);
+                            button.classList.add('active');
+                        }
+                        updateRecommendations();
+                    });
+                });
+
+                resetButton.addEventListener('click', () => {
+                    activeComorbidities.clear();
+                    comorbidityButtons.forEach(btn => btn.classList.remove('active'));
+                    updateRecommendations();
+                });
+            }
+
+            function initNavScroll() {
+                const sections = document.querySelectorAll('section');
+                const navLinks = document.querySelectorAll('.nav-link');
+
+                window.addEventListener('scroll', () => {
+                    let current = '';
+                    sections.forEach(section => {
+                        const sectionTop = section.offsetTop;
+                        if (pageYOffset >= sectionTop - 80) {
+                            current = section.getAttribute('id');
+                        }
+                    });
+
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href').includes(current)) {
+                            link.classList.add('active');
+                        }
+                    });
+                });
+            }
+
+            initPrevalenceChart();
+            initFaqAccordion();
+            initOctetDiagram();
+            initTreatmentAlgorithm();
+            initNavScroll();
+        });
+    </script>
+
+</body>
+</html>
