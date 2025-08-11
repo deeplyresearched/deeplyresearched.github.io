@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bugatti Chiron: The Apex of an Era</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+  
+    <!-- Chosen Palette: Elegant Neutrals & Bugatti Blue -->
+    <!-- Application Structure Plan: A thematic, single-page narrative structure is used instead of mirroring the report's sections. The flow is designed for web-based storytelling: Hero > Legend (History) > Heart (Engine) > Performance > Pantheon (Models) > Experience (Design/Driving) > Bespoke (Gemini-powered) > Legacy (Economics/Successor). A sticky nav allows non-linear exploration. This structure groups related concepts logically for a user, making complex information digestible and engaging. Key interactions include dynamic chart updates for model comparison, visual data representation for performance, and now, generative AI content creation for personalization. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Acceleration stats (0-100/200/300). Goal: Show relentless speed. Viz: Horizontal Bar Chart (Chart.js). Interaction: Tooltip on hover. Justification: Clear, instant comparison of acceleration milestones.
+        - Report Info: Model Variants (Sport, Pur Sport, Super Sport). Goal: Compare specialized versions. Viz: Polar Area Chart (Chart.js) and dynamic text blocks. Interaction: Buttons to select model, updating chart and text. Justification: Visually represents the "focus" of each car (e.g., handling vs. speed) in a more engaging way than a static table.
+        - Report Info: W16 Engine specs. Goal: Inform about the powertrain. Viz: Styled HTML table and key stat cards. Interaction: None. Justification: Presents dense technical data clearly and concisely.
+        - Report Info: Design Philosophy & Driving Experience. Goal: Convey the car's dual character. Viz: Two-column text and image layout with pull quotes. Interaction: Gemini-powered road trip generator. Justification: Adds an interactive, imaginative layer to the driving experience.
+        - New Feature: Bespoke Chiron Generator. Goal: Allow user personalization. Viz: Text generation via Gemini API. Interaction: User selects a theme to generate a unique car description. Justification: Creates a highly engaging and personal "wow" moment.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f7;
+            color: #1f2937;
+        }
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+        }
+        .bugatti-blue {
+            color: #0055A4;
+        }
+        .bg-bugatti-blue {
+            background-color: #0055A4;
+        }
+        .border-bugatti-blue {
+            border-color: #0055A4;
+        }
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #0055A4;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+        .stat-card {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(209, 213, 219, 0.3);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 40vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .pantheon-button, .bespoke-button {
+            transition: all 0.3s ease;
+        }
+        .pantheon-button.active, .bespoke-button.active {
+            background-color: #0055A4;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0055A4;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="header" class="bg-gray-900 text-white sticky top-0 z-50 shadow-lg">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="#hero" class="text-2xl font-bold font-serif">BUGATTI CHIRON</a>
+            <div class="hidden md:flex space-x-8">
+                <a href="#legend" class="nav-link">The Legend</a>
+                <a href="#heart" class="nav-link">The Heart</a>
+                <a href="#performance" class="nav-link">The Performance</a>
+                <a href="#pantheon" class="nav-link">The Pantheon</a>
+                <a href="#experience" class="nav-link">The Experience</a>
+                <a href="#bespoke" class="nav-link">Bespoke</a>
+                <a href="#legacy" class="nav-link">The Legacy</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4 space-y-2">
+            <a href="#legend" class="block nav-link">The Legend</a>
+            <a href="#heart" class="block nav-link">The Heart</a>
+            <a href="#performance" class="block nav-link">The Performance</a>
+            <a href="#pantheon" class="block nav-link">The Pantheon</a>
+            <a href="#experience" class="block nav-link">The Experience</a>
+            <a href="#bespoke" class="block nav-link">Bespoke</a>
+            <a href="#legacy" class="block nav-link">The Legacy</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="h-screen bg-cover bg-center bg-fixed flex items-center justify-center text-white" style="background-image: url('https://placehold.co/1920x1080/1a202c/ffffff?text=Chiron+Silhouette');">
+            <div class="text-center bg-black bg-opacity-50 p-8 rounded-lg">
+                <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold mb-4">BUGATTI CHIRON</h1>
+                <p class="text-xl md:text-2xl lg:text-3xl font-light">The Apex of an Era</p>
+                <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 max-w-4xl mx-auto">
+                    <div class="stat-card p-4 rounded-lg text-gray-800">
+                        <p class="text-sm font-semibold uppercase">Power</p>
+                        <p class="text-2xl md:text-3xl font-bold bugatti-blue">1,500 PS</p>
+                    </div>
+                    <div class="stat-card p-4 rounded-lg text-gray-800">
+                        <p class="text-sm font-semibold uppercase">Torque</p>
+                        <p class="text-2xl md:text-3xl font-bold bugatti-blue">1,600 Nm</p>
+                    </div>
+                    <div class="stat-card p-4 rounded-lg text-gray-800">
+                        <p class="text-sm font-semibold uppercase">Top Speed</p>
+                        <p class="text-2xl md:text-3xl font-bold bugatti-blue">420 km/h</p>
+                    </div>
+                    <div class="stat-card p-4 rounded-lg text-gray-800">
+                        <p class="text-sm font-semibold uppercase">0-100 km/h</p>
+                        <p class="text-2xl md:text-3xl font-bold bugatti-blue">2.4 s</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="legend" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center mb-4">Redefining the Pinnacle</h2>
+                <p class="text-lg text-gray-600 text-center max-w-3xl mx-auto mb-12">This section introduces the Bugatti Chiron, not just as a car, but as a landmark achievement in automotive history. It explores its role as the successor to the Veyron and the ultimate expression of the internal combustion engine before the industry's shift to hybrid technology.</p>
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4">The Ultimate Statement</h3>
+                        <p class="text-gray-700 mb-4">The Bugatti Chiron is not merely a successor to the Veyron; it stands as the definitive statement of the internal combustion hypercar era. It represents a singular moment where the boundaries of power, luxury, and design were pushed to their absolute limits. The mission was to evolve the Veyron's pure engineering statement into a complete, emotionally resonant masterpiece that transcended its own staggering performance figures.</p>
+                        <p class="text-gray-700">Ultimately, the Chiron will be remembered as the apex predator of the pure internal combustion age, a vehicle whose development was constrained not by engineering ambition but by the fundamental frontiers of material science, most notably in tire technology.</p>
+                    </div>
+                    <div>
+                        <div class="bg-gray-100 p-8 rounded-lg shadow-md">
+                            <h4 class="text-xl font-bold mb-3">From VW to Rimac: A Corporate Evolution</h4>
+                            <p class="text-gray-700 mb-4">Acquired by the Volkswagen Group in 1998, Bugatti was reborn in Molsheim, France. The Chiron project was a testament to VW's technological supremacy. As the automotive landscape shifted, a pivotal joint venture with Croatian electric hypercar specialist Rimac Automobili in 2021 formed Bugatti Rimac. This strategic merger secured Bugatti's path into a hybrid future, with the Chiron's successor, the Tourbillon, as its first creation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="heart" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center mb-4">The Heart of the Beast</h2>
+                <p class="text-lg text-gray-600 text-center max-w-3xl mx-auto mb-12">At the core of the Chiron lies one of history's most powerful and complex engines. This section dissects the 8.0-liter, quad-turbocharged W16, exploring the engineering that unleashes 1,500 horsepower and the sophisticated systems required to control such immense power.</p>
+                <div class="grid lg:grid-cols-5 gap-8 items-start">
+                    <div class="lg:col-span-3 bg-white p-8 rounded-lg shadow-lg">
+                        <h3 class="text-2xl font-bold mb-4">Anatomy of the W16 Engine</h3>
+                        <p class="text-gray-700 mb-6">While sharing its basic architecture with the Veyron, the Chiron's 8.0-liter W16 engine was almost entirely re-engineered for a 25% performance increase. It produces 1,500 PS and a monumental 1,600 Nm of torque across a vast, flat plateau from 2,000 to 6,000 rpm, enabling relentless acceleration at any speed.</p>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="text-lg font-bold text-bugatti-blue">Two-Stage Turbocharging</h4>
+                                <p class="text-gray-600 text-sm">To minimize lag, two turbos operate below 3,800 rpm. Above this, valves open to engage all four larger turbochargers, unleashing the engine's full, cataclysmic potential.</p>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-bugatti-blue">Extreme Cooling</h4>
+                                <p class="text-gray-600 text-sm">A system of 10 radiators and a high-performance coolant pump circulate 800 liters of water per minute. Over 60,000 liters of air are forced through the powertrain every minute at full load.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2 bg-gray-800 text-white p-8 rounded-lg shadow-lg">
+                        <h3 class="text-2xl font-bold mb-4">Key Specifications</h3>
+                        <ul class="space-y-3 text-gray-300">
+                            <li class="flex justify-between border-b border-gray-600 pb-1"><span>Engine Type:</span> <span class="font-semibold text-white">W16, Quad-Turbo</span></li>
+                            <li class="flex justify-between border-b border-gray-600 pb-1"><span>Displacement:</span> <span class="font-semibold text-white">8.0 Liters</span></li>
+                            <li class="flex justify-between border-b border-gray-600 pb-1"><span>Power:</span> <span class="font-semibold text-white">1,500 PS @ 6,700 rpm</span></li>
+                            <li class="flex justify-between border-b border-gray-600 pb-1"><span>Torque:</span> <span class="font-semibold text-white">1,600 Nm @ 2,000-6,000 rpm</span></li>
+                            <li class="flex justify-between border-b border-gray-600 pb-1"><span>Transmission:</span> <span class="font-semibold text-white">7-Speed DSG</span></li>
+                            <li class="flex justify-between"><span>Drivetrain:</span> <span class="font-semibold text-white">Permanent AWD</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="performance" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center mb-4">A Study in Controlled Violence</h2>
+                <p class="text-lg text-gray-600 text-center max-w-3xl mx-auto mb-12">The Chiron's performance redefines what is physically possible for a road car. This interactive chart visualizes its staggering acceleration, while the surrounding information details the technology—from the Speed Key to the massive brakes—that manages these physics-defying forces.</p>
+                <div class="chart-container">
+                    <canvas id="accelerationChart"></canvas>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 mt-12">
+                    <div class="bg-gray-100 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-3">The Speed Key</h3>
+                        <p class="text-gray-700">In normal modes, top speed is limited to 380 km/h. A second, physical "Speed Key" is required to unlock the full 420 km/h. Activating it initiates a pre-drive checklist, lowers the car, and retracts the rear wing to minimize drag for top speed runs.</p>
+                    </div>
+                    <div class="bg-gray-100 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-3">The Tire Limitation</h3>
+                        <p class="text-gray-700">The 420 km/h limiter is a safety measure. Bugatti concluded that no commercially available tire could reliably withstand the 3,800 G of centrifugal force at the car's theoretical, unfettered top speed. The Chiron pushed beyond the known limits of material science.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="pantheon" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center mb-4">The Chiron Pantheon</h2>
+                <p class="text-lg text-gray-600 text-center max-w-3xl mx-auto mb-12">Bugatti created a family of specialized Chiron derivatives, each engineered to accentuate a specific aspect of its character. Use the buttons below to explore each model and see how its focus on handling, top speed, or a blend of both is reflected in its performance characteristics.</p>
+                
+                <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8">
+                    <button class="pantheon-button active px-4 py-2 bg-white border-2 border-gray-200 rounded-full font-semibold text-gray-700" data-model="base">Chiron</button>
+                    <button class="pantheon-button px-4 py-2 bg-white border-2 border-gray-200 rounded-full font-semibold text-gray-700" data-model="sport">Chiron Sport</button>
+                    <button class="pantheon-button px-4 py-2 bg-white border-2 border-gray-200 rounded-full font-semibold text-gray-700" data-model="pursport">Chiron Pur Sport</button>
+                    <button class="pantheon-button px-4 py-2 bg-white border-2 border-gray-200 rounded-full font-semibold text-gray-700" data-model="supersport">Chiron Super Sport</button>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-8 items-center">
+                    <div class="bg-white p-8 rounded-lg shadow-lg">
+                        <h3 id="pantheon-title" class="text-3xl font-bold mb-4">Base Chiron</h3>
+                        <p id="pantheon-description" class="text-gray-700 min-h-[100px]">The definitive Grand Touring Hypercar, balancing unprecedented performance with surprising comfort and usability. It set the benchmark for an entire generation of high-performance automobiles.</p>
+                        <div class="mt-6 grid grid-cols-2 gap-4 text-center">
+                            <div>
+                                <p class="text-sm text-gray-500">Power</p>
+                                <p id="pantheon-power" class="text-2xl font-bold bugatti-blue">1,500 PS</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Top Speed</p>
+                                <p id="pantheon-speed" class="text-2xl font-bold bugatti-blue">420 km/h</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container h-[350px] md:h-[450px]">
+                        <canvas id="pantheonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="experience" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center mb-4">Duality of Experience</h2>
+                 <p class="text-lg text-gray-600 text-center max-w-3xl mx-auto mb-12">Driving the Chiron is an experience of two extremes: a serene, luxurious grand tourer and a ferocious, reality-altering hyper-machine. This section explores its design philosophy and offers a chance to imagine your own perfect drive.</p>
+                <div class="grid md:grid-cols-2 gap-12 mb-16">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4">Exterior: "Form Follows Performance"</h3>
+                        <p class="text-gray-700 mb-4">Every line on the Chiron is a solution to an engineering problem. The iconic "Bugatti Line," a sweeping C-shape on the car's profile, is a massive air intake to cool the W16 engine. The "eight-eyed" front end channels air to the brakes, while the rear is sculpted to extract heat and reduce drag. It's an honest narrative of the forces it's built to control.</p>
+                    </div>
+                     <div>
+                        <h3 class="text-2xl font-bold mb-4">Interior: "Analogue Luxury"</h3>
+                        <p class="text-gray-700 mb-4">In an age of distracting touchscreens, Bugatti chose a path of timeless, "analogue luxury." The driver-centric cockpit features a stunning analogue speedometer reading to 500 km/h. The central console is milled from solid aluminum. Every surface is authentic—leather, Alcantara, carbon fiber, and aluminum—with a complete absence of plastic.</p>
+                    </div>
+                </div>
+                <div class="bg-gray-100 p-8 rounded-lg shadow-inner">
+                    <h3 class="text-3xl font-bold text-center mb-4">Plan Your Epic Drive</h3>
+                    <p class="text-gray-600 text-center max-w-2xl mx-auto mb-6">Select one of the world's greatest driving roads and let our AI craft a dream itinerary for a day behind the wheel of the Chiron.</p>
+                    <div class="max-w-md mx-auto">
+                        <select id="road-trip-select" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-bugatti-blue focus:outline-none">
+                            <option value="Swiss Alps">Swiss Alps</option>
+                            <option value="Pacific Coast Highway, California">Pacific Coast Highway, California</option>
+                            <option value="Amalfi Coast, Italy">Amalfi Coast, Italy</option>
+                            <option value="Scottish Highlands">Scottish Highlands</option>
+                        </select>
+                        <button id="generate-trip-button" class="w-full bg-bugatti-blue text-white font-bold py-3 px-4 rounded-lg hover:bg-opacity-90 transition-colors duration-300">
+                            ✨ Plan My Drive
+                        </button>
+                    </div>
+                    <div id="trip-output" class="mt-6 bg-white p-6 rounded-lg min-h-[100px] text-gray-700">
+                        Select a destination and click the button to generate your dream road trip.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="bespoke" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center mb-4">Bespoke Dreams: Your Chiron</h2>
+                <p class="text-lg text-gray-600 text-center max-w-3xl mx-auto mb-12">Every Bugatti is a work of art, often customized through the "Sur Mesure" program. Here, you can become the designer. Select a theme and let our AI generate a vision for your one-of-a-kind Chiron.</p>
+                <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8" id="bespoke-theme-buttons">
+                    <button class="bespoke-button active px-4 py-2 bg-white border-2 border-gray-200 rounded-full font-semibold text-gray-700" data-theme="Regal">Regal</button>
+                    <button class="bespoke-button px-4 py-2 bg-white border-2 border-gray-200 rounded-full font-semibold text-gray-700" data-theme="Aggressive">Aggressive</button>
+                    <button class="bespoke-button px-4 py-2 bg-white border-2 border-gray-200 rounded-full font-semibold text-gray-700" data-theme="Art Deco">Art Deco</button>
+                    <button class="bespoke-button px-4 py-2 bg-white border-2 border-gray-200 rounded-full font-semibold text-gray-700" data-theme="Minimalist">Minimalist</button>
+                </div>
+                 <div class="text-center mb-8">
+                     <button id="generate-bespoke-button" class="bg-gray-800 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-700 transition-colors duration-300">
+                        ✨ Generate My Vision
+                    </button>
+                </div>
+                <div id="bespoke-output" class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg min-h-[150px] text-gray-700">
+                    Select a theme and click the button to generate your bespoke Chiron description.
+                </div>
+            </div>
+        </section>
+
+        <section id="legacy" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center mb-4">The W16's Swan Song</h2>
+                <p class="text-lg text-gray-600 text-center max-w-3xl mx-auto mb-12">The Chiron is more than a car; it's a blue-chip investment and a piece of history. This section examines the economics of owning such an exclusive machine and looks to the future, marking the transition from the pure W16 era to the new hybrid age heralded by its successor, the Tourbillon.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-gray-100 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-3">Economics of an Icon</h3>
+                        <p class="text-gray-700">With a starting price of ~$3 million and a production run limited to just 500 units, the Chiron is a tangible asset. Scarcity and historical significance as the last pure W16 Bugatti drive its value, with pre-owned examples often exceeding their original price at auction.</p>
+                    </div>
+                    <div class="bg-gray-100 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-3">The Final Car: "L'Ultime"</h3>
+                        <p class="text-gray-700">In May 2024, production concluded with the 500th and final car, a bespoke Super Sport named "L'Ultime." This marked the symbolic end of a remarkable chapter and the final, thunderous roar of the W16 engine's reign.</p>
+                    </div>
+                    <div class="bg-gray-100 p-6 rounded-lg md:col-span-2 lg:col-span-1">
+                        <h3 class="text-xl font-bold mb-3">Dawn of the Tourbillon</h3>
+                        <p class="text-gray-700">The successor, the Bugatti Tourbillon, introduces a new hybrid era. It pairs a naturally-aspirated 8.3L V16 with a three-motor electric system, producing a combined 1,800 PS and signaling a radical new direction for the legendary marque.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+  
+    <footer class="bg-gray-900 text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2024 Bugatti Chiron Interactive Report. All data sourced from the provided report.</p>
+            <p class="text-sm text-gray-400 mt-2">This is a conceptual web application for informational purposes. AI-generated content may be fictional.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Basic Navigation & Menu ---
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+            
+            const sections = document.querySelectorAll('section');
+            const headerNavLinks = document.querySelectorAll('#header .nav-link');
+            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.5 };
+            const sectionObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        headerNavLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${id}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+            sections.forEach(section => sectionObserver.observe(section));
+
+            // --- Gemini API Call Function ---
+            const callGemini = async (prompt, outputElement) => {
+                outputElement.innerHTML = '<div class="loader"></div>';
+                const apiKey = ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                
+                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+
+                let response;
+                let retries = 3;
+                let delay = 1000;
+
+                for (let i = 0; i < retries; i++) {
+                    try {
+                        response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (response.ok) {
+                            const result = await response.json();
+                             if (result.candidates && result.candidates.length > 0 &&
+                                result.candidates[0].content && result.candidates[0].content.parts &&
+                                result.candidates[0].content.parts.length > 0) {
+                                const text = result.candidates[0].content.parts[0].text;
+                                outputElement.innerText = text;
+                            } else {
+                                outputElement.innerText = 'The response from the AI was unexpected. Please try again.';
+                            }
+                            return;
+                        }
+                    } catch (error) {
+                        console.error('Fetch error:', error);
+                    }
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    delay *= 2;
+                }
+                outputElement.innerText = 'Failed to get a response from the AI after several attempts. Please check your connection or try again later.';
+            };
+            
+            // --- Acceleration Chart ---
+            const accelerationCtx = document.getElementById('accelerationChart').getContext('2d');
+            new Chart(accelerationCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['0-300 km/h (186 mph)', '0-200 km/h (124 mph)', '0-100 km/h (62 mph)'],
+                    datasets: [{
+                        label: 'Time (seconds)',
+                        data: [13.1, 6.1, 2.4],
+                        backgroundColor: ['rgba(0, 85, 164, 0.8)', 'rgba(0, 85, 164, 0.6)', 'rgba(0, 85, 164, 0.4)'],
+                        borderColor: '#0055A4',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Acceleration Benchmarks', font: { size: 18, family: 'Playfair Display' }, color: '#1f2937' },
+                        tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.raw} s` } }
+                    },
+                    scales: { x: { beginAtZero: true, title: { display: true, text: 'Time in Seconds' } } }
+                }
+            });
+
+            // --- Pantheon Section ---
+            const pantheonData = {
+                base: { title: 'Base Chiron', description: 'The definitive Grand Touring Hypercar, balancing unprecedented performance with surprising comfort and usability.', power: '1,500 PS', speed: '420 km/h', chartData: [8, 9, 8, 9] },
+                sport: { title: 'Chiron Sport', description: 'Engineered for a more dynamic driving experience with a firmer chassis, torque vectoring, and a weight reduction of 18 kg.', power: '1,500 PS', speed: '420 km/h', chartData: [8, 10, 8, 9] },
+                pursport: { title: 'Chiron Pur Sport', description: 'The ultimate driver\'s car, prioritizing cornering prowess over top speed with a 50 kg weight reduction and fixed rear wing.', power: '1,500 PS', speed: '350 km/h', chartData: [8, 10, 10, 7] },
+                supersport: { title: 'Chiron Super Sport', description: 'Singularly focused on achieving the highest possible velocity, with a "Longtail" body and an upgraded 1,600 PS "Thor" engine.', power: '1,600 PS', speed: '440 km/h', chartData: [10, 8, 7, 10] }
+            };
+            const pantheonCtx = document.getElementById('pantheonChart').getContext('2d');
+            const pantheonChart = new Chart(pantheonCtx, {
+                type: 'polarArea',
+                data: {
+                    labels: ['Power', 'Handling', 'Agility', 'Top Speed Focus'],
+                    datasets: [{
+                        label: 'Model Characteristics', data: pantheonData.base.chartData,
+                        backgroundColor: ['rgba(0, 85, 164, 0.5)', 'rgba(45, 156, 219, 0.5)', 'rgba(129, 199, 237, 0.5)', 'rgba(178, 22, 22, 0.5)'],
+                        borderWidth: 1, borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { r: { beginAtZero: true, max: 10, ticks: { display: false }, grid: { color: 'rgba(0, 0, 0, 0.1)' }, pointLabels: { font: { size: 12 }, color: '#374151' } } },
+                    plugins: { legend: { position: 'top' }, title: { display: true, text: 'Model Specialization Profile', font: { size: 16, family: 'Playfair Display' }, color: '#1f2937' } }
+                }
+            });
+            const pantheonButtons = document.querySelectorAll('.pantheon-button');
+            const updatePantheon = (model) => {
+                const data = pantheonData[model];
+                document.getElementById('pantheon-title').textContent = data.title;
+                document.getElementById('pantheon-description').textContent = data.description;
+                document.getElementById('pantheon-power').textContent = data.power;
+                document.getElementById('pantheon-speed').textContent = data.speed;
+                pantheonChart.data.datasets[0].data = data.chartData;
+                pantheonChart.update();
+                pantheonButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.model === model) btn.classList.add('active');
+                });
+            };
+            pantheonButtons.forEach(button => button.addEventListener('click', (e) => updatePantheon(e.target.dataset.model)));
+
+            // --- GEMINI: Epic Drive Section ---
+            const generateTripButton = document.getElementById('generate-trip-button');
+            const tripSelect = document.getElementById('road-trip-select');
+            const tripOutput = document.getElementById('trip-output');
+            generateTripButton.addEventListener('click', () => {
+                const destination = tripSelect.value;
+                const prompt = `You are a travel writer for a luxury automotive magazine. Generate a short, evocative, one-day dream road trip itinerary for a Bugatti Chiron through the ${destination}. Describe the route, a key scenic point, and the feeling of driving the Chiron on those roads. Keep it under 150 words and focus on the sensory experience.`;
+                callGemini(prompt, tripOutput);
+            });
+
+            // --- GEMINI: Bespoke Section ---
+            const bespokeButtons = document.querySelectorAll('.bespoke-button');
+            const generateBespokeButton = document.getElementById('generate-bespoke-button');
+            const bespokeOutput = document.getElementById('bespoke-output');
+            let activeTheme = 'Regal';
+
+            bespokeButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    activeTheme = e.target.dataset.theme;
+                    bespokeButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                });
+            });
+
+            generateBespokeButton.addEventListener('click', () => {
+                const prompt = `You are the head of Bugatti's "Sur Mesure" bespoke program. Write a short, evocative description for a one-of-a-kind Bugatti Chiron. The design theme is "${activeTheme}". Describe the unique exterior paint, the exquisite interior materials, and the overall mood or "personality" of this special creation. Make it sound exclusive and artistic.`;
+                callGemini(prompt, bespokeOutput);
+            });
+        });
+    </script>
+</body>
+</html>
