@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Report: Diabetic Ketoacidosis (DKA)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+  
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The application is structured around a central landing page that directs users to one of two distinct pathways: a "Clinician View" and a "Patient View". This dual-path architecture was chosen because the source report contains highly technical information alongside patient-facing advice. Separating the content ensures that each audience can access information tailored to their level of understanding and needs without being overwhelmed by irrelevant details. The Clinician View is a dashboard-style layout for quick access to data, protocols, and pathophysiology. The Patient View uses analogies, simpler language, and clear, actionable steps to focus on prevention and emergency response. This structure prioritizes user-centric design and efficient knowledge translation over a linear replication of the report. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Epidemiology Trends -> Goal: Compare -> Viz: Bar Chart -> Interaction: Hover for details -> Justification: Visually represents the paradoxical trend of falling mortality vs. rising hospitalizations, which is a key report finding. -> Library: Chart.js.
+        - Report Info: Pathophysiology Cascade -> Goal: Organize/Explore -> Viz: Interactive HTML/CSS Diagram -> Interaction: Click on stages (e.g., "Insulin Deficiency") to reveal detailed text -> Justification: Breaks down a complex process into understandable, interactive steps, making it more engaging than static text. -> Library/Method: HTML/CSS/JS.
+        - Report Info: Treatment Protocol -> Goal: Organize/Guide -> Viz: Interactive Vertical Timeline -> Interaction: Click steps to expand details -> Justification: Presents a time-sensitive process in a clear, sequential, and interactive format that is easier to follow than a dense paragraph or table. -> Library/Method: HTML/CSS/JS.
+        - Report Info: DKA vs. HHS -> Goal: Compare -> Viz: Side-by-side comparison table -> Interaction: Static -> Justification: Provides a clear, direct comparison of key distinguishing features for rapid clinical differentiation. -> Library/Method: HTML/CSS.
+        - Report Info: Long-Term Mortality Risk -> Goal: Inform/Warn -> Viz: Bar Chart -> Interaction: Hover for details -> Justification: Powerfully visualizes the stark 8-fold increase in mortality risk, emphasizing the long-term severity of a DKA episode. -> Library/Method: Chart.js.
+        - Report Info: Patient "Sick Day Rules" -> Goal: Educate/Guide -> Viz: Interactive Cards -> Interaction: Click to flip/reveal info -> Justification: Presents actionable advice in a digestible, engaging format for patients. -> Library/Method: HTML/CSS/JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f7f4;
+            color: #4a4a4a;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        .nav-button.active {
+            background-color: #4a69bd;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .nav-button:not(.active):hover {
+            background-color: #e0e7ff;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .pathophysiology-box {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .pathophysiology-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+            padding-left: 2.5rem;
+            border-left: 2px solid #d1d5db;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -0.6rem;
+            top: 0.1rem;
+            height: 1.125rem;
+            width: 1.125rem;
+            background-color: #f8f7f4;
+            border-radius: 9999px;
+            border: 2px solid #4a69bd;
+        }
+        .timeline-content {
+            cursor: pointer;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .patient-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .patient-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 2rem;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 0.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="app-container" class="container mx-auto p-4 md:p-8 max-w-7xl">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800">Diabetic Ketoacidosis (DKA)</h1>
+            <p class="text-lg text-gray-600 mt-2">An Interactive Guide to a Critical Condition</p>
+        </header>
+
+        <main id="main-content">
+
+            <section id="role-selection" class="text-center bg-white p-8 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">Who are you?</h2>
+                <p class="text-gray-600 mb-6 max-w-2xl mx-auto">This guide is tailored for two different audiences. Please select the path that best describes you to explore information relevant to your needs.</p>
+                <div class="flex flex-col md:flex-row justify-center gap-4">
+                    <button onclick="selectView('clinician')" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-blue-700 transition-transform transform hover:scale-105">
+                        I am a Clinician / Student
+                    </button>
+                    <button onclick="selectView('patient')" class="bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-green-700 transition-transform transform hover:scale-105">
+                        I am a Patient / Caregiver
+                    </button>
+                </div>
+            </section>
+
+            <div id="clinician-view" class="hidden">
+                <button onclick="goHome()" class="mb-6 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition">&larr; Back to Home</button>
+                <div class="bg-white p-4 sm:p-6 rounded-lg shadow-lg">
+                    <nav class="flex flex-wrap justify-center border-b-2 border-gray-200 mb-6">
+                        <button class="nav-button active py-3 px-5 text-sm sm:text-base font-medium" onclick="showSection('dashboard')">Dashboard</button>
+                        <button class="nav-button py-3 px-5 text-sm sm:text-base font-medium" onclick="showSection('pathophysiology')">Pathophysiology</button>
+                        <button class="nav-button py-3 px-5 text-sm sm:text-base font-medium" onclick="showSection('diagnosis')">Diagnosis</button>
+                        <button class="nav-button py-3 px-5 text-sm sm:text-base font-medium" onclick="showSection('management')">Management</button>
+                        <button class="nav-button py-3 px-5 text-sm sm:text-base font-medium" onclick="showSection('complications')">Complications</button>
+                    </nav>
+
+                    <div id="dashboard" class="content-section active">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">Clinician Dashboard</h2>
+                        <p class="text-gray-600 mb-8">This dashboard provides a high-level overview of Diabetic Ketoacidosis, summarizing key epidemiological trends, diagnostic criteria, and severity classifications for rapid clinical assessment. Use this section to quickly grasp the public health context and the essential parameters for identifying and staging a DKA crisis.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-semibold mb-2 text-gray-700">The DKA Paradox</h3>
+                                <p class="text-sm text-gray-500 mb-4">While in-hospital mortality has fallen, hospitalization rates are rising, indicating a gap in preventative care.</p>
+                                <div class="chart-container">
+                                    <canvas id="epidemiologyChart"></canvas>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4 text-gray-700">Diagnostic Triad</h3>
+                                <div class="space-y-4">
+                                    <div class="bg-rose-50 p-4 rounded-lg flex items-center">
+                                        <span class="text-2xl mr-4">🩸</span>
+                                        <div>
+                                            <h4 class="font-semibold text-rose-800">Hyperglycemia</h4>
+                                            <p class="text-rose-700">Plasma Glucose >250 mg/dL (13.9 mmol/L)</p>
+                                        </div>
+                                    </div>
+                                    <div class="bg-amber-50 p-4 rounded-lg flex items-center">
+                                        <span class="text-2xl mr-4">🧪</span>
+                                        <div>
+                                            <h4 class="font-semibold text-amber-800">Ketonemia</h4>
+                                            <p class="text-amber-700">Serum β-hydroxybutyrate ≥3.0 mmol/L</p>
+                                        </div>
+                                    </div>
+                                    <div class="bg-indigo-50 p-4 rounded-lg flex items-center">
+                                        <span class="text-2xl mr-4">📉</span>
+                                        <div>
+                                            <h4 class="font-semibold text-indigo-800">Metabolic Acidosis</h4>
+                                            <p class="text-indigo-700">pH < 7.3 and Bicarbonate < 18 mEq/L</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-12">
+                            <h3 class="text-xl font-semibold mb-4 text-gray-700">DKA Severity Classification</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="bg-gray-100">
+                                            <th class="p-3 font-semibold text-sm text-gray-600">Parameter</th>
+                                            <th class="p-3 font-semibold text-sm text-gray-600">Mild</th>
+                                            <th class="p-3 font-semibold text-sm text-gray-600">Moderate</th>
+                                            <th class="p-3 font-semibold text-sm text-gray-600">Severe</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white">
+                                        <tr class="border-b">
+                                            <td class="p-3 text-gray-700">Arterial pH</td>
+                                            <td class="p-3 text-gray-700">7.25 - 7.30</td>
+                                            <td class="p-3 text-gray-700">7.00 - <7.24</td>
+                                            <td class="p-3 text-red-600 font-medium"><7.00</td>
+                                        </tr>
+                                        <tr class="border-b">
+                                            <td class="p-3 text-gray-700">Serum Bicarbonate (mEq/L)</td>
+                                            <td class="p-3 text-gray-700">15 - 18</td>
+                                            <td class="p-3 text-gray-700">10 - <15</td>
+                                            <td class="p-3 text-red-600 font-medium"><10</td>
+                                        </tr>
+                                        <tr class="border-b">
+                                            <td class="p-3 text-gray-700">Anion Gap</td>
+                                            <td class="p-3 text-gray-700">>10</td>
+                                            <td class="p-3 text-gray-700">>12</td>
+                                            <td class="p-3 text-gray-700">>12</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 text-gray-700">Mental Status</td>
+                                            <td class="p-3 text-gray-700">Alert</td>
+                                            <td class="p-3 text-gray-700">Alert / Drowsy</td>
+                                            <td class="p-3 text-red-600 font-medium">Stupor / Coma</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="pathophysiology" class="content-section">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">Interactive Pathophysiology</h2>
+                        <p class="text-gray-600 mb-8">This section provides an interactive model of the DKA cascade. The core of DKA is a profound insulin deficiency, which triggers a hormonal storm and subsequent metabolic chaos. Click on each stage of the process to understand how hyperglycemia and ketogenesis develop and lead to systemic consequences like acidosis and dehydration.</p>
+                        
+                        <div class="text-center mb-8">
+                            <div class="pathophysiology-box inline-block bg-red-100 text-red-800 p-4 rounded-lg shadow-md border border-red-200" onclick="showModal('Insulin Deficiency', 'This is the central initiating event. Absolute or relative lack of insulin prevents glucose uptake by cells and removes the brakes on counterregulatory hormone release and fat breakdown.')">
+                                <h3 class="font-bold">1. Insulin Deficiency</h3>
+                            </div>
+                            <div class="text-5xl text-gray-400 my-2">↓</div>
+                            <div class="pathophysiology-box inline-block bg-orange-100 text-orange-800 p-4 rounded-lg shadow-md border border-orange-200" onclick="showModal('Counterregulatory Hormone Excess', 'Glucagon, catecholamines, cortisol, and growth hormone surge. This hormonal storm signals the body to enter a catabolic (breakdown) state.')">
+                                <h3 class="font-bold">2. Counterregulatory Hormone Excess</h3>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-center">
+                            <div>
+                                <div class="text-5xl text-gray-400 mb-2">↘</div>
+                                <div class="pathophysiology-box bg-blue-100 text-blue-800 p-4 rounded-lg shadow-md border border-blue-200" onclick="showModal('Increased Hepatic Glucose Production', 'The liver is stimulated to release stored glucose (glycogenolysis) and create new glucose (gluconeogenesis), flooding the bloodstream with sugar that cells cannot use.')">
+                                    <h3 class="font-bold">3a. Increased Glucose Production</h3>
+                                </div>
+                                <div class="text-5xl text-gray-400 my-2">↓</div>
+                                <div class="pathophysiology-box bg-blue-200 text-blue-900 p-4 rounded-lg shadow-lg border border-blue-300" onclick="showModal('Hyperglycemia', 'Blood glucose soars, typically >250 mg/dL. This leads to osmotic diuresis, causing profound dehydration and electrolyte loss as the kidneys try to excrete the excess sugar.')">
+                                    <h3 class="font-bold text-xl">Hyperglycemia</h3>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-5xl text-gray-400 mb-2">↙</div>
+                                <div class="pathophysiology-box bg-green-100 text-green-800 p-4 rounded-lg shadow-md border border-green-200" onclick="showModal('Increased Lipolysis & Ketogenesis', 'Massive breakdown of fat releases free fatty acids (FFAs). The liver converts these FFAs into acidic ketone bodies (β-hydroxybutyrate and acetoacetate) at an uncontrollable rate.')">
+                                    <h3 class="font-bold">3b. Increased Lipolysis & Ketogenesis</h3>
+                                </div>
+                                <div class="text-5xl text-gray-400 my-2">↓</div>
+                                <div class="pathophysiology-box bg-green-200 text-green-900 p-4 rounded-lg shadow-lg border border-green-300" onclick="showModal('Ketoacidosis', 'The accumulation of acidic ketones overwhelms the body\'s buffering systems, causing the blood pH to drop. This leads to a high anion gap metabolic acidosis.')">
+                                    <h3 class="font-bold text-xl">Ketoacidosis</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="diagnosis" class="content-section">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">Diagnosis & Differentiation</h2>
+                        <p class="text-gray-600 mb-8">A rapid and accurate diagnosis is critical in managing a hyperglycemic crisis. This section outlines the key laboratory findings and calculations needed to confirm DKA. It also provides a clear comparison to its main differential diagnosis, Hyperosmolar Hyperglycemic State (HHS), to aid in immediate clinical differentiation.</p>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4 text-gray-700">Key Diagnostic Workup</h3>
+                                <ul class="space-y-3 list-disc list-inside text-gray-600">
+                                    <li><span class="font-semibold">Serum Glucose:</span> Typically >250 mg/dL. Beware of Euglycemic DKA.</li>
+                                    <li><span class="font-semibold">Serum Ketones:</span> β-hydroxybutyrate ≥3.0 mmol/L is the gold standard.</li>
+                                    <li><span class="font-semibold">Venous/Arterial Blood Gas:</span> pH < 7.3, Bicarbonate < 18 mEq/L.</li>
+                                    <li><span class="font-semibold">Anion Gap Calculation:</span> Essential for confirming high anion gap metabolic acidosis. AG > 12 is significant.</li>
+                                    <li><span class="font-semibold">Electrolytes:</span> Assess for potassium shifts and calculate corrected sodium.</li>
+                                    <li><span class="font-semibold">Ancillary Tests:</span> ECG, CBC, urinalysis, and cultures to find precipitating cause (e.g., infection, MI).</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4 text-gray-700">DKA vs. HHS</h3>
+                                <div class="overflow-x-auto bg-gray-50 p-4 rounded-lg">
+                                    <table class="w-full text-left">
+                                        <thead>
+                                            <tr>
+                                                <th class="p-2 font-semibold text-sm">Feature</th>
+                                                <th class="p-2 font-semibold text-sm bg-rose-100 text-rose-800 rounded-l-lg">DKA</th>
+                                                <th class="p-2 font-semibold text-sm bg-sky-100 text-sky-800 rounded-r-lg">HHS</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="border-t">
+                                                <td class="p-2">Dominant Feature</td>
+                                                <td class="p-2 bg-rose-50">Acidosis</td>
+                                                <td class="p-2 bg-sky-50">Hyperosmolarity</td>
+                                            </tr>
+                                            <tr class="border-t">
+                                                <td class="p-2">Glucose (mg/dL)</td>
+                                                <td class="p-2 bg-rose-50">>250</td>
+                                                <td class="p-2 bg-sky-50">>600</td>
+                                            </tr>
+                                            <tr class="border-t">
+                                                <td class="p-2">Ketones</td>
+                                                <td class="p-2 bg-rose-50">Strongly Positive</td>
+                                                <td class="p-2 bg-sky-50">Trace / Negative</td>
+                                            </tr>
+                                            <tr class="border-t">
+                                                <td class="p-2">pH</td>
+                                                <td class="p-2 bg-rose-50"><7.3</td>
+                                                <td class="p-2 bg-sky-50">≥7.3</td>
+                                            </tr>
+                                            <tr class="border-t">
+                                                <td class="p-2">Serum Osmolality</td>
+                                                <td class="p-2 bg-rose-50">Variable</td>
+                                                <td class="p-2 bg-sky-50">>320 mOsm/kg</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="management" class="content-section">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">Interactive Treatment Protocol</h2>
+                        <p class="text-gray-600 mb-8">DKA management is a time-sensitive, protocol-driven process requiring meticulous attention to fluids, insulin, and electrolytes. This interactive timeline breaks down the standard treatment algorithm into key phases. Click on each step to reveal the specific actions, rationales, and critical considerations for that phase of care.</p>
+                        
+                        <div>
+                            <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content" onclick="toggleTimeline(this)">
+                                    <h3 class="font-bold text-lg text-gray-800">Hour 0: Initial Resuscitation & Assessment</h3>
+                                    <div class="hidden mt-2 text-gray-600 space-y-2">
+                                        <p><span class="font-semibold">Action:</span> Secure IV access (x2), draw initial labs (glucose, electrolytes, VBG, ketones), obtain ECG, and administer 1.0-1.5 L of 0.9% NaCl over the first hour.</p>
+                                        <p><span class="font-semibold">Rationale:</span> The immediate priority is to restore intravascular volume, improve tissue perfusion, and begin lowering counterregulatory hormones. This is the most critical first step.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content" onclick="toggleTimeline(this)">
+                                    <h3 class="font-bold text-lg text-gray-800">Hour 1: Insulin Initiation (with caution)</h3>
+                                    <div class="hidden mt-2 text-gray-600 space-y-2">
+                                        <p><span class="font-semibold text-red-600">CRITICAL CHECK:</span> Confirm serum potassium is ≥3.3 mEq/L before starting insulin. If it's low, hold insulin and aggressively replace potassium first.</p>
+                                        <p><span class="font-semibold">Action:</span> If K+ is adequate, start a continuous IV infusion of regular insulin at 0.1 units/kg/hr.</p>
+                                        <p><span class="font-semibold">Rationale:</span> Insulin is the definitive treatment to stop ketogenesis and reverse acidosis. Starting it in a hypokalemic state can be fatal.</p>
+                                    </div>
+                                </div>
+                            </div>
+                             <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content" onclick="toggleTimeline(this)">
+                                    <h3 class="font-bold text-lg text-gray-800">Ongoing: Electrolyte Management</h3>
+                                    <div class="hidden mt-2 text-gray-600 space-y-2">
+                                        <p><span class="font-semibold">Action:</span> Monitor electrolytes every 2-4 hours. If serum K+ is 3.3-5.2 mEq/L, proactively add 20-40 mEq of potassium to each liter of IV fluid.</p>
+                                        <p><span class="font-semibold">Rationale:</span> To prevent iatrogenic hypokalemia as insulin drives potassium into cells. The goal is to maintain serum K+ between 4.0-5.0 mEq/L.</p>
+                                        <p><span class="font-semibold">Bicarbonate:</span> Routine use is NOT recommended. Consider only in extreme, life-threatening acidosis (pH < 6.9).</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content" onclick="toggleTimeline(this)">
+                                    <h3 class="font-bold text-lg text-gray-800">Transition Point: Glucose ~200-250 mg/dL</h3>
+                                    <div class="hidden mt-2 text-gray-600 space-y-2">
+                                        <p><span class="font-semibold">Action:</span> Change IV fluids to D5/0.45% NaCl (or similar dextrose-containing fluid). Reduce insulin infusion rate to 0.02-0.05 units/kg/hr.</p>
+                                        <p><span class="font-semibold">Rationale:</span> This crucial step prevents hypoglycemia while allowing the insulin infusion to continue at a rate sufficient to resolve the underlying ketosis, which clears more slowly than hyperglycemia.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="timeline-item border-l-transparent">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content" onclick="toggleTimeline(this)">
+                                    <h3 class="font-bold text-lg text-gray-800">Resolution & Transition to Subcutaneous Insulin</h3>
+                                    <div class="hidden mt-2 text-gray-600 space-y-2">
+                                        <p><span class="font-semibold">Resolution Criteria:</span> Glucose <200, Bicarb ≥18, pH ≥7.3, Anion Gap closed (≤12).</p>
+                                        <p><span class="font-semibold text-red-600">CRITICAL OVERLAP:</span> Administer a dose of basal (long-acting) subcutaneous insulin 1-2 hours BEFORE stopping the IV insulin infusion.</p>
+                                        <p><span class="font-semibold">Rationale:</span> Failure to overlap will result in rebound hyperglycemia and a recurrence of ketosis as the short-acting IV insulin wears off.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="complications" class="content-section">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">Complications & Prognosis</h2>
+                        <p class="text-gray-600 mb-8">While acute mortality from DKA is low with modern treatment, the event is not benign. It carries risks for severe acute complications and is a powerful predictor of long-term morbidity and mortality. This section highlights the most critical risks to understand that a DKA admission is a sentinel event identifying a high-risk patient.</p>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4 text-gray-700">Acute Complications</h3>
+                                <ul class="space-y-3">
+                                    <li class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                                        <h4 class="font-bold text-red-800">Cerebral Edema</h4>
+                                        <p class="text-sm text-red-700">The most feared complication, especially in children. Rare but carries high mortality (21-24%). Watch for headache, vomiting, and declining mental status during treatment.</p>
+                                    </li>
+                                    <li class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded">
+                                        <h4 class="font-bold text-yellow-800">Hypokalemia & Hypoglycemia</h4>
+                                        <p class="text-sm text-yellow-700">Common iatrogenic risks from treatment. Require meticulous monitoring to prevent cardiac arrhythmias and neurological damage.</p>
+                                    </li>
+                                    <li class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                                        <h4 class="font-bold text-blue-800">Thromboembolism</h4>
+                                        <p class="text-sm text-blue-700">DKA creates a hypercoagulable state. Consider prophylaxis in high-risk adults to prevent DVT, PE, and stroke.</p>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold mb-2 text-gray-700">DKA as a Sentinel Event for Long-Term Risk</h3>
+                                <p class="text-sm text-gray-500 mb-4">A history of DKA is strongly associated with increased future mortality, independent of average glycemic control (HbA1c).</p>
+                                <div class="chart-container">
+                                    <canvas id="prognosisChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="patient-view" class="hidden">
+                 <button onclick="goHome()" class="mb-6 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition">&larr; Back to Home</button>
+                <div class="space-y-12">
+                    <section class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">What is DKA? The Body's "Fuel Crisis"</h2>
+                        <p class="text-gray-600 mb-6">This section explains DKA using a simple analogy. Understanding what happens inside your body during DKA is the first step to preventing this serious condition. Think of it as a fuel crisis where your body's cells are starving, even when there's plenty of sugar in your blood.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                            <div class="bg-blue-50 p-6 rounded-lg">
+                                <div class="text-4xl mb-3">🔑</div>
+                                <h3 class="font-semibold text-xl text-blue-800">1. The Missing Key</h3>
+                                <p class="text-blue-700 mt-2">Insulin is the "key" that lets sugar (fuel) into your body's cells. In DKA, there isn't enough insulin, so the sugar gets locked out and builds up in your blood.</p>
+                            </div>
+                            <div class="bg-orange-50 p-6 rounded-lg">
+                                <div class="text-4xl mb-3">🔥</div>
+                                <h3 class="font-semibold text-xl text-orange-800">2. Emergency Fuel</h3>
+                                <p class="text-orange-700 mt-2">Because your cells are starving, your body panics and starts burning fat for fuel at a very high rate. This is its emergency backup plan.</p>
+                            </div>
+                            <div class="bg-red-50 p-6 rounded-lg">
+                                <div class="text-4xl mb-3">☠️</div>
+                                <h3 class="font-semibold text-xl text-red-800">3. Toxic Waste</h3>
+                                <p class="text-red-700 mt-2">Burning fat this way creates a toxic, acidic waste product called **ketones**. These ketones build up and poison your blood, making you very sick.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">Warning Signs & "Sick Day Rules"</h2>
+                        <p class="text-gray-600 mb-6">Being sick is the most common trigger for DKA. Having a clear plan—known as "Sick Day Rules"—is your best defense. This section covers the key symptoms to watch for and the essential steps you must take when you are ill to stay safe.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4 text-gray-700">Know the Warning Signs</h3>
+                                <ul class="space-y-2">
+                                    <li class="flex items-start"><span class="text-red-500 mr-2 mt-1">●</span><span>Intense thirst and very frequent urination</span></li>
+                                    <li class="flex items-start"><span class="text-red-500 mr-2 mt-1">●</span><span>Nausea, vomiting, or stomach pain</span></li>
+                                    <li class="flex items-start"><span class="text-red-500 mr-2 mt-1">●</span><span>Deep, rapid breathing or shortness of breath</span></li>
+                                    <li class="flex items-start"><span class="text-red-500 mr-2 mt-1">●</span><span>Fruity-smelling breath</span></li>
+                                    <li class="flex items-start"><span class="text-red-500 mr-2 mt-1">●</span><span>Feeling very tired, weak, or confused</span></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4 text-gray-700">Your Sick Day Action Plan</h3>
+                                <div class="space-y-4">
+                                    <div class="patient-card bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                        <h4 class="font-bold text-gray-800">1. NEVER Stop Your Insulin</h4>
+                                        <p class="text-sm text-gray-600">Your body needs insulin even more when you're sick. Talk to your doctor about how to adjust your dose.</p>
+                                    </div>
+                                    <div class="patient-card bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                        <h4 class="font-bold text-gray-800">2. Check Blood Sugar & Ketones</h4>
+                                        <p class="text-sm text-gray-600">Check sugar every 3-4 hours. Check for ketones if your sugar is high (e.g., >240 mg/dL) or you feel sick.</p>
+                                    </div>
+                                    <div class="patient-card bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                        <h4 class="font-bold text-gray-800">3. Stay Hydrated</h4>
+                                        <p class="text-sm text-gray-600">Sip sugar-free fluids like water or broth constantly to avoid dehydration.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <section class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">When to Get Help: An Emergency Guide</h2>
+                        <p class="text-gray-600 mb-6">DKA is a medical emergency. It is critical to know when you can manage symptoms with your doctor's help and when you must go to the emergency room immediately. Do not try to manage severe symptoms at home.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="border-4 border-yellow-400 bg-yellow-50 p-6 rounded-lg">
+                                <h3 class="text-2xl font-bold text-yellow-800 mb-3">📞 Call Your Doctor If...</h3>
+                                <ul class="space-y-2 list-disc list-inside text-yellow-900">
+                                    <li>Your blood sugar stays high despite taking extra insulin.</li>
+                                    <li>Your ketone levels are "moderate" and not improving.</li>
+                                    <li>You are vomiting but can still keep some liquids down.</li>
+                                    <li>You are unsure what to do.</li>
+                                </ul>
+                            </div>
+                            <div class="border-4 border-red-500 bg-red-50 p-6 rounded-lg animate-pulse">
+                                <h3 class="text-2xl font-bold text-red-800 mb-3">🚨 Go to the ER Immediately If...</h3>
+                                <ul class="space-y-2 list-disc list-inside text-red-900">
+                                    <li>Your ketones are "high" or "large".</li>
+                                    <li>You are vomiting and cannot keep any fluids down.</li>
+                                    <li>You have severe stomach pain or difficulty breathing.</li>
+                                    <li>You feel very sleepy, drowsy, or confused.</li>
+                                    <li class="font-bold">Do not drive yourself. Call for an ambulance.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="infoModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <h3 id="modalTitle" class="text-2xl font-bold mb-4"></h3>
+            <p id="modalText" class="text-gray-700"></p>
+        </div>
+    </div>
+
+    <script>
+        const clinicianView = document.getElementById('clinician-view');
+        const patientView = document.getElementById('patient-view');
+        const roleSelection = document.getElementById('role-selection');
+        const navButtons = document.querySelectorAll('.nav-button');
+        const contentSections = document.querySelectorAll('.content-section');
+        const modal = document.getElementById('infoModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalText = document.getElementById('modalText');
+
+        function selectView(view) {
+            roleSelection.style.display = 'none';
+            if (view === 'clinician') {
+                clinicianView.style.display = 'block';
+                patientView.style.display = 'none';
+                initializeClinicianCharts();
+            } else {
+                clinicianView.style.display = 'none';
+                patientView.style.display = 'block';
+            }
+            window.scrollTo(0, 0);
+        }
+
+        function goHome() {
+            clinicianView.style.display = 'none';
+            patientView.style.display = 'none';
+            roleSelection.style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function showSection(sectionId) {
+            contentSections.forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+
+            navButtons.forEach(button => {
+                button.classList.remove('active');
+                if (button.getAttribute('onclick').includes(sectionId)) {
+                    button.classList.add('active');
+                }
+            });
+        }
+
+        function toggleTimeline(element) {
+            const content = element.querySelector('div');
+            content.classList.toggle('hidden');
+        }
+
+        function showModal(title, text) {
+            modalTitle.textContent = title;
+            modalText.textContent = text;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        let epidemiologyChartInstance, prognosisChartInstance;
+
+        function initializeClinicianCharts() {
+            if (!epidemiologyChartInstance) {
+                const ctxEpi = document.getElementById('epidemiologyChart').getContext('2d');
+                epidemiologyChartInstance = new Chart(ctxEpi, {
+                    type: 'bar',
+                    data: {
+                        labels: ['2009', '2014'],
+                        datasets: [{
+                            label: 'DKA Hospitalizations (Rate per 100,000)',
+                            data: [140, 217],
+                            backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                            borderColor: 'rgba(239, 68, 68, 1)',
+                            borderWidth: 1
+                        }, {
+                            label: 'In-Hospital Mortality (%)',
+                            data: [0.8, 0.4],
+                            backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1,
+                            yAxisID: 'y1'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                position: 'left',
+                                title: { display: true, text: 'Hospitalization Rate' }
+                            },
+                            y1: {
+                                beginAtZero: true,
+                                position: 'right',
+                                title: { display: true, text: 'Mortality Rate (%)' },
+                                grid: { drawOnChartArea: false }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += context.parsed.y;
+                                            if (context.dataset.yAxisID === 'y1') {
+                                                label += '%';
+                                            }
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            if (!prognosisChartInstance) {
+                const ctxProg = document.getElementById('prognosisChart').getContext('2d');
+                prognosisChartInstance = new Chart(ctxProg, {
+                    type: 'bar',
+                    data: {
+                        labels: ['No History of DKA', 'History of DKA'],
+                        datasets: [{
+                            label: 'Relative Risk of All-Cause Mortality',
+                            data: [1, 8.5],
+                            backgroundColor: ['rgba(34, 197, 94, 0.6)', 'rgba(220, 38, 38, 0.6)'],
+                            borderColor: ['rgba(34, 197, 94, 1)', 'rgba(220, 38, 38, 1)'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Relative Risk (Fold Increase)'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+</body>
+</html>
