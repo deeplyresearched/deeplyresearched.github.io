@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>An Interactive Guide to Diabetes in Pregnancy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+    <!-- Chosen Palette: Warm Neutrals with Soft Teal Accent -->
+    <!-- Application Structure Plan: A thematic, single-page application with top navigation allowing users to jump to specific areas of interest: Types, Risks, Management, Outcomes, and After Pregnancy. This non-linear structure prioritizes user-driven exploration over the report's linear format. Key interactions include toggle buttons for comparing diabetes types, interactive diagrams for pathophysiology, and tabbed sections for management, making complex information digestible and engaging. This design is chosen to empower users (patients, family members, students) to find and understand the information most relevant to their needs quickly. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Prevalence of GDM vs. pre-existing diabetes -> Goal: Compare -> Viz: Bar Chart (Chart.js) -> Interaction: Static display for immediate impact -> Justification: Quickly illustrates that GDM is the more common issue.
+        - Report Info: Pathophysiology of GDM -> Goal: Explain a process -> Viz: HTML/CSS Flow Diagram -> Interaction: Elements highlight on hover -> Justification: Simplifies the complex "pancreatic stress test" concept visually.
+        - Report Info: Management Strategies (Diet, Meds, Monitoring) -> Goal: Organize related options -> Viz: Tabbed Interface (HTML/CSS/JS) -> Interaction: User clicks tabs to switch content -> Justification: Prevents information overload by grouping related management topics cleanly.
+        - Report Info: Long-term risk of T2D after GDM -> Goal: Emphasize a key statistic -> Viz: Donut Chart (Chart.js) -> Interaction: Hover for tooltip -> Justification: A powerful visual to highlight a critical long-term outcome and motivate postpartum care.
+        - Report Info: Maternal vs. Fetal Risks -> Goal: Compare two sets of outcomes -> Viz: Side-by-side card layout -> Interaction: Clickable cards for more details -> Justification: Allows for easy comparison while keeping the initial view uncluttered.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #4A4A4A;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #008080;
+            border-bottom-color: #008080;
+        }
+        .section-card {
+            background-color: #FFFFFF;
+            border: 1px solid #EAEAEA;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .section-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+        .tab-button {
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-button.active {
+            color: #008080;
+            border-bottom-color: #008080;
+        }
+        .stat-card {
+            background-color: #F0F7F7;
+            border-left: 5px solid #008080;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+                max-height: 400px;
+            }
+        }
+        .flow-step {
+            border: 2px solid #EAEAEA;
+            background-color: #FFFFFF;
+        }
+         .flow-arrow {
+            color: #008080;
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+ padding: 3rem 1.5rem;
+ margin-top: 3rem; /* Adds space above the section */
+ background-color: #f8f7f4; /* A light, neutral background */
+ text-align: center;
+ border-top: 1px solid #e0e0e0;
+ border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+ font-family: 'Oswald', sans-serif;
+ font-size: 2.2rem;
+ color: #2c3e50;
+ margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+ max-width: 650px;
+ margin: 0 auto 1.75rem auto;
+ font-size: 1.1em;
+ color: #555;
+ line-height: 1.6;
+}
+
+.explore-more-buttons {
+ display: flex;
+ justify-content: center;
+ gap: 1rem;
+ flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+ display: inline-block;
+ background-color: #34495e;
+ color: white;
+ padding: 0.8rem 2rem;
+ border-radius: 30px;
+ text-decoration: none;
+ font-weight: bold;
+ font-size: 1em;
+ transition: transform 0.3s ease, background-color 0.3s ease;
+ border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+ transform: translateY(-3px);
+ background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+ background-color: transparent;
+ color: #34495e;
+ border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+ background-color: #34495e;
+ color: white;
+}
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <h1 class="text-xl md:text-2xl font-bold text-teal-700">Diabetes & Pregnancy</h1>
+                <div class="hidden md:flex space-x-6">
+                    <a href="#types" class="nav-link font-semibold pb-1">The Types</a>
+                    <a href="#risks" class="nav-link font-semibold pb-1">Risks & Screening</a>
+                    <a href="#management" class="nav-link font-semibold pb-1">Management</a>
+                    <a href="#outcomes" class="nav-link font-semibold pb-1">Outcomes</a>
+                    <a href="#after" class="nav-link font-semibold pb-1">Life After</a>
+                </div>
+                <div class="md:hidden">
+                    <select id="mobile-nav" class="bg-white border border-gray-300 rounded-md py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <option value="#home">Menu</option>
+                        <option value="#types">The Types</option>
+                        <option value="#risks">Risks & Screening</option>
+                        <option value="#management">Management</option>
+                        <option value="#outcomes">Outcomes</option>
+                        <option value="#after">Life After</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 md:py-12" id="home">
+        
+        <section class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">Understanding Diabetes in Pregnancy</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600">An interactive guide to the types, risks, and management of diabetes during pregnancy. Explore the key differences and learn how to ensure the healthiest outcomes for both mother and baby.</p>
+        </section>
+
+        <section id="types" class="mb-16 scroll-mt-24">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-8">A Spectrum of Conditions</h3>
+            <p class="text-center max-w-3xl mx-auto mb-12 text-gray-600">Diabetes in pregnancy isn't one single condition. It's crucial to distinguish between diabetes that existed before pregnancy (pregestational) and diabetes that develops during pregnancy (gestational). This distinction determines the risks and the focus of care.</p>
+            
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="section-card p-6">
+                    <h4 class="font-bold text-xl mb-4 text-center">Prevalence in the U.S.</h4>
+                    <div class="chart-container">
+                        <canvas id="prevalenceChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="section-card p-6">
+                    <h4 class="font-bold text-xl mb-4 text-center">Compare the Types</h4>
+                    <div id="diabetes-type-selector" class="flex justify-center rounded-lg bg-gray-100 p-1 mb-6">
+                        <button data-type="gdm" class="type-btn flex-1 p-2 rounded-md font-semibold">Gestational (GDM)</button>
+                        <button data-type="pregestational" class="type-btn flex-1 p-2 rounded-md font-semibold">Pre-existing</button>
+                    </div>
+                    <div id="type-details">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="risks" class="mb-16 scroll-mt-24">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-8">Why Does GDM Happen? Risks & Screening</h3>
+            <p class="text-center max-w-3xl mx-auto mb-12 text-gray-600">Gestational diabetes develops when the body can't produce enough insulin to overcome the hormone-driven insulin resistance of pregnancy. Think of pregnancy as a "pancreatic stress test" that unmasks an underlying vulnerability.</p>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="section-card p-6">
+                    <h4 class="font-bold text-xl mb-4 text-center">The "Pancreatic Stress Test"</h4>
+                    <div class="space-y-4">
+                        <div class="flow-step p-3 rounded-lg text-center">
+                            <p><strong>Healthy Pregnancy:</strong> Placental hormones cause insulin resistance.</p>
+                        </div>
+                        <div class="text-center flow-arrow text-2xl font-bold">↓</div>
+                        <div class="flow-step p-3 rounded-lg text-center">
+                             <p>The pancreas compensates by producing <strong>more insulin</strong> to keep blood sugar normal.</p>
+                        </div>
+                    </div>
+                    <div class="my-4 border-t-2 border-dashed"></div>
+                    <div class="space-y-4">
+                        <div class="flow-step p-3 rounded-lg text-center">
+                            <p><strong>GDM Development:</strong> Placental hormones cause insulin resistance.</p>
+                        </div>
+                        <div class="text-center flow-arrow text-2xl font-bold">↓</div>
+                        <div class="flow-step p-3 rounded-lg text-center bg-red-50 border-red-200">
+                             <p>An underlying issue prevents the pancreas from producing enough extra insulin. Blood sugar rises.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="section-card p-6">
+                    <h4 class="font-bold text-xl mb-4 text-center">Key Risk Factors for GDM</h4>
+                     <ul class="space-y-3 list-inside">
+                        <li class="flex items-start"><span class="text-teal-600 mr-2">●</span><span><strong>Age:</strong> Over 25 years old</span></li>
+                        <li class="flex items-start"><span class="text-teal-600 mr-2">●</span><span><strong>BMI:</strong> Pre-pregnancy overweight or obesity</span></li>
+                        <li class="flex items-start"><span class="text-teal-600 mr-2">●</span><span><strong>Family History:</strong> Parent or sibling with diabetes</span></li>
+                        <li class="flex items-start"><span class="text-teal-600 mr-2">●</span><span><strong>Personal History:</strong> GDM in a previous pregnancy or birth of a large baby (>9 lbs)</span></li>
+                        <li class="flex items-start"><span class="text-teal-600 mr-2">●</span><span><strong>Ethnicity:</strong> African American, Hispanic, Asian American, American Indian, or Pacific Islander descent</span></li>
+                        <li class="flex items-start"><span class="text-teal-600 mr-2">●</span><span><strong>Other Conditions:</strong> Polycystic Ovary Syndrome (PCOS) or prediabetes</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="management" class="mb-16 scroll-mt-24">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-8">Management & Glycemic Control</h3>
+            <p class="text-center max-w-3xl mx-auto mb-12 text-gray-600">The goal of management is to maintain tight blood sugar control to protect the health of both mother and baby. This involves a multi-faceted approach, starting with lifestyle and adding medication only when necessary.</p>
+            
+            <div class="section-card p-6 md:p-8">
+                <div class="border-b border-gray-200 mb-6">
+                    <nav class="-mb-px flex justify-center space-x-4 md:space-x-8" aria-label="Tabs">
+                        <button class="tab-button whitespace-nowrap py-4 px-1 font-medium text-lg" data-tab="lifestyle">Lifestyle</button>
+                        <button class="tab-button whitespace-nowrap py-4 px-1 font-medium text-lg" data-tab="medication">Medication</button>
+                        <button class="tab-button whitespace-nowrap py-4 px-1 font-medium text-lg" data-tab="monitoring">Monitoring</button>
+                    </nav>
+                </div>
+
+                <div id="tab-content">
+                </div>
+            </div>
+        </section>
+
+        <section id="outcomes" class="mb-16 scroll-mt-24">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-8">Health Outcomes for Mother & Baby</h3>
+            <p class="text-center max-w-3xl mx-auto mb-12 text-gray-600">Poorly controlled diabetes can lead to significant complications. The timing of high blood sugar is key: pre-existing diabetes carries risks from conception, while GDM risks emerge later in pregnancy.</p>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="section-card p-6 lg:col-span-1">
+                    <h4 class="font-bold text-xl mb-4 text-center">Maternal Risks</h4>
+                    <ul class="space-y-3 list-inside">
+                        <li class="flex items-start"><span class="text-red-500 mr-2">●</span><span><strong>Preeclampsia:</strong> High blood pressure disorder.</span></li>
+                        <li class="flex items-start"><span class="text-red-500 mr-2">●</span><span><strong>Cesarean Delivery:</strong> Often due to a large baby.</span></li>
+                        <li class="flex items-start"><span class="text-red-500 mr-2">●</span><span><strong>Worsening Conditions:</strong> For those with pre-existing diabetes, eye or kidney disease can progress.</span></li>
+                        <li class="flex items-start"><span class="text-red-500 mr-2">●</span><span><strong>Postpartum Depression:</strong> Increased risk linked to the stress of GDM management.</span></li>
+                    </ul>
+                </div>
+                <div class="section-card p-6 lg:col-span-2">
+                    <h4 class="font-bold text-xl mb-4 text-center">Fetal & Neonatal Risks</h4>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <p class="font-semibold">Primary Risks:</p>
+                            <ul class="space-y-3 list-inside mt-2">
+                                <li class="flex items-start"><span class="text-red-500 mr-2">●</span><span><strong>Macrosomia (Large Baby):</strong> Due to excess glucose crossing the placenta, leading to high fetal insulin (a growth hormone). Can cause birth trauma like shoulder dystocia.</span></li>
+                                <li class="flex items-start"><span class="text-red-500 mr-2">●</span><span><strong>Neonatal Hypoglycemia:</strong> Baby's blood sugar drops dangerously low after birth.</span></li>
+                                <li class="flex items-start"><span class="text-red-500 mr-2">●</span><span><strong>Respiratory Distress:</strong> High insulin can delay lung maturation.</span></li>
+                                <li class="flex items-start"><span class="text-red-500 mr-2">●</span><span><strong>Stillbirth:</strong> A tragic risk in poorly controlled cases.</span></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold text-center">Risk of Major Birth Defects</h5>
+                            <div class="chart-container h-64 max-h-64">
+                                <canvas id="defectsChart"></canvas>
+                            </div>
+                             <p class="text-xs text-center text-gray-500 mt-2">GDM develops after major organs are formed, hence the low risk of structural defects.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="after" class="scroll-mt-24">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-8">Life After Pregnancy: A Window of Opportunity</h3>
+            <p class="text-center max-w-3xl mx-auto mb-12 text-gray-600">A GDM diagnosis is a powerful predictor of future health. While blood sugar usually normalizes after delivery, the underlying risk remains. This creates a critical opportunity for lifelong preventive care.</p>
+            
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                 <div class="section-card p-6">
+                    <h4 class="font-bold text-xl mb-4 text-center">Postpartum Follow-Up is Crucial</h4>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <div class="bg-teal-100 text-teal-700 font-bold rounded-full h-8 w-8 flex-shrink-0 flex items-center justify-center mr-4">1</div>
+                            <div>
+                                <h5 class="font-semibold">6-12 Weeks Postpartum</h5>
+                                <p class="text-gray-600">Undergo a glucose tolerance test to confirm blood sugar has normalized and rule out underlying Type 2 diabetes.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="bg-teal-100 text-teal-700 font-bold rounded-full h-8 w-8 flex-shrink-0 flex items-center justify-center mr-4">2</div>
+                            <div>
+                                <h5 class="font-semibold">Every 1-3 Years (Lifelong)</h5>
+                                <p class="text-gray-600">Continue regular diabetes screening (e.g., A1C test) for early detection of prediabetes or Type 2 diabetes.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                           <div class="bg-teal-100 text-teal-700 font-bold rounded-full h-8 w-8 flex-shrink-0 flex items-center justify-center mr-4">3</div>
+                            <div>
+                                <h5 class="font-semibold">Lifestyle & Prevention</h5>
+                                <p class="text-gray-600">Maintaining a healthy weight, diet, and regular exercise are the most effective ways to prevent or delay Type 2 diabetes. Breastfeeding is also highly beneficial for both mother and baby.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="section-card p-6">
+                    <h4 class="font-bold text-xl mb-4 text-center">Future Risk of Type 2 Diabetes After GDM</h4>
+                    <div class="chart-container">
+                        <canvas id="futureRiskChart"></canvas>
+                    </div>
+                    <p class="text-center mt-4 text-gray-600">This highlights why GDM is considered a "sentinel event" for a woman's long-term health and the health of her child, who also has an increased risk.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+
+
+    <footer class="bg-gray-100 mt-16">
+        <div class="container mx-auto px-4 py-6 text-center text-gray-500">
+            <p>This information is for educational purposes only and is not a substitute for professional medical advice. Always consult with a qualified healthcare provider for any health concerns or before making any decisions related to your health or treatment.</p>
+            <p class="text-sm mt-2">Data sourced from "A Comprehensive Clinical Report on Diabetes in Pregnancy".</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    const diabetesData = {
+        gdm: {
+            title: 'Gestational Diabetes (GDM)',
+            etiology: 'Placental hormones cause insulin resistance that overwhelms the mother\'s ability to produce enough insulin.',
+            onset: 'Develops during pregnancy, typically diagnosed at 24-28 weeks.',
+            risk: 'Primary risks are excessive fetal growth (macrosomia) and newborn complications like low blood sugar. Low risk of birth defects.'
+        },
+        pregestational: {
+            title: 'Pre-existing (Type 1 or 2)',
+            etiology: 'Type 1: Autoimmune disease causing absolute insulin lack. Type 2: Insulin resistance and relative insulin deficiency.',
+            onset: 'Exists before pregnancy, meaning high blood sugar is present from conception.',
+            risk: 'High risk (6-12%) of major congenital malformations (heart, neural tube defects) if blood sugar is not controlled before and during the first trimester.'
+        }
+    };
+
+    const tabContentData = {
+        lifestyle: `
+            <h4 class="text-xl font-bold mb-4">The Foundation of Care</h4>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h5 class="font-semibold text-lg mb-2">Medical Nutrition Therapy (MNT)</h5>
+                    <p class="mb-4">The goal is to control blood sugar while providing essential nutrients. This is managed by a registered dietitian.</p>
+                    <ul class="space-y-2 list-inside">
+                        <li>● <strong>Carb Control:</strong> Distribute carbohydrate intake across 3 meals and 2-3 snacks.</li>
+                        <li>● <strong>Carb Quality:</strong> Choose high-fiber, complex carbs (whole grains, vegetables) over simple sugars (juice, sweets).</li>
+                        <li>● <strong>Balance:</strong> Pair carbs with lean protein and healthy fats to slow sugar absorption.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold text-lg mb-2">Physical Activity</h5>
+                    <p class="mb-4">Exercise improves insulin sensitivity, helping to lower blood sugar.</p>
+                    <ul class="space-y-2 list-inside">
+                        <li>● <strong>Recommendation:</strong> Aim for at least 30 minutes of moderate activity (like brisk walking or swimming) most days of the week.</li>
+                        <li>● <strong>Safety First:</strong> Always consult your healthcare provider before starting an exercise program.</li>
+                    </ul>
+                </div>
+            </div>
+        `,
+        medication: `
+            <h4 class="text-xl font-bold mb-4">When Lifestyle Isn't Enough</h4>
+            <p class="mb-6">If blood sugar targets can't be met with diet and exercise, medication is necessary. Insulin is the preferred, gold-standard treatment.</p>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="p-3 font-semibold">Medication</th>
+                            <th class="p-3 font-semibold">How it Works</th>
+                            <th class="p-3 font-semibold">Key Safety Point</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b">
+                            <td class="p-3 font-semibold">Insulin</td>
+                            <td class="p-3">Replaces the body's deficient insulin. Administered via injection.</td>
+                            <td class="p-3">Does NOT cross the placenta, making it the safest option for the fetus.</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-3 font-semibold">Metformin</td>
+                            <td class="p-3">Oral pill that reduces liver glucose production and improves insulin sensitivity.</td>
+                            <td class="p-3">Does cross the placenta. Generally considered safe, but insulin is often preferred.</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 font-semibold">Glyburide</td>
+                            <td class="p-3">Oral pill that stimulates the pancreas to release more insulin.</td>
+                            <td class="p-3">Crosses the placenta and is less commonly used due to higher risks for the baby compared to insulin.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        `,
+        monitoring: `
+            <h4 class="text-xl font-bold mb-4">Keeping Track: Targets & Technology</h4>
+            <p class="mb-6">Close monitoring is essential to guide treatment. Blood sugar targets in pregnancy are much stricter than for non-pregnant individuals.</p>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                <div class="stat-card p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">Fasting / Before Meal</p>
+                    <p class="text-2xl font-bold text-teal-800">&le; 95 mg/dL</p>
+                </div>
+                <div class="stat-card p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">1-Hour After Meal</p>
+                    <p class="text-2xl font-bold text-teal-800">&le; 140 mg/dL</p>
+                </div>
+                <div class="stat-card p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">2-Hours After Meal</p>
+                    <p class="text-2xl font-bold text-teal-800">&le; 120 mg/dL</p>
+                </div>
+            </div>
+            <div>
+                <h5 class="font-semibold text-lg mb-2">Tools for Monitoring</h5>
+                <p><strong>Self-Monitoring (SMBG):</strong> Using a glucometer to check blood sugar from a finger-prick multiple times a day. This is the standard method.</p>
+                <p class="mt-2"><strong>Continuous Glucose Monitoring (CGM):</strong> A wearable sensor that tracks glucose levels 24/7, providing a more complete picture of blood sugar trends. Especially useful for Type 1 diabetes.</p>
+            </div>
+        `
+    };
+
+    const typeSelector = document.getElementById('diabetes-type-selector');
+    const typeDetailsContainer = document.getElementById('type-details');
+    const typeButtons = document.querySelectorAll('.type-btn');
+
+    function updateTypeDetails(type) {
+        const data = diabetesData[type];
+        typeDetailsContainer.innerHTML = `
+            <h5 class="font-bold text-lg mb-2 text-teal-700">${data.title}</h5>
+            <p class="mb-2"><strong>Etiology:</strong> ${data.etiology}</p>
+            <p class="mb-2"><strong>Typical Onset:</strong> ${data.onset}</p>
+            <p><strong>Primary Fetal Risk:</strong> ${data.risk}</p>
+        `;
+        typeButtons.forEach(btn => {
+            btn.classList.toggle('bg-teal-600', btn.dataset.type === type);
+            btn.classList.toggle('text-white', btn.dataset.type === type);
+        });
+    }
+
+    typeSelector.addEventListener('click', (e) => {
+        if (e.target.matches('.type-btn')) {
+            updateTypeDetails(e.target.dataset.type);
+        }
+    });
+    
+    updateTypeDetails('gdm');
+
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContentContainer = document.getElementById('tab-content');
+
+    function updateTabContent(tab) {
+        tabContentContainer.innerHTML = tabContentData[tab];
+        tabButtons.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.tab === tab);
+        });
+    }
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            updateTabContent(button.dataset.tab);
+        });
+    });
+
+    updateTabContent('lifestyle');
+
+    const prevalenceCtx = document.getElementById('prevalenceChart').getContext('2d');
+    new Chart(prevalenceCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Pre-existing Diabetes', 'Gestational Diabetes (GDM)'],
+            datasets: [{
+                label: '% of Live Births',
+                data: [1, 8],
+                backgroundColor: ['#A7D8DE', '#008080'],
+                borderColor: ['#8ACEC4', '#006C6C'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                title: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: '% of Live Births' }
+                }
+            }
+        }
+    });
+
+    const defectsCtx = document.getElementById('defectsChart').getContext('2d');
+    new Chart(defectsCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Gestational Diabetes', 'Pre-existing Diabetes'],
+            datasets: [{
+                label: 'Risk of Major Defects',
+                data: [0.5, 9],
+                backgroundColor: ['#A7D8DE', '#D9534F'],
+                borderColor: ['#8ACEC4', '#B52B27'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: {
+                legend: { display: false },
+                title: { display: false }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    max: 13,
+                    title: { display: true, text: 'Risk % (Range 6-12%)' }
+                }
+            }
+        }
+    });
+
+    const futureRiskCtx = document.getElementById('futureRiskChart').getContext('2d');
+    new Chart(futureRiskCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Develop Type 2 Diabetes', 'Do Not Develop Type 2 Diabetes'],
+            datasets: [{
+                data: [50, 50],
+                backgroundColor: ['#D9534F', '#A7D8DE'],
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.label}: Up to ${context.raw}%`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('section');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                });
+            }
+        });
+    }, { rootMargin: "-50% 0px -50% 0px" });
+
+    sections.forEach(section => {
+        observer.observe(section);
+    });
+    
+    const mobileNav = document.getElementById('mobile-nav');
+    mobileNav.addEventListener('change', (e) => {
+        const targetId = e.target.value;
+        if (targetId) {
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    });
+
+});
+</script>
+
+</body>
+</html>
+
+
