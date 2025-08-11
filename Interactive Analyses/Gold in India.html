@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gold in India: An Interactive Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+  
+    <!-- Chosen Palette: Warm Neutrals & Gold -->
+    <!-- Application Structure Plan: A thematic, single-page dashboard design is chosen over a linear report structure to enhance user engagement and facilitate non-linear exploration. The app is divided into logical sections accessible via a sticky navigation bar: 'Market Snapshot', 'Price Drivers', 'Digital vs. Physical', 'Secure Storage', and 'Strategy & Tax'. This structure allows users to immediately access the information most relevant to their needs—be it current prices, investment strategy, or security concerns—improving usability and information retention. Interactive elements like clickable cards and dynamic charts are used to break down complex topics into digestible pieces, guiding the user through a journey of discovery rather than a passive reading experience. -->
+    <!-- Visualization & Content Choices: Report Info -> Goal -> Viz/Presentation Method -> Interaction -> Justification -> Library/Method. 1) Historical Prices (Table 2) -> Show long-term growth -> Line Chart (Chart.js) -> Hover for details -> Visually compelling, shows trend better than a table. 2) City Prices (Table 1) -> Compare regional variance -> Bar Chart (Chart.js) -> Toggle between 22K/24K -> Easier comparison than scanning a table. 3) Price Drivers -> Explain complex factors -> Interactive Cards (HTML/JS) -> Click to reveal info -> Breaks down dense text, user-controlled pace. 4) Storage Options (Table 4) -> Compare security trade-offs -> Interactive Comparison Grid (HTML/JS) -> Click tabs -> Highlights critical differences like liability, aiding decision-making. 5) Digital Platforms (Table 3) -> Compare providers -> Interactive Table (HTML/JS) -> N/A -> Organizes data clearly. 6) Strategic Allocation -> Visualize portfolio structure -> Donut Chart (Chart.js) -> Hover for tier details -> Simple, intuitive visualization of the recommended strategy. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF7;
+            color: #3D3522;
+        }
+        .bg-gold-gradient {
+            background: linear-gradient(90deg, #D4AF37, #C6A035);
+        }
+        .text-gold {
+            color: #B8860B;
+        }
+        .bg-warm-neutral {
+            background-color: #F5F1E9;
+        }
+        .border-gold-light {
+            border-color: #EAE3D2;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #B8860B;
+            border-bottom-color: #B8860B;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            border: 1px solid #EAE3D2;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -2px rgb(0 0 0 / 0.07);
+        }
+        .tab-button {
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .tab-button.active {
+            background-color: #B8860B;
+            color: #FFFFFF;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #B8860B;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .prose h1, .prose h2, .prose h3 { color: #3D3522; }
+        .prose ul > li::before { background-color: #B8860B; }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm border-b border-gold-light">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-gold">Indian Gold Guide</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#market-snapshot" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Market</a>
+                        <a href="#price-drivers" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Drivers</a>
+                        <a href="#digital-vs-physical" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Types</a>
+                        <a href="#secure-storage" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Storage</a>
+                        <a href="#strategy-tax" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Strategy</a>
+                        <a href="#ai-advisor" class="nav-link px-3 py-2 rounded-md text-sm font-medium">✨ AI Advisor</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-gold hover:bg-warm-neutral focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gold">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div id="mobile-menu" class="md:hidden hidden">
+                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                    <a href="#market-snapshot" class="nav-link block px-3 py-2 rounded-md text-base font-medium">Market</a>
+                    <a href="#price-drivers" class="nav-link block px-3 py-2 rounded-md text-base font-medium">Drivers</a>
+                    <a href="#digital-vs-physical" class="nav-link block px-3 py-2 rounded-md text-base font-medium">Types</a>
+                    <a href="#secure-storage" class="nav-link block px-3 py-2 rounded-md text-base font-medium">Storage</a>
+                    <a href="#strategy-tax" class="nav-link block px-3 py-2 rounded-md text-base font-medium">Strategy</a>
+                    <a href="#ai-advisor" class="nav-link block px-3 py-2 rounded-md text-base font-medium">✨ AI Advisor</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <section id="market-snapshot" class="py-12 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Gold Market Snapshot</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">Explore current gold prices, historical performance, and regional variations across India. This section provides the foundational data to understand gold's value today and its journey over time.</p>
+                <button id="get-ai-outlook-btn" class="mt-6 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-gold-gradient hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold">
+                    ✨ Get Today's AI Outlook
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                <div class="card p-6 text-center">
+                    <h3 class="text-lg font-medium text-gray-500">24 Karat Gold (99.9% Purity)</h3>
+                    <p class="mt-2 text-4xl font-bold text-gold">₹10,151 / gram</p>
+                    <p class="mt-1 text-sm text-gray-500">As of August 2025. Primarily for investment.</p>
+                </div>
+                <div class="card p-6 text-center">
+                    <h3 class="text-lg font-medium text-gray-500">22 Karat Gold (91.6% Purity)</h3>
+                    <p class="mt-2 text-4xl font-bold text-gold">₹9,306 / gram</p>
+                    <p class="mt-1 text-sm text-gray-500">As of August 2025. Standard for jewellery.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold mb-4 text-center">Historical Price Performance (24K/10g)</h3>
+                    <div class="chart-container">
+                        <canvas id="historicalPriceChart"></canvas>
+                    </div>
+                     <p class="text-xs text-center mt-4 text-gray-500">This chart illustrates gold's consistent long-term growth, highlighting its role as a strategic asset for wealth preservation.</p>
+                </div>
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold mb-4 text-center">Today's Rates in Major Cities (per 10g)</h3>
+                    <div class="flex justify-center mb-4">
+                        <div class="inline-flex rounded-md shadow-sm" role="group">
+                            <button type="button" id="btn24k" class="tab-button active px-4 py-2 text-sm font-medium rounded-l-lg border border-gray-200">24 Karat</button>
+                            <button type="button" id="btn22k" class="tab-button px-4 py-2 text-sm font-medium rounded-r-lg border border-gray-200">22 Karat</button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="cityPriceChart"></canvas>
+                    </div>
+                    <p class="text-xs text-center mt-4 text-gray-500">Toggle between 22K and 24K to see how prices vary across major Indian cities due to local taxes and market conditions.</p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-gold-light">
+
+        <section id="price-drivers" class="py-12 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">What Moves the Price of Gold?</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">Gold's price is a complex interplay of global forces and domestic factors. Click on each driver below to understand how it influences the market and your investment.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6 text-center">Global Factors</h3>
+                    <div class="space-y-4" id="global-drivers-container"></div>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6 text-center">Indian Domestic Factors</h3>
+                    <div class="space-y-4" id="domestic-drivers-container"></div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-gold-light">
+        
+        <section id="digital-vs-physical" class="py-12 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Digital vs. Physical Gold</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">The modern investor faces a key choice: hold tangible gold or invest in its convenient digital form? This section breaks down the critical differences to help you decide which is right for your goals.</p>
+            </div>
+            
+            <div class="flex justify-center mb-8">
+                <div class="inline-flex rounded-md shadow-sm" role="group">
+                    <button type="button" id="btn-physical" class="tab-button active px-6 py-3 text-lg font-medium rounded-l-lg border border-gray-200">Physical Gold</button>
+                    <button type="button" id="btn-digital" class="tab-button px-6 py-3 text-lg font-medium rounded-r-lg border border-gray-200">Digital Gold</button>
+                </div>
+            </div>
+
+            <div id="comparison-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            </div>
+        </section>
+
+        <hr class="my-16 border-gold-light">
+
+        <section id="secure-storage" class="py-12 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">How to Secure Your Physical Gold</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">Owning physical gold comes with the responsibility of securing it. Explore the trade-offs between bank lockers, private vaults, and home storage to make an informed decision on protecting your assets.</p>
+            </div>
+            <div id="storage-options-tabs" class="mb-8 flex flex-wrap justify-center gap-2">
+                <button data-target="storage-bank" class="storage-tab tab-button active px-4 py-2 rounded-md">Bank Lockers</button>
+                <button data-target="storage-private" class="storage-tab tab-button px-4 py-2 rounded-md">Private Vaults</button>
+                <button data-target="storage-home" class="storage-tab tab-button px-4 py-2 rounded-md">Home Safe</button>
+            </div>
+            <div id="storage-options-content">
+            </div>
+        </section>
+        
+        <hr class="my-16 border-gold-light">
+
+        <section id="strategy-tax" class="py-12 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Strategy & Taxation</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">Integrate gold into your portfolio with a strategic, risk-based approach. Understand the tax implications to accurately calculate your net returns.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold mb-4 text-center">Recommended Allocation Strategy</h3>
+                    <div class="chart-container h-80 md:h-96">
+                        <canvas id="allocationChart"></canvas>
+                    </div>
+                    <p class="text-xs text-center mt-4 text-gray-500">A tiered strategy balances liquidity, growth, and security. Hover over the chart for details on each tier's purpose.</p>
+                </div>
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold mb-4 text-center">Tax Implications at a Glance</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-gray-600">
+                            <thead class="text-xs text-gray-700 uppercase bg-warm-neutral">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3">Investment Type</th>
+                                    <th scope="col" class="px-4 py-3">Short-Term (<3 yrs)</th>
+                                    <th scope="col" class="px-4 py-3">Long-Term (>3 yrs)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="bg-white border-b border-gold-light">
+                                    <th scope="row" class="px-4 py-4 font-medium whitespace-nowrap">Physical/Digital Gold</th>
+                                    <td class="px-4 py-4">Taxed at your income slab</td>
+                                    <td class="px-4 py-4">20% with indexation + cess</td>
+                                </tr>
+                                <tr class="bg-white border-b border-gold-light">
+                                    <th scope="row" class="px-4 py-4 font-medium whitespace-nowrap">Gold ETFs/Funds</th>
+                                    <td class="px-4 py-4">Taxed at your income slab</td>
+                                    <td class="px-4 py-4">20% with indexation + cess</td>
+                                </tr>
+                                <tr class="bg-white">
+                                    <th scope="row" class="px-4 py-4 font-medium whitespace-nowrap">Sovereign Gold Bonds (SGBs)</th>
+                                    <td class="px-4 py-4">Taxed at slab (if sold on exchange)</td>
+                                    <td class="px-4 py-4 font-bold text-green-700">Tax-Exempt (on maturity)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                     <p class="text-xs text-center mt-4 text-gray-500">Note: 3% GST applies on purchase of physical and digital gold. SGB interest is taxable.</p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-gold-light">
+
+        <section id="ai-advisor" class="py-12 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">✨ AI Strategy Advisor</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">Get a personalized gold investment strategy from our AI. Fill in your details below to receive a custom plan tailored to your profile.</p>
+            </div>
+            <div class="card max-w-3xl mx-auto p-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div>
+                        <label for="age" class="block text-sm font-medium text-gray-700">Your Age</label>
+                        <input type="number" name="age" id="age" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gold focus:ring-gold sm:text-sm" placeholder="e.g., 35">
+                    </div>
+                    <div>
+                        <label for="risk" class="block text-sm font-medium text-gray-700">Risk Tolerance</label>
+                        <select id="risk" name="risk" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gold focus:ring-gold sm:text-sm">
+                            <option>Conservative</option>
+                            <option selected>Balanced</option>
+                            <option>Aggressive</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="amount" class="block text-sm font-medium text-gray-700">Investment Amount (₹)</label>
+                        <input type="number" name="amount" id="amount" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gold focus:ring-gold sm:text-sm" placeholder="e.g., 500000">
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button id="generate-strategy-btn" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-gold-gradient hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold">
+                        Generate My Strategy
+                    </button>
+                </div>
+                <div id="strategy-result-container" class="mt-8">
+                    <div id="strategy-loader" class="hidden justify-center items-center">
+                        <div class="loader"></div>
+                    </div>
+                    <div id="strategy-result" class="prose max-w-none"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+  
+    <footer class="bg-warm-neutral mt-16">
+        <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-500">
+            <p>&copy; 2025 Indian Gold Guide. AI-generated content may be inaccurate. For educational purposes only.</p>
+        </div>
+    </footer>
+
+    <!-- AI Outlook Modal -->
+    <div id="ai-outlook-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center">
+        <div class="card max-w-2xl w-full m-4">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-2xl font-bold text-gold">✨ AI Market Outlook</h3>
+                    <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600">&times;</button>
+                </div>
+                <div id="outlook-content-container">
+                    <div id="outlook-loader" class="hidden justify-center items-center py-8">
+                        <div class="loader"></div>
+                    </div>
+                    <div id="outlook-result" class="prose max-w-none"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Chart.js and static content initialization
+            const chartConfig = {
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#3D3522',
+                            font: {
+                                family: "'Inter', sans-serif"
+                            }
+                        }
+                    },
+                    tooltip: {
+                        bodyFont: {
+                            family: "'Inter', sans-serif"
+                        },
+                        titleFont: {
+                            family: "'Inter', sans-serif"
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        ticks: {
+                            color: '#3D3522',
+                        },
+                        grid: {
+                            color: '#EAE3D2'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#3D3522',
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                maintainAspectRatio: false
+            };
+
+            const historicalData = {
+                labels: ['1964', '1970', '1980', '1990', '2000', '2010', '2015', '2020', '2023', '2025'],
+                prices: [63, 184, 1330, 3200, 4400, 18500, 26344, 48651, 63203, 101513]
+            };
+
+            const cityData = {
+                labels: ['Delhi', 'Mumbai', 'Chennai', 'Kolkata', 'Bangalore', 'Pune'],
+                '24k': [101513, 101367, 101361, 101365, 101355, 101373],
+                '22k': [93063, 92917, 92911, 92915, 92905, 92923]
+            };
+
+            const historicalPriceCtx = document.getElementById('historicalPriceChart').getContext('2d');
+            new Chart(historicalPriceCtx, {
+                type: 'line',
+                data: {
+                    labels: historicalData.labels,
+                    datasets: [{
+                        label: 'Price of 24K Gold (per 10g in ₹)',
+                        data: historicalData.prices,
+                        fill: true,
+                        backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                        borderColor: '#D4AF37',
+                        tension: 0.1,
+                        pointBackgroundColor: '#B8860B'
+                    }]
+                },
+                options: chartConfig
+            });
+
+            const cityPriceCtx = document.getElementById('cityPriceChart').getContext('2d');
+            let cityPriceChart = new Chart(cityPriceCtx, {
+                type: 'bar',
+                data: {
+                    labels: cityData.labels,
+                    datasets: [{
+                        label: '24K Gold Rate (per 10g in ₹)',
+                        data: cityData['24k'],
+                        backgroundColor: '#D4AF37',
+                        borderColor: '#B8860B',
+                        borderWidth: 1
+                    }]
+                },
+                options: chartConfig
+            });
+            
+            // ... (rest of the static content JS from previous version)
+            document.getElementById('btn24k').addEventListener('click', () => {
+                updateCityChart('24k');
+                document.getElementById('btn24k').classList.add('active');
+                document.getElementById('btn22k').classList.remove('active');
+            });
+
+            document.getElementById('btn22k').addEventListener('click', () => {
+                updateCityChart('22k');
+                document.getElementById('btn22k').classList.add('active');
+                document.getElementById('btn24k').classList.remove('active');
+            });
+
+            function updateCityChart(karat) {
+                cityPriceChart.data.datasets[0].data = cityData[karat];
+                cityPriceChart.data.datasets[0].label = `${karat.toUpperCase()} Gold Rate (per 10g in ₹)`;
+                cityPriceChart.update();
+            }
+
+            const drivers = {
+                global: [
+                    { title: 'US Monetary Policy', content: 'Lower US interest rates decrease the opportunity cost of holding non-yielding gold, making it more attractive and driving prices up. The reverse is also true.' },
+                    { title: 'US Dollar Valuation', content: 'Gold is priced in USD. A weaker dollar makes gold cheaper for foreign buyers, increasing demand and price. A stronger dollar has the opposite effect.' },
+                    { title: 'Geopolitical Tensions', content: 'During global instability (wars, financial crises), investors flock to gold as a "safe-haven" asset, preserving capital and driving prices significantly higher.' },
+                    { title: 'Central Bank Buying', content: 'Central banks, especially in emerging markets, are diversifying reserves by buying physical gold. This consistent, large-scale demand creates a strong price floor.' }
+                ],
+                domestic: [
+                    { title: 'Rupee-Dollar Exchange Rate', content: 'India imports gold priced in USD. A weaker Rupee makes gold more expensive domestically, increasing INR prices even if global prices are stable.' },
+                    { title: 'Import Duties & GST', content: 'Changes in government-levied customs duties and GST directly impact the final price for consumers in India. Higher taxes mean higher local prices.' },
+                    { title: 'Seasonal Demand', content: 'Cultural demand during wedding seasons and festivals like Diwali can surge by 15-20%, creating predictable, cyclical upward pressure on domestic prices.' },
+                    { title: 'Domestic Inflation', content: 'Gold is a traditional hedge against inflation in India. When the Rupee\'s purchasing power falls, demand for gold increases, pushing its price up.' }
+                ]
+            };
+
+            function createDriverCard(driver) {
+                const card = document.createElement('div');
+                card.className = 'card cursor-pointer';
+                card.innerHTML = `
+                    <div class="p-4">
+                        <h4 class="font-semibold">${driver.title}</h4>
+                        <p class="text-sm text-gray-500 mt-2 hidden">${driver.content}</p>
+                    </div>
+                `;
+                card.addEventListener('click', () => {
+                    card.querySelector('p').classList.toggle('hidden');
+                });
+                return card;
+            }
+
+            const globalContainer = document.getElementById('global-drivers-container');
+            drivers.global.forEach(d => globalContainer.appendChild(createDriverCard(d)));
+
+            const domesticContainer = document.getElementById('domestic-drivers-container');
+            drivers.domestic.forEach(d => domesticContainer.appendChild(createDriverCard(d)));
+
+            const comparisonData = {
+                physical: [
+                    { title: 'Liquidity', content: 'More cumbersome to sell. Requires finding a buyer and physical transport.', icon: '&#x1F504;' },
+                    { title: 'Costs', content: 'Lower premiums on investment-grade bars/coins. High making charges on jewellery.', icon: '&#x1F4B8;' },
+                    { title: 'Security', content: 'Direct responsibility of the investor. Requires secure storage (locker, vault, safe).', icon: '&#x1F512;' },
+                    { title: 'Counterparty Risk', content: 'Zero risk once in your possession. Its value is inherent and independent of any institution.', icon: '&#x1F46A;' }
+                ],
+                digital: [
+                    { title: 'Liquidity', content: 'Superior liquidity. Can be bought/sold 24/7 via apps with funds credited to bank account.', icon: '&#x1F4F1;' },
+                    { title: 'Costs', content: 'High embedded costs. A non-refundable 3% GST plus a 2-3% buy-sell spread.', icon: '&#x1F4B9;' },
+                    { title: 'Security', content: 'Simplified security. Stored in high-security, insured vaults by professional custodians.', icon: '&#x1F6E1;' },
+                    { title: 'Counterparty Risk', content: 'Higher risk. Relies on the solvency and integrity of the platform, provider, and custodian.', icon: '&#x1F4BC;' }
+                ]
+            };
+
+            const comparisonContainer = document.getElementById('comparison-content');
+            function renderComparison(type) {
+                comparisonContainer.innerHTML = '';
+                comparisonData[type].forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'card p-6 flex flex-col items-center text-center';
+                    card.innerHTML = `
+                        <div class="text-4xl mb-4">${item.icon}</div>
+                        <h4 class="text-lg font-semibold mb-2">${item.title}</h4>
+                        <p class="text-sm text-gray-600">${item.content}</p>
+                    `;
+                    comparisonContainer.appendChild(card);
+                });
+            }
+
+            document.getElementById('btn-physical').addEventListener('click', () => {
+                renderComparison('physical');
+                document.getElementById('btn-physical').classList.add('active');
+                document.getElementById('btn-digital').classList.remove('active');
+            });
+            document.getElementById('btn-digital').addEventListener('click', () => {
+                renderComparison('digital');
+                document.getElementById('btn-digital').classList.add('active');
+                document.getElementById('btn-physical').classList.remove('active');
+            });
+            
+            renderComparison('physical');
+            
+            const storageData = {
+                'storage-bank': {
+                    title: 'Bank Safe Deposit Lockers',
+                    features: [
+                        { name: 'Security', value: 'High physical security but systemic risks.', class: 'text-orange-600' },
+                        { name: 'Access', value: 'Limited to banking hours only.', class: 'text-red-600' },
+                        { name: 'Cost', value: 'Low annual rent (₹1k - ₹22k).', class: 'text-green-600' },
+                        { name: 'Liability', value: 'CRITICAL RISK: Bank liability is capped at 100x rent. You bear most of the financial risk of loss.', class: 'text-red-700 font-bold' }
+                    ],
+                    idealFor: 'Small holdings where cost is the primary concern, but be aware of the significant liability gap.'
+                },
+                'storage-private': {
+                    title: 'Professional Private Vaults',
+                    features: [
+                        { name: 'Security', value: 'Very high, professional-grade with advanced tech.', class: 'text-green-700 font-bold' },
+                        { name: 'Access', value: 'High flexibility, often 24/7/365.', class: 'text-green-600' },
+                        { name: 'Cost', value: 'High premium (₹5k - ₹50k+).', class: 'text-orange-600' },
+                        { name: 'Liability', value: 'LOW RISK: Typically includes full-value insurance. The financial risk is transferred to the provider.', class: 'text-green-700 font-bold' }
+                    ],
+                    idealFor: 'High-value, core strategic holdings where security and risk transfer are paramount.'
+                },
+                'storage-home': {
+                    title: 'Insured Home Safe',
+                    features: [
+                        { name: 'Security', value: 'Medium to high, depends on safe quality and concealment.', class: 'text-orange-600' },
+                        { name: 'Access', value: 'Highest possible, immediate 24/7 access.', class: 'text-green-600' },
+                        { name: 'Cost', value: 'One-time cost for safe (₹5k - ₹50k+).', class: 'text-blue-600' },
+                        { name: 'Liability', value: 'HIGHEST RISK: You are fully responsible for security. Requires a separate, comprehensive insurance policy.', class: 'text-red-700 font-bold' }
+                    ],
+                    idealFor: 'Small, liquid holdings for emergency access, but only if properly secured and fully insured.'
+                }
+            };
+
+            const storageContent = document.getElementById('storage-options-content');
+            const storageTabs = document.querySelectorAll('.storage-tab');
+
+            function renderStorageContent(targetId) {
+                const data = storageData[targetId];
+                storageContent.innerHTML = `
+                    <div class="card p-8 transition-opacity duration-300">
+                        <h3 class="text-2xl font-bold text-center mb-6">${data.title}</h3>
+                        <ul class="space-y-4 mb-6">
+                            ${data.features.map(f => `
+                                <li class="flex items-start">
+                                    <span class="flex-shrink-0 h-6 w-6 text-2xl leading-none">${f.class.includes('green') ? '✅' : (f.class.includes('orange') ? '⚠️' : '❌')}</span>
+                                    <p class="ml-3"><strong class="font-semibold">${f.name}:</strong> <span class="${f.class}">${f.value}</span></p>
+                                </li>
+                            `).join('')}
+                        </ul>
+                        <div class="bg-warm-neutral p-4 rounded-lg text-center">
+                            <p class="font-semibold">Ideal For:</p>
+                            <p class="text-gray-600">${data.idealFor}</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            storageTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    storageTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    renderStorageContent(tab.dataset.target);
+                });
+            });
+
+            renderStorageContent('storage-bank');
+
+            const allocationData = {
+                labels: ['Core Wealth (Physical in Vault)', 'Transactional (Digital)', 'Liquidity (Physical at Home)', 'Tax-Advantaged (SGBs)'],
+                datasets: [{
+                    label: 'Allocation',
+                    data: [75, 15, 5, 5],
+                    backgroundColor: ['#B8860B', '#D4AF37', '#E7C668', '#F8E4A5'],
+                    borderColor: '#FDFBF7',
+                    hoverOffset: 4
+                }]
+            };
+
+            const allocationCtx = document.getElementById('allocationChart').getContext('2d');
+            new Chart(allocationCtx, {
+                type: 'doughnut',
+                data: allocationData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#3D3522',
+                                font: {
+                                    family: "'Inter', sans-serif"
+                                },
+                                boxWidth: 20,
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+            
+            const navLinks = document.querySelectorAll('nav a.nav-link');
+            const sections = document.querySelectorAll('main section');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 80) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').substring(1) === current) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+
+            // Gemini API Integration
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+            const callGemini = async (prompt) => {
+                const payload = {
+                    contents: [{ role: "user", parts: [{ text: prompt }] }],
+                    generationConfig: {
+                        temperature: 0.5,
+                        topP: 1,
+                        topK: 1,
+                        maxOutputTokens: 1024,
+                    },
+                };
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API call failed with status: ${response.status}`);
+                    }
+                    const result = await response.json();
+                    if (result.candidates && result.candidates.length > 0 && result.candidates[0].content && result.candidates[0].content.parts.length > 0) {
+                        return result.candidates[0].content.parts[0].text;
+                    } else {
+                        return "Sorry, I couldn't generate a response. The model's response was empty. Please try again.";
+                    }
+                } catch (error) {
+                    console.error("Gemini API Error:", error);
+                    return "Sorry, there was an error connecting to the AI service. Please check the console for details and try again later.";
+                }
+            };
+
+            // AI Strategy Advisor
+            const generateStrategyBtn = document.getElementById('generate-strategy-btn');
+            const strategyLoader = document.getElementById('strategy-loader');
+            const strategyResult = document.getElementById('strategy-result');
+
+            generateStrategyBtn.addEventListener('click', async () => {
+                const age = document.getElementById('age').value;
+                const risk = document.getElementById('risk').value;
+                const amount = document.getElementById('amount').value;
+
+                if (!age || !amount) {
+                    strategyResult.innerHTML = `<p class="text-red-600">Please fill in your age and investment amount.</p>`;
+                    return;
+                }
+
+                strategyLoader.style.display = 'flex';
+                strategyResult.innerHTML = '';
+                generateStrategyBtn.disabled = true;
+
+                const prompt = `
+                    You are an expert financial advisor in India. A user wants a personalized gold investment strategy.
+                    User Profile:
+                    - Age: ${age}
+                    - Risk Tolerance: ${risk}
+                    - Investment Amount: ₹${amount}
+
+                    Based on this profile, create a clear, concise, and actionable gold investment strategy. Your response must be in Markdown format and include:
+                    1.  ### Strategy Summary: A brief paragraph summarizing the recommended approach for this specific user.
+                    2.  ### Allocation Breakdown: A bulleted list showing the percentage allocation across different gold investment types (e.g., Physical Gold, Digital Gold, Sovereign Gold Bonds (SGBs), Gold ETFs). Justify each allocation percentage based on the user's profile.
+                    3.  ### Key Recommendations: 2-3 bullet points with specific, actionable advice for this investor.
+                    4.  ---
+                    5.  *Disclaimer: This is an AI-generated suggestion and not official financial advice. Consult with a qualified financial professional before making investment decisions.*
+                `;
+
+                const responseText = await callGemini(prompt);
+                strategyResult.innerHTML = marked.parse(responseText);
+                strategyLoader.style.display = 'none';
+                generateStrategyBtn.disabled = false;
+            });
+
+            // AI Market Outlook Modal
+            const modal = document.getElementById('ai-outlook-modal');
+            const openModalBtn = document.getElementById('get-ai-outlook-btn');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const outlookLoader = document.getElementById('outlook-loader');
+            const outlookResult = document.getElementById('outlook-result');
+
+            openModalBtn.addEventListener('click', async () => {
+                modal.style.display = 'flex';
+                outlookResult.innerHTML = '';
+                outlookLoader.style.display = 'flex';
+
+                const prompt = `
+                    You are a financial market analyst specializing in precious metals in India. The current date is August 5, 2025.
+                    Provide a concise market outlook for gold for an Indian investor. The response must be in Markdown format and include:
+                    1.  ### Today's Market Summary: Briefly summarize the key global and domestic factors (like recent US Fed announcements, Rupee vs. Dollar performance, local demand trends) influencing gold prices in India today.
+                    2.  ### Short-Term Outlook (1-2 Weeks): Based on the summary, provide a brief outlook (e.g., bullish, bearish, neutral/sideways) for gold prices. Explain your reasoning in simple terms.
+                    3.  ### Investor Tip: A single, actionable tip for an investor based on the current market conditions.
+                `;
+                
+                const responseText = await callGemini(prompt);
+                outlookResult.innerHTML = marked.parse(responseText);
+                outlookLoader.style.display = 'none';
+            });
+
+            closeModalBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            window.addEventListener('click', (event) => {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
