@@ -139,6 +139,13 @@ main {
     margin-bottom: 1.5rem;
 }
 
+.flex-container {
+    display: flex;
+    justify-content: center; /* This centers the card(s) horizontally */
+    flex-wrap: wrap;         /* Allows items to wrap on smaller screens */
+    gap: 1.5rem;             /* Keeps the same spacing as your grid */
+}
+
 .project-card-content a {
     text-decoration: none;
     color: white;
@@ -197,5 +204,6 @@ footer {
     font-size: 0.9em;
     margin-top: 2em;
 }
+
 
 
