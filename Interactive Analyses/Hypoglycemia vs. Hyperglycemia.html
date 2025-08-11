@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Report: Hypoglycemia vs. Hyperglycemia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+  
+    <!-- Chosen Palette: Calm Medical Neutrals -->
+    <!-- Application Structure Plan: A dual-path, dashboard-style SPA. An initial choice ('Clinician' or 'Patient') tailors the view. The core layout is a two-column design with sticky left navigation and a main content area on the right. This non-linear structure is organized around key concepts (e.g., side-by-side comparison, pathophysiology, management) rather than the report's linear order. This was chosen to serve two distinct audiences effectively, reduce cognitive load by breaking down dense information, and empower users to explore based on their specific interests rather than a prescribed path. -->
+    <!-- Visualization & Content Choices: 1. Epidemiology Data -> Goal: Compare -> Viz: Interactive Bar Chart (Chart.js) -> Interaction: Hover for details. Justification: Standard, effective comparison of categorical data. 2. Pathophysiology -> Goal: Explain process -> Viz: Styled HTML/CSS diagrams -> Interaction: Hover for tooltips. Justification: Clean, responsive, no external dependencies. 3. Symptom Comparison -> Goal: Compare/Inform -> Viz: Two-column card layout -> Interaction: Click-to-display. Justification: Direct visual contrast. 4. Drug Management -> Goal: Organize/Compare -> Viz: Interactive HTML table -> Interaction: Click to expand row. Justification: Progressive disclosure of complex data. 5. FAQs -> Goal: Organize/Answer -> Viz: Accordion list -> Interaction: Click to expand. Justification: Standard, space-saving UI for Q&A. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4;
+            color: #334155;
+        }
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-link.active {
+            background-color: #0D9488;
+            color: white;
+            font-weight: 600;
+        }
+        .nav-link:not(.active):hover {
+            background-color: #F0F9FF;
+            color: #14B8A6;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .path-button {
+            transition: all 0.3s ease;
+        }
+        .path-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .comparison-grid {
+            grid-template-columns: 1fr;
+        }
+        @media (min-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr 20px 1fr;
+            }
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+         @media (min-width: 768px) {
+            .chart-container { height: 400px; }
+        }
+        .faq-question.open .faq-answer {
+            display: block;
+        }
+        .faq-question.open .faq-arrow {
+            transform: rotate(180deg);
+        }
+        .drug-table-row-details {
+            display: none;
+        }
+        .drug-table-row.open .drug-table-row-details {
+            display: table-row;
+        }
+
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="path-selection" class="min-h-screen flex flex-col items-center justify-center p-4 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold text-slate-800 mb-4">Understanding Blood Sugar</h1>
+        <p class="text-xl md:text-2xl text-slate-600 mb-12">An Interactive Guide to Hypoglycemia & Hyperglycemia</p>
+        <div class="space-y-6">
+            <p class="text-lg text-slate-700">To personalize your experience, please select your role:</p>
+            <div class="flex flex-col md:flex-row gap-6">
+                <button onclick="selectPath('patient')" class="path-button bg-white border-2 border-teal-500 text-teal-600 font-semibold py-6 px-12 rounded-xl shadow-lg">
+                    <span class="text-3xl block mb-2">🧑‍🤝‍🧑</span>
+                    I am a Patient or Caregiver
+                </button>
+                <button onclick="selectPath('clinician')" class="path-button bg-teal-600 text-white font-semibold py-6 px-12 rounded-xl shadow-lg">
+                    <span class="text-3xl block mb-2">🩺</span>
+                    I am a Clinician or Student
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-container" class="hidden">
+        <div class="flex flex-col lg:flex-row">
+            <!-- Sticky Navigation -->
+            <aside id="sidebar" class="w-full lg:w-64 lg:min-h-screen bg-white/80 backdrop-blur-sm p-4 lg:sticky lg:top-0 lg:self-start border-b lg:border-r border-slate-200">
+                <h2 class="text-xl font-bold text-slate-800 mb-6">Navigation</h2>
+                <nav class="flex flex-row lg:flex-col gap-2">
+                    <a href="#" data-section="home" class="nav-link active p-3 rounded-lg text-slate-700 text-sm md:text-base">At a Glance</a>
+                    <a href="#" data-section="comparison" class="nav-link p-3 rounded-lg text-slate-700 text-sm md:text-base">Side-by-Side</a>
+                    <a href="#" data-section="pathophysiology" class="nav-link p-3 rounded-lg text-slate-700 text-sm md:text-base">The "Why"</a>
+                    <a href="#" data-section="management" class="nav-link p-3 rounded-lg text-slate-700 text-sm md:text-base">Management</a>
+                    <a href="#" data-section="epidemiology" class="nav-link p-3 rounded-lg text-slate-700 text-sm md:text-base">Epidemiology</a>
+                    <a href="#" data-section="toolkit" class="nav-link p-3 rounded-lg text-slate-700 text-sm md:text-base">Patient Toolkit</a>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="flex-1 p-6 md:p-10">
+                <!-- At a Glance Section -->
+                <section id="home" class="content-section active">
+                    <!-- Content will be dynamically populated -->
+                </section>
+
+                <!-- Side-by-Side Comparison Section -->
+                <section id="comparison" class="content-section">
+                    <h1 class="text-3xl font-bold text-slate-800 mb-2">The Two Sides of Blood Sugar</h1>
+                    <p class="text-lg text-slate-600 mb-8">This section provides a direct comparison of hypoglycemia and hyperglycemia across key characteristics. While one is a slow, chronic issue and the other an acute danger, understanding both is crucial for effective management.</p>
+                    <div class="comparison-grid items-start gap-y-8">
+                        <!-- Hypoglycemia Column -->
+                        <div class="bg-blue-50 border-2 border-blue-200 p-6 rounded-xl h-full">
+                            <h2 class="text-2xl font-bold text-blue-800 mb-4">Hypoglycemia (Low Blood Sugar)</h2>
+                            <div class="space-y-4 text-slate-700">
+                                <p><strong class="text-blue-700">Definition:</strong> Blood glucose typically &lt;70 mg/dL (3.9 mmol/L).</p>
+                                <p><strong class="text-blue-700">Onset:</strong> Rapid, developing over minutes to hours.</p>
+                                <p><strong class="text-blue-700">Core Problem:</strong> An immediate energy crisis for the brain and body. There's not enough fuel in the blood.</p>
+                                <p><strong class="text-blue-700">Primary Symptoms:</strong> Adrenergic (warning) signs like shakiness, sweating, anxiety, and palpitations.</p>
+                                <p><strong class="text-blue-700">Severe Symptoms:</strong> Neuroglycopenic (brain-related) signs like confusion, slurred speech, seizures, and coma.</p>
+                                <p><strong class="text-red-600 font-semibold">Acute Risk:</strong> Immediate danger. Can lead to accidents, seizures, brain damage, or death if not treated promptly.</p>
+                            </div>
+                        </div>
+
+                        <div class="hidden md:flex items-center justify-center h-full">
+                            <span class="text-4xl font-bold text-slate-400">vs</span>
+                        </div>
+
+                        <!-- Hyperglycemia Column -->
+                        <div class="bg-red-50 border-2 border-red-200 p-6 rounded-xl h-full">
+                            <h2 class="text-2xl font-bold text-red-800 mb-4">Hyperglycemia (High Blood Sugar)</h2>
+                            <div class="space-y-4 text-slate-700">
+                                <p><strong class="text-red-700">Definition:</strong> Fasting glucose ≥126 mg/dL or random ≥200 mg/dL.</p>
+                                <p><strong class="text-red-700">Onset:</strong> Gradual, developing over days to weeks, or even years.</p>
+                                <p><strong class="text-red-700">Core Problem:</strong> A long-term poisoning of blood vessels. There's too much sugar in the blood that can't get into cells.</p>
+                                <p><strong class="text-red-700">Primary Symptoms:</strong> Osmotic signs like excessive thirst (polydipsia), frequent urination (polyuria), and fatigue.</p>
+                                <p><strong class="text-red-700">Severe Symptoms:</strong> Signs of crisis like nausea, vomiting (DKA), or profound confusion (HHS).</p>
+                                <p><strong class="text-amber-600 font-semibold">Long-Term Risk:</strong> Chronic danger. Causes cumulative damage to eyes, kidneys, nerves, and heart over many years.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- The "Why" (Pathophysiology) Section -->
+                <section id="pathophysiology" class="content-section">
+                    <h1 class="text-3xl font-bold text-slate-800 mb-2">The "Why": Underlying Mechanisms</h1>
+                    <p class="text-lg text-slate-600 mb-8">This section explores the biological reasons behind high and low blood sugar. Understanding these core mechanisms is key to appreciating why different treatments are used.</p>
+                     <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-2xl font-semibold text-red-800 mb-4">Hyperglycemia: Insulin Resistance & Beta-Cell Failure</h3>
+                            <div class="space-y-4 p-6 bg-white rounded-lg border border-slate-200">
+                                <p>Hyperglycemia is primarily a story of two problems: insulin resistance and the eventual failure of insulin-producing beta cells.</p>
+                                <div class="border-l-4 border-red-300 pl-4">
+                                    <h4 class="font-bold text-slate-800">1. Insulin Resistance</h4>
+                                    <p class="text-slate-600">Cells in muscle, fat, and the liver stop responding properly to insulin. Think of it as the "locks" on the cells becoming rusty. Insulin, the "key," can no longer effectively open the cells to let glucose in for energy.</p>
+                                </div>
+                                 <div class="border-l-4 border-red-300 pl-4">
+                                    <h4 class="font-bold text-slate-800">2. Beta-Cell Dysfunction</h4>
+                                    <p class="text-slate-600">The pancreas tries to compensate for resistance by producing more insulin. Over time, the insulin-producing beta cells get overworked and start to fail, leading to an insulin deficiency. This combination of resistance and deficiency causes glucose to build up in the blood.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-semibold text-blue-800 mb-4">Hypoglycemia: Failure of Counterregulation</h3>
+                            <div class="space-y-4 p-6 bg-white rounded-lg border border-slate-200">
+                                <p>In people with diabetes, hypoglycemia is usually caused by treatment (iatrogenic) combined with a failure of the body's natural defense systems.</p>
+                                <div class="border-l-4 border-blue-300 pl-4">
+                                    <h4 class="font-bold text-slate-800">1. The Normal Defense</h4>
+                                    <p class="text-slate-600">When blood sugar drops, the body first stops releasing insulin. Then, it releases counterregulatory hormones like glucagon and epinephrine to raise glucose levels, causing warning symptoms like shakiness.</p>
+                                </div>
+                                <div class="border-l-4 border-blue-300 pl-4">
+                                    <h4 class="font-bold text-slate-800">2. Hypoglycemia-Associated Autonomic Failure (HAAF)</h4>
+                                    <p class="text-slate-600">Recurrent lows can blunt this defense system. The body stops releasing counterregulatory hormones effectively, and the person no longer feels the warning symptoms. This is called "hypoglycemia unawareness" and is extremely dangerous.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Management Section -->
+                <section id="management" class="content-section">
+                    <h1 class="text-3xl font-bold text-slate-800 mb-2">Management & Treatment</h1>
+                    <p class="text-lg text-slate-600 mb-8">Effective management requires different strategies for high and low blood sugar. Hyperglycemia management is a long-term strategy, while hypoglycemia requires immediate, tactical action.</p>
+                    
+                    <div class="bg-white p-6 rounded-xl border border-slate-200">
+                        <h2 class="text-2xl font-bold text-red-800 mb-4">Managing Hyperglycemia (High Blood Sugar)</h2>
+                        <p class="mb-6">The modern approach to managing T2DM focuses on a holistic strategy that includes lifestyle changes and medications chosen to protect vital organs, not just lower A1C.</p>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <h3 class="font-semibold text-lg text-slate-700 mb-2">Non-Pharmacological Interventions</h3>
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div class="bg-slate-50 p-4 rounded-lg"><strong>Diet:</strong> Focus on whole foods, high-fiber carbs, lean proteins, and healthy fats. The Mediterranean diet is highly recommended.</div>
+                                    <div class="bg-slate-50 p-4 rounded-lg"><strong>Exercise:</strong> Aim for at least 150 minutes of moderate aerobic activity plus 2 resistance training sessions per week.</div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="font-semibold text-lg text-slate-700 mb-2">Pharmacological Therapy</h3>
+                                <p class="text-sm text-slate-500 mb-4">Click on a drug class row to see more details.</p>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left border-collapse">
+                                        <thead class="bg-slate-100">
+                                            <tr>
+                                                <th class="p-3 font-semibold">Class</th>
+                                                <th class="p-3 font-semibold">Primary Benefit</th>
+                                                <th class="p-3 font-semibold">Hypo Risk</th>
+                                                <th class="p-3 font-semibold">Weight Effect</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="drug-table-body">
+                                            <!-- Rows inserted by JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 mt-8">
+                        <h2 class="text-2xl font-bold text-blue-800 mb-4">Managing Hypoglycemia (Low Blood Sugar)</h2>
+                        <p class="mb-6">This is an urgent situation requiring immediate action. The "15-15 Rule" is the standard of care for a conscious person.</p>
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="bg-blue-50 border-2 border-blue-200 p-6 rounded-lg">
+                                <h3 class="font-bold text-lg text-blue-700 mb-2">The 15-15 Rule</h3>
+                                <ol class="list-decimal list-inside space-y-2">
+                                    <li>Consume <strong>15 grams</strong> of fast-acting carbs (e.g., 4oz juice, 3-4 glucose tablets).</li>
+                                    <li>Wait <strong>15 minutes</strong>.</li>
+                                    <li>Re-check blood sugar. If still low, repeat.</li>
+                                    <li>Once normal, eat a snack with protein/fat if your next meal is >1 hour away.</li>
+                                </ol>
+                            </div>
+                             <div class="bg-red-50 border-2 border-red-200 p-6 rounded-lg">
+                                <h3 class="font-bold text-lg text-red-700 mb-2">Severe Hypoglycemia Emergency</h3>
+                                <p class="mb-2">If the person is unconscious, unable to swallow, or seizing:</p>
+                                <ul class="list-disc list-inside space-y-2">
+                                    <li><strong>DO NOT</strong> give food or drink.</li>
+                                    <li>Administer emergency <strong>Glucagon</strong> (nasal or injection) if available.</li>
+                                    <li class="font-semibold">Call 911 immediately.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Epidemiology Section -->
+                <section id="epidemiology" class="content-section">
+                    <h1 class="text-3xl font-bold text-slate-800 mb-2">A Global Epidemic</h1>
+                    <p class="text-lg text-slate-600 mb-8">The prevalence of diabetes, the main driver of chronic hyperglycemia, has surged worldwide. This chart shows the estimated prevalence of diagnosed diabetes among adults in the United States by race and ethnicity, highlighting significant disparities.</p>
+                    <div class="bg-white p-6 rounded-xl border border-slate-200">
+                        <div class="chart-container">
+                            <canvas id="prevalenceChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Patient Toolkit Section -->
+                <section id="toolkit" class="content-section">
+                    <h1 class="text-3xl font-bold text-slate-800 mb-2">Patient Toolkit</h1>
+                    <p class="text-lg text-slate-600 mb-8">This section provides answers to common questions in simple, non-technical language. Click on a question to see the answer.</p>
+                    <div id="faq-container" class="space-y-4">
+                        <!-- FAQs inserted by JS -->
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const content = {
+            patient: {
+                home: `
+                    <h1 class="text-3xl font-bold text-slate-800 mb-2">Welcome!</h1>
+                    <p class="text-lg text-slate-600 mb-8">This interactive guide is designed to help you understand the difference between high and low blood sugar. Let's start with a simple analogy.</p>
+                    <div class="bg-white p-6 rounded-xl border border-slate-200">
+                        <h2 class="text-2xl font-semibold text-slate-700 mb-4">The Beaver Pond Analogy</h2>
+                        <p class="mb-4">Imagine your body is a beaver's pond, and your blood sugar (glucose) is the water. Your brain is the beaver's lodge—it needs the water level to be just right to work properly.</p>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-red-50 p-4 rounded-lg">
+                                <h3 class="font-bold text-red-700">Hyperglycemia (High)</h3>
+                                <p>This is like the pond overflowing. There's too much sugar in your blood, but it can't get into your cells for fuel because the "key" (insulin) isn't working right. Over time, this damages the pond's banks (your blood vessels).</p>
+                            </div>
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <h3 class="font-bold text-blue-700">Hypoglycemia (Low)</h3>
+                                <p>This is like the pond's water level dropping dangerously low. There isn't enough fuel for your brain, which is an immediate emergency.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            clinician: {
+                home: `
+                    <h1 class="text-3xl font-bold text-slate-800 mb-2">Executive Summary</h1>
+                    <p class="text-lg text-slate-600 mb-8">A high-level overview of the clinical dichotomy between hypoglycemia and hyperglycemia.</p>
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 space-y-4 text-slate-700">
+                        <p>Hypoglycemia and hyperglycemia represent opposing poles of glycemic dysregulation. Hyperglycemia is the defining characteristic of diabetes mellitus, driving chronic micro- and macrovascular complications over years. In contrast, hypoglycemia is typically an iatrogenic complication of diabetes therapy, posing an immediate threat to the central nervous system and limiting the pursuit of tight glycemic control.</p>
+                        <p>The management paradigm for hyperglycemia has evolved from a glucose-centric model to a comorbidity-based approach, prioritizing SGLT-2 inhibitors and GLP-1 receptor agonists for their proven organ-protective benefits in patients with ASCVD, HF, or CKD. This strategic, long-term focus contrasts with the tactical, urgent response required for acute hypoglycemia, which centers on rapid carbohydrate or glucagon administration to prevent neuroglycopenia.</p>
+                        <p>Technological advances, including CGM and AID systems, are mitigating the therapeutic burden by increasing time in range and reducing glycemic excursions. These innovations, coupled with novel pharmacotherapies, are advancing the goal of safe, effective, and less onerous glycemic management.</p>
+                    </div>
+                `
+            },
+            faqs: [
+                {
+                    q: "What's the real difference between hypoglycemia and hyperglycemia?",
+                    a: "Hypoglycemia means your blood sugar is too low (usually below 70 mg/dL). It's an immediate problem that happens quickly and can make you feel shaky, sweaty, and confused. Hyperglycemia means your blood sugar is too high. It develops more slowly, with early signs like thirst and frequent urination, and causes damage to your body over the long term."
+                },
+                {
+                    q: "When should I call my doctor or 911?",
+                    a: "Call 911 for Hypoglycemia if you are very confused, can't eat or drink safely, have a seizure, or pass out. 911 should also be called after a glucagon injection. Call your doctor for Hyperglycemia if you have consistently high readings and feel sick with nausea, vomiting, or stomach pain, as these could be signs of DKA."
+                },
+                {
+                    q: "What dietary changes are most effective?",
+                    a: "For overall management, focus on a balanced diet with whole foods like high-fiber carbs, lean proteins, and healthy fats. To treat a low, you need fast-acting sugar like juice or glucose tablets. To prevent lows, eat regular, balanced meals and don't skip them."
+                },
+                {
+                    q: "Can my diabetes be cured?",
+                    a: "Currently, there is no cure for Type 1 diabetes. For Type 2 diabetes, some people can achieve 'remission' through significant weight loss and lifestyle changes, meaning blood sugar returns to normal without medication. However, it is still considered a lifelong condition that needs to be managed."
+                }
+            ],
+            drug_data: [
+                { class: 'Biguanides (Metformin)', benefit: 'First-line therapy', hypo: 'Very Low', weight: 'Neutral/Loss', details: '<strong>Mechanism:</strong> Primarily reduces hepatic glucose production and modestly improves peripheral insulin sensitivity. <strong>Key Side Effects:</strong> GI distress (diarrhea, nausea), Vitamin B12 deficiency with long-term use. Rare risk of lactic acidosis.' },
+                { class: 'SGLT-2 Inhibitors', benefit: 'Strong HF & CKD benefit', hypo: 'Very Low', weight: 'Loss', details: '<strong>Mechanism:</strong> Blocks glucose reabsorption in the kidneys, causing glucose to be excreted in urine. <strong>Key Side Effects:</strong> Genital yeast infections, urinary tract infections. Rare risk of euglycemic DKA.' },
+                { class: 'GLP-1 Receptor Agonists', benefit: 'Strong ASCVD benefit & weight loss', hypo: 'Very Low', weight: 'High Loss', details: '<strong>Mechanism:</strong> Mimics incretin hormones to boost glucose-dependent insulin secretion, suppress glucagon, slow digestion, and increase satiety. <strong>Key Side Effects:</strong> Nausea, vomiting, diarrhea (often transient). Association with pancreatitis.' },
+                { class: 'DPP-4 Inhibitors', benefit: 'Well-tolerated, oral', hypo: 'Low', weight: 'Neutral', details: '<strong>Mechanism:</strong> Prevents the breakdown of natural incretin hormones (GLP-1, GIP), thereby increasing insulin secretion and decreasing glucagon levels. <strong>Key Side Effects:</strong> Generally well-tolerated. Rare risks of pancreatitis and severe joint pain.' },
+                { class: 'Sulfonylureas', benefit: 'High A1C Efficacy', hypo: 'High', weight: 'Gain', details: '<strong>Mechanism:</strong> Directly stimulates the pancreas to release insulin, regardless of blood glucose level. <strong>Key Side Effects:</strong> High risk of hypoglycemia, weight gain.' },
+                { class: 'Insulin', benefit: 'Highest A1C Efficacy', hypo: 'High', weight: 'Gain', details: '<strong>Mechanism:</strong> Replaces or supplements the body\'s own insulin, promoting glucose uptake into cells. <strong>Key Side Effects:</strong> High risk of hypoglycemia, weight gain.' }
+            ]
+        };
+
+        let userPath = 'patient';
+
+        function selectPath(path) {
+            userPath = path;
+            document.getElementById('path-selection').style.display = 'none';
+            document.getElementById('app-container').style.display = 'block';
+            document.getElementById('home').innerHTML = content[userPath].home;
+            
+            if (path === 'patient') {
+                document.querySelector('a[data-section="epidemiology"]').style.display = 'none';
+            } else {
+                 document.querySelector('a[data-section="epidemiology"]').style.display = 'block';
+            }
+        }
+
+        function navigate(sectionId) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`.nav-link[data-section="${sectionId}"]`).classList.add('active');
+        }
+
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                navigate(e.target.dataset.section);
+            });
+        });
+
+        function populateFAQs() {
+            const container = document.getElementById('faq-container');
+            container.innerHTML = content.faqs.map(faq => `
+                <div class="faq-question bg-white border border-slate-200 rounded-lg">
+                    <button class="w-full flex justify-between items-center text-left p-4 font-semibold text-slate-700">
+                        <span>${faq.q}</span>
+                        <span class="faq-arrow transition-transform duration-200">▼</span>
+                    </button>
+                    <div class="faq-answer hidden p-4 pt-0 text-slate-600">
+                        <p>${faq.a}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            container.querySelectorAll('.faq-question button').forEach(button => {
+                button.addEventListener('click', () => {
+                    button.parentElement.classList.toggle('open');
+                });
+            });
+        }
+        
+        function populateDrugTable() {
+            const tableBody = document.getElementById('drug-table-body');
+            tableBody.innerHTML = content.drug_data.map(drug => `
+                <tr class="drug-table-row border-b border-slate-200 hover:bg-slate-50 cursor-pointer">
+                    <td class="p-3">${drug.class}</td>
+                    <td class="p-3">${drug.benefit}</td>
+                    <td class="p-3 ${drug.hypo === 'High' ? 'text-red-600 font-semibold' : ''}">${drug.hypo}</td>
+                    <td class="p-3 ${drug.weight.includes('Loss') ? 'text-green-600' : (drug.weight.includes('Gain') ? 'text-amber-600' : '')}">${drug.weight}</td>
+                </tr>
+                <tr class="drug-table-row-details bg-slate-100">
+                    <td colspan="4" class="p-4 text-sm text-slate-700">${drug.details}</td>
+                </tr>
+            `).join('');
+
+            tableBody.querySelectorAll('.drug-table-row').forEach(row => {
+                row.addEventListener('click', () => {
+                    row.classList.toggle('open');
+                });
+            });
+        }
+
+        function createPrevalenceChart() {
+            const ctx = document.getElementById('prevalenceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['American Indian/Alaskan Native', 'Non-Hispanic Black', 'Hispanic', 'Asian American', 'Non-Hispanic White'],
+                    datasets: [{
+                        label: 'Diagnosed Diabetes Prevalence (%)',
+                        data: [13.6, 12.1, 11.7, 9.1, 6.9],
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 159, 64, 0.6)',
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(153, 102, 255, 0.6)',
+                            'rgba(255, 99, 132, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 99, 132, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'US Adult Diabetes Prevalence by Race/Ethnicity (2021)',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.dataset.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Prevalence (%)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        window.onload = () => {
+            populateFAQs();
+            populateDrugTable();
+            createPrevalenceChart();
+        };
+    </script>
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+  
+</body>
+</html>
