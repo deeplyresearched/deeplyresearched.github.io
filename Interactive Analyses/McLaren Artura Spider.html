@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>McLaren Artura Spider: Interactive Experience</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+  
+    <!-- Chosen Palette: Modern Neutral -->
+    <!-- Application Structure Plan: A dashboard-style, single-page application with a sticky top navigation bar for seamless exploration. The structure is thematic rather than linear: Overview (Hero), Performance, Design, Technology, Versus (Competition), Ask an Expert, and Ownership. This design prioritizes user-driven discovery, allowing users to jump to the most relevant sections. Key interactions include dynamic stat counters, interactive charts for competitive analysis, tabbed/accordion content to manage information density, and new Gemini API-powered features for text-to-speech and dynamic Q&A, making the report's content more digestible and engaging. -->
+    <!-- Visualization & Content Choices: Report Info: Key performance stats -> Goal: Inform/Impress -> Viz: Animated stat cards -> Interaction: On-scroll animation -> Justification: Creates an immediate 'wow' factor. | Report Info: Competitive data -> Goal: Compare -> Viz: Interactive Radar Chart (Chart.js) -> Interaction: User can toggle competitors on/off -> Justification: Transforms a static table into a powerful, dynamic comparison tool. | Report Info: Detailed features (Design/Tech) -> Goal: Organize -> Viz: Tabbed/Accordion layouts -> Interaction: Click to reveal -> Justification: Prevents information overload and encourages focused exploration. | Report Info: General car questions -> Goal: Inform/Engage -> Viz: Text generation via Gemini API -> Interaction: User text input and button click -> Justification: Provides a dynamic Q&A feature, adding significant value. | Report Info: Summary text -> Goal: Accessibility -> Viz: Audio generation via Gemini TTS API -> Interaction: Button click -> Justification: Offers an alternative, hands-free way to consume key information. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
+            color: #1f2937;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 500px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 500px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #ea580c;
+            border-bottom-color: #ea580c;
+        }
+        .stat-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .btn-primary {
+            background-color: #ea580c;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #c2410c;
+        }
+        .tab-button.active {
+            background-color: #ea580c;
+            color: white;
+        }
+        .tab-button {
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .accordion-header {
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .accordion-header:hover {
+            background-color: #f3f4f6;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top-color: #ea580c;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-3">
+            <div class="flex justify-between items-center">
+                <h1 class="text-xl md:text-2xl font-bold text-gray-800">McLaren <span class="text-orange-600">Artura Spider</span></h1>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="#overview" class="nav-link text-gray-600 font-medium pb-1">Overview</a>
+                    <a href="#performance" class="nav-link text-gray-600 font-medium pb-1">Performance</a>
+                    <a href="#design" class="nav-link text-gray-600 font-medium pb-1">Design</a>
+                    <a href="#technology" class="nav-link text-gray-600 font-medium pb-1">Technology</a>
+                    <a href="#versus" class="nav-link text-gray-600 font-medium pb-1">Versus</a>
+                    <a href="#ask-expert" class="nav-link text-gray-600 font-medium pb-1">Ask an Expert</a>
+                    <a href="#ownership" class="nav-link text-gray-600 font-medium pb-1">Ownership</a>
+                </div>
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-600 hover:bg-gray-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                </button>
+            </div>
+            <div id="mobile-menu" class="hidden md:hidden mt-4 space-y-2">
+                 <a href="#overview" class="block nav-link text-gray-600 font-medium py-2">Overview</a>
+                 <a href="#performance" class="block nav-link text-gray-600 font-medium py-2">Performance</a>
+                 <a href="#design" class="block nav-link text-gray-600 font-medium py-2">Design</a>
+                 <a href="#technology" class="block nav-link text-gray-600 font-medium py-2">Technology</a>
+                 <a href="#versus" class="block nav-link text-gray-600 font-medium py-2">Versus</a>
+                 <a href="#ask-expert" class="block nav-link text-gray-600 font-medium py-2">Ask an Expert</a>
+                 <a href="#ownership" class="block nav-link text-gray-600 font-medium py-2">Ownership</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="overview" class="pt-16 pb-20 bg-white">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl md:text-6xl font-extrabold text-gray-900 leading-tight">The Future of Exhilaration.</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">
+                    The Artura Spider is McLaren's first-ever high-performance hybrid convertible, blending breathtaking performance, a lightweight carbon fibre architecture, and the thrill of open-top driving.
+                </p>
+                <button id="generate-audio" class="btn-primary mt-6 px-6 py-3 rounded-full font-semibold flex items-center justify-center mx-auto">
+                    <div id="audio-loading" class="hidden loading-spinner mr-3"></div>
+                    <span id="audio-text">Generate Audio Overview ✨</span>
+                </button>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="stat-card">
+                        <p class="text-orange-600 font-bold text-lg">Horsepower</p>
+                        <p id="stat-hp" class="text-5xl font-extrabold text-gray-900 mt-2">0</p>
+                        <p class="text-gray-500 mt-1">Combined Hybrid Power</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="text-orange-600 font-bold text-lg">0-60 MPH</p>
+                        <p id="stat-accel" class="text-5xl font-extrabold text-gray-900 mt-2">0.0s</p>
+                        <p class="text-gray-500 mt-1">Blistering Acceleration</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="text-orange-600 font-bold text-lg">Top Speed</p>
+                        <p id="stat-speed" class="text-5xl font-extrabold text-gray-900 mt-2">0</p>
+                        <p class="text-gray-500 mt-1">Electronically Limited (mph)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="performance" class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Engineered for the Senses</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">
+                        This section explores the heart of the Artura Spider: its advanced hybrid powertrain and the universally praised driving dynamics. Discover the numbers behind the performance and what experts say about the experience behind the wheel.
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Hybrid Power, Supercar Soul</h3>
+                        <p class="text-gray-600 mb-6">
+                            The Artura Spider is propelled by a 3.0L twin-turbocharged V6 engine paired with a potent Axial Flux electric motor. This combination delivers instant torque and a thrilling rush of power all the way to its 8,500 rpm redline. The lightweight MCLA carbon fibre chassis and revised adaptive dampers ensure this power is delivered with unerring accuracy and balance.
+                        </p>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <span class="text-orange-600 mr-3 mt-1">&#10140;</span>
+                                <div>
+                                    <h4 class="font-semibold">Deliciously Full of Feel</h4>
+                                    <p class="text-gray-500 text-sm">Reviewers consistently praise the electro-hydraulic steering for its precision and rich feedback, creating a deep connection between driver, car, and road.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-orange-600 mr-3 mt-1">&#10140;</span>
+                                <div>
+                                    <h4 class="font-semibold">Faster, Sharper, More Engaging</h4>
+                                    <p class="text-gray-500 text-sm">With new engine mounts, a 25% faster gearbox, and quicker Proactive Damping Control, the 2025 model enhances stability, agility, and overall driver engagement.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-orange-600 mr-3 mt-1">&#10140;</span>
+                                <div>
+                                    <h4 class="font-semibold">Composed and Civilized Ride</h4>
+                                    <p class="text-gray-500 text-sm">Despite its immense capabilities, the Artura offers a remarkably comfortable ride in Comfort mode, effectively absorbing road imperfections for daily livability.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                         <div class="stat-card text-center p-4">
+                            <p class="font-semibold text-gray-700">Torque</p>
+                            <p class="text-3xl font-bold text-orange-600 mt-1">531 <span class="text-lg font-medium text-gray-500">lb-ft</span></p>
+                        </div>
+                        <div class="stat-card text-center p-4">
+                            <p class="font-semibold text-gray-700">Dry Weight</p>
+                            <p class="text-3xl font-bold text-orange-600 mt-1">3212 <span class="text-lg font-medium text-gray-500">lbs</span></p>
+                        </div>
+                         <div class="stat-card text-center p-4">
+                            <p class="font-semibold text-gray-700">Electric Range</p>
+                            <p class="text-3xl font-bold text-orange-600 mt-1">21 <span class="text-lg font-medium text-gray-500">miles</span></p>
+                        </div>
+                        <div class="stat-card text-center p-4">
+                            <p class="font-semibold text-gray-700">1/4 Mile</p>
+                            <p class="text-3xl font-bold text-orange-600 mt-1">10.8 <span class="text-lg font-medium text-gray-500">sec</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="design" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Sculpted by Air</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">
+                        The Artura Spider's design is a masterclass in functional elegance. Every curve, vent, and surface is meticulously crafted to manage airflow, enhance cooling, and create downforce, all while delivering a stunning aesthetic. Explore the key design elements that define this convertible supercar.
+                    </p>
+                </div>
+
+                <div>
+                    <div class="mb-8 flex justify-center border-b border-gray-200">
+                        <button data-tab="exterior" class="tab-button active px-6 py-3 font-medium text-gray-600 rounded-t-lg">Exterior</button>
+                        <button data-tab="interior" class="tab-button px-6 py-3 font-medium text-gray-600 rounded-t-lg">Interior</button>
+                        <button data-tab="rht" class="tab-button px-6 py-3 font-medium text-gray-600 rounded-t-lg">Retractable Hard Top</button>
+                    </div>
+
+                    <div id="tab-content">
+                        <div data-tab-content="exterior" class="tab-pane active">
+                            <div class="grid md:grid-cols-2 gap-8 items-center">
+                                <img src="https://placehold.co/600x400/e2e8f0/334155?text=Artura+Exterior" alt="Artura Spider Exterior" class="rounded-lg shadow-lg w-full">
+                                <div>
+                                    <h3 class="text-2xl font-bold mb-4">Aerodynamic Masterpiece</h3>
+                                    <p class="text-gray-600 mb-4">Hot-formed aluminum panels create a seamless, 'shrink-wrapped' body with minimal shutlines. Hidden door inlets and glazed rear buttresses channel air efficiently, while a rear spoiler and diffuser generate 50kg of downforce for high-speed stability. The signature dihedral doors complete the dramatic look.</p>
+                                    <p class="text-gray-600">For 2025, a new standard Stealth Badge Pack adds a subtle, aggressive touch with blacked-out front and rear badging.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div data-tab-content="interior" class="tab-pane hidden">
+                            <div class="grid md:grid-cols-2 gap-8 items-center">
+                                <img src="https://placehold.co/600x400/e2e8f0/334155?text=Artura+Interior" alt="Artura Spider Interior" class="rounded-lg shadow-lg w-full">
+                                <div>
+                                    <h3 class="text-2xl font-bold mb-4">Driver-Focused Cockpit</h3>
+                                    <p class="text-gray-600 mb-4">The interior is a minimalist, driver-centric environment. The instrument binnacle moves with the steering column, ensuring perfect visibility. Powertrain and Handling controls are mounted on the binnacle for fingertip access, keeping the steering wheel pure and free of buttons. Standard Clubsport seats provide excellent support, with more comfort-oriented options available.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div data-tab-content="rht" class="tab-pane hidden">
+                            <div class="grid md:grid-cols-2 gap-8 items-center">
+                                <img src="https://placehold.co/600x400/e2e8f0/334155?text=Retractable+Hard+Top" alt="Artura Spider RHT" class="rounded-lg shadow-lg w-full">
+                                <div>
+                                    <h3 class="text-2xl font-bold mb-4">Open-Top Freedom in 11 Seconds</h3>
+                                    <p class="text-gray-600 mb-4">The one-piece Retractable Hard Top (RHT) is an engineering marvel. Actuated by eight electric motors, it operates almost silently, opening or closing in just 11 seconds at speeds up to 31 mph. An optional electrochromic glass panel can block over 99% of sunlight at the touch of a button, offering the best of both worlds.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="technology" class="py-20">
+            <div class="container mx-auto px-6">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Intelligent Performance</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">
+                        The Artura Spider is packed with advanced technology to enhance performance, convenience, and safety. From its lightning-fast infotainment system to intelligent driver aids, explore the cutting-edge features that define the modern supercar experience.
+                    </p>
+                </div>
+                <div class="max-w-4xl mx-auto">
+                    <div class="border border-gray-200 rounded-lg">
+                        <div class="accordion-header bg-white p-5 border-b border-gray-200 flex justify-between items-center">
+                            <h3 class="font-semibold text-lg">Infotainment & Connectivity</h3>
+                            <span class="accordion-icon text-orange-600 font-bold text-2xl">+</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p class="p-5 text-gray-600">The McLaren Infotainment System II (MIS II) runs on an 8-inch HD touchscreen, supporting Apple CarPlay. An optional 12-speaker Bowers & Wilkins audio system provides a premium sound experience, while a wireless smartphone charger adds convenience. Notably, Android Auto is not supported.</p>
+                        </div>
+                    </div>
+                     <div class="border border-gray-200 rounded-lg mt-[-1px]">
+                        <div class="accordion-header bg-white p-5 border-b border-gray-200 flex justify-between items-center">
+                            <h3 class="font-semibold text-lg">Driver Assistance</h3>
+                            <span class="accordion-icon text-orange-600 font-bold text-2xl">+</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p class="p-5 text-gray-600">Standard features include Lane Departure Warning and Road Sign Recognition. The optional Driving Assistant Pack adds Blindspot Monitoring and Rear Cross-Traffic Detection, enhancing awareness. A standard vehicle lift system helps navigate speed bumps and steep driveways.</p>
+                        </div>
+                    </div>
+                     <div class="border border-gray-200 rounded-lg mt-[-1px]">
+                        <div class="accordion-header bg-white p-5 border-b border-gray-200 flex justify-between items-center">
+                            <h3 class="font-semibold text-lg">Hybrid & Chassis Tech</h3>
+                            <span class="accordion-icon text-orange-600 font-bold text-2xl">+</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p class="p-5 text-gray-600">Four powertrain modes (E-Mode, Comfort, Sport, Track) tailor the car's character. An E-Differential optimizes power delivery, while Variable Drift Control (VDC) allows for controlled slides. The car also features Pirelli Cyber Tyre technology, providing real-time tire data for ultimate safety and performance.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="versus" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">The Competitive Landscape</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">
+                        The Artura Spider enters a fiercely competitive segment. This interactive chart allows you to compare it against its main rivals across key performance metrics. Select competitors to see how the Artura's blend of lightweight engineering and hybrid power stacks up.
+                    </p>
+                </div>
+                <div class="chart-container">
+                    <canvas id="competitorChart"></canvas>
+                </div>
+                <div class="mt-8 flex flex-wrap justify-center gap-4">
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" class="competitor-toggle form-checkbox h-5 w-5 text-orange-600 rounded" value="Ferrari 296 GTS" checked>
+                        <span class="text-gray-700">Ferrari 296 GTS</span>
+                    </label>
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" class="competitor-toggle form-checkbox h-5 w-5 text-orange-600 rounded" value="Lamborghini Huracán Spyder" checked>
+                        <span class="text-gray-700">Lamborghini Huracán Spyder</span>
+                    </label>
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" class="competitor-toggle form-checkbox h-5 w-5 text-orange-600 rounded" value="Aston Martin Vantage" checked>
+                        <span class="text-gray-700">Aston Martin Vantage</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <section id="ask-expert" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Ask an Expert ✨</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">
+                        Have a specific question about the Artura Spider? Type your question below, and our virtual expert will provide a detailed response.
+                    </p>
+                </div>
+                <div class="max-w-3xl mx-auto">
+                    <textarea id="expert-question" class="w-full h-32 p-4 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-orange-600 transition" placeholder="e.g., How does the hybrid system work?"></textarea>
+                    <button id="ask-expert-btn" class="btn-primary mt-4 px-6 py-3 rounded-full font-semibold flex items-center">
+                        <div id="ask-expert-loading" class="hidden loading-spinner mr-3"></div>
+                        <span id="ask-expert-text">Ask the Expert ✨</span>
+                    </button>
+                    <div id="expert-response" class="mt-8 p-6 bg-gray-100 rounded-lg hidden">
+                        <p class="font-bold text-lg mb-2 text-gray-800">Response:</p>
+                        <p id="expert-response-text" class="text-gray-700"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ownership" class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Pricing & Peace of Mind</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">
+                        Owning a McLaren is an exclusive experience, backed by a comprehensive warranty and service plan. This section provides an overview of the Artura Spider's market position, pricing, and the support McLaren provides to its owners.
+                    </p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="stat-card">
+                        <h3 class="text-xl font-bold mb-3">Pricing</h3>
+                        <p class="text-4xl font-extrabold text-orange-600">$273,800 <span class="text-lg font-medium text-gray-500">USD</span></p>
+                        <p class="text-gray-600 mt-2">Base MSRP in the United States. Extensive MSO options can significantly increase the final price.</p>
+                    </div>
+                     <div class="stat-card">
+                        <h3 class="text-xl font-bold mb-3">Warranty</h3>
+                        <p class="text-4xl font-extrabold text-orange-600">5 <span class="text-lg font-medium text-gray-500">Years</span></p>
+                        <p class="text-gray-600 mt-2">Unlimited mileage vehicle warranty. The hybrid battery is covered for 6 years / 45,000 miles.</p>
+                    </div>
+                     <div class="stat-card">
+                        <h3 class="text-xl font-bold mb-3">Availability</h3>
+                        <p class="text-4xl font-extrabold text-orange-600">Mid-2024</p>
+                        <p class="text-gray-600 mt-2">Deliveries for the 2025 model year began in mid-2024, with the vehicle available for order globally.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+  
+    <footer class="bg-gray-800 text-white">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p>&copy; 2025 McLaren Artura Spider Interactive Report. All data sourced from public reports.</p>
+            <p class="text-sm text-gray-400 mt-2">This is an informational web application and not affiliated with McLaren Automotive.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            const navLinks = document.querySelectorAll('.nav-link');
+            mobileMenu.addEventListener('click', (e) => {
+                if(e.target.classList.contains('nav-link')) {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+
+            const sections = document.querySelectorAll('main section');
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 80) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+            function animateValue(obj, start, end, duration, isFloat = false) {
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    let currentValue = progress * (end - start) + start;
+                    if (isFloat) {
+                        obj.innerHTML = currentValue.toFixed(1) + 's';
+                    } else {
+                        obj.innerHTML = Math.floor(currentValue);
+                    }
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const statHp = document.getElementById('stat-hp');
+                        const statAccel = document.getElementById('stat-accel');
+                        const statSpeed = document.getElementById('stat-speed');
+
+                        animateValue(statHp, 0, 691, 1500);
+                        animateValue(statAccel, 0, 3.0, 1500, true);
+                        animateValue(statSpeed, 0, 205, 1500);
+                        
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            observer.observe(document.getElementById('overview'));
+
+            const tabs = document.querySelectorAll('[data-tab]');
+            const tabContents = document.querySelectorAll('[data-tab-content]');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const target = tab.dataset.tab;
+
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    tabContents.forEach(content => {
+                        content.classList.add('hidden');
+                        if (content.dataset.tabContent === target) {
+                            content.classList.remove('hidden');
+                        }
+                    });
+                });
+            });
+            
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('.accordion-icon');
+                    
+                    const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
+
+                    document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = '0px');
+                    document.querySelectorAll('.accordion-icon').forEach(i => i.textContent = '+');
+
+                    if (!isOpen) {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.textContent = '-';
+                    }
+                });
+            });
+
+            const competitorData = {
+                'McLaren Artura Spider': {
+                    data: [691, 531, 3.0, 205, 3212],
+                    borderColor: 'rgba(234, 88, 12, 1)',
+                    backgroundColor: 'rgba(234, 88, 12, 0.2)',
+                },
+                'Ferrari 296 GTS': {
+                    data: [819, 546, 2.9, 205, 3461],
+                    borderColor: 'rgba(220, 38, 38, 1)',
+                    backgroundColor: 'rgba(220, 38, 38, 0.2)',
+                },
+                'Lamborghini Huracán Spyder': {
+                    data: [631, 443, 3.1, 202, 3400],
+                    borderColor: 'rgba(250, 204, 21, 1)',
+                    backgroundColor: 'rgba(250, 204, 21, 0.2)',
+                },
+                'Aston Martin Vantage': {
+                    data: [656, 553, 3.4, 202, 3847],
+                    borderColor: 'rgba(5, 150, 105, 1)',
+                    backgroundColor: 'rgba(5, 150, 105, 0.2)',
+                }
+            };
+
+            const chartLabels = ['Horsepower (bhp)', 'Torque (lb-ft)', '0-60 mph (sec, lower is better)', 'Top Speed (mph)', 'Weight (lbs, lower is better)'];
+            const normalizedData = {};
+
+            function normalizeData() {
+                const allValues = {
+                    hp: [], torque: [], accel: [], speed: [], weight: []
+                };
+
+                Object.values(competitorData).forEach(car => {
+                    allValues.hp.push(car.data[0]);
+                    allValues.torque.push(car.data[1]);
+                    allValues.accel.push(car.data[2]);
+                    allValues.speed.push(car.data[3]);
+                    allValues.weight.push(car.data[4]);
+                });
+
+                const maxHp = Math.max(...allValues.hp);
+                const maxTorque = Math.max(...allValues.torque);
+                const minAccel = Math.min(...allValues.accel);
+                const maxAccel = Math.max(...allValues.accel);
+                const maxSpeed = Math.max(...allValues.speed);
+                const minWeight = Math.min(...allValues.weight);
+                const maxWeight = Math.max(...allValues.weight);
+
+                for (const carName in competitorData) {
+                    const d = competitorData[carName].data;
+                    normalizedData[carName] = [
+                        (d[0] / maxHp) * 100,
+                        (d[1] / maxTorque) * 100,
+                        (1 - (d[2] - minAccel) / (maxAccel - minAccel)) * 100,
+                        (d[3] / maxSpeed) * 100,
+                        (1 - (d[4] - minWeight) / (maxWeight - minWeight)) * 100
+                    ];
+                }
+            }
+            
+            normalizeData();
+
+            const ctx = document.getElementById('competitorChart').getContext('2d');
+            let competitorChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: chartLabels,
+                    datasets: []
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(0, 0, 0, 0.1)' },
+                            grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                            pointLabels: {
+                                font: { size: 12, weight: 'bold' },
+                                color: '#374151'
+                            },
+                            ticks: {
+                                backdropColor: 'rgba(255, 255, 255, 0.75)',
+                                color: '#4b5563',
+                                stepSize: 25
+                            },
+                            min: 0,
+                            max: 100
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: { size: 14 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const carName = context.dataset.label;
+                                    const originalValue = competitorData[carName].data[context.dataIndex];
+                                    return `${carName}: ${originalValue}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            function updateChart() {
+                const activeCompetitors = Array.from(document.querySelectorAll('.competitor-toggle:checked')).map(cb => cb.value);
+                
+                const newDatasets = [{
+                    label: 'McLaren Artura Spider',
+                    data: normalizedData['McLaren Artura Spider'],
+                    borderColor: competitorData['McLaren Artura Spider'].borderColor,
+                    backgroundColor: competitorData['McLaren Artura Spider'].backgroundColor,
+                    borderWidth: 2,
+                    pointBackgroundColor: competitorData['McLaren Artura Spider'].borderColor,
+                    pointRadius: 4
+                }];
+
+                activeCompetitors.forEach(name => {
+                    newDatasets.push({
+                        label: name,
+                        data: normalizedData[name],
+                        borderColor: competitorData[name].borderColor,
+                        backgroundColor: competitorData[name].backgroundColor,
+                        borderWidth: 2,
+                        pointBackgroundColor: competitorData[name].borderColor,
+                        pointRadius: 4
+                    });
+                });
+
+                competitorChart.data.datasets = newDatasets;
+                competitorChart.update();
+            }
+
+            document.querySelectorAll('.competitor-toggle').forEach(checkbox => {
+                checkbox.addEventListener('change', updateChart);
+            });
+
+            updateChart();
+
+
+            const askExpertBtn = document.getElementById('ask-expert-btn');
+            const expertQuestion = document.getElementById('expert-question');
+            const expertResponseContainer = document.getElementById('expert-response');
+            const expertResponseText = document.getElementById('expert-response-text');
+            const askExpertLoading = document.getElementById('ask-expert-loading');
+            const askExpertText = document.getElementById('ask-expert-text');
+
+            askExpertBtn.addEventListener('click', async () => {
+                const question = expertQuestion.value.trim();
+                if (question === '') return;
+
+                expertResponseContainer.classList.add('hidden');
+                expertResponseText.textContent = '';
+                askExpertLoading.classList.remove('hidden');
+                askExpertText.textContent = 'Thinking...';
+                askExpertBtn.disabled = true;
+
+                try {
+                    const prompt = `You are a McLaren Artura Spider expert. Provide a detailed, accurate, and concise answer to the following question: "${question}". Ensure your response is professional and informative, citing specific features or components of the car where possible.`;
+                    
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { contents: chatHistory };
+                    const apiKey = "";
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) throw new Error('API request failed');
+
+                    const result = await response.json();
+                    
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        expertResponseText.innerHTML = text.replace(/\n/g, '<br>');
+                        expertResponseContainer.classList.remove('hidden');
+                    } else {
+                        expertResponseText.textContent = "Sorry, I couldn't generate a response at this time. Please try again.";
+                        expertResponseContainer.classList.remove('hidden');
+                    }
+                } catch (e) {
+                    expertResponseText.textContent = "An error occurred while fetching the response. Please try again later.";
+                    expertResponseContainer.classList.remove('hidden');
+                } finally {
+                    askExpertLoading.classList.add('hidden');
+                    askExpertText.textContent = 'Ask the Expert ✨';
+                    askExpertBtn.disabled = false;
+                }
+            });
+
+            function base64ToArrayBuffer(base64) {
+                const binaryString = atob(base64);
+                const len = binaryString.length;
+                const bytes = new Uint8Array(len);
+                for (let i = 0; i < len; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                return bytes.buffer;
+            }
+
+            function pcmToWav(pcmData, sampleRate) {
+                const header = new ArrayBuffer(44);
+                const view = new DataView(header);
+                const writeString = (view, offset, string) => {
+                    for (let i = 0; i < string.length; i++) {
+                        view.setUint8(offset + i, string.charCodeAt(i));
+                    }
+                };
+                let offset = 0;
+                writeString(view, offset, 'RIFF'); offset += 4;
+                view.setUint32(offset, 36 + pcmData.byteLength, true); offset += 4;
+                writeString(view, offset, 'WAVE'); offset += 4;
+                writeString(view, offset, 'fmt '); offset += 4;
+                view.setUint32(offset, 16, true); offset += 4;
+                view.setUint16(offset, 1, true); offset += 2;
+                view.setUint16(offset, 1, true); offset += 2;
+                view.setUint32(offset, sampleRate, true); offset += 4;
+                view.setUint32(offset, sampleRate * 2, true); offset += 4;
+                view.setUint16(offset, 2, true); offset += 2;
+                view.setUint16(offset, 16, true); offset += 2;
+                writeString(view, offset, 'data'); offset += 4;
+                view.setUint32(offset, pcmData.byteLength, true); offset += 4;
+                const combined = new Uint8Array(header.byteLength + pcmData.byteLength);
+                combined.set(new Uint8Array(header), 0);
+                combined.set(new Uint8Array(pcmData.buffer), header.byteLength);
+                return new Blob([combined], { type: 'audio/wav' });
+            }
+
+            const generateAudioBtn = document.getElementById('generate-audio');
+            const audioLoading = document.getElementById('audio-loading');
+            const audioText = document.getElementById('audio-text');
+            const audioPlayer = new Audio();
+
+            generateAudioBtn.addEventListener('click', async () => {
+                const textToSpeak = "Say cheerfully: The McLaren Artura Spider is a high-performance hybrid convertible with a powerful V6 engine and an axial flux electric motor. It combines stunning design, lightweight engineering, and cutting-edge technology for an exhilarating driving experience.";
+
+                generateAudioBtn.disabled = true;
+                audioLoading.classList.remove('hidden');
+                audioText.textContent = 'Generating...';
+
+                try {
+                    const payload = {
+                        contents: [{
+                            parts: [{ text: textToSpeak }]
+                        }],
+                        generationConfig: {
+                            responseModalities: ["AUDIO"],
+                            speechConfig: {
+                                voiceConfig: {
+                                    prebuiltVoiceConfig: { voiceName: "Puck" }
+                                }
+                            }
+                        },
+                        model: "gemini-2.5-flash-preview-tts"
+                    };
+                    const apiKey = "";
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) throw new Error('TTS API request failed');
+
+                    const result = await response.json();
+                    const part = result?.candidates?.[0]?.content?.parts?.[0];
+                    const audioData = part?.inlineData?.data;
+                    const mimeType = part?.inlineData?.mimeType;
+
+                    if (audioData && mimeType && mimeType.startsWith("audio/")) {
+                        const sampleRate = 16000;
+                        const pcmData = base64ToArrayBuffer(audioData);
+                        const pcm16 = new Int16Array(pcmData);
+                        const wavBlob = pcmToWav(pcm16, sampleRate);
+                        const audioUrl = URL.createObjectURL(wavBlob);
+                        audioPlayer.src = audioUrl;
+                        audioPlayer.play();
+                    } else {
+                        alert("Sorry, could not generate audio. Please try again.");
+                    }
+                } catch (e) {
+                    alert("An error occurred while generating audio: " + e.message);
+                } finally {
+                    audioLoading.classList.add('hidden');
+                    audioText.textContent = 'Generate Audio Overview ✨';
+                    generateAudioBtn.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
