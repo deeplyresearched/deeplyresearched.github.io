@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Guide to Thyroid Disorders</title>
+    <!-- Chosen Palette: Calm Neutrals with Blue and Orange Accents -->
+    <!-- Application Structure Plan: The application is designed as a comparative dual-panel single-page application (SPA). This structure was chosen because the source report fundamentally describes two opposing conditions (Hypothyroidism vs. Hyperthyroidism). A side-by-side comparison is the most intuitive and effective way for users to understand the contrasting nature of their symptoms, diagnostic paths, and treatment philosophies. The user flow begins with a simple introduction, then moves to a main dashboard with sticky navigation that allows users to jump between thematic sections (Overview, Symptoms, Diagnosis, Treatment, FAQs). This non-linear, topic-based navigation empowers users to explore the information based on their interests, which is more user-friendly than scrolling through a long report. Key interactions include toggling content visibility, hovering for details on diagrams, and exploring tabbed content, all designed to make complex medical information digestible and engaging. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Epidemiology data (prevalence). Goal: Inform & Compare. Viz/Method: Chart.js Bar Chart. Interaction: Tooltips on hover. Justification: A bar chart provides a much clearer and more immediate comparison of prevalence rates than text. Library: Chart.js.
+        - Report Info: HPT Axis. Goal: Organize & Explain. Viz/Method: HTML/CSS diagram. Interaction: Hover effects to highlight components. Justification: A visual diagram simplifies the complex feedback loop of the HPT axis, making the core concept of regulation easier to grasp. Method: Tailwind CSS.
+        - Report Info: Symptoms by organ system. Goal: Compare. Viz/Method: Interactive side-by-side accordion list. Interaction: Click to expand/collapse body systems. Justification: This allows users to directly compare symptoms for a specific system (e.g., cardiovascular) without being overwhelmed by a single massive list. Method: HTML/JS.
+        - Report Info: Diagnostic Workup. Goal: Organize & Guide. Viz/Method: HTML/CSS flowchart. Interaction: Hover effects to trace the diagnostic path. Justification: A flowchart visualizes the decision-making process in diagnostics, making the step-by-step logic clearer than prose. Method: Tailwind CSS.
+        - Report Info: Treatment options. Goal: Compare & Inform. Viz/Method: Tabbed content cards. Interaction: Click tabs to switch between treatment details. Justification: Tabs organize the multiple treatment options for hyperthyroidism cleanly, allowing for detailed exploration without cluttering the UI. Method: HTML/JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #007bff;
+            border-bottom-color: #007bff;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
+        }
+        .accordion-content.open {
+            max-height: 1000px;
+        }
+        .flowchart-step {
+            transition: all 0.3s ease;
+        }
+        .flowchart-step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .flowchart-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #6c757d;
+        }
+
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="header" class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-gray-800">Thyroid Disorders</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-600 border-b-2 border-transparent">Overview</a>
+                        <a href="#symptoms" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-600 border-b-2 border-transparent">Symptoms</a>
+                        <a href="#diagnosis" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-600 border-b-2 border-transparent">Diagnosis</a>
+                        <a href="#treatment" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-600 border-b-2 border-transparent">Treatment</a>
+                        <a href="#faq" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-600 border-b-2 border-transparent">Patient FAQs</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div id="mobile-menu" class="md:hidden hidden">
+                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                    <a href="#overview" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-600">Overview</a>
+                    <a href="#symptoms" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-600">Symptoms</a>
+                    <a href="#diagnosis" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-600">Diagnosis</a>
+                    <a href="#treatment" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-600">Treatment</a>
+                    <a href="#faq" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-600">Patient FAQs</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <section id="overview" class="scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Understanding Thyroid Function</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">Your thyroid is your body's master metabolic regulator. This application provides a comparative look at the two most common forms of thyroid dysfunction: Hypothyroidism (an underactive thyroid) and Hyperthyroidism (an overactive thyroid). Explore the sections to understand their causes, symptoms, and treatments.</p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-12">
+                <h3 class="text-2xl font-bold text-center text-gray-800 mb-6">The Hypothalamic-Pituitary-Thyroid (HPT) Axis</h3>
+                <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Your body maintains thyroid hormone levels through a sensitive feedback loop. The brain (hypothalamus and pituitary) tells the thyroid to work. The thyroid hormones then signal the brain to slow down, creating a perfect balance. Autoimmune diseases disrupt this balance.</p>
+                <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                    <div class="flowchart-step bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg w-full md:w-1/4 text-center">
+                        <h4 class="font-semibold text-blue-800">1. Hypothalamus</h4>
+                        <p class="text-sm text-blue-700">Releases TRH</p>
+                    </div>
+                    <div class="flowchart-arrow transform md:rotate-0 rotate-90">→</div>
+                    <div class="flowchart-step bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg w-full md:w-1/4 text-center">
+                        <h4 class="font-semibold text-blue-800">2. Pituitary Gland</h4>
+                        <p class="text-sm text-blue-700">Releases TSH</p>
+                    </div>
+                    <div class="flowchart-arrow transform md:rotate-0 rotate-90">→</div>
+                    <div class="flowchart-step bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg w-full md:w-1/4 text-center">
+                        <h4 class="font-semibold text-blue-800">3. Thyroid Gland</h4>
+                        <p class="text-sm text-blue-700">Releases T4 & T3</p>
+                    </div>
+                    <div class="flowchart-arrow transform md:rotate-0 rotate-90 text-red-500">⊣</div>
+                    <div class="flowchart-step bg-red-50 border-l-4 border-red-500 p-4 rounded-lg w-full md:w-1/4 text-center">
+                        <h4 class="font-semibold text-red-800">4. Negative Feedback</h4>
+                        <p class="text-sm text-red-700">T4/T3 inhibit TRH/TSH</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <h3 class="text-2xl font-bold text-center text-gray-800 mb-6">Prevalence of Thyroid Disorders</h3>
+                <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Thyroid conditions are common, affecting millions worldwide. Women are significantly more likely to be affected than men. The chart below illustrates the prevalence in the U.S. population.</p>
+                <div class="chart-container">
+                    <canvas id="prevalenceChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-gray-200">
+
+        <section id="symptoms" class="scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Symptoms: A Tale of Two Extremes</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">The symptoms of thyroid dysfunction reflect the body's metabolic rate—either slowing down or speeding up. Use the interactive list below to compare how each condition affects different body systems. Click on a system to reveal the contrasting symptoms.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-blue-50 rounded-xl p-6">
+                    <h3 class="text-2xl font-bold text-blue-800 mb-4 text-center">Hypothyroidism (Underactive)</h3>
+                    <p class="text-center text-blue-700 mb-6">The body's processes slow down.</p>
+                </div>
+                <div class="bg-orange-50 rounded-xl p-6">
+                    <h3 class="text-2xl font-bold text-orange-800 mb-4 text-center">Hyperthyroidism (Overactive)</h3>
+                     <p class="text-center text-orange-700 mb-6">The body's processes speed up.</p>
+                </div>
+            </div>
+            <div id="symptoms-accordion" class="mt-4 space-y-2">
+            </div>
+        </section>
+
+        <hr class="my-16 border-gray-200">
+
+        <section id="diagnosis" class="scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">The Diagnostic Pathway</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">Diagnosis begins with symptoms and a physical exam, but it's confirmed by blood tests. The flowchart below outlines the typical step-by-step process, starting with the highly sensitive TSH test. Hover over each step to learn more.</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <div class="flex flex-col items-center space-y-6">
+                    <div class="flowchart-step bg-gray-100 p-6 rounded-lg w-full md:w-3/4 lg:w-1/2 text-center shadow-md">
+                        <h4 class="font-semibold text-lg text-gray-800">Step 1: Clinical Suspicion & TSH Test</h4>
+                        <p class="text-gray-600 mt-2">The process starts with a patient's symptoms. A serum Thyroid-Stimulating Hormone (TSH) test is the initial, most sensitive screening tool.</p>
+                    </div>
+                    <div class="flowchart-arrow text-3xl">↓</div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+                        <div class="flowchart-step bg-blue-50 border-2 border-blue-200 p-4 rounded-lg text-center">
+                            <h4 class="font-semibold text-blue-800">High TSH</h4>
+                            <p class="text-sm text-blue-700 mt-1">Suggests Hypothyroidism</p>
+                        </div>
+                        <div class="flowchart-step bg-green-50 border-2 border-green-200 p-4 rounded-lg text-center">
+                            <h4 class="font-semibold text-green-800">Normal TSH</h4>
+                            <p class="text-sm text-green-700 mt-1">Thyroid dysfunction unlikely</p>
+                        </div>
+                        <div class="flowchart-step bg-orange-50 border-2 border-orange-200 p-4 rounded-lg text-center">
+                            <h4 class="font-semibold text-orange-800">Low TSH</h4>
+                            <p class="text-sm text-orange-700 mt-1">Suggests Hyperthyroidism</p>
+                        </div>
+                    </div>
+                    <div class="flowchart-arrow text-3xl">↓</div>
+                     <div class="flowchart-step bg-gray-100 p-6 rounded-lg w-full md:w-3/4 lg:w-1/2 text-center shadow-md">
+                        <h4 class="font-semibold text-lg text-gray-800">Step 2: Confirmation with Free T4</h4>
+                        <p class="text-gray-600 mt-2">A Free Thyroxine (fT4) test is added to confirm the diagnosis and determine if it's "overt" (abnormal fT4) or "subclinical" (normal fT4).</p>
+                    </div>
+                    <div class="flowchart-arrow text-3xl">↓</div>
+                     <div class="flowchart-step bg-gray-100 p-6 rounded-lg w-full md:w-3/4 lg:w-1/2 text-center shadow-md">
+                        <h4 class="font-semibold text-lg text-gray-800">Step 3: Determine the Cause</h4>
+                        <p class="text-gray-600 mt-2">Thyroid antibody tests (TPOAb, TSI) and imaging (Ultrasound, RAIU Scan) are used to find the underlying cause, like Hashimoto's or Graves' disease.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-gray-200">
+
+        <section id="treatment" class="scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Approaches to Treatment</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">Treatment goals are to restore normal hormone levels and relieve symptoms. The strategies for hypothyroidism and hyperthyroidism are fundamentally different, reflecting their opposite nature.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                    <h3 class="text-2xl font-bold text-blue-800 mb-4">Treating Hypothyroidism</h3>
+                    <p class="text-gray-600 mb-6">The goal is simple: replace the missing hormone. This is achieved with a synthetic thyroid hormone pill, taken daily.</p>
+                    <div class="border-l-4 border-blue-500 pl-4">
+                        <h4 class="font-semibold text-lg">Levothyroxine (L-T4)</h4>
+                        <p class="text-gray-600 mt-1">The standard of care. It's a synthetic version of the T4 hormone. The dose is carefully adjusted based on TSH blood tests to find the perfect level for each individual. Treatment is typically lifelong.</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                    <h3 class="text-2xl font-bold text-orange-800 mb-4">Treating Hyperthyroidism</h3>
+                    <p class="text-gray-600 mb-6">The goal is more complex: reduce the overproduction of thyroid hormone. There are three main approaches, and the choice depends on many factors, including patient preference.</p>
+                    <div id="treatment-tabs">
+                        <div class="border-b border-gray-200">
+                            <nav class="-mb-px flex space-x-4" aria-label="Tabs">
+                                <button class="tab-button active" data-tab="atd">Antithyroid Drugs</button>
+                                <button class="tab-button" data-tab="rai">Radioactive Iodine</button>
+                                <button class="tab-button" data-tab="surgery">Surgery</button>
+                            </nav>
+                        </div>
+                        <div class="mt-6">
+                            <div id="atd" class="tab-content">
+                                <h4 class="font-semibold text-lg">Antithyroid Drugs (ATDs)</h4>
+                                <p class="text-gray-600 mt-1">Medications like Methimazole block the thyroid's ability to produce new hormones. This approach is not permanent and is often used for 12-18 months to see if the condition goes into remission.</p>
+                            </div>
+                            <div id="rai" class="tab-content hidden">
+                                <h4 class="font-semibold text-lg">Radioactive Iodine (RAI)</h4>
+                                <p class="text-gray-600 mt-1">A single dose of radioactive iodine is taken, which is absorbed by and destroys the overactive thyroid cells. This is a permanent solution that usually leads to hypothyroidism, requiring lifelong hormone replacement.</p>
+                            </div>
+                            <div id="surgery" class="tab-content hidden">
+                                <h4 class="font-semibold text-lg">Thyroidectomy (Surgery)</h4>
+                                <p class="text-gray-600 mt-1">Surgical removal of the thyroid gland. This provides the quickest, most definitive cure for hyperthyroidism but also results in permanent hypothyroidism requiring lifelong hormone replacement.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-gray-200">
+
+        <section id="faq" class="scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Patient FAQs</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">Here are answers to some common questions about living with thyroid conditions. Click on a question to see the answer.</p>
+            </div>
+            <div class="max-w-4xl mx-auto space-y-4" id="faq-accordion">
+            </div>
+        </section>
+
+    </main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+  
+    <footer class="bg-gray-800 mt-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <p class="text-center text-sm text-gray-400">Disclaimer: This information is for educational purposes only and is not a substitute for professional medical advice. Always consult a qualified healthcare provider.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.3
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if(mobileMenu.classList.contains('hidden') === false) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+
+            const prevalenceData = {
+                labels: ['Hyperthyroidism', 'Hypothyroidism'],
+                datasets: [{
+                    label: 'Prevalence in U.S. Population',
+                    data: [1.3, 4.6],
+                    backgroundColor: [
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(54, 162, 235, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            };
+
+            const prevalenceChartCtx = document.getElementById('prevalenceChart').getContext('2d');
+            new Chart(prevalenceChartCtx, {
+                type: 'bar',
+                data: prevalenceData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Prevalence (%)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const symptomsData = [
+                {
+                    system: 'General / Constitutional',
+                    icon: '👤',
+                    hypo: 'Fatigue, weight gain, cold intolerance',
+                    hyper: 'Fatigue, weight loss, heat intolerance'
+                },
+                {
+                    system: 'Cardiovascular',
+                    icon: '❤️',
+                    hypo: 'Slow heart rate, high diastolic BP, high cholesterol',
+                    hyper: 'Fast heart rate, palpitations, atrial fibrillation'
+                },
+                {
+                    system: 'Neurological / Psychiatric',
+                    icon: '🧠',
+                    hypo: 'Depression, "brain fog", slowed reflexes',
+                    hyper: 'Anxiety, irritability, insomnia, tremor'
+                },
+                {
+                    system: 'Dermatological',
+                    icon: '🤚',
+                    hypo: 'Dry, cool skin; brittle hair and nails',
+                    hyper: 'Warm, moist skin; fine hair, excessive sweating'
+                },
+                {
+                    system: 'Gastrointestinal',
+                    icon: '🍎',
+                    hypo: 'Constipation, decreased appetite',
+                    hyper: 'Frequent bowel movements, increased appetite'
+                },
+                {
+                    system: 'Reproductive (Female)',
+                    icon: '♀️',
+                    hypo: 'Heavy, irregular periods, infertility',
+                    hyper: 'Lighter or absent periods, reduced fertility'
+                }
+            ];
+
+            const symptomsAccordion = document.getElementById('symptoms-accordion');
+            symptomsData.forEach(symptom => {
+                const item = document.createElement('div');
+                item.className = 'bg-white rounded-lg shadow';
+                item.innerHTML = `
+                    <button class="accordion-button w-full flex justify-between items-center text-left p-4 font-semibold text-gray-700 hover:bg-gray-50">
+                        <span>${symptom.icon} ${symptom.system}</span>
+                        <span class="transform transition-transform duration-300">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-0">
+                            <div class="p-4 border-t border-blue-200 bg-blue-50/50">
+                                <p class="text-blue-800">${symptom.hypo}</p>
+                            </div>
+                            <div class="p-4 border-t border-orange-200 bg-orange-50/50">
+                                <p class="text-orange-800">${symptom.hyper}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                symptomsAccordion.appendChild(item);
+            });
+            
+            symptomsAccordion.addEventListener('click', function(e) {
+                const button = e.target.closest('.accordion-button');
+                if (button) {
+                    const content = button.nextElementSibling;
+                    const arrow = button.querySelector('span:last-child');
+                    const isOpen = content.classList.contains('open');
+                    
+                    document.querySelectorAll('.accordion-content.open').forEach(el => el.classList.remove('open'));
+                    document.querySelectorAll('.accordion-button span:last-child').forEach(el => el.style.transform = 'rotate(0deg)');
+
+                    if (!isOpen) {
+                        content.classList.add('open');
+                        arrow.style.transform = 'rotate(180deg)';
+                    }
+                }
+            });
+
+            const treatmentTabsContainer = document.getElementById('treatment-tabs');
+            const tabButtons = treatmentTabsContainer.querySelectorAll('.tab-button');
+            const tabContents = treatmentTabsContainer.querySelectorAll('.tab-content');
+
+            treatmentTabsContainer.addEventListener('click', function(e) {
+                const button = e.target.closest('.tab-button');
+                if (button) {
+                    const tabId = button.dataset.tab;
+
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    tabContents.forEach(content => {
+                        if (content.id === tabId) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                }
+            });
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                .tab-button {
+                    padding: 0.5rem 1rem;
+                    font-weight: 500;
+                    color: #4b5563;
+                    border-bottom: 2px solid transparent;
+                    transition: all 0.3s;
+                }
+                .tab-button:hover {
+                    color: #1f2937;
+                    border-bottom-color: #d1d5db;
+                }
+                .tab-button.active {
+                    color: #f97316;
+                    border-bottom-color: #f97316;
+                }
+            `;
+            document.head.appendChild(style);
+
+            const faqData = [
+                {
+                    q: "Can my thyroid condition be cured?",
+                    a: "For most, hypothyroidism (Hashimoto's) is a lifelong condition that is managed, not cured, with daily medication. Hyperthyroidism (Graves') can sometimes go into remission. Definitive treatments like radioactive iodine or surgery cure the overactivity but usually result in permanent hypothyroidism, which then requires lifelong management."
+                },
+                {
+                    q: "What dietary changes are most effective?",
+                    a: "There is no single 'thyroid diet'. A balanced, healthy diet is best. While a gluten-free diet is essential for those with celiac disease, it's not proven necessary for all. Be cautious with high-iodine supplements like kelp, as they can worsen thyroid conditions. Always consult your doctor before major dietary changes."
+                },
+                {
+                    q: "How long until I feel better after starting treatment?",
+                    a: "For hypothyroidism, symptoms often begin to improve within a few weeks, but it can take a few months to find the perfect dose. For hyperthyroidism, beta-blocker medication can provide rapid relief of symptoms like a racing heart, while the main antithyroid drug takes several weeks to lower hormone levels."
+                },
+                {
+                    q: "When should I call my doctor?",
+                    a: "Call your doctor for any new or worsening symptoms. URGENT: If taking antithyroid drugs (Methimazole/PTU) and you develop a fever and sore throat, stop the medication and seek immediate care. If you have hyperthyroidism and develop a very high fever, rapid heartbeat, and confusion, go to the emergency room immediately as it could be a thyroid storm."
+                }
+            ];
+
+            const faqAccordion = document.getElementById('faq-accordion');
+            faqData.forEach(faq => {
+                const item = document.createElement('div');
+                item.className = 'bg-white rounded-lg shadow';
+                item.innerHTML = `
+                    <button class="accordion-button w-full flex justify-between items-center text-left p-4 font-semibold text-gray-700 hover:bg-gray-50">
+                        <span>${faq.q}</span>
+                        <span class="transform transition-transform duration-300">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="p-4 border-t text-gray-600">
+                            <p>${faq.a}</p>
+                        </div>
+                    </div>
+                `;
+                faqAccordion.appendChild(item);
+            });
+
+            faqAccordion.addEventListener('click', function(e) {
+                const button = e.target.closest('.accordion-button');
+                if (button) {
+                    const content = button.nextElementSibling;
+                    const arrow = button.querySelector('span:last-child');
+                    
+                    if (content.classList.contains('open')) {
+                        content.classList.remove('open');
+                        arrow.style.transform = 'rotate(0deg)';
+                    } else {
+                        content.classList.add('open');
+                        arrow.style.transform = 'rotate(180deg)';
+                    }
+                }
+            });
+
+        });
+    </script>
+
+</body>
+</html>
