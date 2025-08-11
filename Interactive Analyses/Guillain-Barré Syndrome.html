@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Report: Guillain-Barré Syndrome</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+  
+    <!-- Chosen Palette: Calm Neutrals with Clinical Blue -->
+    <!-- Application Structure Plan: A multi-section, tab-based SPA designed for dual audiences (patients and clinicians). The structure prioritizes user journey over the report's linear format. 'Overview' provides a quick summary. 'The Patient Journey' focuses on patient-centric information like symptoms and recovery. 'Clinical Deep Dive' offers technical data for professionals on diagnosis and treatment. 'The Science' explains the underlying pathophysiology. This thematic approach allows users to self-select their desired level of detail, enhancing usability and comprehension. Key interactions include tab navigation, interactive charts for epidemiological data, a clickable timeline for the disease course, and toggles for comparing treatments. -->
+    <!-- Visualization & Content Choices: 
+        - Incidence Data -> Goal: Compare -> Viz: Bar Chart (Chart.js) -> Interaction: Hover for details -> Justification: Clearly shows age-based risk.
+        - Gender Ratio -> Goal: Inform -> Viz: Donut Chart (Chart.js) -> Interaction: Hover for percentage -> Justification: Simple, effective visual for proportions.
+        - Pathophysiology -> Goal: Explain -> Viz: Animated Diagram (HTML/CSS/JS) -> Interaction: Automatic animation on view -> Justification: Simplifies the complex 'molecular mimicry' concept visually.
+        - Disease Course -> Goal: Show Change -> Viz: Interactive Timeline (HTML/CSS/JS) -> Interaction: Click stage to show details -> Justification: Maps the progression of the illness in an intuitive, chronological format.
+        - Recovery Stats -> Goal: Inform -> Viz: Donut Charts (Chart.js) -> Interaction: Hover for details -> Justification: Quickly conveys key long-term outcome percentages.
+        - Treatment Comparison -> Goal: Compare -> Viz: Toggleable Cards (HTML/CSS/JS) -> Interaction: Click button to switch view -> Justification: Allows for a direct, side-by-side comparison of the two primary therapies without cluttering the UI.
+        All visualizations are rendered on Canvas via Chart.js or created with structured HTML/CSS to adhere to constraints. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-button.active {
+            border-bottom-color: #007bff;
+            color: #007bff;
+            font-weight: 600;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .stat-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .timeline-item {
+            position: relative;
+            cursor: pointer;
+        }
+        .timeline-dot {
+            transition: all 0.3s ease;
+        }
+        .timeline-item:hover .timeline-dot {
+            transform: scale(1.2);
+            background-color: #0056b3;
+        }
+        .treatment-toggle.active {
+            background-color: #007bff;
+            color: white;
+        }
+        .patho-diagram-element {
+            transition: all 1s ease-in-out;
+        }
+
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Guillain-Barré Syndrome (GBS)</h1>
+            <p class="text-lg text-gray-600 mt-2">An Interactive Clinical & Scientific Review</p>
+        </header>
+
+        <nav class="flex justify-center border-b border-gray-200 mb-8 flex-wrap">
+            <button class="nav-button active py-4 px-6 text-sm md:text-base" onclick="showSection('overview')">Overview</button>
+            <button class="nav-button py-4 px-6 text-sm md:text-base" onclick="showSection('journey')">The Patient Journey</button>
+            <button class="nav-button py-4 px-6 text-sm md:text-base" onclick="showSection('clinical')">Clinical Deep Dive</button>
+            <button class="nav-button py-4 px-6 text-sm md:text-base" onclick="showSection('science')">The Science</button>
+            <button class="nav-button py-4 px-6 text-sm md:text-base" onclick="showSection('faq')">FAQs</button>
+        </nav>
+
+        <main>
+            <section id="overview" class="content-section active">
+                <div class="text-center mb-12">
+                     <h2 class="text-2xl font-bold text-gray-800 mb-2">What is GBS?</h2>
+                     <p class="max-w-3xl mx-auto text-gray-600">
+                        Guillain-Barré Syndrome is an acute, immune-mediated disorder where the body's immune system mistakenly attacks its own peripheral nerves. This leads to rapidly progressive, symmetrical muscle weakness and diminished reflexes. It is the most common cause of acute flaccid paralysis worldwide and is considered a medical emergency requiring immediate hospitalization. This overview provides a snapshot of the key statistics and the underlying mechanism of the disease.
+                    </p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-6 mb-12">
+                    <div class="stat-card">
+                        <h3 class="text-xl font-semibold text-gray-700 mb-2">Global Incidence</h3>
+                        <p class="text-4xl font-bold text-blue-600">1-2</p>
+                        <p class="text-gray-500">cases per 100,000 people per year</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 class="text-xl font-semibold text-gray-700 mb-2">Mortality Rate</h3>
+                        <p class="text-4xl font-bold text-blue-600">3-7%</p>
+                        <p class="text-gray-500">in developed countries, due to complications</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 class="text-xl font-semibold text-gray-700 mb-2">Primary Trigger</h3>
+                        <p class="text-4xl font-bold text-blue-600">~30%</p>
+                        <p class="text-gray-500">of cases are preceded by *Campylobacter jejuni* infection</p>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-8 items-center">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-center mb-4 text-gray-800">Incidence by Age Group</h3>
+                        <p class="text-sm text-gray-600 text-center mb-4">GBS incidence increases steadily with age, particularly after 50.</p>
+                        <div class="chart-container">
+                            <canvas id="incidenceChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                         <h3 class="text-xl font-bold text-center mb-4 text-gray-800">Gender Distribution</h3>
+                         <p class="text-sm text-gray-600 text-center mb-4">A consistent male predominance is observed globally.</p>
+                        <div class="chart-container">
+                            <canvas id="genderChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="journey" class="content-section">
+                <div class="text-center mb-12">
+                     <h2 class="text-2xl font-bold text-gray-800 mb-2">The Patient Journey</h2>
+                     <p class="max-w-3xl mx-auto text-gray-600">
+                        Understanding the experience of GBS is crucial for patients and their families. This section outlines the typical progression of the illness, from the first warning signs to the long-term recovery process. It visualizes the disease timeline and key recovery milestones to provide a clearer picture of what to expect.
+                    </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Initial Symptoms to Watch For</h3>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="flex items-center p-4 bg-blue-50 rounded-lg">
+                            <span class="text-3xl mr-4">👣</span>
+                            <div>
+                                <h4 class="font-semibold">Tingling Sensations</h4>
+                                <p class="text-sm text-gray-600">Often begins in toes/feet and fingers/hands.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-4 bg-blue-50 rounded-lg">
+                            <span class="text-3xl mr-4">📈</span>
+                            <div>
+                                <h4 class="font-semibold">Spreading Weakness</h4>
+                                <p class="text-sm text-gray-600">Typically starts in the legs and moves upwards.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-4 bg-blue-50 rounded-lg">
+                            <span class="text-3xl mr-4">🚶‍♂️</span>
+                            <div>
+                                <h4 class="font-semibold">Balance Issues</h4>
+                                <p class="text-sm text-gray-600">Difficulty walking, tripping, or feeling unsteady.</p>
+                            </div>
+                        </div>
+                         <div class="flex items-center p-4 bg-red-50 rounded-lg">
+                            <span class="text-3xl mr-4">⚠️</span>
+                            <div>
+                                <h4 class="font-semibold text-red-700">Emergency Signs</h4>
+                                <p class="text-sm text-gray-600">Difficulty breathing or swallowing requires immediate help.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6 text-center">Typical Disease Course</h3>
+                    <div class="relative">
+                        <div class="absolute left-1/2 h-full w-0.5 bg-gray-300 hidden md:block"></div>
+                        <div id="timeline-container" class="space-y-8 md:space-y-0"></div>
+                    </div>
+                    <div id="timeline-details" class="mt-6 p-4 bg-gray-100 rounded-lg text-center min-h-[100px] flex items-center justify-center">
+                        <p class="text-gray-700">Click on a stage above to see details.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">Prognosis & Recovery Milestones</h3>
+                    <p class="text-sm text-gray-600 text-center mb-6 max-w-2xl mx-auto">While most patients survive and regain mobility, recovery is often slow and incomplete. These statistics show typical outcomes after the acute phase.</p>
+                    <div class="grid lg:grid-cols-3 gap-8">
+                        <div class="text-center">
+                             <div class="chart-container h-64 max-h-64">
+                                <canvas id="recoveryChart1"></canvas>
+                            </div>
+                            <p class="mt-2 font-semibold text-gray-700">Walk Independently at 6 Months</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="chart-container h-64 max-h-64">
+                                <canvas id="recoveryChart2"></canvas>
+                            </div>
+                             <p class="mt-2 font-semibold text-gray-700">Full/Near-Full Recovery at 1 Year</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="chart-container h-64 max-h-64">
+                                <canvas id="recoveryChart3"></canvas>
+                            </div>
+                             <p class="mt-2 font-semibold text-gray-700">Severe, Permanent Disability</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="clinical" class="content-section">
+                <div class="text-center mb-12">
+                     <h2 class="text-2xl font-bold text-gray-800 mb-2">Clinical Deep Dive</h2>
+                     <p class="max-w-3xl mx-auto text-gray-600">
+                        This section is tailored for healthcare professionals, providing detailed information on the diagnostic workup and evidence-based management of GBS. It highlights key diagnostic criteria, compares primary treatments, and lists important differential diagnoses to consider in a clinical setting.
+                    </p>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-8 mb-8">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Diagnostic Workup</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-semibold text-blue-700">1. Clinical Exam</h4>
+                                <p class="text-sm text-gray-600">Look for rapid, symmetric, ascending weakness with areflexia (absent reflexes).</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-blue-700">2. CSF Analysis (Lumbar Puncture)</h4>
+                                <p class="text-sm text-gray-600">Hallmark finding is **albuminocytologic dissociation** (high protein, normal cell count). Note: May be normal in the first week.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-blue-700">3. Electrodiagnostic Studies (NCS/EMG)</h4>
+                                <p class="text-sm text-gray-600">Confirms neuropathy and helps distinguish subtypes (demyelinating vs. axonal). Early findings include absent F-waves.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Key Differential Diagnoses</h3>
+                        <ul class="list-disc list-inside space-y-2 text-sm text-gray-600">
+                            <li><strong class="text-gray-800">Transverse Myelitis:</strong> Distinguished by a clear sensory level and hyperreflexia.</li>
+                            <li><strong class="text-gray-800">Myasthenia Gravis:</strong> Features fluctuating, fatigable weakness with normal reflexes.</li>
+                            <li><strong class="text-gray-800">Botulism:</strong> Presents with a descending paralysis, starting with cranial nerves.</li>
+                            <li><strong class="text-gray-800">Critical Illness Polyneuropathy:</strong> Occurs in the context of sepsis/multi-organ failure in the ICU.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">Management & Treatment Comparison</h3>
+                    <p class="text-sm text-gray-600 text-center mb-6 max-w-2xl mx-auto">Supportive care in an ICU is paramount. For specific immunotherapy, IVIG and PLEX are equally effective first-line treatments. Corticosteroids are ineffective. Use the toggle below to compare the two primary therapies.</p>
+                    <div class="flex justify-center mb-6">
+                        <button id="show-ivig" class="treatment-toggle active px-4 py-2 rounded-l-lg border border-blue-500" onclick="showTreatment('ivig')">IVIG</button>
+                        <button id="show-plex" class="treatment-toggle px-4 py-2 rounded-r-lg border border-blue-500" onclick="showTreatment('plex')">PLEX</button>
+                    </div>
+                    <div id="treatment-content"></div>
+                </div>
+            </section>
+            
+            <section id="science" class="content-section">
+                 <div class="text-center mb-12">
+                     <h2 class="text-2xl font-bold text-gray-800 mb-2">The Science Behind GBS</h2>
+                     <p class="max-w-3xl mx-auto text-gray-600">
+                        Delve into the pathophysiology of Guillain-Barré Syndrome. This section explains the core concept of molecular mimicry, which drives the autoimmune attack, and details the different subtypes of the disease, linking them to specific antibody targets.
+                    </p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">Molecular Mimicry: A Case of Mistaken Identity</h3>
+                    <p class="text-sm text-gray-600 text-center mb-6 max-w-2xl mx-auto">GBS is triggered when the immune system, responding to an infection, creates antibodies that not only fight the invader but also mistakenly recognize and attack similar-looking molecules (gangliosides) on the surface of our own nerve cells.</p>
+                    <div id="patho-diagram" class="flex flex-col md:flex-row items-center justify-around p-4 space-y-8 md:space-y-0 md:space-x-8">
+                        <div class="text-center flex flex-col items-center">
+                            <div id="pathogen" class="patho-diagram-element bg-red-400 rounded-full h-16 w-16 flex items-center justify-center text-white font-bold">Bug</div>
+                            <p class="mt-2 text-sm font-semibold">1. Infection</p>
+                            <p class="text-xs text-gray-500">e.g., *C. jejuni*</p>
+                        </div>
+                        <div id="arrow1" class="patho-diagram-element text-3xl text-gray-400 opacity-0">&rarr;</div>
+                        <div class="text-center flex flex-col items-center">
+                            <div id="antibody" class="patho-diagram-element bg-blue-500 rounded-lg h-16 w-16 flex items-center justify-center text-white font-bold text-2xl" style="clip-path: polygon(50% 0%, 65% 40%, 100% 40%, 75% 65%, 85% 100%, 50% 80%, 15% 100%, 25% 65%, 0 40%, 35% 40%);">Y</div>
+                            <p class="mt-2 text-sm font-semibold">2. Immune Response</p>
+                             <p class="text-xs text-gray-500">Antibody created</p>
+                        </div>
+                        <div id="arrow2" class="patho-diagram-element text-3xl text-gray-400 opacity-0">&rarr;</div>
+                        <div class="text-center flex flex-col items-center">
+                             <div id="nerve" class="patho-diagram-element bg-yellow-400 h-16 rounded-full flex items-center justify-center px-4">
+                                <div class="w-full h-2 bg-yellow-600 rounded-full"></div>
+                            </div>
+                            <p class="mt-2 text-sm font-semibold">3. Mistaken Attack</p>
+                            <p class="text-xs text-gray-500">Antibody attacks nerve</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Primary GBS Subtypes</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Acute Inflammatory Demyelinating Polyneuropathy (AIDP)</h4>
+                                <p class="text-sm text-gray-600">Most common form in the West. The immune system attacks the **myelin sheath** (nerve insulation). Recovery is via remyelination.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Acute Motor Axonal Neuropathy (AMAN)</h4>
+                                <p class="text-sm text-gray-600">More common in Asia/Latin America. The immune system attacks the **axon** (the nerve fiber itself). Recovery is slower via axonal regeneration.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Clinical Variants & Associated Antibodies</h3>
+                        <ul class="space-y-3">
+                            <li><strong class="text-blue-700">Miller Fisher Syndrome (MFS):</strong> Characterized by ophthalmoplegia, ataxia, and areflexia. Strongly associated with <span class="font-mono bg-gray-200 px-1 rounded">anti-GQ1b</span> antibodies.</li>
+                            <li><strong class="text-blue-700">Pharyngeal-Cervical-Brachial Variant:</strong> Weakness of the throat, neck, and arms. Can mimic botulism.</li>
+                             <li><strong class="text-blue-700">AMAN Subtype:</strong> Pure motor weakness. Often associated with <span class="font-mono bg-gray-200 px-1 rounded">anti-GM1</span> or <span class="font-mono bg-gray-200 px-1 rounded">anti-GD1a</span> antibodies.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="faq" class="content-section">
+                 <div class="text-center mb-12">
+                     <h2 class="text-2xl font-bold text-gray-800 mb-2">Frequently Asked Questions</h2>
+                     <p class="max-w-3xl mx-auto text-gray-600">
+                        This section provides answers to common questions about GBS in simple, non-technical language, addressing concerns that patients and their families often have during and after diagnosis.
+                    </p>
+                </div>
+                <div class="max-w-3xl mx-auto space-y-6">
+                    <div class="bg-white p-5 rounded-lg shadow">
+                        <h3 class="font-semibold text-gray-800">What caused my GBS?</h3>
+                        <p class="text-sm text-gray-600 mt-1">In most cases, GBS is triggered by a common infection (like a stomach bug or the flu) that occurred a few weeks prior. Your immune system gets confused and attacks your nerves by mistake. It is not your fault and could not have been prevented.</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-lg shadow">
+                        <h3 class="font-semibold text-gray-800">Can I be cured?</h3>
+                        <p class="text-sm text-gray-600 mt-1">There is no instant cure, but treatments like IVIG and PLEX significantly speed up recovery. The majority of people (around 70%) eventually make a full or near-full recovery, though it requires time and rehabilitation.</p>
+                    </div>
+                     <div class="bg-white p-5 rounded-lg shadow">
+                        <h3 class="font-semibold text-gray-800">How long will recovery take?</h3>
+                        <p class="text-sm text-gray-600 mt-1">Recovery varies greatly. Symptoms typically worsen for 2-4 weeks, then stabilize (plateau), and then recovery begins. This recovery phase often lasts 6-12 months, but can take up to three years for some to reach their maximum potential.</p>
+                    </div>
+                     <div class="bg-white p-5 rounded-lg shadow">
+                        <h3 class="font-semibold text-gray-800">Will this happen again?</h3>
+                        <p class="text-sm text-gray-600 mt-1">It's very unlikely. A relapse of GBS is rare, occurring in less than 10% of cases. For most people, it is a one-time event.</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+      
+        <footer class="text-center mt-12 pt-8 border-t border-gray-200">
+            <p class="text-xs text-gray-500">This report is for educational and informational purposes only and does not constitute medical advice. Consult a healthcare provider for any health concerns. Content adapted from a comprehensive clinical review on Guillain-Barré Syndrome.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        const sections = document.querySelectorAll('.content-section');
+        const navButtons = document.querySelectorAll('.nav-button');
+
+        function showSection(id) {
+            sections.forEach(section => {
+                section.classList.remove('active');
+                if (section.id === id) {
+                    section.classList.add('active');
+                }
+            });
+            navButtons.forEach(button => {
+                button.classList.remove('active');
+                if (button.getAttribute('onclick').includes(`'${id}'`)) {
+                    button.classList.add('active');
+                }
+            });
+            
+            if (id === 'science') {
+                startPathoAnimation();
+            }
+        }
+
+        const chartConfig = {
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: { size: 12, family: 'Inter' },
+                        padding: 20
+                    }
+                },
+                tooltip: {
+                    bodyFont: { size: 12, family: 'Inter' },
+                    titleFont: { size: 14, family: 'Inter', weight: 'bold' }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { font: { size: 12, family: 'Inter' } },
+                    grid: { color: '#e5e7eb' }
+                },
+                x: {
+                    ticks: { font: { size: 12, family: 'Inter' } },
+                    grid: { display: false }
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        };
+
+        const incidenceData = {
+            labels: ['0-19', '20-39', '40-59', '60-79', '80+'],
+            datasets: [{
+                label: 'Incidence per 100,000',
+                data: [0.8, 1.0, 1.5, 2.5, 3.2],
+                backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                borderColor: 'rgba(59, 130, 246, 1)',
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        };
+        new Chart(document.getElementById('incidenceChart'), { type: 'bar', data: incidenceData, options: chartConfig });
+
+        const genderData = {
+            labels: ['Male', 'Female'],
+            datasets: [{
+                data: [60, 40],
+                backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(239, 68, 68, 0.6)'],
+                borderColor: ['rgba(59, 130, 246, 1)', 'rgba(239, 68, 68, 1)'],
+                borderWidth: 1
+            }]
+        };
+        new Chart(document.getElementById('genderChart'), { type: 'doughnut', data: genderData, options: { ...chartConfig, scales: {} } });
+        
+        const recoveryDataConfig = {
+             plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false }
+            },
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%'
+        };
+
+        new Chart(document.getElementById('recoveryChart1'), {
+            type: 'doughnut',
+            data: { labels: ['Recovered', 'Remaining'], datasets: [{ data: [80, 20], backgroundColor: ['#22c55e', '#e5e7eb'], borderWidth: 0 }] },
+            options: recoveryDataConfig
+        });
+        new Chart(document.getElementById('recoveryChart2'), {
+            type: 'doughnut',
+            data: { labels: ['Recovered', 'Remaining'], datasets: [{ data: [65, 35], backgroundColor: ['#3b82f6', '#e5e7eb'], borderWidth: 0 }] },
+            options: recoveryDataConfig
+        });
+        new Chart(document.getElementById('recoveryChart3'), {
+            type: 'doughnut',
+            data: { labels: ['Disabled', 'Not Disabled'], datasets: [{ data: [8, 92], backgroundColor: ['#ef4444', '#e5e7eb'], borderWidth: 0 }] },
+            options: recoveryDataConfig
+        });
+
+
+        const timelineData = [
+            { stage: 'Onset', duration: 'Hours to Days', description: 'Initial symptoms appear, typically tingling in extremities and mild weakness.' },
+            { stage: 'Progression', duration: 'Days to 4 Weeks', description: 'Weakness rapidly ascends and worsens. 90% of patients reach peak weakness by week 4.' },
+            { stage: 'Nadir', duration: 'Days to Weeks', description: 'The point of maximum weakness. Symptoms are at their most severe but are no longer progressing.' },
+            { stage: 'Plateau', duration: 'Days to Weeks', description: 'A stable period where symptoms neither worsen nor improve. The immune attack has subsided.' },
+            { stage: 'Recovery', duration: 'Months to Years', description: 'A gradual process of nerve healing (remyelination or regeneration). Strength and function slowly return.' }
+        ];
+
+        const timelineContainer = document.getElementById('timeline-container');
+        const timelineDetails = document.getElementById('timeline-details');
+        
+        timelineData.forEach((item, index) => {
+            const isLeft = index % 2 === 0;
+            const itemDiv = document.createElement('div');
+            itemDiv.className = `timeline-item md:flex items-center ${isLeft ? 'md:flex-row-reverse' : ''}`;
+            itemDiv.innerHTML = `
+                <div class="flex-1 text-center md:text-left ${isLeft ? 'md:text-right' : ''}">
+                    <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
+                        <h4 class="font-bold text-blue-600">${item.stage}</h4>
+                        <p class="text-xs text-gray-500">${item.duration}</p>
+                    </div>
+                </div>
+                <div class="flex-shrink-0 w-12 h-12 mx-auto md:mx-4 my-4 md:my-0 rounded-full bg-blue-500 timeline-dot flex items-center justify-center text-white font-bold">${index + 1}</div>
+                <div class="flex-1"></div>
+            `;
+            itemDiv.onclick = () => {
+                timelineDetails.innerHTML = `<p class="text-gray-800 font-semibold">${item.stage}:</p><p class="text-gray-600 text-sm mt-1">${item.description}</p>`;
+            };
+            timelineContainer.appendChild(itemDiv);
+        });
+
+        const treatmentContent = document.getElementById('treatment-content');
+        const treatmentData = {
+            ivig: {
+                title: 'Intravenous Immunoglobulin (IVIG)',
+                html: `
+                    <div class="grid md:grid-cols-3 gap-6 text-sm">
+                        <div><strong class="block text-gray-700">Mechanism:</strong> Neutralizes harmful autoantibodies and modulates the immune response.</div>
+                        <div><strong class="block text-gray-700">Administration:</strong> IV infusion over 5 days. Easy to administer, widely available.</div>
+                        <div><strong class="block text-gray-700">Side Effects:</strong> Headache, fever, rash. Rare but serious: thrombotic events, renal failure.</div>
+                    </div>
+                `
+            },
+            plex: {
+                title: 'Plasma Exchange (PLEX)',
+                html: `
+                    <div class="grid md:grid-cols-3 gap-6 text-sm">
+                        <div><strong class="block text-gray-700">Mechanism:</strong> Physically removes harmful autoantibodies and inflammatory mediators from the blood.</div>
+                        <div><strong class="block text-gray-700">Administration:</strong> 4-6 exchanges over 8-10 days via central venous catheter. Requires specialized equipment.</div>
+                        <div><strong class="block text-gray-700">Side Effects:</strong> Hypotension, sepsis risk from catheter, citrate-induced hypocalcemia.</div>
+                    </div>
+                `
+            }
+        };
+
+        function showTreatment(type) {
+            document.getElementById('show-ivig').classList.toggle('active', type === 'ivig');
+            document.getElementById('show-plex').classList.toggle('active', type === 'plex');
+            treatmentContent.innerHTML = treatmentData[type].html;
+        }
+        showTreatment('ivig');
+
+        function startPathoAnimation() {
+            const pathogen = document.getElementById('pathogen');
+            const antibody = document.getElementById('antibody');
+            const nerve = document.getElementById('nerve');
+            const arrow1 = document.getElementById('arrow1');
+            const arrow2 = document.getElementById('arrow2');
+
+            [pathogen, antibody, nerve, arrow1, arrow2].forEach(el => {
+                el.style.transform = 'scale(0)';
+                el.style.opacity = '0';
+            });
+            
+            setTimeout(() => {
+                pathogen.style.transform = 'scale(1)';
+                pathogen.style.opacity = '1';
+            }, 100);
+            setTimeout(() => {
+                arrow1.style.transform = 'scale(1)';
+                arrow1.style.opacity = '1';
+            }, 600);
+            setTimeout(() => {
+                antibody.style.transform = 'scale(1)';
+                antibody.style.opacity = '1';
+            }, 1100);
+            setTimeout(() => {
+                arrow2.style.transform = 'scale(1)';
+                arrow2.style.opacity = '1';
+            }, 1600);
+            setTimeout(() => {
+                nerve.style.transform = 'scale(1)';
+                nerve.style.opacity = '1';
+            }, 2100);
+            setTimeout(() => {
+                antibody.style.transform = `translate(${nerve.getBoundingClientRect().left - antibody.getBoundingClientRect().left}px, ${nerve.getBoundingClientRect().top - antibody.getBoundingClientRect().top}px) scale(0.5)`;
+                nerve.style.backgroundColor = '#ef4444';
+            }, 2600);
+        }
+
+        window.onload = () => {
+            showSection('overview');
+        };
+    </script>
+</body>
+</html>
