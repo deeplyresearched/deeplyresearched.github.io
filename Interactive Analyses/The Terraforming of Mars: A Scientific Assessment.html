@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Terraforming of Mars: A Scientific Assessment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+  
+    <!-- Chosen Palette: Cosmic Neutrals -->
+    <!-- Application Structure Plan: A narrative, single-page scrolling structure guides the user through the scientific argument. This is more effective for a dense report than a dashboard. The structure is: 1. Hero Section (Conclusion First), 2. Mars vs. Earth Interactive Comparison (Charts), 3. The Core Challenges (Interactive Cards), 4. Proposed Solutions & Reality Check (Visual Flow), 5. The "Great Filters" (Icon-based Summary), 6. Final Verdict (Contrasting Full vs. Para-terraforming). This structure builds a compelling, evidence-based story, making the complex topic digestible and engaging for the user. -->
+    <!-- Visualization & Content Choices: 1. Planetary Comparison (Table 1 Data) -> Goal: Compare -> Viz: Bar Charts (Chart.js) -> Interaction: Hover for details -> Justification: Immediately shows the immense scale of difference. 2. Habitability Needs (Section 2) -> Goal: Inform/Organize -> Viz: Interactive Cards (HTML/CSS) -> Interaction: Click to reveal details -> Justification: Breaks down complex requirements into manageable chunks. 3. Terraforming Methods (Section 3) -> Goal: Organize/Explain -> Viz: Styled HTML Flow Diagram -> Interaction: None, purely informational -> Justification: Clearly shows each proposed solution and its critical failure point. 4. Great Filters (Section 4) -> Goal: Emphasize -> Viz: Icon-based summary (HTML/Tailwind) -> Interaction: None -> Justification: Provides a powerful, at-a-glance summary of the insurmountable obstacles. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712; /* gray-950 */
+            color: #F9FAFB; /* gray-50 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 40vh;
+        }
+        .section-title {
+            font-weight: 900;
+            font-size: 2.25rem; /* text-4xl */
+            line-height: 2.5rem; /* leading-10 */
+            letter-spacing: -0.025em;
+            text-align: center;
+        }
+        .section-subtitle {
+            margin-top: 1rem;
+            max-width: 42rem; /* max-w-2xl */
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            font-size: 1.125rem; /* text-lg */
+            line-height: 1.75rem; /* leading-7 */
+            color: #D1D5DB; /* gray-300 */
+        }
+        .card {
+            background-color: #111827; /* gray-900 */
+            border: 1px solid #374151; /* gray-700 */
+            border-radius: 0.75rem; /* rounded-xl */
+            transition: all 0.3s ease-in-out;
+            overflow: hidden;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(225, 29, 72, 0.1), 0 4px 6px -2px rgba(225, 29, 72, 0.05);
+            border-color: #4B5563; /* gray-600 */
+        }
+        .nav-link {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s ease-in-out;
+            font-weight: 600;
+        }
+        .nav-link:hover {
+            background-color: #1F2937; /* gray-800 */
+        }
+        .verdict-box {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #F87171; /* red-400 */
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+        }
+
+      /* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header class="bg-gray-950/70 backdrop-blur-lg sticky top-0 z-50 border-b border-gray-800">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-white">Terraforming Mars: The Verdict</h1>
+            <div class="hidden md:flex items-center space-x-2">
+                <a href="#comparison" class="nav-link text-gray-300">Comparison</a>
+                <a href="#challenges" class="nav-link text-gray-300">Challenges</a>
+                <a href="#solutions" class="nav-link text-gray-300">Solutions</a>
+                <a href="#filters" class="nav-link text-gray-300">Obstacles</a>
+                <a href="#verdict" class="nav-link text-gray-300">Verdict</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden">
+            <a href="#comparison" class="block py-2 px-6 text-gray-300 hover:bg-gray-800">Comparison</a>
+            <a href="#challenges" class="block py-2 px-6 text-gray-300 hover:bg-gray-800">Challenges</a>
+            <a href="#solutions" class="block py-2 px-6 text-gray-300 hover:bg-gray-800">Solutions</a>
+            <a href="#filters" class="block py-2 px-6 text-gray-300 hover:bg-gray-800">Obstacles</a>
+            <a href="#verdict" class="block py-2 px-6 text-gray-300 hover:bg-gray-800">Verdict</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="py-20 md:py-32 text-center">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-600">Can We Terraform Mars?</h2>
+                <p class="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-gray-300">
+                    The dream of a green Mars is powerful, but is it scientifically possible? This report analyzes the immense challenges of transforming the Red Planet into a second Earth where humans could live without life support.
+                </p>
+                <div class="mt-8">
+                    <a href="#verdict" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full transition-transform duration-300 ease-in-out transform hover:scale-105">
+                        Read The Scientific Verdict
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mars vs Earth Comparison -->
+        <section id="comparison" class="py-16 md:py-24 bg-gray-900">
+            <div class="container mx-auto px-6">
+                <h3 class="section-title">A Tale of Two Worlds</h3>
+                <p class="section-subtitle">
+                    To understand the scale of the terraforming challenge, we must first grasp the profound differences between Earth and Mars today. The data reveals not a sibling planet, but a distant, hostile cousin. This section provides a direct comparison of the key planetary metrics that define habitability.
+                </p>
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div class="chart-container">
+                        <canvas id="pressureChart"></canvas>
+                    </div>
+                    <div class="text-left">
+                        <h4 class="text-2xl font-bold text-red-400">Atmospheric Pressure</h4>
+                        <p class="mt-2 text-gray-300">Mars's atmosphere is a near-vacuum, with less than 1% of Earth's surface pressure. This is far below the **Armstrong Limit**, where water boils at human body temperature, making unprotected life impossible.</p>
+                    </div>
+                </div>
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                     <div class="text-left md:order-2">
+                        <h4 class="text-2xl font-bold text-red-400">Atmospheric Composition</h4>
+                        <p class="mt-2 text-gray-300">The Martian air is a toxic mix of 95% carbon dioxide. Oxygen, essential for human life, is a mere trace gas. Earth's atmosphere is a life-sustaining blend of nitrogen and oxygen.</p>
+                    </div>
+                    <div class="chart-container md:order-1">
+                        <canvas id="compositionChart"></canvas>
+                    </div>
+                </div>
+                 <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div class="chart-container">
+                        <canvas id="tempChart"></canvas>
+                    </div>
+                    <div class="text-left">
+                        <h4 class="text-2xl font-bold text-red-400">Average Surface Temperature</h4>
+                        <p class="mt-2 text-gray-300">Mars is locked in a deep freeze, with an average temperature of -63°C (-81°F). Earth's temperate climate is a distant dream, maintained by a thick, heat-trapping atmosphere that Mars lacks.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Challenges Section -->
+        <section id="challenges" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <h3 class="section-title">The Habitability Checklist</h3>
+                <p class="section-subtitle">
+                    Creating a "second Earth" isn't just about warming Mars up. It's about engineering a complex, stable system that meets the strict, non-negotiable requirements of human biology. Each of these factors represents a monumental challenge in itself. Click on each card to explore the specific goals.
+                </p>
+                <div id="challenge-grid" class="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Cards will be injected by JS -->
+                </div>
+                <div id="challenge-details" class="mt-8"></div>
+            </div>
+        </section>
+
+        <!-- Solutions & Failures Section -->
+        <section id="solutions" class="py-16 md:py-24 bg-gray-900">
+            <div class="container mx-auto px-6">
+                <h3 class="section-title">The Terraforming Toolkit: Ambitious Plans, Harsh Realities</h3>
+                <p class="section-subtitle">
+                    For decades, scientists and futurists have proposed ambitious methods to engineer Mars. However, when scrutinized against the laws of physics and the planet's resource inventory, these grand plans encounter fundamental, show-stopping failures. This is not a matter of will, but of possibility.
+                </p>
+                <div class="mt-16 max-w-4xl mx-auto">
+                    <div class="space-y-12">
+                        <!-- Step 1 -->
+                        <div class="flex items-start space-x-6">
+                            <div class="flex-shrink-0 w-16 h-16 rounded-full bg-red-900/50 border-2 border-red-500 flex items-center justify-center">
+                                <span class="text-2xl font-bold text-red-400">1</span>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold">PROPOSAL: Release Trapped CO₂</h4>
+                                <p class="text-gray-400 mt-1">Warm the planet by vaporizing the CO₂ in the polar caps and soil to create a greenhouse effect.</p>
+                                <div class="mt-3 p-3 rounded-lg bg-red-900/50 border border-red-500/30">
+                                    <p class="font-semibold text-red-400">REALITY CHECK: Resource Deficit</p>
+                                    <p class="text-sm text-gray-300">NASA studies confirm there isn't nearly enough accessible CO₂ on Mars to create the required atmospheric pressure. Releasing it all would yield less than 7% of Earth's pressure, insufficient to warm the planet significantly.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Step 2 -->
+                        <div class="flex items-start space-x-6">
+                            <div class="flex-shrink-0 w-16 h-16 rounded-full bg-red-900/50 border-2 border-red-500 flex items-center justify-center">
+                                <span class="text-2xl font-bold text-red-400">2</span>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold">PROPOSAL: Manufacture Oxygen</h4>
+                                <p class="text-gray-400 mt-1">Use MOXIE-like devices to split atmospheric CO₂ into oxygen, creating breathable air.</p>
+                                <div class="mt-3 p-3 rounded-lg bg-red-900/50 border border-red-500/30">
+                                    <p class="font-semibold text-red-400">REALITY CHECK: Impossible Scale & The Nitrogen Problem</p>
+                                    <p class="text-sm text-gray-300">While the technology works, scaling it to fill an atmosphere would require millions of factories and energy exceeding Earth's entire output for millennia. More importantly, it doesn't solve the critical lack of nitrogen, the essential buffer gas that makes up 78% of our air.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Step 3 -->
+                        <div class="flex items-start space-x-6">
+                            <div class="flex-shrink-0 w-16 h-16 rounded-full bg-red-900/50 border-2 border-red-500 flex items-center justify-center">
+                                <span class="text-2xl font-bold text-red-400">3</span>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold">PROPOSAL: Import Materials</h4>
+                                <p class="text-gray-400 mt-1">Redirect nitrogen-rich comets and asteroids from the outer solar system to crash into Mars.</p>
+                                <div class="mt-3 p-3 rounded-lg bg-red-900/50 border border-red-500/30">
+                                    <p class="font-semibold text-red-400">REALITY CHECK: Science Fiction Logistics</p>
+                                    <p class="text-sm text-gray-300">The energy and technology required to move quintillions of tons of material across the solar system are purely theoretical and far beyond any conceivable capability.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Great Filters Section -->
+        <section id="filters" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <h3 class="section-title">The Great Filters</h3>
+                <p class="section-subtitle">
+                    Beyond engineering challenges, terraforming faces fundamental, planet-sized obstacles. These are not problems to be solved with better technology; they are inherent properties of Mars that may render the goal of an open, habitable world permanently impossible.
+                </p>
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <div class="card p-8">
+                        <div class="text-5xl text-red-500 mx-auto">🛡️</div>
+                        <h4 class="mt-4 text-xl font-bold">The Missing Magnetic Shield</h4>
+                        <p class="mt-2 text-gray-400">Without a global magnetic field, the solar wind relentlessly strips away any atmosphere. Terraforming would be a constant, losing battle against physics, like trying to fill a bucket with a giant hole.</p>
+                    </div>
+                    <div class="card p-8">
+                        <div class="text-5xl text-red-500 mx-auto">⛽</div>
+                        <h4 class="mt-4 text-xl font-bold">The Resource Deficit</h4>
+                        <p class="mt-2 text-gray-400">Mars is fundamentally poor in the volatiles needed for terraforming. There isn't enough accessible carbon dioxide to warm the planet or enough nitrogen to create a breathable air pressure.</p>
+                    </div>
+                    <div class="card p-8">
+                        <div class="text-5xl text-red-500 mx-auto">⏳</div>
+                        <h4 class="mt-4 text-xl font-bold">The Energy & Time Dilemma</h4>
+                        <p class="mt-2 text-gray-400">The energy required for any meaningful terraforming effort exceeds the entire power output of human civilization on Earth. The timescales involved are measured not in decades, but in millennia.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Verdict Section -->
+        <section id="verdict" class="py-16 md:py-24 bg-gray-900">
+            <div class="container mx-auto px-6 max-w-4xl">
+                <h3 class="section-title">The Final Verdict</h3>
+                <p class="section-subtitle">
+                    After synthesizing the planet's environmental realities, the strict requirements for human life, and the fundamental physical barriers, the scientific conclusion is unequivocal.
+                </p>
+                <div class="mt-12 verdict-box">
+                    <h4 class="text-2xl font-bold text-white">Full Terraforming is Not Scientifically Possible.</h4>
+                    <p class="mt-4 text-gray-300">
+                        The dream of stepping onto an open, Earth-like Mars without life support is, and will remain, science fiction. The obstacles—a missing magnetic field, a critical lack of resources like nitrogen and CO₂, and insurmountable energy requirements—are not engineering hurdles but fundamental constraints imposed by planetary science.
+                    </p>
+                </div>
+                <div class="mt-12 text-center">
+                    <h4 class="text-2xl font-semibold text-white">A More Realistic Future: Para-Terraforming</h4>
+                    <p class="mt-4 max-w-2xl mx-auto text-gray-400">
+                        While an open Mars is out of reach, a human future on the Red Planet is still possible through **para-terraforming**. This involves building large, enclosed, pressurized habitats—"worldhouses"—perhaps covering entire craters. Inside these domes, we can create localized, breathable, Earth-like environments. This approach bypasses the planet's fundamental flaws and represents a scientifically grounded path for establishing a sustainable human presence on Mars. Our future there will be within these oases of technology, not on the open plains of a remade world.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+  
+    <footer class="bg-gray-950 border-t border-gray-800">
+        <div class="container mx-auto px-6 py-6 text-center text-gray-500">
+            <p>This interactive report is a synthesis of the "Scientific and Engineering Assessment of the Feasibility of Terraforming Mars."</p>
+            <p class="text-sm mt-2">Data compiled from NASA missions and peer-reviewed scientific literature.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile Menu Toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Data for Charts
+            const pressureData = {
+                labels: ['Earth', 'Mars'],
+                datasets: [{
+                    label: 'Atmospheric Pressure (mbar)',
+                    data: [1013, 6.36],
+                    backgroundColor: ['#3B82F6', '#EF4444'],
+                    borderColor: ['#2563EB', '#DC2626'],
+                    borderWidth: 1
+                }]
+            };
+
+            const compositionData = {
+                labels: ['Nitrogen', 'Oxygen', 'Carbon Dioxide', 'Argon'],
+                datasets: [{
+                    label: 'Earth',
+                    data: [78, 21, 0.04, 0.93],
+                    backgroundColor: '#3B82F6',
+                }, {
+                    label: 'Mars',
+                    data: [2.8, 0.17, 95, 2.0],
+                    backgroundColor: '#EF4444',
+                }]
+            };
+
+            const tempData = {
+                labels: ['Earth', 'Mars'],
+                datasets: [{
+                    label: 'Average Surface Temperature (°C)',
+                    data: [14, -63],
+                    backgroundColor: ['#3B82F6', '#EF4444'],
+                    borderColor: ['#2563EB', '#DC2626'],
+                    borderWidth: 1
+                }]
+            };
+
+            const chartOptions = (title, yAxisLabel) => ({
+                maintainAspectRatio: false,
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: { color: '#D1D5DB' }
+                    },
+                    title: {
+                        display: true,
+                        text: title,
+                        color: '#F9FAFB',
+                        font: { size: 16 }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        grid: { color: '#374151' },
+                        ticks: { color: '#D1D5DB' },
+                        title: { display: true, text: yAxisLabel, color: '#D1D5DB' }
+                    },
+                    x: {
+                        grid: { color: '#374151' },
+                        ticks: { color: '#D1D5DB' }
+                    }
+                }
+            });
+            
+            const compositionChartOptions = (title) => ({
+                maintainAspectRatio: false,
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: { color: '#D1D5DB' }
+                    },
+                    title: {
+                        display: true,
+                        text: title,
+                        color: '#F9FAFB',
+                        font: { size: 16 }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += context.parsed.y + '%';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        type: 'logarithmic',
+                        grid: { color: '#374151' },
+                        ticks: { color: '#D1D5DB', callback: value => value + '%' },
+                        title: { display: true, text: 'Percentage (log scale)', color: '#D1D5DB' }
+                    },
+                    x: {
+                        grid: { color: '#374151' },
+                        ticks: { color: '#D1D5DB' }
+                    }
+                }
+            });
+
+
+            // Render Charts
+            new Chart(document.getElementById('pressureChart'), { type: 'bar', data: pressureData, options: chartOptions('Atmospheric Pressure Comparison', 'Millibars (mbar)') });
+            new Chart(document.getElementById('compositionChart'), { type: 'bar', data: compositionData, options: compositionChartOptions('Atmospheric Composition (%)') });
+            new Chart(document.getElementById('tempChart'), { type: 'bar', data: tempData, options: chartOptions('Average Temperature Comparison', 'Celsius (°C)') });
+
+            // Challenges Section Logic
+            const challenges = [
+                { id: 'pressure', icon: '💨', title: 'Atmospheric Pressure', text: 'Goal: Increase pressure from ~6 mbar to over 300 mbar to support liquid water, and ideally to ~1000 mbar (1 bar) for comfortable human life without pressure suits. This is needed to prevent fatal ebullism and create a stable climate.' },
+                { id: 'composition', icon: '😮', title: 'Breathable Air', text: 'Goal: Transform the 95% CO₂ atmosphere into a mix of ~78% Nitrogen and ~21% Oxygen. This requires sequestering toxic CO₂ and sourcing or creating trillions of tons of both oxygen and nitrogen.' },
+                { id: 'climate', icon: '🌡️', title: 'Stable Climate', text: 'Goal: Raise the average temperature from -63°C to a temperate +14°C and moderate extreme daily temperature swings. This requires a thick, heat-trapping atmosphere and a global water cycle with oceans and rain.' },
+                { id: 'radiation', icon: '☀️', title: 'Radiation Shielding', text: 'Goal: Provide protection from lethal galactic cosmic rays and solar radiation. On Earth, this is done by a combination of a global magnetic field and a thick atmosphere. Mars has neither.' }
+            ];
+
+            const challengeGrid = document.getElementById('challenge-grid');
+            const challengeDetails = document.getElementById('challenge-details');
+            let activeChallenge = null;
+
+            challenges.forEach(challenge => {
+                const card = document.createElement('div');
+                card.className = 'card p-6 text-center cursor-pointer';
+                card.dataset.id = challenge.id;
+                card.innerHTML = `
+                    <div class="text-5xl">${challenge.icon}</div>
+                    <h4 class="mt-4 text-lg font-bold">${challenge.title}</h4>
+                `;
+                card.addEventListener('click', () => {
+                    if (activeChallenge === challenge.id) {
+                        challengeDetails.innerHTML = '';
+                        activeChallenge = null;
+                        card.classList.remove('ring-2', 'ring-red-500');
+                    } else {
+                        document.querySelectorAll('#challenge-grid .card').forEach(c => c.classList.remove('ring-2', 'ring-red-500'));
+                        card.classList.add('ring-2', 'ring-red-500');
+                        challengeDetails.innerHTML = `
+                            <div class="card p-6 bg-gray-900 border-red-500/50">
+                                <h5 class="text-xl font-bold text-red-400">${challenge.title}</h5>
+                                <p class="mt-2 text-gray-300">${challenge.text}</p>
+                            </div>
+                        `;
+                        activeChallenge = challenge.id;
+                    }
+                });
+                challengeGrid.appendChild(card);
+            });
+        });
+    </script>
+</body>
+</html>
