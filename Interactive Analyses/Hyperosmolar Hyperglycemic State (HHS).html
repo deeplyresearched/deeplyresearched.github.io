@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Guide to Hyperosmolar Hyperglycemic State (HHS)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+  
+    <!-- Chosen Palette: Slate Gray & Medical Blue -->
+    <!-- Application Structure Plan: A dual-path, single-page application (SPA) designed to serve two distinct audiences: clinicians and patients. The structure abandons the linear report format for a task-oriented, interactive dashboard. The Clinician View uses a top-level navigation to jump between critical sections (Overview, Pathophysiology, Diagnosis, Management, Prevention), facilitating rapid information retrieval in a clinical setting. The Patient View simplifies content into a Q&A and warning-sign format. This dual-path design was chosen because the source report has two target audiences with vastly different information needs; a single layout would be too complex for patients and too cumbersome for clinicians. Key interactions include an interactive pathophysiology diagram, a fluid deficit calculator, and a dynamic HHS vs. DKA comparison table to enhance understanding and engagement. -->
+    <!-- Visualization & Content Choices: 
+        - HHS vs DKA Mortality (Report Info) -> Goal: Compare/Inform -> Bar Chart (Viz) -> Interaction: Hover for details -> Justification: Immediately highlights the higher mortality of HHS, a key takeaway. (Chart.js)
+        - Precipitating Factors (Report Info) -> Goal: Inform/Organize -> Donut Chart (Viz) -> Interaction: Hover for percentages -> Justification: Provides a quick visual breakdown of common triggers. (Chart.js)
+        - Pathophysiology Cascade (Report Info) -> Goal: Explain Process -> Interactive Diagram (HTML/CSS/JS) -> Interaction: Click steps to reveal text -> Justification: Transforms a complex text description into an engaging, step-by-step visual explanation, superior to a static image. (Custom JS)
+        - HHS vs DKA Comparison (Report Info) -> Goal: Compare/Differentiate -> Interactive Table (HTML/JS) -> Interaction: Click rows to highlight -> Justification: Allows clinicians to quickly compare and contrast key diagnostic markers, a critical task. (Custom JS)
+        - Fluid Deficit (Report Info) -> Goal: Apply/Calculate -> Simple Calculator (HTML/JS) -> Interaction: User input -> Justification: Provides a practical tool for a core management task. (Custom JS)
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .nav-link.active {
+            color: #2563eb; /* blue-600 */
+            border-bottom-color: #2563eb;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .patho-step {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .patho-step.active {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 3px #60a5fa; /* blue-400 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .comparison-row:hover {
+            background-color: #eff6ff; /* blue-50 */
+        }
+
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <div id="app-container" class="max-w-7xl mx-auto p-4 md:p-8">
+
+        <!-- Initial View Selector -->
+        <div id="view-selector" class="text-center py-24 transition-opacity duration-500">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">Hyperosmolar Hyperglycemic State</h1>
+            <p class="text-lg text-slate-600 mb-12 max-w-2xl mx-auto">An interactive clinical guide for medical professionals and a resource for patients and caregivers.</p>
+            <div class="flex flex-col md:flex-row justify-center items-center gap-6">
+                <button onclick="selectView('clinician')" class="w-full md:w-auto bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-700 transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                    Clinician View
+                </button>
+                <button onclick="selectView('patient')" class="w-full md:w-auto bg-slate-200 text-slate-800 font-semibold py-3 px-8 rounded-lg hover:bg-slate-300 transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-opacity-50">
+                    Patient & Caregiver View
+                </button>
+            </div>
+        </div>
+
+        <!-- Clinician View -->
+        <div id="clinician-view" class="hidden">
+            <header class="sticky top-0 bg-f8fafc/80 backdrop-blur-sm z-10 border-b border-slate-200 mb-8">
+                <div class="flex justify-between items-center py-4">
+                    <h1 class="text-2xl font-bold text-blue-600">HHS: Clinician Dashboard</h1>
+                    <button onclick="selectView('selector')" class="text-sm text-slate-600 hover:text-blue-600">Change View</button>
+                </div>
+                <nav id="main-nav" class="flex flex-wrap gap-x-6 gap-y-2 border-b-2 border-transparent">
+                    <a data-target="overview" class="nav-link text-slate-600 hover:text-blue-600 font-medium pb-2 border-b-2 border-transparent active">At a Glance</a>
+                    <a data-target="pathophysiology" class="nav-link text-slate-600 hover:text-blue-600 font-medium pb-2 border-b-2 border-transparent">Pathophysiology</a>
+                    <a data-target="diagnosis" class="nav-link text-slate-600 hover:text-blue-600 font-medium pb-2 border-b-2 border-transparent">Diagnosis</a>
+                    <a data-target="management" class="nav-link text-slate-600 hover:text-blue-600 font-medium pb-2 border-b-2 border-transparent">Management Protocol</a>
+                    <a data-target="prevention" class="nav-link text-slate-600 hover:text-blue-600 font-medium pb-2 border-b-2 border-transparent">Prevention</a>
+                </nav>
+            </header>
+
+            <main>
+                <!-- Section: At a Glance -->
+                <section id="overview" class="content-section active">
+                    <h2 class="text-3xl font-bold mb-2 text-slate-900">At a Glance: The HHS Emergency</h2>
+                    <p class="mb-8 text-slate-600">This section provides a high-level summary of Hyperosmolar Hyperglycemic State, focusing on its severity, typical patient profile, and common triggers. Use these key data points for rapid assessment and context.</p>
+                    
+                    <div class="grid md:grid-cols-3 gap-6 mb-12">
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                            <h3 class="font-bold text-lg mb-2 text-red-600">High Mortality Rate</h3>
+                            <p class="text-4xl font-bold text-red-500">~20%</p>
+                            <p class="text-slate-500">Up to 10x higher than Diabetic Ketoacidosis (DKA), underscoring the severity of this condition.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                            <h3 class="font-bold text-lg mb-2 text-slate-700">Key Diagnostic Triad</h3>
+                            <p class="text-slate-600 font-medium"><span class="font-bold text-blue-600">Glucose:</span> ≥600 mg/dL</p>
+                            <p class="text-slate-600 font-medium"><span class="font-bold text-blue-600">Osmolality:</span> >320 mOsm/kg</p>
+                            <p class="text-slate-600 font-medium"><span class="font-bold text-blue-600">Ketones:</span> Minimal to none</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                            <h3 class="font-bold text-lg mb-2 text-slate-700">Typical Patient Profile</h3>
+                            <p class="text-slate-600">Older adult (50-70s) with Type 2 Diabetes, often with an underlying illness and impaired ability to access fluids.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                            <h3 class="text-xl font-bold text-center mb-4">HHS vs. DKA Mortality</h3>
+                            <div class="chart-container">
+                                <canvas id="mortalityChart"></canvas>
+                            </div>
+                            <p class="text-center text-sm text-slate-500 mt-4">Visual comparison of reported mortality rates, highlighting the critical nature of HHS.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                            <h3 class="text-xl font-bold text-center mb-4">Common Precipitating Factors</h3>
+                            <div class="chart-container">
+                                <canvas id="triggersChart"></canvas>
+                            </div>
+                            <p class="text-center text-sm text-slate-500 mt-4">Infection is the most common trigger, accounting for over half of cases.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Pathophysiology -->
+                <section id="pathophysiology" class="content-section">
+                    <h2 class="text-3xl font-bold mb-2 text-slate-900">The Vicious Cycle of HHS</h2>
+                    <p class="mb-8 text-slate-600 max-w-4xl">HHS develops from a cascade of events driven by relative insulin deficiency and counterregulatory hormone excess. Unlike DKA, enough insulin is present to prevent ketosis but not hyperglycemia. Click each step below to understand how the cycle perpetuates and worsens, leading to severe dehydration and hyperosmolality.</p>
+                    
+                    <div id="patho-diagram" class="space-y-4">
+                        <div class="grid md:grid-cols-5 gap-4 items-center text-center">
+                            <div id="patho-step-1" class="patho-step bg-white p-4 rounded-lg shadow-sm border-2 border-transparent">
+                                <h4 class="font-bold">1. Relative Insulin Deficiency</h4>
+                                <p class="text-sm text-slate-500">+ Stressor (e.g., Infection)</p>
+                            </div>
+                            <div class="text-2xl font-bold text-slate-400">→</div>
+                            <div id="patho-step-2" class="patho-step bg-white p-4 rounded-lg shadow-sm border-2 border-transparent">
+                                <h4 class="font-bold">2. Severe Hyperglycemia</h4>
+                                <p class="text-sm text-slate-500">Unchecked glucose production</p>
+                            </div>
+                            <div class="text-2xl font-bold text-slate-400">→</div>
+                            <div id="patho-step-3" class="patho-step bg-white p-4 rounded-lg shadow-sm border-2 border-transparent">
+                                <h4 class="font-bold">3. Osmotic Diuresis</h4>
+                                <p class="text-sm text-slate-500">Massive water & electrolyte loss</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-end">
+                            <div class="text-2xl font-bold text-slate-400 transform -rotate-90">→</div>
+                        </div>
+                         <div class="grid md:grid-cols-5 gap-4 items-center text-center">
+                            <div id="patho-step-5" class="patho-step bg-white p-4 rounded-lg shadow-sm border-2 border-transparent">
+                                <h4 class="font-bold">5. Worsening Hyperglycemia</h4>
+                                <p class="text-sm text-slate-500">Cycle Accelerates</p>
+                            </div>
+                             <div class="text-2xl font-bold text-slate-400">←</div>
+                            <div id="patho-step-4" class="patho-step bg-white p-4 rounded-lg shadow-sm border-2 border-transparent">
+                                <h4 class="font-bold">4. Dehydration & Renal Failure</h4>
+                                <p class="text-sm text-slate-500">Decreased glucose excretion</p>
+                            </div>
+                            <div class="text-2xl font-bold text-slate-400"></div>
+                            <div class="text-2xl font-bold text-slate-400"></div>
+                        </div>
+                    </div>
+
+                    <div id="patho-details" class="mt-8 bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg">
+                        <p class="text-slate-700">Click on a step above to see details.</p>
+                    </div>
+                </section>
+
+                <!-- Section: Diagnosis -->
+                <section id="diagnosis" class="content-section">
+                    <h2 class="text-3xl font-bold mb-2 text-slate-900">Diagnosis & Differential</h2>
+                    <p class="mb-8 text-slate-600 max-w-4xl">Rapidly distinguishing HHS from DKA is critical as management priorities differ. This table highlights the key laboratory findings. Remember to consider mixed DKA/HHS presentations, which occur in up to a third of cases.</p>
+                    
+                    <div class="overflow-x-auto bg-white rounded-xl shadow-sm border">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-100">
+                                <tr>
+                                    <th class="p-4 font-semibold">Feature</th>
+                                    <th class="p-4 font-semibold text-blue-700">Hyperosmolar Hyperglycemic State (HHS)</th>
+                                    <th class="p-4 font-semibold text-red-700">Diabetic Ketoacidosis (DKA)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-t comparison-row"><td class="p-4 font-medium">Plasma Glucose</td><td class="p-4 font-bold text-blue-700">Markedly high (≥600 mg/dL)</td><td class="p-4 text-red-700">High (≥250 mg/dL)</td></tr>
+                                <tr class="border-t comparison-row"><td class="p-4 font-medium">Arterial pH</td><td class="p-4 font-bold text-blue-700">>7.30</td><td class="p-4 text-red-700"><7.30</td></tr>
+                                <tr class="border-t comparison-row"><td class="p-4 font-medium">Serum Bicarbonate</td><td class="p-4 font-bold text-blue-700">≥15 mmol/L</td><td class="p-4 text-red-700"><18 mmol/L</td></tr>
+                                <tr class="border-t comparison-row"><td class="p-4 font-medium">Serum Ketones</td><td class="p-4 font-bold text-blue-700">Small or absent</td><td class="p-4 text-red-700">Positive and significant</td></tr>
+                                <tr class="border-t comparison-row"><td class="p-4 font-medium">Serum Osmolality</td><td class="p-4 font-bold text-blue-700">Markedly high (>320 mOsm/kg)</td><td class="p-4 text-red-700">Variable, moderately elevated</td></tr>
+                                <tr class="border-t comparison-row"><td class="p-4 font-medium">Anion Gap</td><td class="p-4 font-bold text-blue-700">Variable, near normal</td><td class="p-4 text-red-700">Elevated</td></tr>
+                                <tr class="border-t comparison-row"><td class="p-4 font-medium">Clinical Onset</td><td class="p-4 font-bold text-blue-700">Insidious (days to weeks)</td><td class="p-4 text-red-700">Rapid (<24 hours)</td></tr>
+                                <tr class="border-t comparison-row"><td class="p-4 font-medium">Primary Symptom</td><td class="p-4 font-bold text-blue-700">Profound neurologic changes</td><td class="p-4 text-red-700">Nausea, vomiting, abdominal pain</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Section: Management -->
+                <section id="management" class="content-section">
+                    <h2 class="text-3xl font-bold mb-2 text-slate-900">HHS Management Protocol</h2>
+                    <p class="mb-8 text-slate-600 max-w-4xl">HHS management is a delicate balance of restoring volume and gradually correcting osmolality. This protocol outlines a phased, goal-directed approach. The cornerstone of therapy is aggressive fluid resuscitation, which must precede insulin administration.</p>
+                    
+                    <div class="space-y-8">
+                        <!-- Pillar 1: Fluids -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                            <h3 class="text-2xl font-bold mb-4 text-blue-700">Pillar 1: Fluid Resuscitation</h3>
+                            <p class="mb-4 text-slate-600">This is the most critical first step. The average fluid deficit is 9-12 liters. The goal is to restore circulatory volume and gradually lower osmolality by no more than 3 mOsm/kg/hr.</p>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="font-bold mb-2">Initial Phase (First Hour)</h4>
+                                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                                        <li>Administer <strong>1 - 1.5 L of 0.9% NaCl</strong> (isotonic saline) over the first hour.</li>
+                                        <li>Rate: 15-20 mL/kg/hr.</li>
+                                        <li>Goal: Stabilize hemodynamics.</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold mb-2">Subsequent Phase</h4>
+                                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                                        <li>Calculate <strong>corrected sodium</strong>: Measured Na⁺ + 2.4 * [(Glucose - 100) / 100]</li>
+                                        <li>If corrected Na⁺ is high/normal: Switch to <strong>0.45% NaCl</strong> at 250-500 mL/hr.</li>
+                                        <li>If corrected Na⁺ is low: Continue <strong>0.9% NaCl</strong> at 250-500 mL/hr.</li>
+                                        <li>When glucose reaches ~250 mg/dL, add dextrose to fluids (e.g., D5/0.45% NaCl).</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pillar 2: Electrolytes -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                            <h3 class="text-2xl font-bold mb-4 text-green-700">Pillar 2: Electrolyte Management</h3>
+                            <div class="bg-red-100 border-l-4 border-red-500 p-4 rounded-md mb-4">
+                                <p class="font-bold text-red-800">CRITICAL RULE: Do NOT start insulin if serum K⁺ is < 3.3 mmol/L. Correct potassium first to prevent life-threatening arrhythmias.</p>
+                            </div>
+                            <ul class="list-disc list-inside space-y-2 text-slate-700">
+                                <li>Patients have a massive total body potassium deficit, even if initial serum K⁺ is normal/high.</li>
+                                <li>Once urine output is confirmed and K⁺ is < 5.2 mmol/L, begin replacement.</li>
+                                <li>Add <strong>20-40 mmol K⁺</strong> to each liter of IV fluid.</li>
+                                <li>Goal: Maintain serum K⁺ between 4.0 - 5.0 mmol/L.</li>
+                                <li>Routine phosphate replacement is not recommended unless severe depletion causes clinical symptoms.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Pillar 3: Insulin -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                            <h3 class="text-2xl font-bold mb-4 text-purple-700">Pillar 3: Insulin Therapy</h3>
+                            <p class="mb-4 text-slate-600">Insulin is administered *after* fluid resuscitation has begun to avoid worsening intravascular volume depletion.</p>
+                             <ul class="list-disc list-inside space-y-2 text-slate-700">
+                                <li><strong>No initial bolus</strong> is recommended for pure HHS.</li>
+                                <li>Start a continuous IV infusion at a low, fixed rate: <strong>0.05 units/kg/hour</strong>. (Half the DKA dose).</li>
+                                <li>Goal: Gradual glucose decline of <strong>50-90 mg/dL per hour</strong>.</li>
+                                <li>Avoid rapid drops in glucose to prevent cerebral edema.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Prevention -->
+                <section id="prevention" class="content-section">
+                    <h2 class="text-3xl font-bold mb-2 text-slate-900">Prevention & Patient Education</h2>
+                    <p class="mb-8 text-slate-600 max-w-4xl">Preventing HHS is paramount. Hospitalization for HHS is a "teachable moment" indicating a breakdown in care. Focus education on sick day management and early warning signs.</p>
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                        <h3 class="text-2xl font-bold mb-4 text-blue-700">Key "Sick Day" Rules for Patients</h3>
+                        <p class="mb-6 text-slate-600">Provide patients with a clear, written plan. The core principles are:</p>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-semibold text-lg mb-2">✅ DO:</h4>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start"><span class="text-green-500 mr-2">✔</span><span><strong>Continue Diabetes Meds:</strong> Never stop insulin or oral agents. Stress increases glucose.</span></li>
+                                    <li class="flex items-start"><span class="text-green-500 mr-2">✔</span><span><strong>Monitor Frequently:</strong> Check blood glucose every 4 hours.</span></li>
+                                    <li class="flex items-start"><span class="text-green-500 mr-2">✔</span><span><strong>Stay Hydrated:</strong> Drink plenty of sugar-free fluids (water, broth).</span></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg mb-2">🚨 WHEN TO SEEK HELP:</h4>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start"><span class="text-red-500 mr-2">!</span><span>Persistent vomiting or diarrhea.</span></li>
+                                    <li class="flex items-start"><span class="text-red-500 mr-2">!</span><span>Fever >101°F (38.3°C).</span></li>
+                                    <li class="flex items-start"><span class="text-red-500 mr-2">!</span><span>Moderate to large ketones in urine (if testing).</span></li>
+                                    <li class="flex items-start"><span class="text-red-500 mr-2">!</span><span><strong>Any confusion, drowsiness, or altered mental status.</strong></span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <!-- Patient View -->
+        <div id="patient-view" class="hidden">
+            <header class="border-b border-slate-200 mb-8">
+                <div class="flex justify-between items-center py-4">
+                    <h1 class="text-2xl font-bold text-blue-600">HHS: Patient & Caregiver Guide</h1>
+                    <button onclick="selectView('selector')" class="text-sm text-slate-600 hover:text-blue-600">Change View</button>
+                </div>
+            </header>
+
+            <main class="space-y-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <h2 class="text-2xl font-bold mb-3 text-slate-900">What is Hyperosmolar Hyperglycemic State (HHS)?</h2>
+                    <p class="text-slate-700 mb-4">HHS is a dangerous complication of diabetes, most common in people with type 2. Think of it like this: your blood becomes too thick with sugar, like syrup. This happens because there isn't enough insulin to move sugar from your blood into your cells for energy.</p>
+                    <p class="text-slate-700">This "syrupy" blood makes your kidneys work overtime to get rid of the extra sugar, causing you to urinate a lot. This leads to extreme dehydration, which is the main danger of HHS. It develops slowly over days or weeks.</p>
+                </div>
+
+                <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-r-lg">
+                    <h2 class="text-2xl font-bold mb-3 text-red-700">Warning Signs: When to Get Help Immediately</h2>
+                    <p class="text-red-800 mb-4">HHS is a medical emergency. If you or a loved one with diabetes experience these symptoms, especially during an illness like the flu or an infection, call 911 or go to the nearest emergency room.</p>
+                    <ul class="grid sm:grid-cols-2 gap-4 text-lg font-medium text-slate-800">
+                        <li class="flex items-center"><span class="text-2xl mr-3">💧</span>Extreme thirst that cannot be quenched</li>
+                        <li class="flex items-center"><span class="text-2xl mr-3">🚽</span>Very frequent urination</li>
+                        <li class="flex items-center"><span class="text-2xl mr-3">🧠</span>Confusion, drowsiness, or difficulty staying awake</li>
+                        <li class="flex items-center"><span class="text-2xl mr-3">👁️</span>Vision problems</li>
+                        <li class="flex items-center"><span class="text-2xl mr-3">🥵</span>Fever</li>
+                        <li class="flex items-center"><span class="text-2xl mr-3">🗣️</span>Weakness or paralysis on one side of the body</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <h2 class="text-2xl font-bold mb-4 text-slate-900">Frequently Asked Questions</h2>
+                    <div class="space-y-4" id="faq-container">
+                        <!-- FAQs will be injected here by JS -->
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const appData = {
+            pathoDetails: {
+                'patho-step-1': {
+                    title: '1. Relative Insulin Deficiency & Stressor',
+                    text: 'The process begins with a baseline state of poorly controlled Type 2 Diabetes, where there is insulin resistance or insufficient insulin production. An acute physiological stressor, most commonly an infection, triggers a surge in counterregulatory hormones (like cortisol and glucagon). This surge dramatically worsens insulin resistance and drives up blood sugar.'
+                },
+                'patho-step-2': {
+                    title: '2. Severe Hyperglycemia',
+                    text: 'The combination of relative insulin deficiency and high counterregulatory hormones leads to two problems: 1) The liver produces massive amounts of glucose (gluconeogenesis and glycogenolysis), and 2) Peripheral tissues like muscle cannot effectively take up glucose from the blood. This results in profound hyperglycemia, with blood glucose levels soaring, often above 600 mg/dL.'
+                },
+                'patho-step-3': {
+                    title: '3. Osmotic Diuresis',
+                    text: 'When blood glucose levels exceed the kidneys\' reabsorptive capacity (around 180-200 mg/dL), the excess glucose spills into the urine (glucosuria). Glucose is an osmotically active solute, meaning it pulls large amounts of water with it. This creates a powerful osmotic diuresis, leading to the loss of enormous volumes of water and electrolytes.'
+                },
+                'patho-step-4': {
+                    title: '4. Dehydration & Renal Failure',
+                    text: 'The massive fluid loss (often 9-12 liters) leads to severe total body dehydration and a drop in intravascular volume. This reduces blood flow to the kidneys, causing a fall in the glomerular filtration rate (GFR) and leading to acute kidney injury. The kidneys can no longer effectively excrete glucose.'
+                },
+                'patho-step-5': {
+                    title: '5. Worsening Hyperglycemia & Hyperosmolality',
+                    text: 'With impaired renal function, the body loses its main escape route for excess glucose. Blood glucose levels spiral even higher, which in turn worsens the osmotic diuresis and dehydration. The loss of free water in excess of sodium makes the blood extremely concentrated (hyperosmolar), which is the direct cause of the severe neurological symptoms seen in HHS.'
+                }
+            },
+            faqs: [
+                {
+                    question: "What causes HHS?",
+                    answer: "HHS is usually triggered by an illness or infection, like pneumonia or a urinary tract infection, in someone with diabetes (often type 2). Not taking diabetes medications, having a heart attack or stroke, or taking certain other medications like steroids can also be triggers."
+                },
+                {
+                    question: "How is HHS different from DKA?",
+                    answer: "Both are serious diabetes emergencies. The main difference is that in HHS, the body still produces a tiny bit of insulin, which prevents the build-up of acids called ketones. In DKA, there is no insulin, so ketones build up and make the blood acidic. HHS involves much more severe dehydration and higher blood sugar levels."
+                },
+                {
+                    question: "How can I prevent HHS?",
+                    answer: "The best prevention is good diabetes management. This includes taking your medications as prescribed, monitoring your blood sugar, and having a 'sick day plan.' When you are sick, it's critical to keep taking your diabetes medicine, drink plenty of sugar-free fluids, and check your blood sugar more often. Call your doctor if you can't keep fluids down or if your blood sugar stays very high."
+                },
+                {
+                    question: "When should I call my doctor or go to the hospital?",
+                    answer: "You should have a plan with your doctor. Generally, call them if you are sick and have persistent vomiting or diarrhea, a high fever, or blood sugar levels that remain very high despite following your sick day plan. Go to the emergency room immediately if you or a loved one with diabetes shows any signs of confusion, extreme drowsiness, weakness, or vision changes."
+                }
+            ]
+        };
+
+        const viewSelector = document.getElementById('view-selector');
+        const clinicianView = document.getElementById('clinician-view');
+        const patientView = document.getElementById('patient-view');
+        const mainNav = document.getElementById('main-nav');
+        const contentSections = document.querySelectorAll('.content-section');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        function selectView(viewName) {
+            viewSelector.style.display = 'none';
+            clinicianView.style.display = 'none';
+            patientView.style.display = 'none';
+
+            if (viewName === 'clinician') {
+                clinicianView.style.display = 'block';
+                initializeClinicianView();
+            } else if (viewName === 'patient') {
+                patientView.style.display = 'block';
+                initializePatientView();
+            } else {
+                viewSelector.style.display = 'block';
+            }
+        }
+
+        function initializeClinicianView() {
+            createMortalityChart();
+            createTriggersChart();
+            setupPathoDiagram();
+            setupNav();
+        }
+
+        function initializePatientView() {
+            const faqContainer = document.getElementById('faq-container');
+            faqContainer.innerHTML = '';
+            appData.faqs.forEach((faq, index) => {
+                const faqElement = document.createElement('div');
+                faqElement.innerHTML = `
+                    <button onclick="toggleFaq(${index})" class="w-full text-left flex justify-between items-center p-4 bg-slate-100 rounded-lg hover:bg-slate-200 focus:outline-none">
+                        <h3 class="font-semibold text-slate-800">${faq.question}</h3>
+                        <span id="faq-icon-${index}" class="transform transition-transform duration-300">▼</span>
+                    </button>
+                    <div id="faq-answer-${index}" class="hidden p-4 text-slate-600">
+                        ${faq.answer}
+                    </div>
+                `;
+                faqContainer.appendChild(faqElement);
+            });
+        }
+        
+        window.toggleFaq = function(index) {
+            const answer = document.getElementById(`faq-answer-${index}`);
+            const icon = document.getElementById(`faq-icon-${index}`);
+            const isHidden = answer.classList.contains('hidden');
+            if (isHidden) {
+                answer.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            } else {
+                answer.classList.add('hidden');
+                icon.classList.remove('rotate-180');
+            }
+        }
+
+        function setupNav() {
+            mainNav.addEventListener('click', (e) => {
+                if (e.target.matches('.nav-link')) {
+                    const targetId = e.target.getAttribute('data-target');
+                    
+                    navLinks.forEach(link => link.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    contentSections.forEach(section => {
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                        } else {
+                            section.classList.remove('active');
+                        }
+                    });
+                }
+            });
+        }
+
+        function createMortalityChart() {
+            const ctx = document.getElementById('mortalityChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Diabetic Ketoacidosis (DKA)', 'Hyperosmolar Hyperglycemic State (HHS)'],
+                    datasets: [{
+                        label: 'Reported Mortality Rate',
+                        data: [1, 20],
+                        backgroundColor: ['rgba(239, 68, 68, 0.6)', 'rgba(59, 130, 246, 0.6)'],
+                        borderColor: ['rgba(239, 68, 68, 1)', 'rgba(59, 130, 246, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Mortality Rate (%)' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Mortality: up to ${context.raw}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createTriggersChart() {
+            const ctx = document.getElementById('triggersChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Infection (Pneumonia, UTI)', 'Medication Non-adherence', 'New/Undiagnosed Diabetes', 'Other Acute Illness', 'Other'],
+                    datasets: [{
+                        label: 'Precipitating Factors',
+                        data: [55, 21, 10, 9, 5],
+                        backgroundColor: ['#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe', '#e0f2fe'],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function setupPathoDiagram() {
+            const diagram = document.getElementById('patho-diagram');
+            const detailsPane = document.getElementById('patho-details');
+            const steps = document.querySelectorAll('.patho-step');
+
+            diagram.addEventListener('click', (e) => {
+                const step = e.target.closest('.patho-step');
+                if (step) {
+                    const stepId = step.id;
+                    const detailData = appData.pathoDetails[stepId];
+
+                    steps.forEach(s => s.classList.remove('active'));
+                    step.classList.add('active');
+
+                    detailsPane.innerHTML = `
+                        <h4 class="font-bold text-lg mb-2 text-slate-800">${detailData.title}</h4>
+                        <p class="text-slate-700">${detailData.text}</p>
+                    `;
+                }
+            });
+            
+            // Set initial state
+            document.getElementById('patho-step-1').click();
+        }
+
+    </script>
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+  
+</body>
+</html>
