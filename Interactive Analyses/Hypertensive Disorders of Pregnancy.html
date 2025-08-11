@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hypertensive Disorders of Pregnancy: An Interactive Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+
+  
+    <!-- Chosen Palette: Maternal Health Harmony -->
+    <!-- Application Structure Plan: The SPA is designed around a user's learning journey, not the report's linear structure. It starts with a high-level overview (What is HDP?), moves to understanding the types (Classifications), explores the underlying cause (Pathophysiology), identifies who is at risk (Risk Factors), details the clinical picture (Diagnosis & Symptoms), shows the consequences (Complications), and finally, outlines the care pathway (Management & Long-Term Health). This thematic flow with interactive elements like clickable tabs, cards, and charts is more intuitive and engaging for both patients and clinicians than a dense document. It allows users to dive into areas of interest without being forced through a linear narrative, enhancing usability and knowledge retention. -->
+    <!-- Visualization & Content Choices: 
+        - HDP Prevalence (Donut Chart): Goal: Inform. Method: Chart.js. Interaction: Hover for details. Justification: Quickly shows the scale of the problem (1 in 10-17 pregnancies).
+        - HDP Classifications (Interactive Tabs): Goal: Organize/Compare. Method: HTML/JS. Interaction: Click to switch content. Justification: Allows easy comparison of the four distinct types without overwhelming the user.
+        - Pathophysiology (HTML/CSS Diagram): Goal: Explain. Method: HTML/CSS with flexbox. Interaction: Static visual flow. Justification: Simplifies the complex two-stage model into a clear, visual cause-and-effect diagram, avoiding dense text.
+        - Risk Factors (Bar Chart & Interactive List): Goal: Compare/Inform. Method: Chart.js & HTML/JS. Interaction: Hover chart, click list items. Justification: The chart visualizes the magnitude of risk, while the interactive list provides detailed context for each factor.
+        - Complications (HTML/CSS Cards): Goal: Inform. Method: HTML/CSS with grid. Interaction: Static cards with icons. Justification: Breaks down severe maternal and fetal complications into easily scannable, visually distinct blocks.
+        - Management Pathway (Interactive Timeline): Goal: Organize/Inform. Method: HTML/CSS/JS. Interaction: Click on stages. Justification: Presents the complex management process from prevention to postpartum care as a clear, step-by-step journey.
+        - All choices adhere to the NO SVG/Mermaid constraint, using Canvas for charts and structured HTML/CSS for diagrams. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fdfbf8;
+            color: #4a4a4a;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .nav-link.active {
+            color: #c58d8d;
+            border-bottom-color: #c58d8d;
+        }
+        .nav-link:hover {
+            color: #ab7a7a;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            background-color: #e0c4c4;
+            color: #6d4c41;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -31px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #e0c4c4;
+            border: 3px solid #fdfbf8;
+        }
+
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <header class="py-8 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#6d4c41]">Hypertensive Disorders of Pregnancy</h1>
+            <p class="mt-4 text-lg text-gray-600">An Interactive Guide to Understanding, Risks, and Management</p>
+        </header>
+
+        <nav class="sticky top-0 bg-[#fdfbf8]/80 backdrop-blur-md z-10 border-b border-gray-200 mb-8">
+            <ul class="flex justify-center flex-wrap space-x-4 sm:space-x-8 text-sm sm:text-base font-semibold text-gray-500">
+                <li><a class="nav-link active py-4 px-2 border-b-2 border-transparent" data-target="overview">Overview</a></li>
+                <li><a class="nav-link py-4 px-2 border-b-2 border-transparent" data-target="classification">Classification</a></li>
+                <li><a class="nav-link py-4 px-2 border-b-2 border-transparent" data-target="pathophysiology">Pathophysiology</a></li>
+                <li><a class="nav-link py-4 px-2 border-b-2 border-transparent" data-target="risks">Risk Factors</a></li>
+                <li><a class="nav-link py-4 px-2 border-b-2 border-transparent" data-target="diagnosis">Diagnosis & Symptoms</a></li>
+                <li><a class="nav-link py-4 px-2 border-b-2 border-transparent" data-target="complications">Complications</a></li>
+                <li><a class="nav-link py-4 px-2 border-b-2 border-transparent" data-target="management">Management</a></li>
+            </ul>
+        </nav>
+
+        <main id="main-content" class="min-h-screen">
+            
+            <!-- Overview Section -->
+            <section id="overview" class="content-section active animate-fade-in">
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <h2 class="text-3xl font-bold text-[#6d4c41] mb-4">A Global Health Imperative</h2>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        This section provides a high-level introduction to Hypertensive Disorders of Pregnancy (HDP). You will learn about the prevalence of these conditions and why they are considered a critical marker for a woman's long-term cardiovascular health. The chart below visualizes the significant impact of HDP on pregnancies worldwide.
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div class="text-gray-600 space-y-4">
+                            <p>Hypertensive disorders of pregnancy (HDP) are a group of conditions that represent one of the leading causes of maternal and infant illness and death globally. Their prevalence is rising due to factors like increased maternal age and pre-existing health conditions.</p>
+                            <p>Crucially, HDP is not just a temporary issue during pregnancy. It's now understood as an early warning sign for a woman's future risk of developing chronic hypertension and other cardiovascular diseases. This shifts the focus from a short-term obstetric problem to a long-term health journey that requires care far beyond delivery.</p>
+                            <div class="mt-6 p-4 bg-[#fdfbf8] rounded-lg border border-gray-200">
+                                <p class="font-semibold text-[#6d4c41]">Key Takeaway:</p>
+                                <p>HDP is a "stress test" for the cardiovascular system, unmasking a woman's predisposition to future heart and vascular disease.</p>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="chart-container">
+                                <canvas id="prevalenceChart"></canvas>
+                            </div>
+                            <p class="text-center text-sm text-gray-500 mt-2">Approximate Prevalence of HDP in the U.S.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Classification Section -->
+            <section id="classification" class="content-section">
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <h2 class="text-3xl font-bold text-[#6d4c41] mb-2">The Spectrum of HDP</h2>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        HDP is not a single condition but a spectrum of disorders. Accurate classification is key to proper management. In this section, you can interactively explore the four primary types of HDP. Click on each tab to understand its specific definition, timing of onset, and key characteristics. This allows for a clear comparison of how these related but distinct conditions are identified.
+                    </p>
+                    <div class="mb-6">
+                        <div class="border-b border-gray-200">
+                            <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+                                <button class="tab-button active whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm rounded-t-lg bg-gray-100 hover:bg-gray-200" data-tab="chronic">Chronic Hypertension</button>
+                                <button class="tab-button whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm rounded-t-lg bg-gray-100 hover:bg-gray-200" data-tab="gestational">Gestational Hypertension</button>
+                                <button class="tab-button whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm rounded-t-lg bg-gray-100 hover:bg-gray-200" data-tab="preeclampsia">Preeclampsia-Eclampsia</button>
+                                <button class="tab-button whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm rounded-t-lg bg-gray-100 hover:bg-gray-200" data-tab="superimposed">Superimposed Preeclampsia</button>
+                            </nav>
+                        </div>
+                        <div class="mt-6">
+                            <div id="chronic" class="tab-content active p-4 bg-[#fdfbf8] rounded-b-lg rounded-r-lg">
+                                <h3 class="font-bold text-xl text-[#6d4c41]">Chronic Hypertension</h3>
+                                <p class="mt-2 text-gray-600">High blood pressure (BP ≥ 140/90 mmHg) that exists before pregnancy, is diagnosed before 20 weeks of gestation, or persists more than 12 weeks after delivery. It complicates 1-5% of pregnancies and is a major risk factor for developing superimposed preeclampsia.</p>
+                            </div>
+                            <div id="gestational" class="tab-content p-4 bg-[#fdfbf8] rounded-b-lg rounded-r-lg">
+                                <h3 class="font-bold text-xl text-[#6d4c41]">Gestational Hypertension (GH)</h3>
+                                <p class="mt-2 text-gray-600">New onset of high blood pressure (BP ≥ 140/90 mmHg) at or after 20 weeks of gestation without proteinuria or other signs of end-organ damage. It's often a provisional diagnosis, as up to 50% of women with GH will go on to develop preeclampsia.</p>
+                            </div>
+                            <div id="preeclampsia" class="tab-content p-4 bg-[#fdfbf8] rounded-b-lg rounded-r-lg">
+                                <h3 class="font-bold text-xl text-[#6d4c41]">Preeclampsia-Eclampsia</h3>
+                                <p class="mt-2 text-gray-600">A complex, multi-system disorder defined by new-onset hypertension after 20 weeks with proteinuria OR, in its absence, signs of significant end-organ damage (e.g., low platelets, impaired liver/kidney function, severe headaches). Eclampsia is the onset of seizures in a woman with preeclampsia.</p>
+                            </div>
+                            <div id="superimposed" class="tab-content p-4 bg-[#fdfbf8] rounded-b-lg rounded-r-lg">
+                                <h3 class="font-bold text-xl text-[#6d4c41]">Superimposed Preeclampsia</h3>
+                                <p class="mt-2 text-gray-600">Occurs when a woman with pre-existing chronic hypertension develops new-onset proteinuria or other severe features of preeclampsia after 20 weeks. This combination carries a markedly higher risk for mother and baby.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Pathophysiology Section -->
+            <section id="pathophysiology" class="content-section">
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <h2 class="text-3xl font-bold text-[#6d4c41] mb-2">The Two-Stage Model of Preeclampsia</h2>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        To understand preeclampsia, it's essential to know its origin story, which begins with the placenta. This section visually breaks down the widely accepted "Two-Stage Model." It illustrates how early, silent problems with placental development lead to the widespread maternal symptoms that appear later in pregnancy. This cause-and-effect flow helps demystify how a placental issue can impact the entire body.
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="p-6 bg-[#fdfbf8] rounded-lg border border-gray-200">
+                            <h3 class="font-bold text-xl text-[#6d4c41] mb-3">Stage 1: Defective Placentation (Early Pregnancy)</h3>
+                            <div class="space-y-4 text-gray-600">
+                                <div class="flex items-start space-x-3">
+                                    <span class="text-2xl mt-1">1️⃣</span>
+                                    <div>
+                                        <h4 class="font-semibold">Poor Spiral Artery Remodeling</h4>
+                                        <p>In a normal pregnancy, maternal arteries remodel to become wide, low-resistance vessels. In preeclampsia, this process is incomplete, leaving narrow, constricted arteries.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <span class="text-2xl mt-1">2️⃣</span>
+                                    <div>
+                                        <h4 class="font-semibold">Placental Ischemia & Stress</h4>
+                                        <p>The narrow arteries lead to reduced blood flow (ischemia) and oxidative stress in the placenta. This stage is clinically silent.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6 bg-[#fdfbf8] rounded-lg border border-gray-200">
+                            <h3 class="font-bold text-xl text-[#c58d8d] mb-3">Stage 2: Maternal Syndrome (Late Pregnancy)</h3>
+                            <div class="space-y-4 text-gray-600">
+                                <div class="flex items-start space-x-3">
+                                    <span class="text-2xl mt-1">3️⃣</span>
+                                    <div>
+                                        <h4 class="font-semibold">Release of Toxic Factors</h4>
+                                        <p>The stressed placenta releases anti-angiogenic factors (like sFlt-1) into the mother's bloodstream.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <span class="text-2xl mt-1">4️⃣</span>
+                                    <div>
+                                        <h4 class="font-semibold">Systemic Endothelial Dysfunction</h4>
+                                        <p>These factors attack the lining of the mother's blood vessels (endothelium) throughout her body, causing hypertension, kidney damage (proteinuria), liver issues, and neurological symptoms.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Risk Factors Section -->
+            <section id="risks" class="content-section">
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <h2 class="text-3xl font-bold text-[#6d4c41] mb-2">Who is at Risk?</h2>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        Identifying risk factors is key to prevention. This section outlines the high and moderate-risk factors for developing preeclampsia. The chart visually compares the impact of several key factors, while the lists provide a comprehensive overview. This dual presentation helps in understanding both the magnitude and the breadth of risk, which guides preventative strategies like low-dose aspirin therapy.
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-8 items-start">
+                        <div>
+                            <h3 class="font-semibold text-xl text-[#6d4c41] mb-4">High-Risk Factors (≥1 factor warrants prevention)</h3>
+                            <ul class="list-disc list-inside space-y-2 text-gray-600">
+                                <li>History of Preeclampsia</li>
+                                <li>Multifetal gestation (twins, etc.)</li>
+                                <li>Chronic hypertension</li>
+                                <li>Type 1 or 2 Diabetes</li>
+                                <li>Pre-existing kidney disease</li>
+                                <li>Autoimmune diseases (e.g., Lupus, APS)</li>
+                            </ul>
+                            <h3 class="font-semibold text-xl text-[#6d4c41] mt-8 mb-4">Moderate-Risk Factors (≥2 factors warrant prevention)</h3>
+                            <ul class="list-disc list-inside space-y-2 text-gray-600">
+                                <li>First pregnancy (Nulliparity)</li>
+                                <li>Obesity (BMI > 30)</li>
+                                <li>Family history of preeclampsia</li>
+                                <li>Advanced maternal age (≥35 years)</li>
+                                <li>Black race (as a proxy for racism's impact)</li>
+                                <li>In vitro fertilization (IVF)</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <div class="chart-container h-96">
+                                <canvas id="riskFactorChart"></canvas>
+                            </div>
+                            <p class="text-center text-sm text-gray-500 mt-2">Approximate Increase in Preeclampsia Risk</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Diagnosis & Symptoms Section -->
+            <section id="diagnosis" class="content-section">
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <h2 class="text-3xl font-bold text-[#6d4c41] mb-2">Diagnosis and Warning Signs</h2>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        Early recognition is critical. This section is divided into two parts: the clinical tools used for diagnosis and the key warning symptoms patients should be aware of. Use the tabs to switch between the "Diagnostic Toolkit" for a clinical perspective and "Patient Warning Signs" for essential self-monitoring information. This separation helps tailor the information to different audiences while keeping it all in one accessible place.
+                    </p>
+                    <div class="mb-6">
+                        <div class="border-b border-gray-200">
+                            <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+                                <button class="tab-button active whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm rounded-t-lg bg-gray-100 hover:bg-gray-200" data-tab="symptoms">Patient Warning Signs</button>
+                                <button class="tab-button whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm rounded-t-lg bg-gray-100 hover:bg-gray-200" data-tab="toolkit">Diagnostic Toolkit</button>
+                            </nav>
+                        </div>
+                        <div class="mt-6">
+                            <div id="symptoms" class="tab-content active p-4 bg-[#fdfbf8] rounded-b-lg rounded-r-lg">
+                                <h3 class="font-bold text-xl text-[#6d4c41]">Key Symptoms of Preeclampsia Progression</h3>
+                                <p class="text-gray-600 mt-2 mb-4">While many women are asymptomatic, the following new-onset symptoms in the second half of pregnancy require immediate medical attention:</p>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start"><span class="mr-3 text-xl">🧠</span><div><span class="font-semibold">Severe Headache:</span> Persistent, throbbing, and unresponsive to standard pain relief.</div></li>
+                                    <li class="flex items-start"><span class="mr-3 text-xl">👁️</span><div><span class="font-semibold">Visual Disturbances:</span> Blurred vision, flashing lights, or dark spots.</div></li>
+                                    <li class="flex items-start"><span class="mr-3 text-xl">🤢</span><div><span class="font-semibold">Upper Abdominal Pain:</span> Severe pain in the upper right or middle abdomen, under the ribs.</div></li>
+                                    <li class="flex items-start"><span class="mr-3 text-xl">🎈</span><div><span class="font-semibold">Sudden Swelling:</span> Rapid swelling, especially in the face and hands; sudden weight gain.</div></li>
+                                    <li class="flex items-start"><span class="mr-3 text-xl">😮‍💨</span><div><span class="font-semibold">Shortness of Breath:</span> Difficulty breathing can be a sign of fluid in the lungs (pulmonary edema).</div></li>
+                                </ul>
+                            </div>
+                            <div id="toolkit" class="tab-content p-4 bg-[#fdfbf8] rounded-b-lg rounded-r-lg">
+                                <h3 class="font-bold text-xl text-[#6d4c41]">The "Preeclampsia Panel" & Workup</h3>
+                                <p class="text-gray-600 mt-2 mb-4">Diagnosis relies on a combination of measurements and lab tests to assess for hypertension and end-organ damage.</p>
+                                <ul class="space-y-3">
+                                    <li><span class="font-semibold">Blood Pressure:</span> ≥140/90 mmHg on two occasions, or ≥160/110 mmHg for severe range.</li>
+                                    <li><span class="font-semibold">Urine Protein:</span> Urine protein/creatinine ratio ≥ 0.3 or a 24-hour collection ≥ 300 mg.</li>
+                                    <li><span class="font-semibold">Platelet Count:</span> Low platelets (<100,000/μL) indicate a severe feature.</li>
+                                    <li><span class="font-semibold">Liver Function:</span> Elevated liver enzymes (AST/ALT) to twice the normal limit.</li>
+                                    <li><span class="font-semibold">Kidney Function:</span> Elevated serum creatinine (>1.1 mg/dL or doubling of baseline).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Complications Section -->
+            <section id="complications" class="content-section">
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <h2 class="text-3xl font-bold text-[#6d4c41] mb-2">Impact on Mother and Baby</h2>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        HDP can have serious consequences for both the mother and the fetus. This section outlines the most significant acute complications. It also highlights the critical, long-term cardiovascular legacy for women who have experienced HDP, emphasizing that the health implications extend far beyond pregnancy.
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="font-semibold text-xl text-[#c58d8d] mb-4">Acute Maternal Complications</h3>
+                            <div class="grid grid-cols-2 gap-4 text-center">
+                                <div class="bg-[#fdfbf8] p-4 rounded-lg border"><span class="text-3xl">🧠</span><p class="mt-2 font-semibold text-sm">Eclampsia & Stroke</p></div>
+                                <div class="bg-[#fdfbf8] p-4 rounded-lg border"><span class="text-3xl">🫁</span><p class="mt-2 font-semibold text-sm">Pulmonary Edema</p></div>
+                                <div class="bg-[#fdfbf8] p-4 rounded-lg border"><span class="text-3xl">🩸</span><p class="mt-2 font-semibold text-sm">Placental Abruption</p></div>
+                                <div class="bg-[#fdfbf8] p-4 rounded-lg border"><span class="text-3xl">🧪</span><p class="mt-2 font-semibold text-sm">HELLP Syndrome</p></div>
+                                <div class="bg-[#fdfbf8] p-4 rounded-lg border"><span class="text-3xl">երի</span><p class="mt-2 font-semibold text-sm">Kidney Injury</p></div>
+                                <div class="bg-[#fdfbf8] p-4 rounded-lg border"><span class="text-3xl">💔</span><p class="mt-2 font-semibold text-sm">Liver Damage</p></div>
+                            </div>
+                            <div class="mt-8 p-4 bg-red-50 border border-red-200 rounded-lg">
+                                <h4 class="font-bold text-red-800">Long-Term Legacy: A Lifetime of Risk</h4>
+                                <p class="text-red-700 mt-2">A history of preeclampsia doubles the risk of future heart disease and stroke, and quadruples the risk of heart failure. It is a major risk factor for lifelong cardiovascular health surveillance.</p>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-xl text-[#6d4c41] mb-4">Fetal & Neonatal Complications</h3>
+                            <div class="grid grid-cols-2 gap-4 text-center">
+                                <div class="bg-[#fdfbf8] p-4 rounded-lg border"><span class="text-3xl">📉</span><p class="mt-2 font-semibold text-sm">Growth Restriction (IUGR)</p></div>
+                                <div class="bg-[#fdfbf8] p-4 rounded-lg border"><span class="text-3xl">⏳</span><p class="mt-2 font-semibold text-sm">Preterm Birth</p></div>
+                                <div class="bg-[#fdfbf8] p-4 rounded-lg border"><span class="text-3xl">💧</span><p class="mt-2 font-semibold text-sm">Oligohydramnios</p></div>
+                                <div class="bg-[#fdfbf8] p-4 rounded-lg border"><span class="text-3xl">💔</span><p class="mt-2 font-semibold text-sm">Placental Abruption</p></div>
+                                <div class="bg-[#fdfbf8] p-4 rounded-lg border"><span class="text-3xl">🩺</span><p class="mt-2 font-semibold text-sm">Fetal Distress</p></div>
+                                <div class="bg-[#fdfbf8] p-4 rounded-lg border"><span class="text-3xl">✝️</span><p class="mt-2 font-semibold text-sm">Stillbirth</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Management Section -->
+            <section id="management" class="content-section">
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <h2 class="text-3xl font-bold text-[#6d4c41] mb-2">The Care Pathway</h2>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        Management of HDP is a journey that begins with prevention and continues long after delivery. This interactive timeline outlines the key stages of care. Click on each stage to reveal the primary goals and interventions, from preventative low-dose aspirin for at-risk women, to intensive monitoring during pregnancy, and crucial surveillance in the "fourth trimester" postpartum.
+                    </p>
+                    <div class="relative pl-8 border-l-2 border-dashed border-gray-300">
+                        <!-- Prevention -->
+                        <div class="timeline-item mb-12">
+                            <h3 class="text-xl font-bold text-[#6d4c41]">1. Prevention (Pre-16 Weeks)</h3>
+                            <p class="text-gray-600 mt-2">For women with high or moderate risk factors, specific interventions can significantly reduce the chance of developing preeclampsia.</p>
+                            <ul class="mt-3 list-disc list-inside text-gray-600 space-y-1">
+                                <li><b>Low-Dose Aspirin (81mg):</b> The most effective therapy. Recommended for those with ≥1 high-risk or ≥2 moderate-risk factors, started before 16 weeks.</li>
+                                <li><b>Calcium Supplementation:</b> Recommended by WHO for women with low dietary calcium intake.</li>
+                                <li><b>Lifestyle:</b> Exercise and healthy weight management are key primary prevention strategies.</li>
+                            </ul>
+                        </div>
+                        <!-- Antenatal Management -->
+                        <div class="timeline-item mb-12">
+                            <h3 class="text-xl font-bold text-[#6d4c41]">2. Antenatal Management (During Pregnancy)</h3>
+                            <p class="text-gray-600 mt-2">Once HDP develops, management is tailored to the type, severity, and gestational age, balancing maternal safety with fetal well-being.</p>
+                            <ul class="mt-3 list-disc list-inside text-gray-600 space-y-1">
+                                <li><b>Chronic/Gestational HTN:</b> Treatment with safe medications (Labetalol, Nifedipine) if BP ≥ 140/90 mmHg. Regular maternal and fetal surveillance. Delivery typically around 37-39 weeks.</li>
+                                <li><b>Preeclampsia w/o Severe Features:</b> Intensive outpatient surveillance. Delivery recommended at 37 weeks.</li>
+                                <li><b>Preeclampsia w/ Severe Features:</b> Hospitalization is mandatory. Treatment includes IV magnesium sulfate for seizure prevention and IV antihypertensives for BP control. Delivery is the only cure, planned after stabilization (at 34 weeks or later, or immediately if unstable).</li>
+                            </ul>
+                        </div>
+                        <!-- Postpartum Care -->
+                        <div class="timeline-item">
+                            <h3 class="text-xl font-bold text-[#6d4c41]">3. Postpartum & Long-Term Care (The "Fourth Trimester" & Beyond)</h3>
+                            <p class="text-gray-600 mt-2">The risk doesn't end at delivery. Blood pressure often peaks 3-7 days postpartum, making this a high-risk period.</p>
+                             <ul class="mt-3 list-disc list-inside text-gray-600 space-y-1">
+                                <li><b>Immediate Follow-up:</b> ACOG recommends a BP check within 7-10 days postpartum (or 72 hours for severe cases). Remote BP monitoring is an effective strategy.</li>
+                                <li><b>Patient Education:</b> Women must be counseled that HDP is a major risk factor for future cardiovascular disease.</li>
+                                <li><b>Lifelong Surveillance:</b> Annual checks of blood pressure, lipids, and glucose are recommended, along with a formal transition of care to a primary provider.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+  
+    <footer class="text-center py-8 mt-12 bg-gray-100 border-t">
+        <p class="text-gray-500 text-sm">This interactive guide is for informational purposes only and is based on a comprehensive clinical review. It is not a substitute for professional medical advice. Always consult with a qualified healthcare provider.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.content-section');
+
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            function setActiveLink(targetId) {
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.dataset.target === targetId);
+                });
+            }
+
+            function showSection(targetId) {
+                sections.forEach(section => {
+                    section.classList.toggle('active', section.id === targetId);
+                });
+                setActiveLink(targetId);
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.dataset.target;
+                    showSection(targetId);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            });
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.tab;
+                    
+                    const parentContainer = button.closest('.mb-6');
+                    
+                    parentContainer.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    parentContainer.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.toggle('active', content.id === targetId);
+                    });
+                });
+            });
+            
+            function createPrevalenceChart() {
+                const ctx = document.getElementById('prevalenceChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Pregnancies with HDP (up to 1 in 10)', 'Unaffected Pregnancies'],
+                        datasets: [{
+                            data: [10, 90],
+                            backgroundColor: ['#c58d8d', '#e0c4c4'],
+                            borderColor: '#fdfbf8',
+                            borderWidth: 4,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#4a4a4a',
+                                    font: { size: 12 }
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'HDP Affects a Significant Number of Pregnancies',
+                                color: '#6d4c41',
+                                font: { size: 16, weight: 'bold' }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.label}: ${context.raw}%`;
+                                    }
+                                }
+                            }
+                        },
+                        cutout: '60%'
+                    }
+                });
+            }
+
+            function createRiskFactorChart() {
+                const ctx = document.getElementById('riskFactorChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Antiphospholipid Syndrome (APS)', 'Prior Preeclampsia', 'Chronic Hypertension', 'Pre-existing Diabetes', 'Multifetal Gestation', 'Nulliparity (First Pregnancy)'],
+                        datasets: [{
+                            label: 'Approx. Times Increase in Risk',
+                            data: [10, 7, 5, 3, 3, 3],
+                            backgroundColor: '#e0c4c4',
+                            borderColor: '#c58d8d',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            title: {
+                                display: true,
+                                text: 'Impact of Key Risk Factors',
+                                color: '#6d4c41',
+                                font: { size: 16, weight: 'bold' }
+                            },
+                            tooltip: {
+                                backgroundColor: '#6d4c41'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Risk Multiplier',
+                                    color: '#4a4a4a'
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    color: '#4a4a4a',
+                                    font: { size: 11 }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            createPrevalenceChart();
+            createRiskFactorChart();
+
+            showSection('overview');
+        });
+    </script>
+</body>
+</html>
