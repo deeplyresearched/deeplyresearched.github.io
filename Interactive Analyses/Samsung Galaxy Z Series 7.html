@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samsung Galaxy Z Series 7: Interactive Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+  
+    <!-- Chosen Palette: Slate Gray & Neutrals with Coral and Blue Accents -->
+    <!-- Application Structure Plan: A top-down, interactive dashboard structure. The user is first presented with the three distinct product lines (Fold 7, Flip 7, Flip 7 FE) in a high-level overview. They can then choose to dive deeper into a specific model using a tabbed interface for categorized details (Design, Camera, Performance). This prevents information overload. The core interactive element is a dedicated 'Head-to-Head' comparison section with dynamic charts, allowing users to compare the models on key metrics they care about (e.g., dimensions, battery, display). This task-oriented design (helping a user choose a phone) is more effective than a linear report, guiding the user from broad discovery to specific comparison and finally to a purchase verdict. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Physical dimensions (weight, thickness). Goal: Compare. Viz: Grouped Bar Chart (Chart.js). Interaction: User selects a metric to compare. Justification: A chart visually communicates subtle differences in size and weight more effectively than a table.
+        - Report Info: Key specs (battery, screen size). Goal: Compare. Viz: Simple Bar Chart (Chart.js). Interaction: User selects a spec category. Justification: Provides a quick, scannable comparison of key value propositions.
+        - Report Info: Processor hierarchy. Goal: Compare. Viz: Abstracted 'Performance' Bar Chart (Chart.js). Justification: Simplifies complex technical details (Snapdragon vs. Exynos models) into an easy-to-understand relative performance ladder.
+        - Report Info: Durability features (materials, fold count). Goal: Inform & Build Trust. Viz: Icon-based feature list (HTML/Tailwind). Justification: Breaks down technical terms into easily digestible visual points, enhancing credibility.
+        - Report Info: Purchase Verdicts. Goal: Advise. Viz: Styled summary cards (HTML/Tailwind). Justification: Clearly presents the final recommendation for each user profile.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .active-nav {
+            background-color: #0f172a; /* slate-900 */
+            color: white;
+        }
+        .inactive-nav {
+            background-color: #e2e8f0; /* slate-200 */
+            color: #475569; /* slate-600 */
+        }
+        .active-tab {
+            border-bottom: 2px solid #0f172a; /* slate-900 */
+            color: #0f172a; /* slate-900 */
+            font-weight: 600;
+        }
+        .inactive-tab {
+            color: #64748b; /* slate-500 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <header class="bg-white shadow-sm sticky top-0 z-20">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl md:text-3xl font-bold text-slate-900">Galaxy Z Series 7</h1>
+            <nav class="hidden md:flex space-x-6 text-lg">
+                <a href="#overview" class="font-medium text-slate-600 hover:text-slate-900">Overview</a>
+                <a href="#compare" class="font-medium text-slate-600 hover:text-slate-900">Compare</a>
+                <a href="#innovations" class="font-medium text-slate-600 hover:text-slate-900">Innovations</a>
+                <a href="#verdict" class="font-medium text-slate-600 hover:text-slate-900">Verdict</a>
+            </nav>
+            <span class="md:hidden text-slate-500">July 2025</span>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <section id="intro" class="text-center mb-12">
+            <h2 class="text-3xl md:text-5xl font-bold mb-4">A New Generation Unfolds</h2>
+            <p class="max-w-3xl mx-auto text-lg text-slate-600">Samsung's 7th generation of foldables marks a strategic split: the Z Fold 7's radical pursuit of a thin, camera-centric design, the Z Flip 7's refined focus on usability, and the Z Flip 7 FE's mission to bring foldables to everyone. Explore the lineup below.</p>
+        </section>
+
+        <section id="overview" class="mb-16">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Device Cards will be dynamically inserted here -->
+            </div>
+        </section>
+
+        <section id="compare" class="mb-16 bg-white p-6 rounded-2xl shadow-lg">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-4xl font-bold">Head-to-Head Comparison</h2>
+                <p class="text-slate-600 mt-2">Select a category to see how the devices stack up.</p>
+            </div>
+            <div class="flex justify-center flex-wrap gap-3 mb-8">
+                <button data-chart="dimensions" class="comparison-btn active-nav px-4 py-2 rounded-full font-semibold transition-all duration-300">Dimensions & Weight</button>
+                <button data-chart="display" class="comparison-btn inactive-nav px-4 py-2 rounded-full font-semibold transition-all duration-300">Display Sizes</button>
+                <button data-chart="battery" class="comparison-btn inactive-nav px-4 py-2 rounded-full font-semibold transition-all duration-300">Battery Capacity</button>
+                <button data-chart="camera" class="comparison-btn inactive-nav px-4 py-2 rounded-full font-semibold transition-all duration-300">Main Camera</button>
+            </div>
+            <div class="chart-container">
+                <canvas id="comparisonChart"></canvas>
+            </div>
+        </section>
+
+        <section id="innovations" class="mb-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold">Core Innovations</h2>
+                <p class="text-slate-600 mt-2">Key advancements that define the entire 7th generation lineup.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center"><span class="text-3xl mr-3">🛡️</span> A New Era of Durability</h3>
+                    <p class="text-slate-600 mb-4">Addressing the primary consumer fear of fragility, Samsung has engineered its most resilient foldables yet. This newfound toughness is a cornerstone of the 7th generation's appeal to the mainstream market.</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-start"><span class="font-bold text-sky-600 mr-2">✓</span><div><strong class="text-slate-900">500,000 Folds:</strong> New hinge and display engineered to withstand over a decade of heavy use.</div></li>
+                        <li class="flex items-start"><span class="font-bold text-sky-600 mr-2">✓</span><div><strong class="text-slate-900">Armor Aluminum & Titanium:</strong> A stronger frame and a titanium plate layer in the Z Fold 7 provide enhanced structural rigidity.</div></li>
+                        <li class="flex items-start"><span class="font-bold text-sky-600 mr-2">✓</span><div><strong class="text-slate-900">Gorilla Glass Ceramic 2:</strong> New cover screen material on the Fold 7 improves crack deflection.</div></li>
+                        <li class="flex items-start"><span class="font-bold text-sky-600 mr-2">✓</span><div><strong class="text-slate-900">"Black Magic" Engineering:</strong> Third-party tests confirm extreme resilience to bending and dust, fundamentally changing the narrative around foldable fragility.</div></li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center"><span class="text-3xl mr-3">✨</span> Galaxy AI & One UI 8</h3>
+                    <p class="text-slate-600 mb-4">The entire lineup is unified by a smarter, more multimodal AI experience. Galaxy AI is not just a feature; it's leveraged to make the unique foldable form factors more intelligent and useful.</p>
+                     <ul class="space-y-3">
+                        <li class="flex items-start"><span class="font-bold text-indigo-600 mr-2">✓</span><div><strong class="text-slate-900">Multimodal Interaction:</strong> AI understands context from typing, voice, and sight (via the camera) for more natural interactions.</div></li>
+                        <li class="flex items-start"><span class="font-bold text-indigo-600 mr-2">✓</span><div><strong class="text-slate-900">Gemini Live on FlexWindow:</strong> The Z Flip 7's cover screen becomes an interactive assistant for hands-free queries and visual search.</div></li>
+                        <li class="flex items-start"><span class="font-bold text-indigo-600 mr-2">✓</span><div><strong class="text-slate-900">Creative Suite:</strong> Tools like Photo Assist, Portrait Studio, and Audio Eraser are enhanced by the large screens for powerful on-the-go editing.</div></li>
+                        <li class="flex items-start"><span class="font-bold text-indigo-600 mr-2">✓</span><div><strong class="text-slate-900">Now Bar & Brief:</strong> New UI elements on the Flip 7's cover screen provide at-a-glance updates and app activity.</div></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="verdict" class="text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-2">Which Foldable is for You?</h2>
+            <p class="text-slate-600 mb-8 max-w-2xl mx-auto">Your choice depends on your priorities. Do you value the biggest screen and best camera, a stylish and practical clamshell, or the most accessible entry into the world of foldables?</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                 <!-- Verdict Cards will be dynamically inserted here -->
+            </div>
+        </section>
+
+    </main>
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+<script>
+const devices = {
+    "zfold7": {
+        name: "Galaxy Z Fold 7",
+        tagline: "The Ultra, Unfolded",
+        price: 1999.99,
+        color: "bg-sky-100",
+        accent: "text-sky-800",
+        borderColor: "border-sky-200",
+        icon: "📱",
+        details: {
+            design: {
+                title: "Design: The Obsession with Thinness",
+                content: "A radical redesign makes this the thinnest and lightest Fold ever at just 4.2mm unfolded and 215g. It moves from a niche tool to a mainstream luxury device. The cover display is a much more usable 6.5-inch panel with a standard 21:9 aspect ratio, while the main screen is a massive 8.0-inch canvas. The trade-off: S Pen support has been removed to achieve this ultra-slim profile."
+            },
+            camera: {
+                title: "Camera: A 200MP Revolution",
+                content: "For the first time, a Fold gets the 'Ultra' camera treatment. It inherits the formidable 200MP wide-angle sensor from the S25 Ultra, a monumental leap that establishes it as a true camera flagship. This is paired with a 12MP ultra-wide and a 10MP 3x telephoto lens, creating a pro-grade creative studio in your pocket."
+            },
+            performance: {
+                title: "Performance: Elite Power, Middling Endurance",
+                content: "Powered by the custom Snapdragon 8 Elite for Galaxy, the Fold 7 offers top-tier performance for AI and gaming. However, to achieve its thinness, the battery remains at 4,400mAh with modest 25W charging, a notable compromise for power users."
+            }
+        },
+        verdict: {
+            user: "Luxury Tech Adopter & Content Creator",
+            summary: "For those who demand the largest screen and a top-tier camera in the most elegant package. The price and lack of S Pen are secondary to the 'wow' factor of the design and camera."
+        }
+    },
+    "zflip7": {
+        name: "Galaxy Z Flip 7",
+        tagline: "The Perfected Clamshell",
+        price: 1099.99,
+        color: "bg-rose-100",
+        accent: "text-rose-800",
+        borderColor: "border-rose-200",
+        icon: "👛",
+        details: {
+            design: {
+                title: "Design: The FlexWindow Unleashed",
+                content: "The cover screen is the star, expanding to a highly functional 4.1-inch, 120Hz 'FlexWindow'. This transforms it from a notification ticker to a mini-smartphone for handling daily tasks. The device is also the slimmest Flip yet, making it more pocketable than ever."
+            },
+            camera: {
+                title: "Camera & DeX: Iteration meets Productivity",
+                content: "The camera system remains a capable 50MP main and 12MP ultra-wide setup, with software improvements from the ProVisual Engine. The big news is the addition of Samsung DeX support, turning the stylish clamshell into a powerful pocket workstation for the first time."
+            },
+            performance: {
+                title: "Performance: The Exynos Gambit",
+                content: "In a strategic shift, the Flip 7 uses the Exynos 2500 chip globally. While a capable 3nm processor, it's a step down from the Fold's Snapdragon and has raised concerns about thermal performance. This is balanced by a larger 4,300mAh battery, a direct fix for a long-standing user complaint."
+            }
+        },
+        verdict: {
+            user: "Mainstream Trendsetter",
+            summary: "The ideal choice for a stylish, compact phone that doesn't compromise on a useful cover screen or all-day battery. The best all-around clamshell, if you're comfortable with the Exynos chip."
+        }
+    },
+    "zflip7fe": {
+        name: "Galaxy Z Flip 7 FE",
+        tagline: "The Foldable for Everyone",
+        price: 899.99,
+        color: "bg-slate-100",
+        accent: "text-slate-800",
+        borderColor: "border-slate-200",
+        icon: "🎟️",
+        details: {
+            design: {
+                title: "Design: A Familiar, Proven Formula",
+                content: "The Flip 7 FE is essentially a re-badged Galaxy Z Flip 6. It uses the same body, 6.7-inch main display, and 3.4-inch cover screen. This is a smart manufacturing move to bring the foldable experience below the $900 price barrier for the first time."
+            },
+            camera: {
+                title: "Camera: Flagship Hardware, Budget Price",
+                content: "It inherits the excellent 50MP main and 12MP ultra-wide camera system from the Flip 6. This means users get a flagship-level camera experience from last year's model at a significantly lower price point, offering incredible value."
+            },
+            performance: {
+                title: "Performance: Strategic Compromises",
+                content: "To hit its price, the FE uses the Exynos 2400 processor and 8GB of RAM, a step down from the Flip 6's Snapdragon chip and 12GB of RAM. It retains the same 4,000mAh battery. These changes create a clear performance gap, positioning it as the entry-level option."
+            }
+        },
+        verdict: {
+            user: "Foldable-Curious & Budget-Conscious",
+            summary: "The perfect, low-risk entry point into foldables. It offers over 90% of the core experience for a huge discount, making it a viable alternative to traditional slab phones."
+        }
+    }
+};
+
+const chartData = {
+    dimensions: {
+        labels: ['Thickness Folded (mm)', 'Thickness Unfolded (mm)', 'Weight (g)'],
+        datasets: [
+            { label: 'Z Fold 7', data: [8.9, 4.2, 215], backgroundColor: 'rgba(14, 165, 233, 0.7)' },
+            { label: 'Z Flip 7', data: [13.7, 6.5, 188], backgroundColor: 'rgba(244, 63, 94, 0.7)' },
+            { label: 'Z Flip 7 FE', data: [14.9, 6.9, 187], backgroundColor: 'rgba(100, 116, 139, 0.7)' }
+        ]
+    },
+    display: {
+        labels: ['Cover Display (in)', 'Main Display (in)'],
+        datasets: [
+            { label: 'Z Fold 7', data: [6.5, 8.0], backgroundColor: 'rgba(14, 165, 233, 0.7)' },
+            { label: 'Z Flip 7', data: [4.1, 6.9], backgroundColor: 'rgba(244, 63, 94, 0.7)' },
+            { label: 'Z Flip 7 FE', data: [3.4, 6.7], backgroundColor: 'rgba(100, 116, 139, 0.7)' }
+        ]
+    },
+    battery: {
+        labels: ['Battery Capacity (mAh)'],
+        datasets: [
+            { label: 'Z Fold 7', data: [4400], backgroundColor: 'rgba(14, 165, 233, 0.7)' },
+            { label: 'Z Flip 7', data: [4300], backgroundColor: 'rgba(244, 63, 94, 0.7)' },
+            { label: 'Z Flip 7 FE', data: [4000], backgroundColor: 'rgba(100, 116, 139, 0.7)' }
+        ]
+    },
+    camera: {
+        labels: ['Main Camera (MP)'],
+        datasets: [
+            { label: 'Z Fold 7', data: [200], backgroundColor: 'rgba(14, 165, 233, 0.7)' },
+            { label: 'Z Flip 7', data: [50], backgroundColor: 'rgba(244, 63, 94, 0.7)' },
+            { label: 'Z Flip 7 FE', data: [50], backgroundColor: 'rgba(100, 116, 139, 0.7)' }
+        ]
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const overviewContainer = document.querySelector('#overview .grid');
+    const verdictContainer = document.querySelector('#verdict .grid');
+    let chartInstance = null;
+
+    function populateCards() {
+        Object.keys(devices).forEach(key => {
+            const device = devices[key];
+            const overviewCard = `
+                <div id="${key}" class="bg-white rounded-2xl shadow-lg p-6 flex flex-col fade-in">
+                    <div class="flex-grow">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold ${device.accent}">${device.name}</h3>
+                            <span class="text-4xl">${device.icon}</span>
+                        </div>
+                        <p class="text-lg text-slate-500 mb-4">"${device.tagline}"</p>
+                        <p class="text-3xl font-bold mb-6">$${device.price.toLocaleString()}</p>
+                        
+                        <div class="border-b ${device.borderColor} mb-4">
+                            <nav class="flex -mb-px">
+                                <button data-device="${key}" data-tab="design" class="tab-btn active-tab flex-1 text-center py-3 px-1 transition-colors duration-200">Design</button>
+                                <button data-device="${key}" data-tab="camera" class="tab-btn inactive-tab flex-1 text-center py-3 px-1 transition-colors duration-200">Camera</button>
+                                <button data-device="${key}" data-tab="performance" class="tab-btn inactive-tab flex-1 text-center py-3 px-1 transition-colors duration-200">Performance</button>
+                            </nav>
+                        </div>
+
+                        <div class="tab-content text-slate-600" data-device-content="${key}">
+                            <h4 class="font-semibold text-slate-800 mb-2">${device.details.design.title}</h4>
+                            <p>${device.details.design.content}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            overviewContainer.innerHTML += overviewCard;
+
+            const verdictCard = `
+                <div class="bg-white p-6 rounded-2xl shadow-lg text-left fade-in">
+                    <h3 class="text-xl font-bold ${device.accent} mb-2">${device.name}</h3>
+                    <p class="font-semibold text-slate-800 mb-3">Best for: ${device.verdict.user}</p>
+                    <p class="text-slate-600">${device.verdict.summary}</p>
+                </div>
+            `;
+            verdictContainer.innerHTML += verdictCard;
+        });
+    }
+
+    function setupTabListeners() {
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const deviceKey = button.dataset.device;
+                const tabKey = button.dataset.tab;
+                
+                document.querySelectorAll(`.tab-btn[data-device="${deviceKey}"]`).forEach(btn => {
+                    btn.classList.remove('active-tab');
+                    btn.classList.add('inactive-tab');
+                });
+                button.classList.add('active-tab');
+                button.classList.remove('inactive-tab');
+
+                const contentContainer = document.querySelector(`[data-device-content="${deviceKey}"]`);
+                const deviceData = devices[deviceKey].details[tabKey];
+                contentContainer.innerHTML = `
+                    <div class="fade-in">
+                        <h4 class="font-semibold text-slate-800 mb-2">${deviceData.title}</h4>
+                        <p>${deviceData.content}</p>
+                    </div>
+                `;
+            });
+        });
+    }
+
+    function createChart(chartId) {
+        const ctx = document.getElementById('comparisonChart').getContext('2d');
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+        chartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: chartData[chartId],
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#e2e8f0' // slate-200
+                        },
+                        ticks: {
+                            color: '#475569' // slate-600
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#475569' // slate-600
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: '#1e293b' // slate-800
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#0f172a', // slate-900
+                        titleFont: {
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 14
+                        },
+                        padding: 12,
+                        cornerRadius: 8
+                    }
+                },
+                animation: {
+                    duration: 500
+                }
+            }
+        });
+    }
+
+    function setupComparisonListeners() {
+        document.querySelectorAll('.comparison-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const chartId = button.dataset.chart;
+                createChart(chartId);
+
+                document.querySelectorAll('.comparison-btn').forEach(btn => {
+                    btn.classList.remove('active-nav');
+                    btn.classList.add('inactive-nav');
+                });
+                button.classList.add('active-nav');
+                button.classList.remove('inactive-nav');
+            });
+        });
+    }
+    
+    function setupSmoothScroll() {
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    }
+
+    populateCards();
+    setupTabListeners();
+    createChart('dimensions');
+    setupComparisonListeners();
+    setupSmoothScroll();
+});
+</script>
+
+</body>
+</html>
