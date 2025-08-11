@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Guide to Amenorrhea, Anomalies & Infertility</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+  
+    <!-- Chosen Palette: Calm Clinical -->
+    <!-- Application Structure Plan: A patient-journey-centric, thematic structure is used instead of mirroring the report's linear format. The SPA is organized into four logical, task-oriented sections: 'The Why?' (Etiology), 'The How?' (Diagnosis), 'The What Next?' (Treatment), and 'The Future'. This structure facilitates intuitive exploration, allowing users to navigate based on clinical questions (e.g., causes, diagnostic steps, treatment options). Key interactions include interactive diagrams for physiological processes (HPO Axis, Müllerian Development), a guided flowchart for amenorrhea diagnosis, a visual gallery for uterine anomalies, and dynamic charts for comparing treatments and outcomes. This design transforms the dense report into an engaging, user-friendly educational tool that enhances understanding and retention. -->
+    <!-- Visualization & Content Choices: Report Info: HPO Axis -> Goal: Explain regulation -> Viz: Interactive HTML/CSS flowchart with hover-reveal tooltips. Justification: Visualizes the feedback loop better than text. Method: Vanilla JS. Report Info: Müllerian Development -> Goal: Explain embryology -> Viz: Clickable HTML/CSS timeline. Justification: Simplifies a complex sequence. Method: Vanilla JS. Report Info: Amenorrhea Diagnosis (Table 1) -> Goal: Guide differential diagnosis -> Viz: Interactive flowchart. Justification: Mimics clinical decision-making. Method: Vanilla JS. Report Info: Müllerian Anomalies (Table 2) -> Goal: Compare anomaly types -> Viz: Interactive visual gallery. Justification: More engaging than a table. Method: Vanilla JS. Report Info: Ovulation Induction Agents (Table 3) -> Goal: Compare medications -> Viz: Chart.js Bar Chart. Justification: Allows dynamic comparison. Library: Chart.js. Report Info: Uterus Transplant Outcomes (Table 4) -> Goal: Present key statistics -> Viz: HTML 'Stat Cards' & Chart.js Bar Chart. Justification: Highlights key numbers and visualizes risk distribution. Library: Chart.js. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4;
+            color: #333333;
+        }
+        .nav-link {
+            position: relative;
+            transition: color 0.3s;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4A7C59;
+            transition: width 0.3s;
+        }
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #4A7C59;
+            margin-bottom: 1rem;
+        }
+        .section-subtitle {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 2.5rem;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+        .interactive-tab {
+            cursor: pointer;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            background-color: #E9E8E4;
+            color: #555;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .interactive-tab.active {
+            background-color: #4A7C59;
+            color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(74, 124, 89, 0.2);
+        }
+        .hpo-element, .mullerian-stage {
+            position: relative;
+            cursor: pointer;
+        }
+        .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            z-index: 10;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: opacity 0.3s;
+            width: 200px;
+            font-size: 0.875rem;
+        }
+        .hpo-element:hover .tooltip, .mullerian-stage:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+
+      /* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="header" class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-md">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#home" class="text-xl font-bold text-[#4A7C59]">Reproductive Health Guide</a>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#why" class="nav-link">The 'Why?' (Etiology)</a>
+                <a href="#how" class="nav-link">The 'How?' (Diagnosis)</a>
+                <a href="#what-next" class="nav-link">The 'What Next?' (Treatment)</a>
+                <a href="#future" class="nav-link">The Future</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-2xl">☰</button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden bg-white/90">
+            <a href="#why" class="block py-2 px-6 text-center nav-link">The 'Why?' (Etiology)</a>
+            <a href="#how" class="block py-2 px-6 text-center nav-link">The 'How?' (Diagnosis)</a>
+            <a href="#what-next" class="block py-2 px-6 text-center nav-link">The 'What Next?' (Treatment)</a>
+            <a href="#future" class="block py-2 px-6 text-center nav-link">The Future</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="min-h-screen flex items-center bg-stone-50">
+            <div class="container mx-auto px-6 text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-[#4A7C59] mb-4">An Interactive Guide to Female Reproductive Health</h1>
+                <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+                    An exploration of the intricate connections between Amenorrhea, Müllerian Anomalies, and Infertility. This guide translates complex clinical information into an accessible, interactive format to enhance understanding of causes, diagnosis, and treatment pathways.
+                </p>
+            </div>
+        </section>
+
+        <section id="why" class="py-20">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title text-center">The 'Why?': Understanding the Foundations</h2>
+                <p class="section-subtitle text-center max-w-3xl mx-auto">This section explores the fundamental biological processes that govern female reproduction. Understanding the normal function of the hormonal axis and embryonic development is key to diagnosing when things go wrong. Interact with the diagrams below to learn more.</p>
+                
+                <div class="grid md:grid-cols-2 gap-12 items-start">
+                    <div class="card p-6">
+                        <h3 class="text-2xl font-bold mb-4 text-center">The HPO-U Axis: A Hormonal Symphony</h3>
+                        <p class="text-gray-600 mb-6 text-center">The Hypothalamic-Pituitary-Ovarian-Uterine axis is the master regulator. Hover over each component to see its role.</p>
+                        <div class="flex flex-col items-center space-y-4">
+                            <div class="hpo-element bg-rose-100 p-3 rounded-lg shadow w-48 text-center">
+                                Hypothalamus
+                                <span class="tooltip">Releases GnRH in pulses to start the cycle.</span>
+                            </div>
+                            <div class="text-2xl text-rose-400">↓</div>
+                            <div class="hpo-element bg-orange-100 p-3 rounded-lg shadow w-48 text-center">
+                                Pituitary Gland
+                                <span class="tooltip">Releases FSH (grows follicles) & LH (triggers ovulation).</span>
+                            </div>
+                            <div class="text-2xl text-orange-400">↓</div>
+                            <div class="hpo-element bg-amber-100 p-3 rounded-lg shadow w-48 text-center">
+                                Ovaries
+                                <span class="tooltip">Produce Estrogen (builds lining) & Progesterone (maintains lining).</span>
+                            </div>
+                            <div class="text-2xl text-amber-400">↓</div>
+                            <div class="hpo-element bg-teal-100 p-3 rounded-lg shadow w-48 text-center">
+                                Uterus
+                                <span class="tooltip">The endometrium thickens and sheds, resulting in menstruation.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card p-6">
+                        <h3 class="text-2xl font-bold mb-4 text-center">Müllerian Duct Development</h3>
+                        <p class="text-gray-600 mb-6 text-center">The female reproductive tract forms in three key stages. A failure at any stage can lead to an anomaly. Hover over each stage to learn more.</p>
+                        <div class="flex flex-col items-center space-y-4">
+                            <div class="mullerian-stage border-2 border-dashed border-sky-400 p-3 rounded-lg w-full text-center">
+                                <span class="font-semibold text-sky-600">Stage 1: Organogenesis</span>
+                                <p class="text-sm text-gray-600 mt-1">The two Müllerian ducts form.</p>
+                                <span class="tooltip">Failure here can lead to Müllerian Agenesis (MRKH) or a Unicornuate Uterus.</span>
+                            </div>
+                            <div class="text-2xl text-sky-400">↓</div>
+                            <div class="mullerian-stage border-2 border-dashed border-indigo-400 p-3 rounded-lg w-full text-center">
+                                <span class="font-semibold text-indigo-600">Stage 2: Fusion</span>
+                                <p class="text-sm text-gray-600 mt-1">The ducts fuse to create the uterus.</p>
+                                <span class="tooltip">Failure of fusion can lead to a Bicornuate Uterus or Uterus Didelphys.</span>
+                            </div>
+                            <div class="text-2xl text-indigo-400">↓</div>
+                            <div class="mullerian-stage border-2 border-dashed border-violet-400 p-3 rounded-lg w-full text-center">
+                                <span class="font-semibold text-violet-600">Stage 3: Septal Resorption</span>
+                                <p class="text-sm text-gray-600 mt-1">The central wall is resorbed.</p>
+                                <span class="tooltip">Failure of resorption is the most common anomaly, leading to a Septate Uterus.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="how" class="py-20 bg-stone-50">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title text-center">The 'How?': Navigating the Diagnosis</h2>
+                <p class="section-subtitle text-center max-w-3xl mx-auto">Diagnosing the cause of amenorrhea or identifying a structural anomaly requires a systematic approach. This section provides interactive tools to explore the diagnostic pathways and classifications used in clinical practice.</p>
+
+                <div class="card p-8 mb-12">
+                    <h3 class="text-2xl font-bold mb-4 text-center">Amenorrhea Diagnostic Pathway</h3>
+                    <p class="text-gray-600 mb-6 text-center">Start by selecting the type of amenorrhea to see the typical diagnostic considerations.</p>
+                    <div id="amenorrhea-tabs" class="flex justify-center space-x-4 mb-6">
+                        <button data-tab="primary" class="interactive-tab active">Primary Amenorrhea</button>
+                        <button data-tab="secondary" class="interactive-tab">Secondary Amenorrhea</button>
+                    </div>
+                    <div id="amenorrhea-content"></div>
+                </div>
+
+                <div class="card p-8">
+                    <h3 class="text-2xl font-bold mb-4 text-center">Müllerian Anomaly Explorer</h3>
+                    <p class="text-gray-600 mb-8 text-center">Explore the main types of Müllerian anomalies according to the ASRM 2021 classification. Click on an anomaly to learn more about its characteristics and clinical presentation.</p>
+                    <div id="anomaly-gallery" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+                    <div id="anomaly-details" class="mt-8 p-6 bg-gray-50 rounded-lg hidden"></div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="what-next" class="py-20">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title text-center">The 'What Next?': Exploring Treatments</h2>
+                <p class="section-subtitle text-center max-w-3xl mx-auto">Once a diagnosis is made, a range of treatments can address the underlying cause of infertility. This section covers the stepwise approach to restoring ovulation and the surgical options for correcting uterine anomalies.</p>
+                
+                <div class="grid lg:grid-cols-2 gap-12">
+                    <div class="card p-8">
+                        <h3 class="text-2xl font-bold mb-6 text-center">Ovulation Induction Treatment Comparison</h3>
+                        <p class="text-gray-600 mb-6 text-center">This chart compares the first-line oral agents and second-line injectable medications used to induce ovulation. Note the trade-offs between efficacy and risk.</p>
+                        <div class="chart-container">
+                            <canvas id="ovulationChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card p-8">
+                        <h3 class="text-2xl font-bold mb-6 text-center">Surgical Correction of Uterine Anomalies</h3>
+                        <p class="text-gray-600 mb-6 text-center">For certain anomalies, surgery can dramatically improve reproductive outcomes. The goal is to create a more normal uterine cavity to support a pregnancy.</p>
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="font-semibold text-lg text-teal-700">Septate Uterus Repair (Hysteroscopic Metroplasty)</h4>
+                                <p class="text-sm text-gray-600">A minimally invasive procedure to resect the internal septum.</p>
+                                <div class="mt-2 p-3 bg-teal-50 rounded-lg">
+                                    <p class="font-medium">Outcome: Live birth rates can increase from <span class="font-bold">&lt;10%</span> to <span class="font-bold">&gt;70%</span> post-surgery.</p>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg text-indigo-700">Bicornuate Uterus Repair (Laparoscopic Metroplasty)</h4>
+                                <p class="text-sm text-gray-600">A procedure to unify the two uterine horns.</p>
+                                <div class="mt-2 p-3 bg-indigo-50 rounded-lg">
+                                    <p class="font-medium">Outcome: Considered for select cases of recurrent loss; term pregnancy rates can reach <span class="font-bold">60-80%</span>.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="future" class="py-20 bg-stone-50">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title text-center">The Future: Advanced Technologies & Horizons</h2>
+                <p class="section-subtitle text-center max-w-3xl mx-auto">For women with absolute uterine factor infertility, advanced reproductive technologies offer new hope. This section explores the established pathway of surrogacy and the revolutionary, experimental field of uterus transplantation.</p>
+                
+                <div class="card p-8 mb-12">
+                    <h3 class="text-2xl font-bold mb-2 text-center">Mayer-Rokitansky-Küster-Hauser (MRKH) Syndrome</h3>
+                    <p class="text-gray-600 mb-6 text-center">MRKH is a condition of uterine absence. Management focuses on creating a neovagina for sexual function and using advanced ART for fertility.</p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <h4 class="font-semibold text-lg">Neovagina Creation</h4>
+                            <p class="text-sm">First-line treatment is non-surgical dilation therapy (>90% success). Surgery is a second-line option.</p>
+                        </div>
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <h4 class="font-semibold text-lg">Fertility Management</h4>
+                            <p class="text-sm">The established path is IVF with a Gestational Carrier. Uterus Transplantation is a new, experimental option.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card p-8">
+                    <h3 class="text-2xl font-bold mb-6 text-center">Uterus Transplantation (UTx) at a Glance</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-8">
+                        <div class="bg-rose-100 p-4 rounded-lg">
+                            <div class="text-3xl font-bold text-rose-600">>80</div>
+                            <div class="text-sm">Procedures Worldwide</div>
+                        </div>
+                        <div class="bg-teal-100 p-4 rounded-lg">
+                            <div class="text-3xl font-bold text-teal-600">>40</div>
+                            <div class="text-sm">Live Births</div>
+                        </div>
+                        <div class="bg-amber-100 p-4 rounded-lg">
+                            <div class="text-3xl font-bold text-amber-600">~74%</div>
+                            <div class="text-sm">Surgical Success Rate</div>
+                        </div>
+                        <div class="bg-sky-100 p-4 rounded-lg">
+                            <div class="text-3xl font-bold text-sky-600">>80%</div>
+                            <div class="text-sm">Live Birth Rate (post-success)</div>
+                        </div>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-4 text-center">Common Obstetric Complications in UTx Pregnancies</h4>
+                     <div class="chart-container" style="height: 350px;">
+                        <canvas id="utxChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+  
+    <footer class="bg-[#333333] text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>This interactive guide is for educational purposes only and is not a substitute for professional medical advice. All data synthesized from the clinical review provided.</p>
+            <p class="text-sm mt-2 opacity-70">Created with HTML, Tailwind CSS, and Chart.js.</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const db = {
+        amenorrhea: {
+            primary: `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <h4 class="font-bold text-lg">Breasts Present, Uterus Absent</h4>
+                        <p class="text-sm mt-1"><strong>Differential:</strong> Müllerian Agenesis (MRKH), Androgen Insensitivity (AIS).</p>
+                        <p class="text-sm mt-1"><strong>Key Tests:</strong> Karyotype, Testosterone Level.</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <h4 class="font-bold text-lg">Breasts Absent, Uterus Present</h4>
+                        <p class="text-sm mt-1"><strong>Differential:</strong> Gonadal Failure (e.g., Turner Syndrome), Hypothalamic/Pituitary issue (e.g., FHA).</p>
+                        <p class="text-sm mt-1"><strong>Key Tests:</strong> FSH Level, Karyotype, Brain MRI.</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <h4 class="font-bold text-lg">Breasts Present, Uterus Present</h4>
+                        <p class="text-sm mt-1"><strong>Differential:</strong> Outflow Tract Obstruction (e.g., Imperforate Hymen), PCOS.</p>
+                        <p class="text-sm mt-1"><strong>Key Tests:</strong> Pelvic Exam, Ultrasound, standard secondary workup.</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <h4 class="font-bold text-lg">Breasts Absent, Uterus Absent</h4>
+                        <p class="text-sm mt-1"><strong>Differential:</strong> Very rare disorders of steroidogenesis or agonadism.</p>
+                        <p class="text-sm mt-1"><strong>Key Tests:</strong> Karyotype, specific hormone panels.</p>
+                    </div>
+                </div>
+            `,
+            secondary: `
+                <div class="space-y-4">
+                    <p><strong>Polycystic Ovary Syndrome (PCOS):</strong> The most common cause. Diagnosed by Rotterdam criteria (2 of 3: irregular cycles, high androgens, polycystic ovaries on US).</p>
+                    <p><strong>Functional Hypothalamic Amenorrhea (FHA):</strong> Axis suppression due to stress, low weight, or excess exercise. A diagnosis of exclusion.</p>
+                    <p><strong>Primary Ovarian Insufficiency (POI):</strong> Ovarian failure before age 40. Characterized by high FSH levels.</p>
+                    <p><strong>Hyperprolactinemia:</strong> High prolactin levels inhibit the HPO axis. Requires pituitary imaging.</p>
+                    <p><strong>Asherman's Syndrome:</strong> Intrauterine scar tissue, often after uterine surgery, preventing menstrual bleeding.</p>
+                </div>
+            `
+        },
+        anomalies: [
+            { name: 'Müllerian Agenesis', description: 'Absence of uterus and upper vagina (MRKH).', cause: 'Failure of duct development (Stage 1).', presentation: 'Primary amenorrhea, infertility.' },
+            { name: 'Unicornuate Uterus', description: 'Single-horned uterus.', cause: 'Failure of one duct to develop (Stage 1).', presentation: 'Infertility, pregnancy loss, preterm birth.' },
+            { name: 'Uterus Didelphys', description: 'Complete duplication of uterus and cervix.', cause: 'Complete failure of fusion (Stage 2).', presentation: 'Often asymptomatic, can cause pregnancy loss.' },
+            { name: 'Bicornuate Uterus', description: 'Two horns, one cervix, deep fundal indent.', cause: 'Incomplete fusion (Stage 2).', presentation: 'Pregnancy loss, preterm birth.' },
+            { name: 'Septate Uterus', description: 'Single uterus with internal dividing wall.', cause: 'Failure of resorption (Stage 3).', presentation: 'Highest rate of recurrent pregnancy loss.' },
+            { name: 'Transverse Vaginal Septum', description: 'Horizontal tissue wall blocking vagina.', cause: 'Failure of vertical fusion.', presentation: 'Primary amenorrhea with cyclic pain.' }
+        ]
+    };
+
+    const amenorrheaTabs = document.getElementById('amenorrhea-tabs');
+    const amenorrheaContent = document.getElementById('amenorrhea-content');
+
+    function renderAmenorrheaContent(tab) {
+        amenorrheaContent.innerHTML = db.amenorrhea[tab];
+        amenorrheaTabs.querySelectorAll('.interactive-tab').forEach(t => {
+            t.classList.toggle('active', t.dataset.tab === tab);
+        });
+    }
+
+    amenorrheaTabs.addEventListener('click', (e) => {
+        if (e.target.matches('.interactive-tab')) {
+            renderAmenorrheaContent(e.target.dataset.tab);
+        }
+    });
+
+    renderAmenorrheaContent('primary');
+
+    const anomalyGallery = document.getElementById('anomaly-gallery');
+    const anomalyDetails = document.getElementById('anomaly-details');
+
+    db.anomalies.forEach(anomaly => {
+        const div = document.createElement('div');
+        div.className = 'card p-4 text-center cursor-pointer';
+        div.innerHTML = `<h5 class="font-semibold">${anomaly.name}</h5>`;
+        div.addEventListener('click', () => {
+            anomalyDetails.innerHTML = `
+                <h4 class="font-bold text-xl mb-2">${anomaly.name}</h4>
+                <p><strong>Description:</strong> ${anomaly.description}</p>
+                <p><strong>Embryological Cause:</strong> ${anomaly.cause}</p>
+                <p><strong>Common Presentation:</strong> ${anomaly.presentation}</p>
+            `;
+            anomalyDetails.classList.remove('hidden');
+            document.querySelectorAll('#anomaly-gallery .card').forEach(c => c.classList.remove('ring-2', 'ring-offset-2', 'ring-[#4A7C59]'));
+            div.classList.add('ring-2', 'ring-offset-2', 'ring-[#4A7C59]');
+        });
+        anomalyGallery.appendChild(div);
+    });
+
+    const ovulationCtx = document.getElementById('ovulationChart').getContext('2d');
+    new Chart(ovulationCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Letrozole', 'Clomiphene', 'Injectable Gonadotropins'],
+            datasets: [
+                {
+                    label: 'Live Birth Rate (per cycle/cumulative)',
+                    data: [27.5, 22.5, 25],
+                    backgroundColor: 'rgba(74, 124, 89, 0.6)',
+                    borderColor: 'rgba(74, 124, 89, 1)',
+                    borderWidth: 1,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Multiple Pregnancy Risk (%)',
+                    data: [6, 10, 25],
+                    backgroundColor: 'rgba(180, 130, 145, 0.6)',
+                    borderColor: 'rgba(180, 130, 145, 1)',
+                    borderWidth: 1,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: { display: true, text: 'Efficacy vs. Risk of Ovulation Induction Agents' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += context.parsed.y + '%';
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: { display: true, text: 'Rate (%)' },
+                    max: 35
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: { display: true, text: 'Risk (%)' },
+                    grid: { drawOnChartArea: false },
+                    max: 35
+                }
+            }
+        }
+    });
+
+    const utxCtx = document.getElementById('utxChart').getContext('2d');
+    new Chart(utxCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Preterm Birth', 'Preeclampsia', 'Gestational Diabetes', 'Gestational HTN'],
+            datasets: [{
+                label: 'Incidence in UTx Pregnancies (%)',
+                data: [80, 15, 10, 10],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(75, 192, 192, 0.6)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                title: { display: true, text: 'Approximate Rate of Complications' }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        callback: function(value) {
+                            return value + "%"
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    const navLinks = document.querySelectorAll('nav a');
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (!mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+    });
+
+    const sections = document.querySelectorAll('main section');
+    const headerNavLinks = document.querySelectorAll('#header .nav-link');
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (pageYOffset >= sectionTop - 60) {
+                current = section.getAttribute('id');
+            }
+        });
+        headerNavLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').includes(current)) {
+                link.classList.add('active');
+            }
+        });
+    });
+});
+</script>
+
+</body>
+</html>
