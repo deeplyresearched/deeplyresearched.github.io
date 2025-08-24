@@ -44,10 +44,12 @@ header nav ul {
     margin: 0;
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem 1.8rem;
 }
 
 header nav li {
-    margin: 0 0.75em;
+    margin: 0;
 }
 
 header nav a {
@@ -78,7 +80,7 @@ main {
 /* Section for Project Cards and PDF Library */
 .category-section {
     background-color: white;
-    padding: 2.5rem 1.5rem;
+    padding: 2.5rem 0.8rem;
     margin-bottom: 2em;
     border-radius: 12px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.05);
@@ -95,7 +97,15 @@ main {
 /* Grid for Project Cards */
 .project-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Flex container for centering single items */
+.flex-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
     gap: 1.5rem;
 }
 
@@ -114,6 +124,13 @@ main {
 .project-card:hover {
     transform: translateY(-8px);
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.project-card-image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    background-color: #e0e0e0;
 }
 
 .project-card-content {
@@ -139,13 +156,6 @@ main {
     margin-bottom: 1.5rem;
 }
 
-.flex-container {
-    display: flex;
-    justify-content: center; /* This centers the card(s) horizontally */
-    flex-wrap: wrap;         /* Allows items to wrap on smaller screens */
-    gap: 1.5rem;             /* Keeps the same spacing as your grid */
-}
-
 .project-card-content a {
     text-decoration: none;
     color: white;
@@ -155,28 +165,29 @@ main {
     border-radius: 5px;
     text-align: center;
     transition: background-color 0.3s ease;
-    margin-top: auto; /* Pushes button to the bottom */
+    margin-top: auto;
 }
 
 .project-card-content a:hover {
     background-color: #2c3e50;
 }
 
-
-/* PDF Library Section Styles */
-.pdf-library-section {
+/* PDF Library & Explore Further Section Styles */
+.pdf-library-section, .explore-further-section {
     text-align: center;
     background-color: #34495e;
     color: white;
+    border-radius: 20px;
 }
-.pdf-library-section .category-title {
+.pdf-library-section .category-title, .explore-further-section .category-title {
     color: white;
 }
-.pdf-library-description {
+.pdf-library-description, .explore-further-section p {
     max-width: 600px;
     margin: 0 auto 2rem auto;
     font-size: 1.1em;
     opacity: 0.9;
+    color: #bdc3c7;
 }
 .pdf-library-button {
     display: inline-block;
@@ -194,8 +205,58 @@ main {
     background-color: #f0f0f0;
 }
 
+/* --- NEW EXPLORE & FOOTER STYLES --- */
+.explore-further-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem 0;
+    padding: 3rem 1.5rem 2rem;
+    color: white;
+}
+.footer-nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.8rem 6rem;
+    list-style: none;
+    padding:0;
+    margin: 0 0 2.5rem 0;
+}
+.footer-nav a {
+    color: #ecf0f1;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.1em;
+    transition: color 0.3s ease;
+}
+.footer-nav a:hover {
+    color: white;
+    text-decoration: underline;
+}
+.social-links {
+    margin-bottom: 1rem;
+}
+.social-links a {
+    color: #bdc3c7;
+    font-size: 1.8rem;
+    margin: 0 0.75rem;
+    transition: color 0.3s ease, transform 0.3s ease;
+    display: inline-block;
+}
+.social-links a:hover {
+    color: white;
+    transform: scale(1.1);
+}
 
-/* Footer Styles */
+.site-footer {
+    text-align: center;
+    padding: 1.5em 0;
+    background-color: #2c3e50;
+    color: #95a5a6;
+    font-size: 0.9em;
+    margin-top: 0;
+}
+
 footer {
     text-align: center;
     padding: 1.5em 0;
@@ -204,6 +265,5 @@ footer {
     font-size: 0.9em;
     margin-top: 2em;
 }
-
 
 
