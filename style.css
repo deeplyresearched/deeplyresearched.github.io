@@ -220,7 +220,7 @@ main {
     gap: 0.8rem 6rem;
     list-style: none;
     padding:0;
-    margin: 0 0 2.5rem 0;
+    margin: 2.5rem 0.8rem 2.5rem 0.8rem;
 }
 .footer-nav a {
     color: #ecf0f1;
@@ -265,5 +265,6 @@ footer {
     font-size: 0.9em;
     margin-top: 2em;
 }
+
 
 
