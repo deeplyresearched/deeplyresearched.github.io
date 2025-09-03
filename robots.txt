@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.google.com/search?q=https://deeplyresearched.github.io/sitemap.xml
+Sitemap: https://deeplyresearched.github.io/sitemap.xml
