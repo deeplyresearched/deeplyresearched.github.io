@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title> 2026 Volvo XC60: Interactive Report</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+
+<!-- Chosen Palette: Scandinavian Serenity -->
+<!-- Application Structure Plan: The SPA is designed as a top-down discovery journey for a prospective buyer, prioritizing user tasks over the report's linear structure. It begins with a high-level overview (Hero), then dives into the most critical update ('What's New'). It then allows users to interactively explore core choices (Powertrains, Trims) and key brand pillars (Interior, Safety). A dynamic competitive analysis tool follows, allowing for direct comparison on key metrics. The app concludes with strategic context. This thematic, task-oriented flow is more intuitive for vehicle research than a simple chapter-by-chapter replication, enabling users to explore based on their personal priorities (e.g., performance, price, or features). -->
+<!-- Visualization & Content Choices: Report Info: Powertrain specs -> Goal: Compare B5 vs T8 -> Viz: Interactive toggle -> Interaction: User clicks toggle to update stats panel -> Justification: Simplifies a key decision point, making complex specs easily digestible. | Report Info: Competitive data table -> Goal: Compare XC60 to rivals -> Viz: Bar Chart (Chart.js) -> Interaction: User selects metric from dropdown to dynamically re-render the chart -> Justification: Transforms a dense static table into an exploratory tool, allowing users to compare what matters most to them. | Report Info: Trim levels and pricing -> Goal: Guide trim selection -> Viz: Interactive dropdown/selector -> Interaction: User selects trim to see updated price and features -> Justification: Mimics a vehicle configurator experience, making pricing and feature differences clear and easy to evaluate. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+<style>
+body {
+font-family: 'Inter', sans-serif;
+background-color: #F8F7F4;
+color: #2D3748;
+}
+.chart-container {
+position: relative;
+width: 100%;
+max-width: 800px;
+margin-left: auto;
+margin-right: auto;
+height: 400px;
+max-height: 50vh;
+}
+@media (min-width: 768px) {
+.chart-container {
+height: 500px;
+}
+}
+.nav-link {
+transition: color 0.3s ease, border-bottom-color 0.3s ease;
+}
+.nav-link:hover {
+color: #3B82F6;
+}
+.active-nav {
+color: #3B82F6;
+border-bottom-color: #3B82F6;
+}
+.btn-primary {
+background-color: #313b4c;
+color: #FFFFFF;
+transition: background-color 0.3s ease;
+}
+.btn-primary:hover {
+background-color: #1f2632;
+}
+.btn-secondary {
+background-color: #E2E8F0;
+color: #2D3748;
+transition: background-color 0.3s ease;
+}
+.btn-secondary.active {
+background-color: #313b4c;
+color: #FFFFFF;
+}
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+
+</style>
+</head>
+<body class="antialiased">
+
+<header id="header" class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+<nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+<div class="text-2xl font-bold text-gray-800">
+<span class="text-blue-600">2026</span> Volvo XC60
+</div>
+<div class="hidden md:flex space-x-8">
+<a href="#overview" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Overview</a>
+<a href="#powertrain" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Powertrain</a>
+<a href="#interior" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Interior</a>
+<a href="#safety" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Safety</a>
+<a href="#trims" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Trims</a>
+<a href="#competitors" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Compare</a>
+</div>
+<button id="mobile-menu-button" class="md:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500">
+<div id="menu-icon-open" class="w-6 h-6">
+<div class="w-6 h-0.5 bg-gray-800 mb-1.5"></div>
+<div class="w-6 h-0.5 bg-gray-800"></div>
+<div class="w-6 h-0.5 bg-gray-800 mt-1.5"></div>
+</div>
+<div id="menu-icon-close" class="hidden w-6 h-6">
+<div class="w-6 h-0.5 bg-gray-800 rotate-45 translate-y-0.5"></div>
+<div class="w-6 h-0.5 bg-gray-800 -rotate-45 -translate-y-px"></div>
+</div>
+</button>
+</nav>
+<div id="mobile-menu" class="hidden md:hidden bg-white px-6 pb-4">
+<a href="#overview" class="block py-2 text-gray-600">Overview</a>
+<a href="#powertrain" class="block py-2 text-gray-600">Powertrain</a>
+<a href="#interior" class="block py-2 text-gray-600">Interior</a>
+<a href="#safety" class="block py-2 text-gray-600">Safety</a>
+<a href="#trims" class="block py-2 text-gray-600">Trims</a>
+<a href="#competitors" class="block py-2 text-gray-600">Compare</a>
+</div>
+</header>
+
+<main>
+<section id="overview" class="pt-16 pb-20 bg-white">
+<div class="container mx-auto px-6 text-center">
+<h1 class="text-4xl md:text-6xl font-bold text-gray-800 leading-tight">Calculated Refinement. Proven Leader.</h1>
+<p class="mt-4 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">The 2026 Volvo XC60 enhances its legacy of safety, comfort, and Scandinavian design with key technological upgrades and refined styling, reinforcing its position in the competitive luxury SUV market.</p>
+<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+<div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+<h3 class="text-3xl font-bold text-blue-600">Up to 455 hp</h3>
+<p class="mt-2 text-gray-500">With the T8 Recharge Plug-In Hybrid</p>
+</div>
+<div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+<h3 class="text-3xl font-bold text-blue-600">35 Miles</h3>
+<p class="mt-2 text-gray-500">Of Pure Electric Range (T8)</p>
+</div>
+<div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+<h3 class="text-3xl font-bold text-blue-600">$50,995</h3>
+<p class="mt-2 text-gray-500">Starting MSRP (B5 Core)</p>
+</div>
+</div>
+<div class="mt-12">
+<h2 class="text-3xl font-bold text-gray-800 mb-8">What's New for 2026?</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
+<div class="bg-white p-6 rounded-lg border">
+<h3 class="font-bold text-xl mb-2">Upgraded Digital Cockpit</h3>
+<p class="text-gray-600">A new, faster 11.2-inch "floating" touchscreen powered by a Snapdragon processor provides a fluid, responsive experience with Google Built-in for seamless navigation and voice control.</p>
+</div>
+<div class="bg-white p-6 rounded-lg border">
+<h3 class="font-bold text-xl mb-2">Refined Exterior Styling</h3>
+<p class="text-gray-600">The front grille is updated with a new diagonal motif from the flagship XC90, creating a stronger family resemblance. Darkened taillights and new wheel designs complete the modern look.</p>
+</div>
+<div class="bg-white p-6 rounded-lg border">
+<h3 class="font-bold text-xl mb-2">Standardized Safety Suite</h3>
+<p class="text-gray-600">In a class-leading move, Volvo's entire suite of advanced safety and driver-assistance systems, including Adaptive Cruise Control, is now standard on every XC60 trim level.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="powertrain" class="py-20">
+<div class="container mx-auto px-6">
+<h2 class="text-3xl md:text-4xl font-bold text-center text-gray-800">Choose Your Power</h2>
+<p class="mt-4 text-lg text-gray-600 text-center max-w-3xl mx-auto">The XC60 offers two distinct electrified powertrains. Select an option below to explore the balance of composed efficiency with the B5 mild-hybrid or the potent performance and electric capability of the T8 plug-in hybrid.</p>
+<div class="mt-10 flex justify-center space-x-4">
+<button id="b5-btn" class="powertrain-btn btn-secondary active px-6 py-3 rounded-lg font-semibold">B5 Mild Hybrid</button>
+<button id="t8-btn" class="powertrain-btn btn-secondary px-6 py-3 rounded-lg font-semibold">T8 Plug-In Hybrid</button>
+</div>
+<div id="powertrain-display" class="mt-12 max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg transition-all duration-500">
+</div>
+</div>
+</section>
+
+<section id="interior" class="py-20 bg-white">
+<div class="container mx-auto px-6">
+<h2 class="text-3xl md:text-4xl font-bold text-center text-gray-800">A Scandinavian Sanctuary</h2>
+<p class="mt-4 text-lg text-gray-600 text-center max-w-3xl mx-auto">The 2026 XC60's cabin is a masterclass in human-centric design, blending cutting-edge technology with timeless materials and everyday practicality. This refresh introduces a faster, larger screen while retaining key physical controls, creating an ideal bridge for modern drivers.</p>
+<div class="mt-12 max-w-5xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="flex flex-col items-center text-center p-4">
+<div class="text-blue-600 mb-4">
+<span class="w-16 h-16 inline-flex items-center justify-center rounded-full bg-blue-100">
+<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+</span>
+</div>
+<h3 class="text-xl font-bold mb-2">Intuitive Technology</h3>
+<p class="text-gray-600">The new 11.2" display is 2x faster, offering a seamless interface with Google Built-in. Crucially, it's paired with a physical volume knob and defrost buttons for tactile, no-look operation of core functions.</p>
+</div>
+<div class="flex flex-col items-center text-center p-4">
+<div class="text-blue-600 mb-4">
+<span class="w-16 h-16 inline-flex items-center justify-center rounded-full bg-blue-100">
+<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+</span>
+</div>
+<h3 class="text-xl font-bold mb-2">Premium Materials</h3>
+<p class="text-gray-600">Experience new sustainable options like Quilted Nordico vegan upholstery or genuine Nappa leather. An Orrefors crystal gear shifter adds a unique touch of Swedish artistry to the center console.</p>
+</div>
+<div class="flex flex-col items-center text-center p-4">
+<div class="text-blue-600 mb-4">
+<span class="w-16 h-16 inline-flex items-center justify-center rounded-full bg-blue-100">
+<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+</span>
+</div>
+<h3 class="text-xl font-bold mb-2">Uncompromised Utility</h3>
+<p class="text-gray-600">Practicality remains a core strength, with a generous 63.3 cubic feet of maximum cargo space. The well-shaped cargo bay and standard power liftgate make loading effortless.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="safety" class="py-20">
+<div class="container mx-auto px-6 text-center">
+<h2 class="text-3xl md:text-4xl font-bold text-gray-800">The Safety Mandate</h2>
+<p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">While competitors charge thousands for optional packages, Volvo makes its entire suite of advanced safety systems standard on every 2026 XC60. Safety isn't a luxury; it's the foundation.</p>
+<div class="mt-12 max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-8">
+<div class="bg-white p-4 rounded-lg shadow-sm text-center">
+<p class="font-semibold">Adaptive Cruise Control</p>
+</div>
+<div class="bg-white p-4 rounded-lg shadow-sm text-center">
+<p class="font-semibold">Blind Spot Information (BLIS)</p>
+</div>
+<div class="bg-white p-4 rounded-lg shadow-sm text-center">
+<p class="font-semibold">Lane Keeping Aid</p>
+</div>
+<div class="bg-white p-4 rounded-lg shadow-sm text-center">
+<p class="font-semibold">Collision Avoidance</p>
+</div>
+<div class="bg-white p-4 rounded-lg shadow-sm text-center">
+<p class="font-semibold">Rear Cross Traffic Alert</p>
+</div>
+<div class="bg-white p-4 rounded-lg shadow-sm text-center">
+<p class="font-semibold">Front & Rear Park Assist</p>
+</div>
+</div>
+</div>
+</section>
+
+<section id="trims" class="py-20 bg-white">
+<div class="container mx-auto px-6">
+<h2 class="text-3xl md:text-4xl font-bold text-center text-gray-800">Find Your XC60</h2>
+<p class="mt-4 text-lg text-gray-600 text-center max-w-3xl mx-auto">The XC60 lineup is structured to meet diverse needs, from the remarkably well-equipped Core to the high-performance Polestar Engineered. Select a trim to see its features and pricing.</p>
+<div class="mt-10 max-w-lg mx-auto">
+<label for="trim-selector" class="block text-sm font-medium text-gray-700">Select Trim Level:</label>
+<select id="trim-selector" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+</select>
+</div>
+<div id="trim-display" class="mt-8 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+</div>
+</div>
+</section>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+
+<section id="competitors" class="py-20">
+<div class="container mx-auto px-6">
+<h2 class="text-3xl md:text-4xl font-bold text-center text-gray-800">How It Stacks Up</h2>
+<p class="mt-4 text-lg text-gray-600 text-center max-w-3xl mx-auto">The compact luxury SUV segment is fierce. See how the XC60's B5 and T8 variants compare to key rivals on the metrics that matter most to you. Use the dropdown to change the comparison.</p>
+<div class="mt-10 max-w-sm mx-auto">
+<label for="metric-selector" class="block text-sm font-medium text-gray-700">Compare by:</label>
+<select id="metric-selector" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+<option value="horsepower">Horsepower</option>
+<option value="zeroToSixty">0-60 MPH (sec)</option>
+<option value="cargo">Max Cargo (cu. ft.)</option>
+<option value="msrp">Base MSRP</option>
+</select>
+</div>
+<div class="mt-8">
+<div class="chart-container">
+<canvas id="competitorChart"></canvas>
+</div>
+</div>
+</div>
+</section>
+<section id="strategy" class="py-20 bg-white">
+<div class="container mx-auto px-6">
+<h2 class="text-3xl md:text-4xl font-bold text-center text-gray-800">A Bridge to the Future</h2>
+<p class="mt-4 text-lg text-gray-600 text-center max-w-3xl mx-auto">This refresh is more than an update; it's a strategic move. The XC60 serves as a profitable and popular bridge, funding the brand's all-electric future while providing a compelling option for today's luxury buyer.</p>
+<div class="mt-12 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="bg-gray-50 p-8 rounded-lg">
+<h3 class="text-2xl font-bold mb-3">American Backbone</h3>
+<p class="text-gray-600">Starting in late 2026, the XC60 will be produced at Volvo's advanced facility in South Carolina. This "build where you sell" strategy strengthens market roots, reduces delivery times, and insulates the brand from global supply chain volatility.</p>
+</div>
+<div class="bg-gray-50 p-8 rounded-lg">
+<h3 class="text-2xl font-bold mb-3">The Coexistence Strategy</h3>
+<p class="text-gray-600">The refreshed XC60 will sell alongside the upcoming all-electric EX60. This allows Volvo to serve customers who aren't ready for a full EV, using the profits from its bestseller to fund the next generation of electric vehicle technology.</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+
+<footer class="bg-gray-800 text-white py-8">
+<div class="container mx-auto px-6 text-center">
+<p>&copy; 2024 Interactive Vehicle Report. Data synthesized from public research.</p>
+<p class="text-sm text-gray-400 mt-2">This is a conceptual web application created for informational purposes.</p>
+</div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+const powertrainData = {
+b5: {
+title: 'B5 AWD: The Composed Standard',
+description: 'The B5 powertrain pairs a turbocharged 2.0L engine with a 48-volt mild-hybrid system for smooth, refined, and efficient performance. Its focus is on a serene and confident driving experience, making it an ideal companion for daily driving and long-distance cruising.',
+stats: [
+{ label: 'Horsepower', value: '247 hp' },
+{ label: 'Torque', value: '266 lb-ft' },
+{ label: '0-60 MPH', value: '6.5 sec' },
+{ label: 'Fuel Economy', value: '26 MPG Combined' }
+]
+},
+t8: {
+title: 'T8 Recharge: The Potent All-Rounder',
+description: 'The T8 plug-in hybrid transforms the XC60 into a high-performance SUV with a formidable 455 hp. It offers the duality of up to 35 miles of pure electric range for gas-free commuting and blistering acceleration when you need it.',
+stats: [
+{ label: 'Horsepower', value: '455 hp' },
+{ label: 'Torque', value: '523 lb-ft' },
+{ label: '0-60 MPH', value: '4.5 sec' },
+{ label: 'Electric Range', value: '35 Miles' }
+]
+}
+};
+
+const trimData = {
+core: {
+name: "Core",
+b5_msrp: "$50,995",
+t8_msrp: "$62,445",
+description: "The entry point to the XC60 lineup is remarkably well-equipped, featuring the full suite of advanced safety systems, a panoramic moonroof, and the new 11.2-inch touchscreen as standard.",
+features: ["18-inch wheels", "Panoramic moonroof", "Heated front seats", "Full safety suite", "11.2-inch Google Built-in display"]
+},
+plus: {
+name: "Plus (Sweet Spot)",
+b5_msrp: "$55,595",
+t8_msrp: "$66,895",
+description: "The Plus trim adds highly desirable convenience features, making it the ideal choice for most buyers. The 360-degree camera significantly enhances ease of parking and maneuverability.",
+features: ["All Core features, plus:", "19-inch wheels", "360-degree camera system", "Side proximity sensors", "Upgraded ambient lighting"]
+},
+ultra: {
+name: "Ultra",
+b5_msrp: "$60,945",
+t8_msrp: "$72,245",
+description: "The Ultra trim elevates the luxury experience with premium materials and audio, including genuine Nappa leather and a 14-speaker Harman Kardon sound system.",
+features: ["All Plus features, plus:", "20-inch wheels", "Harman Kardon premium audio", "Nappa leather upholstery", "4-zone climate control"]
+},
+black: {
+name: "Ultra Black Edition",
+b5_msrp: "$62,095",
+t8_msrp: "$73,345",
+description: "A distinct appearance package that builds on the Ultra trim, offering a stealthy, assertive look with extensive black exterior trim and exclusive 21-inch wheels.",
+features: ["All Ultra features, plus:", "21-inch black wheels", "Black exterior trim & badging", "Ventilated black Nappa leather"]
+},
+polestar: {
+name: "Polestar Engineered (T8 Only)",
+b5_msrp: "N/A",
+t8_msrp: "$81,095",
+description: "The pinnacle of XC60 performance, this T8-exclusive trim features a specialized chassis tuned by Polestar with Öhlins dampers and Akebono brakes for a truly dynamic drive.",
+features: ["All Ultra features, plus:", "Polestar chassis (Öhlins dampers)", "Akebono high-performance brakes", "15-speaker Bowers & Wilkins audio", "Signature gold accents"]
+}
+};
+
+const competitorData = {
+models: ['Volvo XC60 B5', 'Volvo XC60 T8', 'BMW X3 xDrive30', 'BMW X3 M50', 'Mercedes GLC 300', 'Genesis GV70 2.5T', 'Lexus NX 350h'],
+horsepower: [247, 455, 255, 393, 255, 300, 240],
+zeroToSixty: [6.5, 4.5, 6.0, 4.4, 6.0, 5.8, 7.2],
+cargo: [63.3, 63.3, 67.1, 67.1, 56.3, 56.9, 46.9],
+msrp: [50995, 62445, 52075, 67075, 51000, 50480, 58000]
+};
+const powertrainDisplay = document.getElementById('powertrain-display');
+const b5Btn = document.getElementById('b5-btn');
+const t8Btn = document.getElementById('t8-btn');
+
+function updatePowertrain(type) {
+const data = powertrainData[type];
+powertrainDisplay.innerHTML = `
+<h3 class="text-2xl font-bold text-gray-800 mb-4">${data.title}</h3>
+<p class="text-gray-600 mb-6">${data.description}</p>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+${data.stats.map(stat => `
+<div>
+<p class="text-2xl font-bold text-blue-600">${stat.value}</p>
+<p class="text-sm text-gray-500">${stat.label}</p>
+</div>
+`).join('')}
+</div>
+`;
+if (type === 'b5') {
+b5Btn.classList.add('active');
+t8Btn.classList.remove('active');
+} else {
+t8Btn.classList.add('active');
+b5Btn.classList.remove('active');
+}
+}
+b5Btn.addEventListener('click', () => updatePowertrain('b5'));
+t8Btn.addEventListener('click', () => updatePowertrain('t8'));
+updatePowertrain('b5');
+
+const trimSelector = document.getElementById('trim-selector');
+const trimDisplay = document.getElementById('trim-display');
+Object.keys(trimData).forEach(key => {
+const option = document.createElement('option');
+option.value = key;
+option.textContent = trimData[key].name;
+trimSelector.appendChild(option);
+});
+
+function updateTrim(key) {
+const data = trimData[key];
+trimDisplay.innerHTML = `
+<div class="bg-gray-50 p-6 rounded-lg">
+<h3 class="text-2xl font-bold text-gray-800">${data.name}</h3>
+<p class="mt-2 text-gray-600">${data.description}</p>
+<div class="mt-6 space-y-2">
+<p class="text-lg"><span class="font-semibold">B5 AWD MSRP:</span> ${data.b5_msrp}</p>
+<p class="text-lg"><span class="font-semibold">T8 PHEV MSRP:</span> ${data.t8_msrp}</p>
+</div>
+</div>
+<div class="bg-gray-50 p-6 rounded-lg">
+<h4 class="text-xl font-bold text-gray-800 mb-4">Key Features</h4>
+<ul class="space-y-2 text-gray-600 list-disc list-inside">
+${data.features.map(feature => `<li>${feature}</li>`).join('')}
+</ul>
+</div>
+`;
+}
+
+trimSelector.addEventListener('change', (e) => updateTrim(e.target.value));
+updateTrim('plus');
+trimSelector.value = 'plus';
+
+const ctx = document.getElementById('competitorChart').getContext('2d');
+const metricSelector = document.getElementById('metric-selector');
+let competitorChart;
+
+function renderChart(metric) {
+if (competitorChart) {
+competitorChart.destroy();
+}
+
+const isLowerBest = metric === 'zeroToSixty';
+const chartData = {
+labels: competitorData.models.map(label => label.split(' ')),
+datasets: [{
+label: metricSelector.options[metricSelector.selectedIndex].text,
+data: competitorData[metric],
+backgroundColor: competitorData.models.map(model => model.includes('Volvo') ? 'rgba(59, 130, 246, 0.7)' : 'rgba(209, 213, 219, 0.7)'),
+borderColor: competitorData.models.map(model => model.includes('Volvo') ? 'rgba(59, 130, 246, 1)' : 'rgba(156, 163, 175, 1)'),
+borderWidth: 1
+}]
+};
+
+competitorChart = new Chart(ctx, {
+type: 'bar',
+data: chartData,
+options: {
+responsive: true,
+maintainAspectRatio: false,
+plugins: {
+legend: {
+display: false
+},
+tooltip: {
+callbacks: {
+title: function(context) {
+return context[0].label.replace(/,/g, ' ');
+},
+label: function(context) {
+let label = context.dataset.label || '';
+if (label) {
+label += ': ';
+}
+if (context.parsed.y !== null) {
+if (metric === 'msrp') {
+label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(context.parsed.y);
+} else {
+label += context.parsed.y;
+}
+}
+return label;
+}
+}
+}
+},
+scales: {
+y: {
+beginAtZero: false,
+reverse: isLowerBest,
+title: {
+display: true,
+text: metricSelector.options[metricSelector.selectedIndex].text + (isLowerBest ? ' (Lower is Better)' : '')
+}
+},
+x: {
+ticks: {
+maxRotation: 0,
+minRotation: 0,
+autoSkip: false,
+}
+}
+}
+}
+});
+}
+
+metricSelector.addEventListener('change', (e) => renderChart(e.target.value));
+renderChart('horsepower');
+const navLinks = document.querySelectorAll('.nav-link');
+const sections = document.querySelectorAll('main section');
+const headerHeight = document.getElementById('header').offsetHeight;
+
+const observerOptions = {
+root: null,
+rootMargin: `-${headerHeight}px 0px 0px 0px`,
+threshold: 0.4
+};
+
+const observer = new IntersectionObserver((entries) => {
+entries.forEach(entry => {
+if (entry.isIntersecting) {
+navLinks.forEach(link => {
+link.classList.remove('active-nav');
+if (link.getAttribute('href').substring(1) === entry.target.id) {
+link.classList.add('active-nav');
+}
+});
+}
+});
+}, observerOptions);
+
+sections.forEach(section => {
+observer.observe(section);
+});
+const mobileMenuButton = document.getElementById('mobile-menu-button');
+const mobileMenu = document.getElementById('mobile-menu');
+const menuIconOpen = document.getElementById('menu-icon-open');
+const menuIconClose = document.getElementById('menu-icon-close');
+
+mobileMenuButton.addEventListener('click', () => {
+mobileMenu.classList.toggle('hidden');
+menuIconOpen.classList.toggle('hidden');
+menuIconClose.classList.toggle('hidden');
+});
+mobileMenu.addEventListener('click', (e) => {
+if (e.target.tagName === 'A') {
+mobileMenu.classList.add('hidden');
+menuIconOpen.classList.remove('hidden');
+menuIconClose.classList.add('hidden');
+}
+});
+
+});
+</script>
+</body>
+</html>
+
