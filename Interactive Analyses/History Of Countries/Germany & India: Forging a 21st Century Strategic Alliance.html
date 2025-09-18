@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Germany & India: Forging a 21st Century Strategic Alliance</title>
+<meta name="description" content="Unpack the evolving Germany-India strategic partnership. This report analyzes the geopolitical, economic, and socio-cultural forces shaping a vital 21st-century alliance.">
+<meta name="keywords" content="Germany India partnership, India Germany relations, Strategic alliance 21st century, Indo-Pacific strategy Germany, Geopolitics India Germany, Bilateral trade Germany India, Green Sustainable Development Partnership, Migration Mobility Partnership, Defense cooperation India Germany, De-risking from China, Germany foreign policy India, India economic growth, Skilled labor Germany India, Global strategic partnerships, Europe Asia relations">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+    <!-- Chosen Palette: Warm Neutrals & Slate Blue -->
+    <!-- Application Structure Plan: A thematic, single-page dashboard design was chosen to allow users to explore the complex Indo-German relationship in a non-linear, intuitive manner. The structure includes a main navigation bar (Overview, Political, Economic, People, Future) that smoothly scrolls to dedicated sections. This is more user-friendly than a rigid, report-like structure. The overview provides immediate, high-level insights with key stats, while thematic sections allow for deeper dives. Interactions like chart data toggling and clickable diagrams are designed to engage the user and reveal information progressively, preventing cognitive overload. The flow encourages exploration based on user interest, making the dense information highly accessible. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Key metrics (trade, students, etc.) -> Goal: Inform -> Viz/Presentation Method: Highlight Cards -> Interaction: Hover effect -> Justification: Provides a quick, scannable summary of the relationship's scale -> Library/Method: HTML/Tailwind.
+        - Report Info: Historical Milestones -> Goal: Show Change -> Viz/Presentation Method: Interactive Vertical Timeline -> Interaction: Click to highlight details -> Justification: Presents historical context in a visually engaging and digestible format -> Library/Method: HTML/Tailwind/JS.
+        - Report Info: Bilateral Trade & FDI Growth -> Goal: Compare/Show Change -> Viz/Presentation Method: Bar Chart -> Interaction: Buttons to toggle between datasets -> Justification: Clearly visualizes economic trends and allows direct comparison between two key metrics -> Library/Method: Chart.js/Canvas.
+        - Report Info: Strategic Cooperation Areas -> Goal: Organize/Relate -> Viz/Presentation Method: Interactive Diagram (nodes and central hub) -> Interaction: Click on nodes to display details -> Justification: Illustrates the interconnectedness of political initiatives more effectively than a static list -> Library/Method: HTML/Tailwind/JS.
+        - Report Info: Indian Diaspora in Germany -> Goal: Show Proportion -> Viz/Presentation Method: Donut Chart -> Interaction: Hover over segments for tooltips -> Justification: Provides an immediate, clear visual breakdown of the diaspora's composition -> Library/Method: Chart.js/Canvas.
+        - Report Info: Future Outlook -> Goal: Inform -> Viz/Presentation Method: Formatted text with custom icons -> Interaction: None -> Justification: Clearly presents forward-looking analysis and key takeaways. -> Library/Method: HTML/Tailwind. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f7f4;
+            color: #1f2937;
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-bottom-color 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -31px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #6b7280;
+            border: 2px solid #f8f7f4;
+            transition: background-color 0.3s ease;
+        }
+        .timeline-item.active::before {
+             background-color: #3b82f6;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 450px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .strategy-node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .strategy-node:hover, .strategy-node.active {
+            transform: scale(1.05);
+            background-color: #3b82f6;
+            color: white;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+    </style>
+</head>
+<body class="bg-amber-50 text-gray-800">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="font-bold text-xl text-gray-800">Indo-German Partnership</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Overview</a>
+                        <a href="#political" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Political & Strategic</a>
+                        <a href="#economic" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Economic Ties</a>
+                        <a href="#people" class="nav-link px-3 py-2 rounded-md text-sm font-medium">People & Culture</a>
+                        <a href="#future" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Future Outlook</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <section id="overview" class="scroll-mt-20">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">A Deepening Alliance in the 21st Century</h1>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">Explore the key drivers transforming the Indo-German relationship into a pivotal strategic partnership, shaping foreign policies and global dynamics.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div class="bg-white p-6 rounded-xl shadow-md text-center">
+                    <div class="text-4xl font-bold text-blue-600">> €30 Billion</div>
+                    <p class="mt-2 text-gray-600 font-medium">Annual Bilateral Trade</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md text-center">
+                    <div class="text-4xl font-bold text-blue-600">~43,000</div>
+                    <p class="mt-2 text-gray-600 font-medium">Indian Students in Germany</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md text-center">
+                    <div class="text-4xl font-bold text-blue-600">2,000+</div>
+                    <p class="mt-2 text-gray-600 font-medium">German Companies in India</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <h3 class="text-2xl font-bold text-center text-gray-900 mb-6">Key Milestones in the Partnership</h3>
+                <div class="flex flex-col md:flex-row gap-8">
+                    <div class="w-full md:w-1/2">
+                        <div id="timeline-container" class="relative border-l-2 border-gray-300 ml-4 pl-8 space-y-10">
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/2 bg-amber-50/50 rounded-lg p-6 flex items-center">
+                        <div id="timeline-details" class="text-left">
+                            <h4 id="timeline-year" class="font-bold text-xl text-blue-700 mb-2">Select a Year</h4>
+                            <p id="timeline-text" class="text-gray-700">Click on a year on the timeline to see details about significant events and initiatives in the Indo-German relationship.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="political" class="scroll-mt-20 mt-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Political & Strategic Alignment</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">This section explores the political bedrock of the partnership, built on shared democratic values and a commitment to a rules-based international order. Discover the key strategic initiatives where Berlin and New Delhi collaborate to address global challenges, from climate change to security in the Indo-Pacific.</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <div class="flex flex-col lg:flex-row items-center gap-8">
+                    <div class="w-full lg:w-1/2 flex justify-center items-center">
+                        <div class="relative w-[350px] h-[350px] md:w-[400px] md:h-[400px]">
+                            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white w-40 h-40 rounded-full flex items-center justify-center text-center font-bold text-lg p-4">Shared Interests</div>
+                            <div id="strategy-node-1" class="strategy-node absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-lg w-32 h-32 rounded-full flex items-center justify-center text-center font-semibold p-2">Green & Sustainable Dev.</div>
+                            <div id="strategy-node-2" class="strategy-node absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 bg-white shadow-lg w-32 h-32 rounded-full flex items-center justify-center text-center font-semibold p-2">Multilateralism (G4)</div>
+                            <div id="strategy-node-3" class="strategy-node absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 bg-white shadow-lg w-32 h-32 rounded-full flex items-center justify-center text-center font-semibold p-2">Security & Indo-Pacific</div>
+                            <div id="strategy-node-4" class="strategy-node absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 bg-white shadow-lg w-32 h-32 rounded-full flex items-center justify-center text-center font-semibold p-2">Digitalization & Innovation</div>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-1/2">
+                        <div id="strategy-details" class="bg-amber-50/50 rounded-lg p-6 min-h-[250px] flex flex-col justify-center">
+                            <h4 id="strategy-title" class="font-bold text-xl text-blue-700 mb-2">Click a domain to explore</h4>
+                            <p id="strategy-text" class="text-gray-700">The strategic partnership is built on several key pillars. Click on an area of cooperation to learn more about specific initiatives and shared goals.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="economic" class="scroll-mt-20 mt-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Economic Ties: Trade & Investment</h2>
+                 <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">As economic powerhouses, India and Germany share a robust commercial relationship. This section visualizes the growth in trade and investment that fuels the partnership. Interact with the chart to see how German foreign direct investment complements the strong trade flows, particularly in sectors like engineering, automotive, and technology.</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                 <div class="flex justify-center mb-6 space-x-4">
+                    <button id="tradeBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400">Bilateral Trade</button>
+                    <button id="fdiBtn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-400">German FDI in India</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="economicChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="people" class="scroll-mt-20 mt-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900">People & Culture: The Human Bridge</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">The Indo-German connection is deeply enriched by its people-to-people ties. Here, we look at the growing Indian diaspora in Germany, a vibrant community of students, professionals, and academics. This cultural exchange, fostered by institutions and educational partnerships, forms the living fabric of the bilateral relationship.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                    <h3 class="text-xl font-bold text-center text-gray-900 mb-4">Indian Diaspora in Germany (Estimates)</h3>
+                    <div class="chart-container h-80 md:h-96">
+                        <canvas id="diasporaChart"></canvas>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                     <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h4 class="font-bold text-lg text-gray-800">Academic Exchange</h4>
+                        <p class="mt-2 text-gray-600">Germany is a top destination for Indian students pursuing higher education, facilitated by organizations like the German Academic Exchange Service (DAAD). This fosters a new generation of skilled professionals with ties to both nations.</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h4 class="font-bold text-lg text-gray-800">Cultural Institutions</h4>
+                        <p class="mt-2 text-gray-600">The Goethe-Institut (Max Mueller Bhavan) in India plays a crucial role in promoting German language and culture, while Indian cultural festivals in Germany showcase the richness of Indian traditions, enhancing mutual understanding.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="future" class="scroll-mt-20 mt-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Future Outlook & Implications</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">The deepening Indo-German alliance carries significant implications for both nations and the global order. This concluding section outlines the potential trajectory of the partnership, highlighting key areas of opportunity and the challenges that lie ahead as they navigate a complex geopolitical landscape together.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                        <span class="text-green-500 mr-3">✔</span>Opportunities
+                    </h3>
+                    <ul class="space-y-3 text-gray-700 list-inside">
+                        <li class="flex items-start"><span class="mr-2 mt-1">∙</span><span><strong>Technology Co-development:</strong> Joint ventures in AI, 5G, and green technologies to set global standards.</span></li>
+                        <li class="flex items-start"><span class="mr-2 mt-1">∙</span><span><strong>Global Governance Leadership:</strong> Stronger G4 coordination to push for UNSC reform and shape global norms.</span></li>
+                        <li class="flex items-start"><span class="mr-2 mt-1">∙</span><span><strong>Supply Chain Resilience:</strong> Diversifying supply chains away from single-country dependence.</span></li>
+                        <li class="flex items-start"><span class="mr-2 mt-1">∙</span><span><strong>Skilled Migration Pacts:</strong> Creating pathways for Indian talent to address Germany's demographic challenges.</span></li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                        <span class="text-red-500 mr-3">⚠</span>Challenges
+                    </h3>
+                    <ul class="space-y-3 text-gray-700 list-inside">
+                        <li class="flex items-start"><span class="mr-2 mt-1">∙</span><span><strong>Geopolitical Divergence:</strong> Navigating different approaches towards Russia and China.</span></li>
+                        <li class="flex items-start"><span class="mr-2 mt-1">∙</span><span><strong>Trade Liberalization:</strong> Overcoming hurdles in the EU-India Free Trade Agreement negotiations.</span></li>
+                        <li class="flex items-start"><span class="mr-2 mt-1">∙</span><span><strong>Bureaucratic Hurdles:</strong> Streamlining regulatory environments in both countries to ease business operations.</span></li>
+                        <li class="flex items-start"><span class="mr-2 mt-1">∙</span><span><strong>Pace of Implementation:</strong> Ensuring bilateral agreements translate into tangible on-ground action swiftly.</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+
+    <footer class="bg-white mt-16">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-500">
+            <p>Interactive Analysis of Indo-German Relations. Created for illustrative purposes.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const timelineData = {
+                2000: { year: '2000', text: 'India and Germany establish a "Strategic Partnership", laying the foundation for deeper cooperation on bilateral and global issues.' },
+                2011: { year: '2011', text: 'The first Inter-Governmental Consultations (IGC) are held, creating a unique cabinet-level dialogue format between the two nations.' },
+                2015: { year: '2015', text: 'A significant push for economic ties is made during Chancellor Merkel\'s visit, focusing on the "Make in India" initiative and sustainable urban development.' },
+                2019: { year: '2019', text: 'The 5th IGC results in a Joint Statement focusing on artificial intelligence and digital transformation, highlighting the expanding scope of the partnership.' },
+                2022: { year: '2022', text: 'The Green and Sustainable Development Partnership is launched, committing €10 billion in new and additional assistance by 2030 to support India\'s climate goals.' },
+                2023: { year: '2023', text: 'Defence and security cooperation gains prominence with joint naval exercises and discussions on co-production of military hardware in the Indo-Pacific context.' }
+            };
+
+            const strategyData = {
+                'strategy-node-1': { title: 'Green & Sustainable Development', text: 'A cornerstone of the partnership. Germany provides significant technological and financial support for India\'s ambitious goals in renewable energy, e-mobility, and sustainable urban planning, highlighted by the €10 billion Green and Sustainable Development Partnership.' },
+                'strategy-node-2': { title: 'Multilateralism & G4', text: 'Both nations are key members of the G4 (along with Brazil and Japan), advocating for the reform of the UN Security Council. They champion a rules-based international order and cooperate closely in multilateral forums.' },
+                'strategy-node-3': { title: 'Security & Indo-Pacific', text: 'Germany has increased its focus on the Indo-Pacific, aligning with India\'s strategic interests. Cooperation includes maritime security, counter-terrorism dialogues, and exploring joint defence production.' },
+                'strategy-node-4': { title: 'Digitalization & Innovation', text: 'Collaboration on digital transformation, AI, and Industry 4.0 is a rapidly growing area. This includes joint research projects and fostering connections between their startup ecosystems.' }
+            };
+
+            const economicData = {
+                trade: {
+                    labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023'],
+                    values: [17.3, 17.4, 18.7, 20.4, 20.3, 19.4, 24.0, 28.5, 30.2],
+                    title: 'Bilateral Trade (in € Billion)'
+                },
+                fdi: {
+                    labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023'],
+                    values: [0.97, 0.84, 1.09, 0.96, 0.49, 0.67, 0.71, 0.58, 0.62],
+                    title: 'German FDI Inflow to India (in US$ Billion)'
+                }
+            };
+            
+            const timelineContainer = document.getElementById('timeline-container');
+            const timelineYear = document.getElementById('timeline-year');
+            const timelineText = document.getElementById('timeline-text');
+            Object.keys(timelineData).reverse().forEach(year => {
+                const item = document.createElement('div');
+                item.classList.add('timeline-item', 'relative', 'cursor-pointer');
+                item.dataset.year = year;
+                const yearLabel = document.createElement('h4');
+                yearLabel.classList.add('font-bold', 'text-lg', 'text-gray-700');
+                yearLabel.textContent = year;
+                item.appendChild(yearLabel);
+                timelineContainer.appendChild(item);
+            });
+
+            timelineContainer.addEventListener('click', (e) => {
+                const item = e.target.closest('.timeline-item');
+                if (item) {
+                    const year = item.dataset.year;
+                    const data = timelineData[year];
+                    
+                    document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('active'));
+                    item.classList.add('active');
+                    
+                    timelineYear.textContent = data.year;
+                    timelineText.textContent = data.text;
+                    timelineText.parentElement.classList.add('fade-in');
+                    setTimeout(() => timelineText.parentElement.classList.remove('fade-in'), 500);
+                }
+            });
+
+            const strategyTitle = document.getElementById('strategy-title');
+            const strategyText = document.getElementById('strategy-text');
+            document.querySelectorAll('.strategy-node').forEach(node => {
+                node.addEventListener('click', () => {
+                    const data = strategyData[node.id];
+                    
+                    document.querySelectorAll('.strategy-node').forEach(el => el.classList.remove('active'));
+                    node.classList.add('active');
+
+                    strategyTitle.textContent = data.title;
+                    strategyText.textContent = data.text;
+                    strategyText.parentElement.classList.add('fade-in');
+                    setTimeout(() => strategyText.parentElement.classList.remove('fade-in'), 500);
+                });
+            });
+
+            const economicCtx = document.getElementById('economicChart').getContext('2d');
+            let economicChart;
+
+            function renderEconomicChart(type) {
+                const data = economicData[type];
+                const buttonToActivate = type === 'trade' ? document.getElementById('tradeBtn') : document.getElementById('fdiBtn');
+                const buttonToDeactivate = type === 'trade' ? document.getElementById('fdiBtn') : document.getElementById('tradeBtn');
+
+                buttonToActivate.classList.remove('bg-gray-200', 'text-gray-700');
+                buttonToActivate.classList.add('bg-blue-600', 'text-white');
+                buttonToDeactivate.classList.remove('bg-blue-600', 'text-white');
+                buttonToDeactivate.classList.add('bg-gray-200', 'text-gray-700');
+
+                if (economicChart) {
+                    economicChart.destroy();
+                }
+
+                economicChart = new Chart(economicCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: data.title,
+                            data: data.values,
+                            backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1,
+                            borderRadius: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                             title: {
+                                display: true,
+                                text: data.title,
+                                font: {
+                                    size: 16,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: '#e5e7eb'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            document.getElementById('tradeBtn').addEventListener('click', () => renderEconomicChart('trade'));
+            document.getElementById('fdiBtn').addEventListener('click', () => renderEconomicChart('fdi'));
+            renderEconomicChart('trade');
+
+            const diasporaCtx = document.getElementById('diasporaChart').getContext('2d');
+            new Chart(diasporaCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['IT Professionals', 'Students', 'Engineers', 'Healthcare', 'Others'],
+                    datasets: [{
+                        label: 'Diaspora Composition',
+                        data: [40, 25, 15, 10, 10],
+                        backgroundColor: ['#2563eb', '#60a5fa', '#93c5fd', '#bfdbfe', '#dbeafe'],
+                        borderColor: '#f8f7f4',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 80) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+             
+            navLinks.forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            const firstTimelineItem = document.querySelector('.timeline-item');
+            if(firstTimelineItem) {
+                firstTimelineItem.click();
+            }
+        });
+    </script>
+</body>
+</html>
