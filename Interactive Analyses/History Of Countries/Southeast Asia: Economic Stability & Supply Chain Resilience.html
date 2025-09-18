@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Southeast Asia: Economic Stability & Supply Chain Resilience</title>
+<meta name="description" content="Explore how great power protectionism impacts Southeast Asia's economy and supply chains. Discover ASEAN's challenges, opportunities, and strategic responses to global trade shifts.">
+<meta name="keywords" content="Southeast Asia economy, ASEAN trade, Supply chain resilience, Global protectionism, Geopolitical risk, Trade wars impact, China+1 strategy, RCEP agreement, FDI Southeast Asia, Economic stability, Supply chain diversification, Emerging markets, Regional integration, Logistics challenges, Vietnam economy">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;6-00;700;800&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+    <!-- Chosen Palette: Energetic & Playful -->
+    <!-- Narrative Structure Plan: The infographic is structured as a top-to-bottom narrative scroll, designed for easy digestion. It begins with a high-level hook explaining the core conflict, then presents key regional KPIs as "big numbers" to grab attention. The story then drills down into comparative country-level economic impacts, the multi-faceted nature of supply chain resilience, and finally, a look at specific sector shifts. This linear, storytelling approach was chosen to guide the user through the complex topic logically, from the general cause to the specific effects, which is ideal for an infographic format. -->
+    <!-- Visualization & Content Choices: 1. Conflict Diagram (Goal: Organize) - Implemented with styled HTML/CSS to show the flow of trade pressures. Justification: A simple visual to establish context. Method: Tailwind CSS. 2. Country Economic Impact (Goal: Compare) - A grouped bar chart for FDI & GDP. Justification: Allows direct comparison of multiple metrics across several countries simultaneously. Method: Chart.js. 3. Supply Chain Resilience (Goal: Compare) - A radar chart. Justification: The best visualization for comparing multiple, disparate factors (like infrastructure and stability) for several entities. Method: Chart.js. 4. Sectoral Shifts (Goal: Compare/Composition) - A stacked bar chart showing relocation destinations by sector. Justification: Superior to pie charts as it shows both the total magnitude of relocation for each sector and its composition by country. Method: Chart.js. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F9FA;
+            color: #343A40;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 45vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        h1 { color: #FF4E50; }
+        h2 { color: #FC913A; }
+        .kpi-value { color: #FF4E50; }
+        .accent-border { border-color: #F9D423; }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+        <header class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-3">The Ripple Effect</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">An analysis of how escalating trade protectionism between economic superpowers is reshaping the economies and supply chains of developing nations in Southeast Asia.</p>
+        </header>
+
+        <main class="space-y-16">
+
+            <section class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold text-center mb-8">The Core Conflict: A Chain Reaction</h2>
+                <p class="text-center text-gray-600 max-w-3xl mx-auto mb-10">The primary driver of recent global trade instability has been the imposition of tariffs and trade barriers between the United States and China. This has not been an isolated event; it has forced a global re-evaluation of supply chains, with Southeast Asia at the epicenter of both challenges and opportunities.</p>
+                <div class="flex flex-col md:flex-row items-center justify-center gap-4 text-center">
+                    <div class="p-4 bg-red-100 text-red-800 rounded-lg w-40">
+                        <div class="font-bold">USA</div>
+                        <div class="text-sm">Imposes Tariffs</div>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-400 transform md:rotate-0 rotate-90">&lrarr;</div>
+                     <div class="p-4 bg-blue-100 text-blue-800 rounded-lg w-40">
+                        <div class="font-bold">China</div>
+                        <div class="text-sm">Retaliates</div>
+                    </div>
+                     <div class="text-2xl font-bold text-gray-400 transform md:rotate-0 rotate-90">&darr;</div>
+                    <div class="p-4 bg-yellow-100 text-yellow-800 rounded-lg w-48 border-2 accent-border">
+                        <div class="font-bold">Global Supply Chains</div>
+                        <div class="text-sm">Disrupted & Relocated</div>
+                    </div>
+                     <div class="text-2xl font-bold text-gray-400 transform md:rotate-0 rotate-90">&darr;</div>
+                     <div class="p-4 bg-green-100 text-green-800 rounded-lg w-48">
+                        <div class="font-bold">Southeast Asia</div>
+                        <div class="text-sm">Experiences Economic Shifts</div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-center mb-8">Regional Impact at a Glance</h2>
+                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <div class="kpi-value text-5xl font-extrabold">+8.3%</div>
+                        <p class="text-sm font-semibold text-gray-500 mt-2">Average Increase in FDI for Beneficiary Nations</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <div class="kpi-value text-5xl font-extrabold">65%</div>
+                        <p class="text-sm font-semibold text-gray-500 mt-2">of Firms Relocating from China Consider SEA</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <div class="kpi-value text-5xl font-extrabold">+1.5%</div>
+                        <p class="text-sm font-semibold text-gray-500 mt-2">Average Inflationary Pressure Due to Supply Shifts</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold text-center mb-4">A Tale of Two Metrics: FDI vs. GDP</h2>
+                <p class="text-center text-gray-600 max-w-3xl mx-auto mb-8">While many nations in the region have attracted significant Foreign Direct Investment (FDI) from relocating companies, the impact on overall Gross Domestic Product (GDP) growth has been more varied. This reflects the complex reality that new investment can also bring infrastructure strain and economic volatility.</p>
+                <div class="chart-container">
+                    <canvas id="economicImpactChart"></canvas>
+                </div>
+            </section>
+
+            <section class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold text-center mb-4">The Resilience Scorecard</h2>
+                <p class="text-center text-gray-600 max-w-3xl mx-auto mb-8">A nation's ability to capitalize on trade shifts depends on multiple factors. This chart compares key countries across five resilience metrics, where a higher score indicates a more favorable environment for absorbing new investment and managing supply chain shocks.</p>
+                <div class="chart-container">
+                    <canvas id="resilienceChart"></canvas>
+                </div>
+            </section>
+
+            <section class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold text-center mb-4">Sectoral Shifts: Who Wins What?</h2>
+                <p class="text-center text-gray-600 max-w-3xl mx-auto mb-8">Trade diversion is not uniform; different industries relocate to different countries based on their unique strengths. This chart shows the primary destinations for manufacturing relocation across three key sectors: Electronics, Textiles, and Automotive Parts.</p>
+                 <div class="chart-container" style="height: 450px; max-height: 55vh;">
+                    <canvas id="sectoralShiftChart"></canvas>
+                </div>
+            </section>
+
+        </main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+
+        <footer class="text-center mt-16 pt-8 border-t border-gray-200">
+            <p class="text-sm text-gray-500">Data synthesized for illustrative purposes. Analysis based on prevailing economic trends and reports.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const wrapLabel = (label) => {
+                const maxLength = 16;
+                if (label.length <= maxLength) {
+                    return label;
+                }
+                const words = label.split(' ');
+                let lines = [];
+                let currentLine = '';
+                for (const word of words) {
+                    if ((currentLine + ' ' + word).trim().length > maxLength) {
+                        lines.push(currentLine.trim());
+                        currentLine = word;
+                    } else {
+                        currentLine = (currentLine + ' ' + word).trim();
+                    }
+                }
+                if (currentLine) {
+                    lines.push(currentLine.trim());
+                }
+                return lines;
+            };
+
+            const multiLineTooltipTitle = {
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                  return label.join(' ');
+                                } else {
+                                  return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            
+            const colors = {
+                red: '#FF4E50',
+                orange: '#FC913A',
+                yellow: '#F9D423',
+                lightGreen: '#EDE574',
+                blue: '#00A0B0',
+                purple: '#6A4C93'
+            };
+
+            new Chart(document.getElementById('economicImpactChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Vietnam', 'Malaysia', 'Thailand', 'Indonesia', 'Philippines'],
+                    datasets: [
+                        {
+                            label: 'FDI Growth Change (%)',
+                            data: [12.5, 8.9, 4.2, 3.5, 1.8],
+                            backgroundColor: colors.red,
+                            borderColor: colors.red,
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Real GDP Impact (%)',
+                            data: [2.1, 1.5, -0.5, 0.8, -1.2],
+                            backgroundColor: colors.orange,
+                            borderColor: colors.orange,
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    ...multiLineTooltipTitle,
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) { return value + '%' }
+                            }
+                        }
+                    },
+                    plugins: {
+                        ...multiLineTooltipTitle.plugins,
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('resilienceChart'), {
+                type: 'radar',
+                data: {
+                    labels: ['Infrastructure', 'Labor Scalability', 'Political Stability', wrapLabel('Ease of Doing Business'), 'Economic Diversification'],
+                    datasets: [
+                         {
+                            label: 'Vietnam',
+                            data: [6, 8, 7, 6, 7],
+                            backgroundColor: 'rgba(255, 78, 80, 0.2)',
+                            borderColor: colors.red,
+                            pointBackgroundColor: colors.red,
+                        },
+                        {
+                            label: 'Malaysia',
+                            data: [9, 6, 7, 8, 9],
+                            backgroundColor: 'rgba(252, 145, 58, 0.2)',
+                            borderColor: colors.orange,
+                            pointBackgroundColor: colors.orange,
+                        },
+                        {
+                            label: 'Thailand',
+                            data: [8, 6, 6, 8, 8],
+                            backgroundColor: 'rgba(0, 160, 176, 0.2)',
+                            borderColor: colors.blue,
+                            pointBackgroundColor: colors.blue,
+                        }
+                    ]
+                },
+                options: {
+                    ...multiLineTooltipTitle,
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { display: true },
+                            suggestedMin: 0,
+                            suggestedMax: 10,
+                            pointLabels: { font: { size: 10 } }
+                        }
+                    },
+                    plugins: {
+                       ...multiLineTooltipTitle.plugins,
+                       legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('sectoralShiftChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Electronics', 'Textiles & Apparel', 'Automotive Parts'],
+                    datasets: [
+                        { label: 'Vietnam', data: [45, 50, 15], backgroundColor: colors.red },
+                        { label: 'Thailand', data: [10, 15, 40], backgroundColor: colors.orange },
+                        { label: 'Malaysia', data: [25, 5, 15], backgroundColor: colors.yellow },
+                        { label: 'Indonesia', data: [12, 25, 25], backgroundColor: colors.blue },
+                        { label: 'Philippines', data: [8, 5, 5], backgroundColor: colors.purple },
+                    ]
+                },
+                options: {
+                    ...multiLineTooltipTitle,
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true, ticks: { callback: function(value) { return value + '%' } } },
+                        y: { stacked: true }
+                    },
+                    plugins: {
+                        ...multiLineTooltipTitle.plugins,
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
+
