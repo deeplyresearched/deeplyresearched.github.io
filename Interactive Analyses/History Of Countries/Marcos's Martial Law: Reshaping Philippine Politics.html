@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marcos's Martial Law: Reshaping Philippine Politics</title>
+<meta name="description" content="Ferdinand Marcos's Martial Law wasn't just a suspension of democracy; it fundamentally re-engineered the Philippine state, creating lasting legacies of cronyism and political dynasties.">
+<meta name="keywords" content="Philippine Martial Law, Ferdinand Marcos, Marcos Dynasty, Philippine Politics History, Martial Law Philippines 1972, Crony Capitalism Philippines, Political Dynasties Philippines, Authoritarianism in Philippines, Proclamation 1081, Enduring Marcos Legacy, Philippine Democracy, Marcos Dictatorship, Philippine State Re-engineering, Historical Memory Philippines">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+
+    <!-- Chosen Palette: Historical Archives -->
+    <!-- Application Structure Plan: The application is structured as a narrative journey, guiding the user through the key facets of Martial Law's impact. The flow is logical: 1) Overview sets the stage. 2) Deconstruction of Democracy shows the foundational institutional changes. 3) Economic & Social Costs quantifies the human and financial toll. 4) The Façade of Elections reveals the illusion of democratic processes. 5) Enduring Legacy connects the past to present-day issues. This thematic, scrolling structure tells a coherent story, while the sticky navigation allows for non-linear exploration. This design was chosen to make a complex historical topic digestible and to clearly demonstrate the cause-and-effect relationships central to the user's query. -->
+    <!-- Visualization & Content Choices: 
+        1. Deconstruction of Democracy -> Goal: Organize/Change -> Viz: Interactive Timeline -> Justification: A timeline is the most intuitive way to present the sequential dismantling of democratic institutions. It's more engaging than a simple list and clearly shows the methodical nature of the power consolidation. -> Method: HTML/CSS/JS.
+        2. Economic & Social Costs -> Goal: Inform/Compare -> Viz: Large Stat Cards & a Line Chart -> Justification: The cards provide immediate, high-impact data on the human cost. The line chart effectively visualizes the dramatic trend of debt accumulation over time, which is a key economic legacy. -> Library: Chart.js (Canvas).
+        3. Façade of Elections -> Goal: Compare -> Viz: Interactive Bar Chart -> Justification: A bar chart provides a clear comparison. The interactivity (toggling between election events and media suppression data) creates a powerful "aha" moment for the user, revealing the hollow nature of the elections. -> Library: Chart.js (Canvas).
+        4. Enduring Legacy -> Goal: Organize/Relationships -> Viz: Interactive Cause-and-Effect Diagram -> Justification: This directly visualizes the most complex part of the prompt—the connection between past actions and present problems. It makes abstract concepts like "culture of impunity" tangible by linking them to specific historical roots. -> Method: HTML/CSS/JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #333333;
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-bottom-color 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #A34A28;
+            border-bottom-color: #A34A28;
+        }
+        .timeline-item.active .timeline-dot {
+            background-color: #A34A28;
+            transform: scale(1.25);
+        }
+        .timeline-item.active .timeline-year {
+            color: #A34A28;
+            font-weight: 700;
+        }
+        .legacy-box {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .legacy-box.active {
+            background-color: #A34A28;
+            color: #FFFFFF;
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .legacy-box.related {
+            background-color: #DDCDBF;
+            border-color: #A34A28;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 450px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 450px;
+            }
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="header" class="bg-[#FDFBF8]/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-[#A34A28]">Martial Law's Legacy</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#overview" class="nav-link pb-1">Overview</a>
+                <a href="#deconstruction" class="nav-link pb-1">Deconstruction</a>
+                <a href="#costs" class="nav-link pb-1">Costs</a>
+                <a href="#elections" class="nav-link pb-1">Elections</a>
+                <a href="#legacy" class="nav-link pb-1">Legacy</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#A34A28]">
+                <div class="w-6 h-0.5 bg-[#333333] mb-1.5"></div>
+                <div class="w-6 h-0.5 bg-[#333333]"></div>
+                <div class="w-6 h-0.5 bg-[#333333] mt-1.5"></div>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg">
+            <a href="#overview" class="block text-center py-2 px-4 text-sm hover:bg-gray-100">Overview</a>
+            <a href="#deconstruction" class="block text-center py-2 px-4 text-sm hover:bg-gray-100">Deconstruction</a>
+            <a href="#costs" class="block text-center py-2 px-4 text-sm hover:bg-gray-100">Costs</a>
+            <a href="#elections" class="block text-center py-2 px-4 text-sm hover:bg-gray-100">Elections</a>
+            <a href="#legacy" class="block text-center py-2 px-4 text-sm hover:bg-gray-100">Legacy</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 md:py-16">
+
+        <section id="overview" class="text-center min-h-[60vh] flex flex-col justify-center items-center">
+            <h2 class="text-4xl md:text-6xl font-bold tracking-tight mb-4">A Nation Reshaped</h2>
+            <p class="max-w-3xl mx-auto text-lg md:text-xl text-gray-600 leading-relaxed">
+                On September 21, 1972, President Ferdinand Marcos placed the Philippines under Martial Law with Proclamation 1081, initiating a 14-year authoritarian rule. This act fundamentally altered the nation's political, social, and economic fabric. This infographic explores the systematic changes imposed during this period and analyzes their deep, lasting impact on Philippine democracy that continues to reverberate decades later.
+            </p>
+        </section>
+
+        <section id="deconstruction" class="py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-2">The Deconstruction of Democracy</h2>
+                <p class="max-w-3xl mx-auto text-gray-600">
+                    The declaration of Martial Law began a systematic process to consolidate power. Key democratic institutions were swiftly dismantled or subjugated, concentrating authority in the executive. This timeline highlights the critical steps taken to reshape the government. Click on each year to understand its significance.
+                </p>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-8">
+                <div id="timeline-nav" class="md:w-1/4 flex md:flex-col justify-center">
+                    <div class="timeline-item p-4 cursor-pointer" data-year="1972">
+                        <div class="flex items-center">
+                            <div class="timeline-dot w-4 h-4 rounded-full bg-gray-300 transition-all duration-300"></div>
+                            <span class="timeline-year ml-4 text-lg font-medium text-gray-500">1972</span>
+                        </div>
+                    </div>
+                    <div class="timeline-item p-4 cursor-pointer" data-year="1973">
+                        <div class="flex items-center">
+                            <div class="timeline-dot w-4 h-4 rounded-full bg-gray-300 transition-all duration-300"></div>
+                            <span class="timeline-year ml-4 text-lg font-medium text-gray-500">1973</span>
+                        </div>
+                    </div>
+                    <div class="timeline-item p-4 cursor-pointer" data-year="1976">
+                        <div class="flex items-center">
+                            <div class="timeline-dot w-4 h-4 rounded-full bg-gray-300 transition-all duration-300"></div>
+                            <span class="timeline-year ml-4 text-lg font-medium text-gray-500">1976</span>
+                        </div>
+                    </div>
+                    <div class="timeline-item p-4 cursor-pointer" data-year="1981">
+                        <div class="flex items-center">
+                            <div class="timeline-dot w-4 h-4 rounded-full bg-gray-300 transition-all duration-300"></div>
+                            <span class="timeline-year ml-4 text-lg font-medium text-gray-500">1981</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-3/4 bg-white p-8 rounded-lg shadow-lg">
+                    <h3 id="timeline-title" class="text-2xl font-bold mb-4 text-[#A34A28]"></h3>
+                    <p id="timeline-content" class="text-gray-700 leading-relaxed"></p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="costs" class="py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-2">The Economic & Social Costs</h2>
+                <p class="max-w-3xl mx-auto text-gray-600">
+                    The political restructuring was accompanied by profound economic and social consequences. The period was marked by massive foreign debt, crony capitalism, and widespread human rights abuses. These figures, based on data from historical records and human rights organizations, provide a glimpse into the staggering cost of authoritarian rule.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 text-center">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h4 class="text-4xl font-bold text-[#A34A28]">70,000+</h4>
+                    <p class="text-gray-600 mt-2">Detained Individuals</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h4 class="text-4xl font-bold text-[#A34A28]">34,000+</h4>
+                    <p class="text-gray-600 mt-2">Torture Victims</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h4 class="text-4xl font-bold text-[#A34A28]">3,200+</h4>
+                    <p class="text-gray-600 mt-2">Extrajudicial Killings</p>
+                </div>
+            </div>
+            <div class="bg-white p-4 sm:p-8 rounded-lg shadow-lg">
+                 <h3 class="text-xl font-bold text-center mb-4">Philippine External Debt (1972-1986)</h3>
+                <div class="chart-container">
+                    <canvas id="debtChart"></canvas>
+                </div>
+                 <p class="text-center text-sm text-gray-500 mt-4">The nation's external debt skyrocketed by over 1200% under the Marcos regime, growing from $2.2 billion to $28.3 billion, leaving a legacy of economic burden for subsequent generations.</p>
+            </div>
+        </section>
+
+        <section id="elections" class="py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-2">The Façade of Elections</h2>
+                <p class="max-w-3xl mx-auto text-gray-600">
+                    To maintain a veneer of legitimacy, the Marcos regime held several electoral exercises. However, these were conducted in a climate of fear with a controlled media. This visualization contrasts the frequency of these political events with the state of press freedom. Use the button to toggle the context.
+                </p>
+            </div>
+            <div class="bg-white p-4 sm:p-8 rounded-lg shadow-lg">
+                <div class="text-center mb-6">
+                    <button id="toggleChartData" class="bg-[#A34A28] text-white px-6 py-2 rounded-md hover:bg-[#8e4024] transition-colors">Show Media Control Context</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="electionsChart"></canvas>
+                </div>
+                 <p id="elections-context" class="text-center text-sm text-gray-500 mt-4">During the Martial Law period, a total of 13 national electoral exercises were held to legitimize the regime.</p>
+            </div>
+        </section>
+
+        <section id="legacy" class="py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-2">The Enduring Legacy</h2>
+                <p class="max-w-3xl mx-auto text-gray-600">
+                    The fall of the Marcos regime did not erase its deep-seated impact. Systemic problems that plague the Philippines today—political dynasties, a culture of impunity, and weakened state institutions—have their roots in the Martial Law era. This diagram illustrates the connections between the policies of the past and the realities of the present. Click a "Cause" to see its "Effects".
+                </p>
+            </div>
+            <div class="flex flex-col lg:flex-row gap-8 items-start">
+                <div class="w-full lg:w-3/5">
+                    <div class="grid grid-cols-2 gap-4 items-center">
+                        <div class="space-y-4">
+                            <h4 class="text-center font-bold text-lg text-[#A34A28]">Cause (Martial Law Era)</h4>
+                            <div id="cause-1" class="legacy-box border-2 border-gray-300 p-4 rounded-lg text-center">Concentration of Power</div>
+                            <div id="cause-2" class="legacy-box border-2 border-gray-300 p-4 rounded-lg text-center">Crony Capitalism</div>
+                            <div id="cause-3" class="legacy-box border-2 border-gray-300 p-4 rounded-lg text-center">State Control of Media</div>
+                            <div id="cause-4" class="legacy-box border-2 border-gray-300 p-4 rounded-lg text-center">Politicized Institutions</div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <h4 class="text-center font-bold text-lg text-gray-700">Effect (Post-Marcos Era)</h4>
+                            <div id="effect-1" class="legacy-box border-2 border-gray-300 p-4 rounded-lg text-center">Entrenched Political Dynasties</div>
+                            <div id="effect-2" class="legacy-box border-2 border-gray-300 p-4 rounded-lg text-center">Systemic Corruption</div>
+                            <div id="effect-3" class="legacy-box border-2 border-gray-300 p-4 rounded-lg text-center">Landscape of Disinformation</div>
+                            <div id="effect-4" class="legacy-box border-2 border-gray-300 p-4 rounded-lg text-center">Culture of Impunity</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full lg:w-2/5 bg-white p-8 rounded-lg shadow-lg mt-8 lg:mt-0 min-h-[300px]">
+                    <h3 id="legacy-title" class="text-2xl font-bold mb-4 text-[#A34A28]">Select a Cause</h3>
+                    <p id="legacy-content" class="text-gray-700 leading-relaxed">Click on an item from the "Cause" column to explore its direct long-term consequences on the Philippine political landscape.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+
+    <footer class="bg-[#DDCDBF] text-gray-700 py-6">
+        <div class="container mx-auto px-6 text-center">
+            <p>An interactive analysis of the long-term impact of Martial Law on Philippine politics.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            const navLinks = document.querySelectorAll('header a[href^="#"]');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+
+            const sections = document.querySelectorAll('section');
+            const headerNavLinks = document.querySelectorAll('.nav-link');
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.4
+            };
+
+            const sectionObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        headerNavLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                sectionObserver.observe(section);
+            });
+
+            const timelineData = {
+                '1972': {
+                    title: '1972: Proclamation 1081 & The Shutdown',
+                    content: 'Upon declaring Martial Law, Marcos ordered the arrest of opposition figures, activists, and journalists. Congress was padlocked, effectively abolishing the legislative branch. This immediate and forceful consolidation of power eliminated institutional checks and balances, placing all governmental authority under his direct control.'
+                },
+                '1973': {
+                    title: '1973: The New Constitution',
+                    content: 'A new constitution was ratified via "citizens\' assemblies." It replaced the presidential system with a parliamentary one, making Marcos both President and Prime Minister. This provided a legal framework for his one-man rule and extended his term indefinitely, fundamentally altering the nation\'s governing principles.'
+                },
+                '1976': {
+                    title: '1976: Amendment 6 & Legislative Power',
+                    content: 'Amendment 6 was introduced, granting the President the power to issue decrees, proclamations, and orders that had the force of law. This bypassed even the rubber-stamp interim legislature (Batasang Pambansa), cementing the President\'s role as the ultimate law-maker and further eroding any semblance of separation of powers.'
+                },
+                '1981': {
+                    title: '1981: The Cosmetic Lifting of Martial Law',
+                    content: 'While Martial Law was officially lifted in 1981, Marcos retained sweeping decree-making powers through the 1973 Constitution and Amendment 6. This move was largely seen as a gesture to appease foreign critics, while the authoritarian structure and mechanisms of control remained firmly in place.'
+                }
+            };
+            
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            const timelineTitle = document.getElementById('timeline-title');
+            const timelineContent = document.getElementById('timeline-content');
+            
+            function updateTimeline(year) {
+                timelineItems.forEach(item => {
+                    item.classList.toggle('active', item.dataset.year === year);
+                });
+                const data = timelineData[year];
+                timelineTitle.textContent = data.title;
+                timelineContent.textContent = data.content;
+            }
+
+            timelineItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    updateTimeline(item.dataset.year);
+                });
+            });
+            updateTimeline('1972');
+            
+            const wrapLabel = (label) => {
+                const maxLength = 16;
+                if (label.length <= maxLength) return label;
+                const words = label.split(' ');
+                const lines = [];
+                let currentLine = '';
+                for (const word of words) {
+                    if ((currentLine + ' ' + word).length > maxLength && currentLine.length > 0) {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        currentLine = currentLine ? currentLine + ' ' + word : word;
+                    }
+                }
+                lines.push(currentLine);
+                return lines;
+            };
+            
+            const tooltipTitleCallback = (tooltipItems) => {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) {
+                  return label.join(' ');
+                } else {
+                  return label;
+                }
+            };
+
+            const debtData = {
+                labels: ['1972', '1975', '1978', '1981', '1983', '1986'],
+                datasets: [{
+                    label: 'External Debt (in Billion USD)',
+                    data: [2.2, 6.1, 13.3, 22.0, 24.8, 28.3],
+                    borderColor: '#A34A28',
+                    backgroundColor: 'rgba(163, 74, 40, 0.1)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            };
+
+            const debtCtx = document.getElementById('debtChart').getContext('2d');
+            new Chart(debtCtx, {
+                type: 'line',
+                data: debtData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Billions of USD' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { title: tooltipTitleCallback } }
+                    }
+                }
+            });
+
+            const electionsData = {
+                labels: ['Referendums', 'Plebiscites', 'Legislative Elections', 'Presidential Elections'].map(wrapLabel),
+                datasets: [{
+                    label: 'Number of Electoral Events',
+                    data: [5, 4, 2, 2],
+                    backgroundColor: '#DDCDBF',
+                    borderColor: '#A34A28',
+                    borderWidth: 1
+                }]
+            };
+
+            const mediaData = {
+                labels: ['Major Newspapers Shut Down', 'TV/Radio Stations Closed'].map(wrapLabel),
+                datasets: [{
+                    label: 'Media Outlets Controlled',
+                    data: [8, 60],
+                    backgroundColor: ['#A34A28', '#8e4024'],
+                    borderColor: '#333333',
+                    borderWidth: 1
+                }]
+            };
+            
+            let currentChartData = 'elections';
+            const electionsCtx = document.getElementById('electionsChart').getContext('2d');
+            const electionsContextP = document.getElementById('elections-context');
+
+            let electionsChart = new Chart(electionsCtx, {
+                type: 'bar',
+                data: electionsData,
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { title: { display: true, text: 'Count' } }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Electoral Events During Martial Law (1973-1986)',
+                            font: { size: 16 }
+                        },
+                        legend: { display: false },
+                        tooltip: { callbacks: { title: tooltipTitleCallback } }
+                    }
+                }
+            });
+
+            const toggleChartBtn = document.getElementById('toggleChartData');
+            toggleChartBtn.addEventListener('click', () => {
+                if (currentChartData === 'elections') {
+                    electionsChart.data = mediaData;
+                    electionsChart.options.plugins.title.text = 'Media Control at the Start of Martial Law (1972)';
+                    electionsChart.update();
+                    toggleChartBtn.textContent = 'Show Electoral Events';
+                    electionsContextP.textContent = 'Upon declaration, the regime immediately seized control of all media, silencing dissent and controlling the national narrative.';
+                    currentChartData = 'media';
+                } else {
+                    electionsChart.data = electionsData;
+                    electionsChart.options.plugins.title.text = 'Electoral Events During Martial Law (1973-1986)';
+                    electionsChart.update();
+                    toggleChartBtn.textContent = 'Show Media Control Context';
+                    electionsContextP.textContent = 'During the Martial Law period, a total of 13 national electoral exercises were held to legitimize the regime.';
+                    currentChartData = 'elections';
+                }
+            });
+
+            const legacyData = {
+                'cause-1': {
+                    title: 'From Concentrated Power to Political Dynasties',
+                    content: 'Marcos consolidated power by abolishing term limits and placing loyalists in key positions. This created a template for political control. After 1986, families used this model to establish multi-generational political dynasties, hindering democratic competition.',
+                    relatedEffects: ['effect-1', 'effect-4']
+                },
+                'cause-2': {
+                    title: 'From Crony Capitalism to Systemic Corruption',
+                    content: 'The regime favored friends and family with control over major industries, creating monopolies. This institutionalized the practice of using public office for private gain. Post-Marcos, this culture persists as systemic corruption, with powerful oligarchs influencing policy.',
+                    relatedEffects: ['effect-2', 'effect-1']
+                },
+                'cause-3': {
+                    title: 'From State Control to a Landscape of Disinformation',
+                    content: 'By shutting down independent media and controlling all information, the regime eliminated critical public discourse. The long-term effect was a weakened media sector and a public susceptible to propaganda, a vulnerability now exploited by modern disinformation campaigns.',
+                    relatedEffects: ['effect-3']
+                },
+                'cause-4': {
+                    title: 'From Politicized Institutions to a Culture of Impunity',
+                    content: 'The military and judiciary were used to suppress dissent, with loyalty to the regime prized over the rule of law. This eroded their independence. The legacy is a persistent culture of impunity, where the powerful can evade accountability, weakening the entire justice system.',
+                    relatedEffects: ['effect-4', 'effect-2']
+                }
+            };
+            
+            const causeBoxes = document.querySelectorAll('[id^="cause-"]');
+            const effectBoxes = document.querySelectorAll('[id^="effect-"]');
+            const legacyTitle = document.getElementById('legacy-title');
+            const legacyContent = document.getElementById('legacy-content');
+
+            causeBoxes.forEach(box => {
+                box.addEventListener('click', () => {
+                    const causeId = box.id;
+                    const data = legacyData[causeId];
+
+                    causeBoxes.forEach(b => b.classList.remove('active'));
+                    box.classList.add('active');
+                    
+                    effectBoxes.forEach(e => {
+                        e.classList.remove('related');
+                    });
+                    
+                    data.relatedEffects.forEach(effectId => {
+                        document.getElementById(effectId).classList.add('related');
+                    });
+                    
+                    legacyTitle.textContent = data.title;
+                    legacyContent.textContent = data.content;
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
