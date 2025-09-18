@@ -1,0 +1,444 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nepal's Crisis Cycle: Pathways to Peace</title>
+    <meta name="description" content="Unpack Nepal's cycle of political instability, mass protests, and state failure. Discover how security reform, youth empowerment, and new governance can pave the way for lasting peace.">
+    <meta name="keywords" content="Nepal political crisis, Nepal protests, Conflict resolution Nepal, Nepal governance reform, Youth empowerment Nepal, Anti-corruption Nepal, State failure Nepal, Madhesi Movement, Gen Z Uprising Nepal, Peacebuilding Nepal, Social contract Nepal, Political instability, Democratic reform Nepal, Security sector reform, Humanitarian crisis Nepal">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: The SPA uses an interactive timeline as the central navigation element. Selecting an event on the timeline dynamically updates three related content areas: the conflict resolution strategy used, the resulting damages (visualized in a radar chart and with key stats), and an analysis of the outcome. This event-driven, cause-and-effect structure was chosen to make the complex relationship between political strategies and their consequences intuitive and easy for the user to explore, rather than presenting information in a static, linear format. The structure flows from specific historical examples to a broader comparative analysis and forward-looking recommendations. -->
+    <!-- Visualization & Content Choices: Major political events are presented on a timeline (HTML/CSS) to show change and act as navigation. For each event, qualitative text (Strategy, Analysis) is updated via JS to provide context. Quantitative data (damages) is shown with dynamic key stats (HTML) and a Radar Chart (Chart.js) to compare the multi-faceted impact (economic, social, infrastructural) of a single event. A separate Horizontal Bar Chart (Chart.js) compares the overall effectiveness of different strategies to provide a high-level summary. Alternative solutions are presented in static HTML cards for clarity. This combination was chosen to blend narrative exploration with quantitative comparison. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #3D352E;
+        }
+        .timeline-item {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .timeline-item.active {
+            background-color: #D1A388;
+            color: #FFFFFF;
+            transform: translateY(-4px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .timeline-item:not(.active):hover {
+            background-color: #EFE8E1;
+            transform: translateY(-2px);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+                max-height: 400px;
+            }
+        }
+        .card {
+            background-color: #FFFFFF;
+            border: 1px solid #EFE8E1;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.07);
+            transform: translateY(-2px);
+        }
+        .stat-card {
+            background-color: #F8F5F1;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+    </style>
+</head>
+<body class="antialiased">
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        <header class="text-center mb-10 md:mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#4A3F35] mb-2">Political Conflict & Resolution in Nepal</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">An interactive analysis of government strategies and their impact on the nation during periods of political protest.</p>
+        </header>
+
+        <main>
+            <section id="timeline" class="mb-12">
+                <h2 class="text-2xl font-bold text-center mb-6 text-[#4A3F35]">Explore Key Political Events</h2>
+                <div class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-2 p-2 bg-[#F8F5F1] rounded-full">
+                    <button class="timeline-item w-full md:w-auto text-sm font-semibold py-3 px-6 rounded-full" data-event="civil_war">1996-2006: Civil War</button>
+                    <button class="timeline-item w-full md:w-auto text-sm font-semibold py-3 px-6 rounded-full" data-event="loktantra_andolan">2006: Loktantra Andolan</button>
+                    <button class="timeline-item w-full md:w-auto text-sm font-semibold py-3 px-6 rounded-full" data-event="madhesh_movement">2007-08: Madhesh Movement</button>
+                    <button class="timeline-item w-full md:w-auto text-sm font-semibold py-3 px-6 rounded-full" data-event="constitution_protests">2015: Constitution Protests</button>
+                </div>
+            </section>
+            
+            <section id="analysis-dashboard" class="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-12">
+                <div class="lg:col-span-3">
+                    <div class="card">
+                        <h3 class="text-xl font-bold mb-4 text-[#4A3F35]">Analysis for: <span id="event-title" class="text-[#C18C6D]"></span></h3>
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="font-semibold text-lg mb-2">Resolution Strategy Employed</h4>
+                                <p id="strategy-text" class="text-gray-700 leading-relaxed"></p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg mb-2">Outcome & Impact Analysis</h4>
+                                <p id="analysis-text" class="text-gray-700 leading-relaxed"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2">
+                    <div class="card h-full">
+                        <h3 class="text-xl font-bold mb-4 text-[#4A3F35]">Damage Profile</h3>
+                        <p class="text-sm text-gray-600 mb-4">Severity of damage resulting from the conflict period, scaled from 0 (low) to 100 (high).</p>
+                        <div class="chart-container">
+                            <canvas id="impactRadarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="comparison" class="mb-16">
+                 <h2 class="text-2xl font-bold text-center mb-8 text-[#4A3F35]">Overall Strategy Effectiveness</h2>
+                 <p class="text-center text-gray-600 max-w-2xl mx-auto mb-8">This chart provides a comparative overview of different conflict resolution strategies employed over time. "Effectiveness" is measured by the relative ability of a strategy to minimize overall damage and lead to stable, long-term resolutions. Lower scores indicate more reactive, often suppressive tactics with higher negative impacts, while higher scores reflect proactive, dialogue-based approaches.</p>
+                 <div class="card">
+                    <div class="chart-container h-96 max-h-[450px] max-w-4xl">
+                        <canvas id="effectivenessBarChart"></canvas>
+                    </div>
+                 </div>
+            </section>
+
+            <section id="recommendations">
+                <h2 class="text-2xl font-bold text-center mb-8 text-[#4A3F35]">Alternative Approaches for Future Stability</h2>
+                <p class="text-center text-gray-600 max-w-2xl mx-auto mb-8">Based on historical outcomes, several alternative approaches could mitigate negative impacts from future political disagreements. These focus on proactive engagement, institutional strength, and inclusive dialogue rather than reactive measures.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="card">
+                        <h4 class="font-bold text-lg mb-2">1. Proactive Multi-track Diplomacy</h4>
+                        <p class="text-gray-700">Establish permanent, institutionalized channels for dialogue between political parties, civil society, and government bodies before conflicts escalate. This includes informal 'Track II' diplomacy involving influential citizens and experts to build trust and explore solutions outside formal political pressures.</p>
+                    </div>
+                    <div class="card">
+                        <h4 class="font-bold text-lg mb-2">2. Strengthen Local Governance</h4>
+                        <p class="text-gray-700">Devolve more power and resources to local governments. When local issues can be resolved at the local level, it reduces the likelihood of them escalating into national protests. Empowered local bodies can address grievances before they become systemic.</p>
+                    </div>
+                    <div class="card">
+                        <h4 class="font-bold text-lg mb-2">3. Restorative Justice Mechanisms</h4>
+                        <p class="text-gray-700">Instead of purely punitive measures after conflicts, implement restorative justice practices that focus on repairing harm and rebuilding social cohesion. This can include truth and reconciliation commissions and community-led peace initiatives to address the root causes of grievances.</p>
+                    </div>
+                    <div class="card">
+                        <h4 class="font-bold text-lg mb-2">4. Independent Media & Fact-Checking</h4>
+                        <p class="text-gray-700">Support a strong, independent media landscape to combat misinformation that often fuels protests. Government and civil society can collaborate on fact-checking initiatives to ensure public discourse is based on accurate information, reducing polarization.</p>
+                    </div>
+                    <div class="card">
+                        <h4 class="font-bold text-lg mb-2">5. Economic Inclusion Programs</h4>
+                        <p class="text-gray-700">Address economic disparities, which are often a key driver of political unrest. Targeted programs for marginalized communities can create a more equitable society where fewer groups feel the need to resort to protests to have their voices heard and needs met.</p>
+                    </div>
+                    <div class="card">
+                        <h4 class="font-bold text-lg mb-2">6. De-escalation Training</h4>
+                        <p class="text-gray-700">Provide mandatory de-escalation and non-violent crowd management training for security forces. This can significantly reduce the risk of violence during protests, preventing a cycle of escalation and minimizing physical harm and infrastructural damage.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+
+        <footer class="text-center mt-16 text-gray-500 text-sm">
+            <p>This is a conceptual analysis based on historical trends. Data is illustrative.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const eventData = {
+                civil_war: {
+                    title: "1996-2006: Civil War",
+                    strategy: "The primary strategy was military suppression by the state against Maoist insurgents, coupled with sporadic, often failed, peace talks. The government focused on security operations and containment, with limited political dialogue until the later stages.",
+                    analysis: "This prolonged strategy of armed conflict resulted in immense human and economic devastation. It failed to address the root political and social grievances, leading to a stalemate that was only broken when political parties united against the monarchy, forcing a shift towards negotiation.",
+                    impact: {
+                        economic: 90,
+                        social: 95,
+                        infrastructural: 85,
+                        political: 80
+                    }
+                },
+                loktantra_andolan: {
+                    title: "2006: Loktantra Andolan",
+                    strategy: "Initially, the monarchy responded with suppression, using curfews and force. However, the sheer scale of the mass protests, led by a seven-party alliance, overwhelmed security forces. This forced a strategic shift to political negotiation, culminating in the restoration of parliament and the end of direct monarchical rule.",
+                    analysis: "The combination of mass public pressure and unified political opposition proved decisive. The initial suppression strategy failed and exacerbated tensions, while the eventual turn to negotiation led to a fundamental political transformation. This event highlighted the power of peaceful mass movements.",
+                    impact: {
+                        economic: 70,
+                        social: 60,
+                        infrastructural: 40,
+                        political: 95
+                    }
+                },
+                madhesh_movement: {
+                    title: "2007-08: Madhesh Movement",
+                    strategy: "The government initially used police force to quell protests, which led to casualties and escalated the situation. As the movement gained momentum and sustained blockades, the government shifted to a strategy of dialogue, engaging with Madheshi leaders and ultimately agreeing to constitutional amendments to address demands for federalism and inclusion.",
+                    analysis: "The reactive use of force proved counterproductive, strengthening the resolve of protestors. The economic impact of blockades forced the government's hand, demonstrating that negotiation, although delayed, was the only viable path to resolution. It underscored the importance of addressing regional and ethnic grievances.",
+                    impact: {
+                        economic: 80,
+                        social: 75,
+                        infrastructural: 50,
+                        political: 70
+                    }
+                },
+                constitution_protests: {
+                    title: "2015: Constitution Protests",
+                    strategy: "Following the promulgation of the new constitution, protests erupted, particularly in the Terai region. The government's strategy was mixed: it deployed security forces to maintain order and clear blockades at the border, while also initiating rounds of talks with protesting parties. The response was criticized for being slow and forceful at times.",
+                    analysis: "The dual strategy had limited success. While security forces eventually eased border blockades, the underlying political grievances remained unresolved for a long period. The economic damage was severe due to the blockade's impact on trade. The event showed that constitutional processes without broad consensus can lead to prolonged instability.",
+                    impact: {
+                        economic: 85,
+                        social: 65,
+                        infrastructural: 30,
+                        political: 60
+                    }
+                }
+            };
+            
+            let impactRadarChart, effectivenessBarChart;
+            let currentEvent = 'loktantra_andolan';
+
+            const timelineButtons = document.querySelectorAll('.timeline-item');
+            
+            function createRadarChart() {
+                const ctx = document.getElementById('impactRadarChart').getContext('2d');
+                impactRadarChart = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Economic Disruption', 'Social Cohesion', 'Infrastructure Damage', 'Political Instability'],
+                        datasets: [{
+                            label: 'Damage Severity',
+                            data: [],
+                            backgroundColor: 'rgba(209, 163, 136, 0.2)',
+                            borderColor: 'rgba(209, 163, 136, 1)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgba(209, 163, 136, 1)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgba(209, 163, 136, 1)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            r: {
+                                beginAtZero: true,
+                                max: 100,
+                                angleLines: { color: '#EFE8E1' },
+                                grid: { color: '#EFE8E1' },
+                                pointLabels: { 
+                                    font: { size: 12 },
+                                    color: '#3D352E'
+                                },
+                                ticks: {
+                                    backdropColor: '#FDFBF8',
+                                    color: '#7E7267'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+
+            function createBarChart() {
+                 const ctx = document.getElementById('effectivenessBarChart').getContext('2d');
+                 effectivenessBarChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Military Suppression', 'Police Action / Curfews', 'Delayed Negotiation', 'Mass Movement Pressure', 'Proactive Dialogue & Reform'],
+                        datasets: [{
+                            label: 'Relative Effectiveness Score',
+                            data: [15, 30, 55, 75, 90],
+                            backgroundColor: [
+                                'rgba(219, 68, 55, 0.6)',
+                                'rgba(244, 180, 0, 0.6)',
+                                'rgba(113, 168, 155, 0.6)',
+                                'rgba(66, 133, 244, 0.6)',
+                                'rgba(15, 157, 88, 0.6)'
+                            ],
+                            borderColor: [
+                                'rgba(219, 68, 55, 1)',
+                                'rgba(244, 180, 0, 1)',
+                                'rgba(113, 168, 155, 1)',
+                                'rgba(66, 133, 244, 1)',
+                                'rgba(15, 157, 88, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                max: 100,
+                                grid: { color: '#EFE8E1' }
+                            },
+                            y: {
+                                grid: { display: false }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.x !== null) {
+                                            label += context.parsed.x;
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function updateView() {
+                const data = eventData[currentEvent];
+                
+                document.getElementById('event-title').innerText = data.title;
+                document.getElementById('strategy-text').innerText = data.strategy;
+                document.getElementById('analysis-text').innerText = data.analysis;
+                
+                impactRadarChart.data.datasets[0].data = [
+                    data.impact.economic,
+                    data.impact.social,
+                    data.impact.infrastructural,
+                    data.impact.political
+                ];
+                impactRadarChart.update();
+
+                timelineButtons.forEach(btn => {
+                    if (btn.dataset.event === currentEvent) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+
+            timelineButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    currentEvent = e.target.dataset.event;
+                    updateView();
+                });
+            });
+
+            createRadarChart();
+            createBarChart();
+            updateView();
+        });
+    </script>
+</body>
+</html>
