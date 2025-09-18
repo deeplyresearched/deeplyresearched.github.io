@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>France's Political Crisis: Europe's Future at Stake</title>
+<meta name="description" content="Analyze France's 2024-2025 political crisis, snap election fallout, and governmental collapses. Understand how fiscal woes and inequality impact France, the EU, and the critical 2027 election.">
+<meta name="keywords" content="French political crisis, Macron government, France snap election 2024, European Union, France economy, government collapse, Fifth Republic, European politics, social unrest France, far-right France, EU leadership, budget deficit France, inequality France, 2027 French election, political fragmentation">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+    <!-- Chosen Palette: Calm Neutrals -->
+    <!-- Application Structure Plan: A thematic, single-page dashboard design was chosen to deconstruct the complex political crisis into digestible parts. The structure uses a top navigation bar for quick access to four key sections: 1) A high-level 'Synthèse' (Overview) with key metrics, 2) An interactive 'Facteurs Déclenchants' (Root Causes) section with clickable tabs (Economic, Social, Political) to explore data via charts, 3) An interactive 'Implications' section, also with tabs, for qualitative analysis, and 4) a 'Chronologie' (Timeline) for historical context. This non-linear structure allows users to explore the information based on their interests, making the dense topic more accessible and engaging than a simple linear report. The core interaction revolves around the tab system, which reveals information progressively to avoid overwhelming the user. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Key economic indicators. Goal: Inform/Change. Viz: KPI Cards & Line Chart (Chart.js). Interaction: Hover tooltips. Justification: KPI cards offer quick stats, while the line chart effectively shows trends over time (inflation, debt).
+        - Report Info: Political landscape fragmentation. Goal: Organize/Proportions. Viz: Doughnut Chart (Chart.js). Interaction: Hover tooltips. Justification: A doughnut chart is ideal for showing the distribution of power and the lack of a clear majority in parliament.
+        - Report Info: Public concerns. Goal: Compare. Viz: Bar Chart (Chart.js). Interaction: Hover tooltips. Justification: Bar charts are excellent for comparing the relative importance of different societal issues.
+        - Report Info: Sequence of key events. Goal: Organize/Change. Viz: HTML/CSS Timeline. Interaction: None. Justification: A vertical timeline provides a clear, chronological narrative of the events leading to the crisis.
+        - Report Info: Consequences analysis. Goal: Inform. Viz: Interactive Text Blocks. Interaction: Clickable tabs to switch content. Justification: Allows for detailed textual analysis to be presented in a structured, non-overwhelming way.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4;
+            color: #2c3e50;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-bottom-color 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #2980b9;
+            border-bottom-color: #2980b9;
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            background-color: #3498db;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #3498db;
+            border: 3px solid #F8F7F4;
+        }
+
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+    </style>
+</head>
+<body class="antialiased">
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-gray-800">Crise Politique Française</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#synthese" class="nav-link text-gray-600 font-medium pb-1">Synthèse</a>
+                <a href="#facteurs" class="nav-link text-gray-600 font-medium pb-1">Facteurs</a>
+                <a href="#implications" class="nav-link text-gray-600 font-medium pb-1">Implications</a>
+                <a href="#chronologie" class="nav-link text-gray-600 font-medium pb-1">Chronologie</a>
+            </div>
+             <div class="md:hidden">
+                <select onchange="window.location.hash=this.value" class="block w-full bg-white border border-gray-300 rounded-md py-2 px-3 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="#synthese">Synthèse</option>
+                    <option value="#facteurs">Facteurs</option>
+                    <option value="#implications">Implications</option>
+                    <option value="#chronologie">Chronologie</option>
+                </select>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 md:py-12">
+        <section id="synthese" class="mb-16 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">Analyse d'une Fracture Politique et Sociale</h2>
+            <p class="max-w-3xl mx-auto text-gray-600 mb-10">
+                Cette application interactive explore les dynamiques complexes derrière la récente crise politique en France. Elle décortique les facteurs socio-économiques et politiques, analyse les implications potentielles et retrace la chronologie des événements clés qui ont conduit à la situation actuelle de grande incertitude.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                    <h3 class="text-xl font-semibold text-gray-500">Dette Publique</h3>
+                    <p class="text-4xl font-bold text-red-500 mt-2">110,6%</p>
+                    <p class="text-sm text-gray-500">du PIB (Fin 2024)</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                    <h3 class="text-xl font-semibold text-gray-500">Taux de Chômage</h3>
+                    <p class="text-4xl font-bold text-yellow-500 mt-2">7,5%</p>
+                    <p class="text-sm text-gray-500">Q2 2025</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                    <h3 class="text-xl font-semibold text-gray-500">Confiance Politique</h3>
+                    <p class="text-4xl font-bold text-blue-500 mt-2">28%</p>
+                    <p class="text-sm text-gray-500">Confiance envers le gouvernement</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="facteurs" class="mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Les Facteurs Déclenchants</h2>
+            <p class="max-w-3xl mx-auto text-gray-600 text-center mb-10">
+                La crise actuelle est le résultat d'une convergence de tensions de longue date. Explorez les trois piliers principaux de ce mécontentement : les difficultés économiques, les fractures sociales et une fragmentation politique profonde. Cliquez sur les boutons pour afficher les données correspondantes.
+            </p>
+            <div class="flex justify-center space-x-2 md:space-x-4 mb-8">
+                <button onclick="showCause('economique')" id="btn-economique" class="tab-button active bg-white font-medium py-2 px-4 rounded-lg shadow">Économiques</button>
+                <button onclick="showCause('social')" id="btn-social" class="tab-button bg-white font-medium py-2 px-4 rounded-lg shadow">Sociaux</button>
+                <button onclick="showCause('politique')" id="btn-politique" class="tab-button bg-white font-medium py-2 px-4 rounded-lg shadow">Politiques</button>
+            </div>
+
+            <div id="cause-economique" class="cause-content bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-2xl font-bold mb-2 text-center">Tensions Économiques</h3>
+                <p class="text-center text-gray-600 mb-6">L'inflation persistante et une dette publique élevée ont érodé le pouvoir d'achat et limité la marge de manœuvre du gouvernement, alimentant la colère contre des réformes jugées injustes, comme celle des retraites.</p>
+                <div class="chart-container">
+                    <canvas id="economicChart"></canvas>
+                </div>
+            </div>
+            <div id="cause-social" class="cause-content hidden bg-white p-6 rounded-lg shadow-lg">
+                 <h3 class="text-2xl font-bold mb-2 text-center">Fractures Sociales</h3>
+                 <p class="text-center text-gray-600 mb-6">Une perception d'inégalité croissante et des angoisses liées à l'immigration, la sécurité et l'avenir des services publics créent un terreau fertile pour les extrêmes politiques.</p>
+                <div class="chart-container">
+                    <canvas id="socialChart"></canvas>
+                </div>
+            </div>
+            <div id="cause-politique" class="cause-content hidden bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-2xl font-bold mb-2 text-center">Fragmentation Politique</h3>
+                <p class="text-center text-gray-600 mb-6">L'absence de majorité absolue à l'Assemblée Nationale depuis 2022 a paralysé l'action législative et a conduit à un usage controversé de l'article 49.3, accentuant la perception d'un déni de démocratie.</p>
+                <div class="chart-container">
+                    <canvas id="politicalChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="implications" class="mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Quelles Implications ?</h2>
+            <p class="max-w-3xl mx-auto text-gray-600 text-center mb-10">
+                Cette crise ouvre une période d'instabilité majeure avec des conséquences potentiellement profondes pour la France, tant sur le plan intérieur que sur la scène européenne. Naviguez entre les différents domaines pour comprendre les enjeux à court et long terme.
+            </p>
+            <div class="flex justify-center space-x-2 md:space-x-4 mb-8">
+                <button onclick="showImplication('interieure')" id="btn-interieure" class="implication-button tab-button active bg-white font-medium py-2 px-4 rounded-lg shadow">Politique Intérieure</button>
+                <button onclick="showImplication('sociale')" id="btn-sociale" class="implication-button tab-button bg-white font-medium py-2 px-4 rounded-lg shadow">Stabilité Sociale</button>
+                <button onclick="showImplication('europe')" id="btn-europe" class="implication-button tab-button bg-white font-medium py-2 px-4 rounded-lg shadow">Position dans l'UE</button>
+            </div>
+
+            <div class="bg-white p-8 rounded-lg shadow-lg min-h-[250px]">
+                <div id="implication-interieure" class="implication-content">
+                    <h3 class="text-2xl font-bold mb-3">Paralysie et Incertitude</h3>
+                    <p class="text-gray-700 leading-relaxed">Le résultat des élections anticipées pourrait ne pas dégager de majorité claire, prolongeant la paralysie législative. La capacité du gouvernement à faire passer des réformes cruciales, y compris le budget, est sérieusement compromise. Le risque de nouvelles dissolutions ou d'une instabilité gouvernementale chronique est élevé, affaiblissant durablement les institutions de la Ve République.</p>
+                </div>
+                <div id="implication-sociale" class="implication-content hidden">
+                    <h3 class="text-2xl font-bold mb-3">Polarisation et Risques de Troubles</h3>
+                    <p class="text-gray-700 leading-relaxed">La crise exacerbe la polarisation de la société française. Quel que soit le résultat des élections, une partie importante de la population se sentira non représentée ou trahie, augmentant le risque de manifestations d'envergure et de troubles sociaux. La confiance dans le système politique est à un niveau historiquement bas, ce qui pourrait éroder davantage la cohésion sociale.</p>
+                </div>
+                <div id="implication-europe" class="implication-content hidden">
+                    <h3 class="text-2xl font-bold mb-3">Affaiblissement du leadership français</h3>
+                    <p class="text-gray-700 leading-relaxed">Une France politiquement instable perd de son influence au sein de l'Union Européenne. Sa capacité à piloter des initiatives majeures (défense, politique industrielle, transition écologique) est réduite. Les partenaires européens s'inquiètent de la trajectoire budgétaire du pays et de la montée des forces eurosceptiques, ce qui pourrait compliquer les prises de décision et fragiliser l'axe franco-allemand, moteur de l'intégration européenne.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="chronologie">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-10">Chronologie des Événements Clés</h2>
+            <div class="relative max-w-2xl mx-auto pl-8">
+                <div class="absolute left-0 h-full w-0.5 bg-gray-300"></div>
+                <div class="mb-12 relative timeline-item">
+                    <p class="font-bold text-lg text-blue-600">Juin 2022</p>
+                    <p class="text-gray-700">Élections législatives : le président perd sa majorité absolue à l'Assemblée Nationale, début d'une période de blocages parlementaires.</p>
+                </div>
+                <div class="mb-12 relative timeline-item">
+                    <p class="font-bold text-lg text-blue-600">Mars 2023</p>
+                    <p class="text-gray-700">Adoption de la réforme des retraites via l'article 49.3, déclenchant des manifestations massives et une crise politique.</p>
+                </div>
+                <div class="mb-12 relative timeline-item">
+                    <p class="font-bold text-lg text-blue-600">Juin 2024</p>
+                    <p class="text-gray-700">Élections européennes : le Rassemblement National arrive largement en tête, consolidant sa position de premier parti de France.</p>
+                </div>
+                <div class="relative timeline-item">
+                    <p class="font-bold text-lg text-red-600">Juin 2024</p>
+                    <p class="text-gray-700">Suite aux résultats des européennes, le président annonce la dissolution de l'Assemblée Nationale et la tenue d'élections législatives anticipées.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-6 py-4 text-center">
+            <p>&copy; 2025 Analyse Politique. Données à des fins illustratives.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const chartColors = {
+                red: 'rgba(231, 76, 60, 0.8)',
+                blue: 'rgba(52, 152, 219, 0.8)',
+                grey: 'rgba(149, 165, 166, 0.8)',
+                darkGrey: 'rgba(44, 62, 80, 0.8)',
+                green: 'rgba(46, 204, 113, 0.8)',
+                purple: 'rgba(155, 89, 182, 0.8)',
+                orange: 'rgba(230, 126, 34, 0.8)',
+            };
+            
+            const commonChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    tooltip: {
+                        backgroundColor: '#2c3e50',
+                        titleFont: {
+                            size: 14
+                        },
+                        bodyFont: {
+                            size: 12
+                        },
+                        padding: 10,
+                        cornerRadius: 4,
+                    }
+                },
+                scales: {
+                     x: {
+                        ticks: {
+                            maxRotation: 0,
+                            minRotation: 0,
+                            autoSkip: true,
+                            maxTicksLimit: 7,
+                            callback: function(value, index, values) {
+                                let label = this.getLabelForValue(value);
+                                if (label.length > 16) {
+                                    return label.substring(0, 16) + '...';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            };
+
+            const economicCtx = document.getElementById('economicChart')?.getContext('2d');
+            if (economicCtx) {
+                new Chart(economicCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['2021', '2022', '2023', '2024', '2025 (est.)'],
+                        datasets: [{
+                            label: 'Taux d\'inflation (%)',
+                            data: [1.6, 5.2, 4.9, 2.8, 2.5],
+                            borderColor: chartColors.red,
+                            backgroundColor: chartColors.red.replace('0.8', '0.2'),
+                            fill: true,
+                            tension: 0.3
+                        }, {
+                            label: 'Dette Publique (% du PIB)',
+                            data: [112.9, 111.6, 110.1, 110.6, 111.0],
+                            borderColor: chartColors.blue,
+                            backgroundColor: chartColors.blue.replace('0.8', '0.2'),
+                            fill: false,
+                            tension: 0.3
+                        }]
+                    },
+                    options: commonChartOptions
+                });
+            }
+
+            const socialCtx = document.getElementById('socialChart')?.getContext('2d');
+            if (socialCtx) {
+                new Chart(socialCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Pouvoir d\'achat', 'Sécurité', 'Immigration', 'Santé', 'Environnement'],
+                        datasets: [{
+                            label: 'Principales préoccupations des Français (%)',
+                            data: [58, 35, 32, 28, 22],
+                            backgroundColor: [chartColors.orange, chartColors.red, chartColors.purple, chartColors.blue, chartColors.green],
+                        }]
+                    },
+                    options: {
+                        ...commonChartOptions,
+                        indexAxis: 'y'
+                    }
+                });
+            }
+
+            const politicalCtx = document.getElementById('politicalChart')?.getContext('2d');
+            if (politicalCtx) {
+                new Chart(politicalCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['RN & alliés', 'NFP (gauche)', 'Ensemble (Présidentiel)', 'LR & divers droite', 'Autres'],
+                        datasets: [{
+                            label: 'Sièges à l\'Assemblée (projection)',
+                            data: [240, 180, 100, 45, 12],
+                            backgroundColor: [chartColors.darkGrey, chartColors.red, chartColors.blue, chartColors.grey, chartColors.orange],
+                        }]
+                    },
+                    options: {
+                         ...commonChartOptions,
+                         cutout: '50%',
+                    }
+                });
+            }
+        });
+
+        function showCause(cause) {
+            document.querySelectorAll('.cause-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`cause-${cause}`).classList.remove('hidden');
+
+            document.querySelectorAll('#facteurs .tab-button').forEach(el => el.classList.remove('active'));
+            document.getElementById(`btn-${cause}`).classList.add('active');
+        }
+
+        function showImplication(implication) {
+            document.querySelectorAll('.implication-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`implication-${implication}`).classList.remove('hidden');
+            
+            document.querySelectorAll('#implications .tab-button').forEach(el => el.classList.remove('active'));
+            document.getElementById(`btn-${implication}`).classList.add('active');
+        }
+
+        const navLinks = document.querySelectorAll('header .nav-link');
+        const sections = document.querySelectorAll('main section');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 60) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
