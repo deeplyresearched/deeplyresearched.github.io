@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaza War: Reshaping Middle East & Global Order</title>
+    <meta name="description" content="Analyze the Gaza War's profound impact on Middle East geopolitics, igniting regional conflicts, economic shocks, and straining global alliances. A new era of instability.">
+    <meta name="keywords" content="Gaza War, Israel-Hamas Conflict, Middle East Geopolitics, Regional Destabilization, Global Realignment, Iran Axis of Resistance, Red Sea Attacks, Houthi Rebels, Israel-Hezbollah Conflict, International Relations, Abraham Accords Impact, Palestinian Question, Geopolitical Analysis, Global Order, Middle East Conflict">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+    <!-- Chosen Palette: Neutral Geopolitical -->
+    <!-- Application Structure Plan: The application is designed as a thematic, tab-based dashboard to dissect the multifaceted crisis. This non-linear structure allows users to explore Economic, Social, Security, and International dimensions at their own pace, which is more intuitive for a complex, interconnected topic than a linear report. The sections are: 1) Overview: A landing page with a summary and a high-level map of conflict zones for immediate context. 2) Economic Impacts: Focuses on quantitative data, using interactive charts to show the financial fallout on trade and national economies. 3) Social & Humanitarian Crisis: Employs impactful stat cards and charts to convey the human cost. 4) Security & Military Spillover: Uses a custom HTML/CSS diagram to visualize the complex web of state and non-state actors, which is clearer than text alone. 5) International Response: A structured table to compare the varied reactions of global powers. This design prioritizes user-driven exploration and synthesis of information. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Regional conflict hotspots (Gaza, Lebanon, Red Sea). Goal: Orient. Viz/Method: HTML/CSS diagram. Interaction: Click to show info. Justification: Provides quick geographical context. Library: N/A.
+        - Report Info: GDP growth forecast changes for Egypt, Jordan, Lebanon. Goal: Compare. Viz/Method: Bar Chart. Interaction: Hover for tooltips. Justification: Effective for comparing pre/post-conflict data. Library: Chart.js.
+        - Report Info: Displaced persons, humanitarian aid needs. Goal: Inform/Show Scale. Viz/Method: Stat cards, Donut Chart. Interaction: Clickable buttons to filter data. Justification: Big numbers and simple charts for immediate impact. Library: Chart.js.
+        - Report Info: Relationships between Israel, Hamas, Hezbollah, Houthis, Iran, US. Goal: Organize Relationships. Viz/Method: HTML/CSS flowchart. Interaction: Click on an actor to get details. Justification: Clarifies complex alliances and conflicts visually. Library: N/A.
+        - Report Info: Stances of US, EU, and regional powers. Goal: Compare/Organize. Viz/Method: Interactive HTML table. Interaction: Filter or sort content. Justification: Structured format for direct comparison. Library: N/A.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f7f4;
+            color: #333;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-button.active {
+            border-bottom-color: #4a5568;
+            color: #2d3748;
+            font-weight: 600;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+        }
+        .actor-node {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .actor-node:hover, .actor-node.selected {
+            transform: scale(1.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+        .connector {
+            position: absolute;
+            background-color: #cbd5e0;
+            z-index: 0;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+    </style>
+</head>
+<body class="antialiased">
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">Regional Destabilization Report</h1>
+            <p class="text-lg text-gray-600">An interactive analysis of the Israel-Hamas war's ripple effects across the Middle East.</p>
+        </header>
+
+        <nav class="flex justify-center border-b border-gray-300 mb-8 flex-wrap">
+            <button class="nav-button px-4 py-3 text-sm md:text-base text-gray-500 hover:text-gray-800 active" data-target="overview">Overview</button>
+            <button class="nav-button px-4 py-3 text-sm md:text-base text-gray-500 hover:text-gray-800" data-target="economic">Economic Impacts</button>
+            <button class="nav-button px-4 py-3 text-sm md:text-base text-gray-500 hover:text-gray-800" data-target="social">Social & Humanitarian</button>
+            <button class="nav-button px-4 py-3 text-sm md:text-base text-gray-500 hover:text-gray-800" data-target="security">Security Spillover</button>
+            <button class="nav-button px-4 py-3 text-sm md:text-base text-gray-500 hover:text-gray-800" data-target="international">International Response</button>
+        </nav>
+
+        <main>
+            <section id="overview" class="content-section active">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="prose max-w-none text-gray-700">
+                        <h2 class="text-2xl font-semibold text-gray-800">The Widening Conflict</h2>
+                        <p>The conflict, which began with Hamas's attack on October 7, 2023, has rapidly evolved from a localized war into a multi-front regional crisis. Its effects are not contained within Gaza's borders but are sending shockwaves across the Middle East, impacting economies, societies, and international security dynamics.</p>
+                        <p>This interactive report provides a structured overview of these cascading effects. Explore the different sections to understand the specific economic, humanitarian, and security implications for neighboring countries and the broader international community. The crisis has drawn in regional powers and non-state actors, creating a volatile web of conflicts from the Levant to the Red Sea.</p>
+                    </div>
+                    <div>
+                        <div class="card p-4 rounded-lg shadow-md">
+                             <h3 class="text-lg font-semibold text-center mb-4">Key Conflict Hotspots</h3>
+                             <div id="hotspot-map" class="relative h-64 md:h-80">
+                                <div class="absolute top-[15%] left-[45%] text-center">
+                                    <button data-hotspot="lebanon" class="hotspot-btn bg-red-100 text-red-800 rounded-full px-3 py-1 text-sm font-semibold border-2 border-red-200 hover:bg-red-200">Lebanon</button>
+                                </div>
+                                <div class="absolute top-[40%] left-[30%] text-center">
+                                    <button data-hotspot="gaza" class="hotspot-btn bg-red-500 text-white rounded-lg px-4 py-2 text-base font-bold border-2 border-red-600 hover:bg-red-600">Gaza & Israel</button>
+                                </div>
+                                <div class="absolute top-[45%] left-[60%] text-center">
+                                    <button data-hotspot="westbank" class="hotspot-btn bg-orange-100 text-orange-800 rounded-full px-3 py-1 text-sm font-semibold border-2 border-orange-200 hover:bg-orange-200">West Bank</button>
+                                </div>
+                                <div class="absolute bottom-[5%] left-[50%] text-center">
+                                    <button data-hotspot="redsea" class="hotspot-btn bg-blue-100 text-blue-800 rounded-full px-3 py-1 text-sm font-semibold border-2 border-blue-200 hover:bg-blue-200">Red Sea</button>
+                                </div>
+                             </div>
+                             <p id="hotspot-info" class="text-center text-gray-600 mt-4 h-16">Click on a hotspot to see more information.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="economic" class="content-section">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">Economic Fallout</h2>
+                    <p class="text-lg text-gray-600 max-w-3xl mx-auto mt-2">The conflict has triggered severe economic shocks, disrupting key sectors like tourism and global trade while straining the already fragile economies of neighboring states.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="card p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-semibold mb-4 text-center">Neighboring Economies Under Strain</h3>
+                        <p class="text-center text-gray-600 mb-4">GDP growth forecasts have been significantly revised downwards for countries reliant on tourism and regional stability.</p>
+                        <div class="chart-container">
+                            <canvas id="gdpChart"></canvas>
+                        </div>
+                    </div>
+                     <div class="card p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-semibold mb-4 text-center">Red Sea Shipping Disruption</h3>
+                        <p class="text-center text-gray-600 mb-4">Houthi attacks on commercial vessels have forced major shipping lines to reroute, causing a sharp decline in traffic through the vital Suez Canal.</p>
+                        <div class="chart-container">
+                            <canvas id="shippingChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="social" class="content-section">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">Social & Humanitarian Crisis</h2>
+                    <p class="text-lg text-gray-600 max-w-3xl mx-auto mt-2">The human cost of the conflict is catastrophic, primarily within Gaza, creating an unprecedented humanitarian disaster with regional social repercussions.</p>
+                </div>
+                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="card p-6 rounded-lg shadow-md text-center">
+                        <h4 class="text-xl font-semibold text-gray-700">Displaced Population</h4>
+                        <p class="text-5xl font-bold text-blue-600 my-4">1.9 M</p>
+                        <p class="text-gray-600">The vast majority of Gaza's population has been forced to flee their homes, many multiple times.</p>
+                    </div>
+                    <div class="card p-6 rounded-lg shadow-md text-center">
+                        <h4 class="text-xl font-semibold text-gray-700">Facing Famine</h4>
+                        <p class="text-5xl font-bold text-red-600 my-4">100%</p>
+                        <p class="text-gray-600">Of Gaza's population faces high levels of acute food insecurity, with famine officially declared in some areas.</p>
+                    </div>
+                    <div class="card p-6 rounded-lg shadow-md text-center">
+                        <h4 class="text-xl font-semibold text-gray-700">Healthcare Collapse</h4>
+                        <p class="text-5xl font-bold text-orange-600 my-4">&lt; 50%</p>
+                        <p class="text-gray-600">Of hospitals in Gaza are even partially functional, operating with severe shortages of staff and supplies.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="security" class="content-section">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">Security Spillover & Actor Web</h2>
+                    <p class="text-lg text-gray-600 max-w-3xl mx-auto mt-2">The war has activated a network of state and non-state actors, expanding the conflict across multiple fronts. Click on an actor to understand their role.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 card p-6 rounded-lg shadow-md relative min-h-[500px]">
+                        <div class="actor-node selected" data-actor="israel" style="top: 45%; left: 45%; position: absolute; background-color: #DBEAFE; color: #1E40AF; padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: 2px solid #93C5FD; z-index:10;">Israel</div>
+                        <div class="actor-node" data-actor="hamas" style="top: 45%; left: 15%; position: absolute; background-color: #FEE2E2; color: #991B1B; padding: 0.5rem 1rem; border-radius: 0.5rem; border: 2px solid #FCA5A5; z-index:10;">Hamas</div>
+                        <div class="actor-node" data-actor="hezbollah" style="top: 15%; left: 45%; position: absolute; background-color: #FEF3C7; color: #92400E; padding: 0.5rem 1rem; border-radius: 0.5rem; border: 2px solid #FCD34D; z-index:10;">Hezbollah</div>
+                        <div class="actor-node" data-actor="houthis" style="top: 75%; left: 45%; position: absolute; background-color: #FEF3C7; color: #92400E; padding: 0.5rem 1rem; border-radius: 0.5rem; border: 2px solid #FCD34D; z-index:10;">Houthis</div>
+                        <div class="actor-node" data-actor="iran" style="top: 45%; left: 75%; position: absolute; background-color: #D1FAE5; color: #065F46; padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: 2px solid #6EE7B7; z-index:10;">Iran</div>
+                        <div class="actor-node" data-actor="us" style="top: 15%; left: 15%; position: absolute; background-color: #E0E7FF; color: #3730A3; padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: 2px solid #A5B4FC; z-index:10;">United States</div>
+                    </div>
+                    <div id="actor-info" class="card p-6 rounded-lg shadow-md">
+                        <h3 id="actor-name" class="text-2xl font-bold mb-2"></h3>
+                        <p id="actor-description"></p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="international" class="content-section">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">International Response</h2>
+                    <p class="text-lg text-gray-600 max-w-3xl mx-auto mt-2">Global and regional powers have responded with a mix of diplomacy, military action, and humanitarian aid, reflecting complex geopolitical interests.</p>
+                </div>
+                <div class="card p-2 md:p-6 rounded-lg shadow-md overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="p-4 font-semibold">Actor</th>
+                                <th class="p-4 font-semibold">Primary Stance & Actions</th>
+                                <th class="p-4 font-semibold">Key Role</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr>
+                                <td class="p-4 font-medium">United States</td>
+                                <td class="p-4 text-gray-700">Strong military and diplomatic support for Israel. Leads Operation Prosperity Guardian in the Red Sea to counter Houthi attacks. Pushes for ceasefires and humanitarian aid delivery.</td>
+                                <td class="p-4 text-gray-700">Primary Ally / Military Actor</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">European Union</td>
+                                <td class="p-4 text-gray-700">Politically divided but generally condemns Hamas, supports a two-state solution, and provides significant humanitarian aid. Participates in maritime security missions.</td>
+                                <td class="p-4 text-gray-700">Diplomatic & Humanitarian Actor</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">Egypt & Qatar</td>
+                                <td class="p-4 text-gray-700">Serve as the primary mediators in ceasefire and hostage negotiations between Israel and Hamas. Egypt manages the critical Rafah border crossing for aid.</td>
+                                <td class="p-4 text-gray-700">Key Mediators</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">Jordan</td>
+                                <td class="p-4 text-gray-700">Faces significant internal pressure due to its large Palestinian population. Engages in diplomacy and facilitates aid delivery, while managing domestic stability.</td>
+                                <td class="p-4 text-gray-700">Frontline State / Stabilizer</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">Russia & China</td>
+                                <td class="p-4 text-gray-700">Generally critical of the US role and Western response. Use diplomatic platforms like the UN to call for immediate ceasefires and position themselves as alternative global powers.</td>
+                                <td class="p-4 text-gray-700">Geopolitical Counterweights</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const navButtons = document.querySelectorAll('.nav-button');
+        const contentSections = document.querySelectorAll('.content-section');
+
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetId = button.getAttribute('data-target');
+                
+                navButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                contentSections.forEach(section => {
+                    if (section.id === targetId) {
+                        section.classList.add('active');
+                    } else {
+                        section.classList.remove('active');
+                    }
+                });
+            });
+        });
+
+        const hotspotData = {
+            gaza: "The epicenter of the conflict, resulting in a severe humanitarian crisis and large-scale military operations.",
+            lebanon: "Site of continuous cross-border attacks between Israel and Hezbollah, risking a full-scale war.",
+            westbank: "Experiencing heightened tensions, with increased Israeli military raids and settler violence.",
+            redsea: "Houthi militants are attacking commercial shipping, disrupting global trade and prompting international military response."
+        };
+
+        const hotspotButtons = document.querySelectorAll('.hotspot-btn');
+        const hotspotInfo = document.getElementById('hotspot-info');
+
+        hotspotButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const hotspotId = button.getAttribute('data-hotspot');
+                hotspotInfo.textContent = hotspotData[hotspotId];
+            });
+        });
+
+        const actorData = {
+            israel: { name: "Israel", desc: "Engaged in a multi-front war with the stated goals of dismantling Hamas, securing its borders, and returning hostages. Its actions have led to a major humanitarian crisis in Gaza and escalating regional conflicts." },
+            hamas: { name: "Hamas", desc: "The catalyst for the current war after its October 7 attack. Aims to resist Israeli occupation through armed conflict. Designated a terrorist organization by many countries." },
+            hezbollah: { name: "Hezbollah", desc: "An Iran-backed group in Lebanon. Has engaged in escalating cross-border attacks with Israel in solidarity with Hamas, creating a northern front and raising fears of a wider war." },
+            houthis: { name: "Houthis", desc: "An Iran-backed group controlling parts of Yemen. They are attacking international shipping in the Red Sea, claiming it is in support of Palestinians and targeting Israel-linked vessels." },
+            iran: { name: "Iran", desc: "A major regional power that supports and funds the 'Axis of Resistance,' including Hamas, Hezbollah, and the Houthis. Aims to counter Israeli and US influence in the region." },
+            us: { name: "United States", desc: "Israel's primary international ally, providing significant military aid and diplomatic support. Also leading a multinational naval coalition to protect shipping in the Red Sea." }
+        };
+
+        const actorNodes = document.querySelectorAll('.actor-node');
+        const actorNameEl = document.getElementById('actor-name');
+        const actorDescEl = document.getElementById('actor-description');
+
+        function updateActorInfo(actorId) {
+            actorNameEl.textContent = actorData[actorId].name;
+            actorDescEl.textContent = actorData[actorId].desc;
+            actorNodes.forEach(node => {
+                if(node.dataset.actor === actorId) {
+                    node.classList.add('selected');
+                } else {
+                    node.classList.remove('selected');
+                }
+            });
+        }
+        
+        actorNodes.forEach(node => {
+            node.addEventListener('click', () => {
+                updateActorInfo(node.dataset.actor);
+            });
+        });
+
+        updateActorInfo('israel');
+        
+        if (document.getElementById('gdpChart')) {
+            new Chart(document.getElementById('gdpChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Egypt', 'Jordan', 'Lebanon'],
+                    datasets: [
+                        {
+                            label: 'Pre-Conflict Forecast',
+                            data: [3.5, 2.7, 0.5],
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Post-Conflict Forecast',
+                            data: [2.8, 1.8, -0.9],
+                            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'GDP Growth (%)' }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        if (document.getElementById('shippingChart')) {
+            new Chart(document.getElementById('shippingChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb'],
+                    datasets: [{
+                        label: 'Suez Canal Container Traffic (% Change from previous year)',
+                        data: [0, -15, -30, -55, -65],
+                        fill: false,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                     scales: {
+                        y: {
+                            title: { display: true, text: '% Change' }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>
