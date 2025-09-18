@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bhutan GNH: Success, Challenges & Future Insights</title>
+<meta name="description" content="Unpack Bhutan's GNH: its triumphs in sustainability & well-being, and its evolving challenges from economic pressures to social equity. A critical analysis.">
+<meta name="keywords" content="Gross National Happiness, Bhutan GNH, Bhutan development, Sustainable development Bhutan, Environmental sustainability, Bhutan well-being index, Carbon negative countries, Holistic well-being, Bhutan economy challenges, Youth unemployment Bhutan, Tourism Bhutan, GDP alternative, Human rights Bhutan, GNH framework, Bhutan future challenges">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+
+    <!-- Chosen Palette: Himalayan Serenity -->
+    <!-- Application Structure Plan: The application is designed as a single-page, multi-section interactive dashboard. This structure was chosen over a linear report format to empower users to explore the complex topic of GNH in a non-linear, self-directed way. The thematic sections (Overview, Pillars, Measurement, Impacts, Challenges) break down the information into digestible chunks. The user flow is guided by a sticky navigation bar, allowing instant access to any topic. Key interactions include clicking on the Four Pillars to reveal detailed information, hovering over charts for specific data points, and expanding challenge cards. This interactive, modular approach makes the dense information more accessible and engaging, facilitating a deeper understanding of how the components of GNH interrelate. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: The Four Pillars of GNH. -> Goal: Organize & Inform. -> Viz/Method: Interactive HTML/CSS cards. -> Interaction: On-click reveal of detailed descriptions. -> Justification: Encourages user engagement and focuses attention on one pillar at a time, preventing information overload. -> Library/Method: Vanilla JS.
+        - Report Info: The Nine Domains composing the GNH Index. -> Goal: Inform & Show Composition. -> Viz/Method: Doughnut Chart. -> Interaction: Hover tooltips show domain names. -> Justification: A doughnut chart is excellent for visually representing parts of a whole, clearly showing how different domains contribute to the overall index. -> Library/Method: Chart.js (Canvas).
+        - Report Info: Bhutan's socio-economic progress. -> Goal: Compare & Show Change. -> Viz/Method: Combined Line (GDP) and Bar (GNH) chart. -> Interaction: Hover tooltips for yearly data. -> Justification: This visualization directly addresses the core research question by juxtaposing economic growth with well-being metrics, highlighting their relationship over time. -> Library/Method: Chart.js (Canvas).
+        - Report Info: Challenges facing Bhutan. -> Goal: Organize & Inform. -> Viz/Method: Accordion-style expandable cards. -> Interaction: On-click to expand/collapse detailed text. -> Justification: Presents a clean, high-level list of challenges while keeping detailed explanations neatly tucked away until the user actively seeks them, improving readability. -> Library/Method: Vanilla JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fdfcfb;
+            color: #3f3c3a;
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-bottom-color 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #d97706; /* amber-600 */
+            border-bottom-color: #d97706;
+        }
+        .pillar-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .pillar-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .challenge-card summary {
+            transition: background-color 0.3s ease;
+        }
+        .challenge-card[open] summary {
+            background-color: #fef3c7; /* amber-100 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 40vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 450px;
+            }
+        }
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-gray-800">Gross National Happiness</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Overview</a>
+                        <a href="#pillars" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">The Four Pillars</a>
+                        <a href="#measurement" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Measuring GNH</a>
+                        <a href="#impact" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Impact & Progress</a>
+                        <a href="#challenges" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Challenges</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <section id="overview" class="scroll-mt-20 text-center mb-16 md:mb-24">
+            <h2 class="text-3xl md:text-4xl font-bold text-amber-700 mb-4">A Holistic Approach to Development</h2>
+            <p class="max-w-3xl mx-auto text-base md:text-lg text-gray-600">
+                Gross National Happiness (GNH) is a philosophy that guides the government of Bhutan, emphasizing collective happiness and well-being as the primary goal of development. It challenges the conventional wisdom that economic growth is the ultimate objective, proposing instead a balanced approach that integrates material well-being with spiritual, cultural, and environmental health. This interactive report explores the framework, impact, and challenges of Bhutan's unique vision.
+            </p>
+        </section>
+
+        <section id="pillars" class="scroll-mt-20 mb-16 md:mb-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800">The Four Pillars of GNH</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-base md:text-lg text-gray-600">
+                    GNH is built upon four foundational pillars that guide policy and decision-making in Bhutan. Click on each pillar to learn more about its objectives and role in promoting national well-being.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="pillar-card cursor-pointer bg-white rounded-lg shadow-lg p-6 text-center" data-pillar="1">
+                    <div class="text-4xl mb-4">🏛️</div>
+                    <h3 class="text-lg font-semibold text-gray-900">1. Good Governance</h3>
+                </div>
+                <div class="pillar-card cursor-pointer bg-white rounded-lg shadow-lg p-6 text-center" data-pillar="2">
+                    <div class="text-4xl mb-4">📈</div>
+                    <h3 class="text-lg font-semibold text-gray-900">2. Sustainable & Equitable Socio-Economic Development</h3>
+                </div>
+                <div class="pillar-card cursor-pointer bg-white rounded-lg shadow-lg p-6 text-center" data-pillar="3">
+                    <div class="text-4xl mb-4">🎭</div>
+                    <h3 class="text-lg font-semibold text-gray-900">3. Preservation & Promotion of Culture</h3>
+                </div>
+                <div class="pillar-card cursor-pointer bg-white rounded-lg shadow-lg p-6 text-center" data-pillar="4">
+                    <div class="text-4xl mb-4">🌳</div>
+                    <h3 class="text-lg font-semibold text-gray-900">4. Environmental Conservation</h3>
+                </div>
+            </div>
+            <div id="pillar-details" class="mt-8 p-6 bg-amber-50 rounded-lg hidden">
+                <h4 id="pillar-title" class="text-2xl font-bold text-amber-800 mb-2"></h4>
+                <p id="pillar-description" class="text-gray-700"></p>
+            </div>
+        </section>
+
+        <section id="measurement" class="scroll-mt-20 mb-16 md:mb-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800">Measuring What Matters: The 9 Domains</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-base md:text-lg text-gray-600">
+                    To translate the GNH philosophy into practice, it is measured through a comprehensive framework of 9 domains and 33 indicators. These domains provide a holistic view of citizen well-being beyond simple economic figures. The chart below shows the equal weight given to each domain in the overall GNH index.
+                </p>
+            </div>
+            <div class="chart-container">
+                <canvas id="gnhDomainsChart"></canvas>
+            </div>
+        </section>
+
+        <section id="impact" class="scroll-mt-20 mb-16 md:mb-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800">Impact & Progress</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-base md:text-lg text-gray-600">
+                    The GNH philosophy has guided tangible progress in key areas of development, often prioritizing long-term well-being and sustainability over short-term economic gains. The chart below visualizes the relationship between economic growth (GDP) and the GNH index over time.
+                </p>
+            </div>
+            <div class="bg-white p-4 md:p-8 rounded-lg shadow-lg">
+                <div class="chart-container h-[400px] md:h-[500px] max-h-[60vh]">
+                    <canvas id="gnhProgressChart"></canvas>
+                </div>
+                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 text-center">
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <p class="text-3xl font-bold text-green-700">>72%</p>
+                        <p class="text-green-800 mt-1">Forest Cover</p>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <p class="text-3xl font-bold text-blue-700">~73 yrs</p>
+                        <p class="text-blue-800 mt-1">Life Expectancy</p>
+                    </div>
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <p class="text-3xl font-bold text-yellow-700">Carbon Negative</p>
+                        <p class="text-yellow-800 mt-1">Global Status</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="challenges" class="scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800">Navigating the Challenges Ahead</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-base md:text-lg text-gray-600">
+                    Despite its successes, Bhutan faces significant challenges in implementing the GNH framework in a rapidly globalizing world. Balancing tradition with modernity remains a constant endeavor. Explore some of the key challenges below.
+                </p>
+            </div>
+            <div class="space-y-4 max-w-4xl mx-auto">
+                <details class="challenge-card bg-white p-4 rounded-lg shadow-sm cursor-pointer">
+                    <summary class="font-semibold text-lg text-gray-800 list-none flex justify-between items-center">
+                        Youth Unemployment
+                        <span class="text-amber-600 transform transition-transform duration-300 group-open:rotate-180">&#9662;</span>
+                    </summary>
+                    <p class="mt-2 text-gray-600">
+                        A growing youth population faces a shortage of suitable jobs, creating a mismatch between the aspirations of educated young people and the opportunities available in the economy. This poses a risk to social stability and individual well-being.
+                    </p>
+                </details>
+                <details class="challenge-card bg-white p-4 rounded-lg shadow-sm cursor-pointer">
+                    <summary class="font-semibold text-lg text-gray-800 list-none flex justify-between items-center">
+                        Economic Vulnerability
+                        <span class="text-amber-600 transform transition-transform duration-300 group-open:rotate-180">&#9662;</span>
+                    </summary>
+                    <p class="mt-2 text-gray-600">
+                        Bhutan's economy is heavily reliant on hydropower exports to India and foreign aid. This lack of diversification makes it vulnerable to external shocks and climate change impacts on glacial water sources.
+                    </p>
+                </details>
+                <details class="challenge-card bg-white p-4 rounded-lg shadow-sm cursor-pointer">
+                    <summary class="font-semibold text-lg text-gray-800 list-none flex justify-between items-center">
+                        Cultural Preservation vs. Globalization
+                        <span class="text-amber-600 transform transition-transform duration-300 group-open:rotate-180">&#9662;</span>
+                    </summary>
+                    <p class="mt-2 text-gray-600">
+                        The influx of global media and technology presents both opportunities and challenges. While connecting Bhutan to the world, it also exerts pressure on traditional values, languages, and cultural practices, which are central to the GNH philosophy.
+                    </p>
+                </details>
+                 <details class="challenge-card bg-white p-4 rounded-lg shadow-sm cursor-pointer">
+                    <summary class="font-semibold text-lg text-gray-800 list-none flex justify-between items-center">
+                        Ensuring Equity
+                        <span class="text-amber-600 transform transition-transform duration-300 group-open:rotate-180">&#9662;</span>
+                    </summary>
+                    <p class="mt-2 text-gray-600">
+                        While poverty has decreased, disparities in income and access to services persist between urban and rural areas. Ensuring that the benefits of development are shared equitably across all segments of society is a continuing priority.
+                    </p>
+                </details>
+            </div>
+        </section>
+
+    </main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+
+
+    <footer class="bg-gray-800 text-white mt-16 md:mt-24">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center text-sm">
+            <p>&copy; 2025 Interactive Report. Created to explore the principles of Gross National Happiness.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const pillarData = {
+                '1': {
+                    title: 'Good Governance',
+                    description: 'This pillar emphasizes the importance of a just, transparent, and accountable government. It includes promoting the rule of law, ensuring political freedom, and fighting corruption to create a stable and secure society where citizens can thrive.'
+                },
+                '2': {
+                    title: 'Sustainable & Equitable Socio-Economic Development',
+                    description: 'This pillar focuses on building a strong economy that benefits all citizens fairly. It prioritizes creating livelihoods, reducing poverty, and ensuring access to quality education and healthcare, all while managing resources responsibly for future generations.'
+                },
+                '3': {
+                    title: 'Preservation & Promotion of Culture',
+                    description: 'This pillar recognizes the importance of a strong cultural identity for the well-being of a nation. It aims to protect Bhutan\'s rich heritage, traditions, and values while allowing for dynamic evolution in the face of globalization.'
+                },
+                '4': {
+                    title: 'Environmental Conservation',
+                    description: 'Central to GNH, this pillar mandates the protection and conservation of the natural environment. Bhutan\'s constitution requires maintaining at least 60% of its land under forest cover, reflecting a deep respect for ecological balance and biodiversity.'
+                }
+            };
+
+            const pillarCards = document.querySelectorAll('.pillar-card');
+            const pillarDetailsContainer = document.getElementById('pillar-details');
+            const pillarTitle = document.getElementById('pillar-title');
+            const pillarDescription = document.getElementById('pillar-description');
+
+            pillarCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const pillarId = card.dataset.pillar;
+                    const data = pillarData[pillarId];
+                    pillarTitle.textContent = data.title;
+                    pillarDescription.textContent = data.description;
+                    pillarDetailsContainer.classList.remove('hidden');
+                });
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.4
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            navLinks.forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            const gnhDomainsCtx = document.getElementById('gnhDomainsChart').getContext('2d');
+            new Chart(gnhDomainsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Psychological Well-being', 'Health', 'Time Use', 'Education', 'Cultural Diversity', 'Good Governance', 'Community Vitality', 'Ecological Diversity', 'Living Standards'],
+                    datasets: [{
+                        label: 'GNH Domains',
+                        data: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                        backgroundColor: [
+                            '#4ade80', '#3b82f6', '#facc15', '#a855f7', '#f97316', '#14b8a6', '#ec4899', '#22c55e', '#8b5cf6'
+                        ],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                             labels: {
+                                font: {
+                                    size: 10
+                                }
+                            }
+                        },
+                        title: {
+                            display: false,
+                            text: 'The 9 Domains of GNH'
+                        }
+                    }
+                }
+            });
+
+            const gnhProgressCtx = document.getElementById('gnhProgressChart').getContext('2d');
+            new Chart(gnhProgressCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['2005', '2010', '2015', '2022'],
+                    datasets: [
+                        {
+                            label: 'GNH Index (0-1 Scale)',
+                            data: [0.743, 0.756, 0.767, 0.781],
+                            backgroundColor: 'rgba(217, 119, 6, 0.6)', 
+                            borderColor: 'rgba(217, 119, 6, 1)',
+                            borderWidth: 1,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'GDP per Capita (USD)',
+                            data: [1470, 2450, 2870, 3560],
+                            backgroundColor: 'rgba(107, 114, 128, 0.6)',
+                            borderColor: 'rgba(107, 114, 128, 1)',
+                            type: 'line',
+                            fill: false,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Bhutan: GNH Index vs. GDP per Capita Growth',
+                            font: { size: 16 }
+                        },
+                         tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        if (context.dataset.type === 'line') {
+                                             label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                                        } else {
+                                             label += context.parsed.y;
+                                        }
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                             min: 0.7,
+                             max: 0.8,
+                            title: {
+                                display: true,
+                                text: 'GNH Index'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            min: 1000,
+                            max: 4000,
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                             title: {
+                                display: true,
+                                text: 'GDP per Capita (USD)'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
