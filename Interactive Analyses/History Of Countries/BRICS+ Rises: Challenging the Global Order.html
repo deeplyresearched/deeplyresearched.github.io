@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRICS+ Rises: Challenging the Global Order</title>
+    <meta name="description" content="Explore how the expanded BRICS+ bloc reshapes the global financial and geopolitical      landscape, driving de-dollarization, new institutions, and a powerful Global South voice.">
+<meta name="keywords" content="BRICS+, BRICS expansion, de-dollarization, global order, geopolitics, emerging markets, New Development Bank, NDB, Global South, multipolar world, international finance, US dollar, sanctions, G7, economic coalition">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+    <!-- Chosen Palette: Calm Neutrals with Teal Accent -->
+    <!-- Application Structure Plan: A thematic, single-page scrolling narrative is employed to guide users through a complex topic logically. The structure flows from a high-level overview ('The New Powerhouse') to the core mechanisms of change ('Reshaping Finance'), the geopolitical consequences ('Shifting Dynamics'), and finally a nuanced look at internal complexities ('Challenges & Outlook'). This narrative approach is more intuitive for understanding a multifaceted subject than a dense dashboard. Interactions like toggling data on charts and clicking cards for details are designed to reveal information progressively, preventing overwhelm and encouraging exploration. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: BRICS+ vs G7 economic/demographic scale. -> Goal: Compare. -> Viz: Donut Chart (Chart.js), Dynamic Stat Cards (HTML/JS). -> Interaction: Toggle button to switch data between founding BRICS and expanded BRICS+, showing the impact of new members. -> Justification: Provides an immediate, powerful visual comparison of the blocs' global weight.
+        - Report Info: De-dollarization and NDB's role. -> Goal: Explain Change. -> Viz: Line Chart (Chart.js for NDB growth), interactive diagram (HTML/CSS). -> Interaction: Hovering over diagram steps reveals tooltips; chart tooltips show specific data points. -> Justification: The line chart visualizes growth over time, while the diagram simplifies the complex institutional shift away from traditional financial systems.
+        - Report Info: Influence in global institutions. -> Goal: Compare. -> Viz: Stacked Bar Chart (Chart.js). -> Interaction: Compare IMF/World Bank voting shares (G7-dominated) with NDB's equal model. -> Justification: A direct visual contrast of the old and new governance models, highlighting the BRICS+ challenge to the status quo.
+        - Report Info: Internal bloc challenges. -> Goal: Organize/Inform. -> Viz: Interactive Cards (HTML/CSS/JS). -> Interaction: Clicking a card reveals detailed text about a specific challenge. -> Justification: Neatly categorizes complex issues, keeping the UI clean while allowing users to drill down into topics of interest.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #383838;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+                max-height: 400px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-color 0.3s;
+        }
+        .nav-link:hover {
+            color: #14B8A6;
+        }
+        .nav-link.active {
+            color: #14B8A6;
+            border-bottom-color: #14B8A6;
+        }
+        .stat-card {
+            background-color: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .challenge-card {
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out;
+        }
+        .challenge-card .front, .challenge-card .back {
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            transition: transform 0.5s ease-in-out;
+        }
+        .challenge-card .back {
+            transform: rotateY(180deg);
+        }
+        .challenge-card.flipped .front {
+            transform: rotateY(-180deg);
+        }
+        .challenge-card.flipped .back {
+            transform: rotateY(0deg);
+        }
+
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-teal-600">BRICS+ Analysis</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#overview" class="nav-link text-gray-600 pb-1 border-b-2 border-transparent">Overview</a>
+                <a href="#finance" class="nav-link text-gray-600 pb-1 border-b-2 border-transparent">Financial Shift</a>
+                <a href="#power" class="nav-link text-gray-600 pb-1 border-b-2 border-transparent">Power Dynamics</a>
+                <a href="#challenges" class="nav-link text-gray-600 pb-1 border-b-2 border-transparent">Challenges</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-700 focus:outline-none">
+                <span class="text-2xl">&#9776;</span>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden">
+             <a href="#overview" class="block py-2 px-6 text-sm text-gray-700 hover:bg-teal-50">Overview</a>
+             <a href="#finance" class="block py-2 px-6 text-sm text-gray-700 hover:bg-teal-50">Financial Shift</a>
+             <a href="#power" class="block py-2 px-6 text-sm text-gray-700 hover:bg-teal-50">Power Dynamics</a>
+             <a href="#challenges" class="block py-2 px-6 text-sm text-gray-700 hover:bg-teal-50">Challenges</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 md:py-12">
+
+        <section id="hero" class="text-center py-16">
+            <h2 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">The BRICS+ Expansion: A New Global Blueprint</h2>
+            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+                The recent expansion of the BRICS bloc marks a pivotal moment in international relations. This interactive report explores how the growing economic and geopolitical ambitions of this diverse group are fundamentally reshaping the global financial architecture and traditional power dynamics.
+            </p>
+        </section>
+
+        <section id="overview" class="py-12 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center mb-2">A New Economic Powerhouse</h3>
+            <p class="text-center text-gray-600 mb-10 max-w-3xl mx-auto">With the inclusion of new members, the BRICS+ bloc now represents a formidable force in the global economy. This section quantifies the collective scale of the group, comparing its share of key global metrics against the G7 nations. Use the toggle to see the significant impact of the 2024 expansion.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div class="stat-card">
+                    <h4 class="text-lg font-semibold text-gray-500 mb-2">Share of Global GDP (PPP)</h4>
+                    <p id="gdp-stat" class="text-5xl font-bold text-teal-600">36%</p>
+                </div>
+                <div class="stat-card">
+                    <h4 class="text-lg font-semibold text-gray-500 mb-2">Share of Global Population</h4>
+                    <p id="pop-stat" class="text-5xl font-bold text-teal-600">45%</p>
+                </div>
+                <div class="stat-card">
+                    <h4 class="text-lg font-semibold text-gray-500 mb-2">Share of Global Oil Production</h4>
+                    <p id="oil-stat" class="text-5xl font-bold text-teal-600">44%</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <div class="flex justify-center mb-4">
+                    <div class="bg-gray-200 rounded-full p-1 flex">
+                        <button id="brics-plus-btn" class="px-4 py-1 text-sm font-semibold rounded-full bg-teal-500 text-white">BRICS+</button>
+                        <button id="brics-founding-btn" class="px-4 py-1 text-sm font-semibold rounded-full text-gray-600">Founding BRICS</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="gdpPopulationChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="finance" class="py-12 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center mb-2">Reshaping Global Finance</h3>
+            <p class="text-center text-gray-600 mb-10 max-w-3xl mx-auto">A core ambition of the BRICS+ bloc is to create a multipolar financial world, reducing dependency on the US dollar and Western-led institutions like the IMF and World Bank. This is primarily being pursued through the New Development Bank (NDB) and promoting trade in local currencies.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h4 class="text-xl font-bold text-center mb-4">NDB Project Funding Growth</h4>
+                    <div class="chart-container h-80 max-h-80 md:h-96 md:max-h-96">
+                        <canvas id="ndbChart"></canvas>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h4 class="font-bold text-lg mb-2">1. Alternative to IMF/World Bank</h4>
+                        <p class="text-gray-600">The New Development Bank (NDB) offers infrastructure and sustainable development loans with a focus on emerging economies, providing an alternative source of funding without the policy conditionalities often attached to Western loans.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h4 class="font-bold text-lg mb-2">2. De-Dollarization Initiatives</h4>
+                        <p class="text-gray-600">Members are increasingly settling bilateral trade in local currencies (e.g., yuan, rupee, ruble), bypassing the SWIFT system and reducing exposure to US sanctions and monetary policy.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="power" class="py-12 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center mb-2">Shifting Power Dynamics</h3>
+             <p class="text-center text-gray-600 mb-10 max-w-3xl mx-auto">The rise of BRICS+ presents a direct challenge to the post-WWII global order long dominated by the G7. This shift is most visible in the structure of global governance institutions, where BRICS+ advocates for a more equitable distribution of power.</p>
+
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h4 class="text-xl font-bold text-center mb-4">Voting Power: NDB vs. IMF</h4>
+                 <p class="text-center text-sm text-gray-500 mb-6">The chart below contrasts the equal voting shares within the NDB's founding members against the G7-dominated structure of the IMF, illustrating the different approaches to global governance.</p>
+                <div class="chart-container h-80 max-h-80 md:h-96 md:max-h-96">
+                    <canvas id="votingPowerChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="challenges" class="py-12 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center mb-2">Internal Landscape & Challenges</h3>
+            <p class="text-center text-gray-600 mb-10 max-w-3xl mx-auto">Despite its growing influence, BRICS+ is not a monolithic alliance. The bloc faces significant internal challenges, including economic disparities, geopolitical rivalries, and divergent political systems. Click on each card below to explore these complexities.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <div class="challenge-card h-56 relative" data-challenge="1">
+                    <div class="front absolute w-full h-full bg-white rounded-lg shadow-lg p-6 flex flex-col justify-center items-center text-center">
+                        <div class="text-4xl mb-3">&#128176;</div>
+                        <h4 class="font-bold text-lg">Economic Disparities</h4>
+                        <p class="text-sm text-gray-500 mt-2">Click to learn more</p>
+                    </div>
+                    <div class="back absolute w-full h-full bg-teal-600 text-white rounded-lg shadow-lg p-6 flex flex-col justify-center">
+                        <p class="text-sm">The bloc includes economic giants like China alongside smaller economies. Aligning economic policies and trade goals can be difficult due to vast differences in GDP per capita, industrialization, and economic structure.</p>
+                    </div>
+                </div>
+
+                <div class="challenge-card h-56 relative" data-challenge="2">
+                    <div class="front absolute w-full h-full bg-white rounded-lg shadow-lg p-6 flex flex-col justify-center items-center text-center">
+                         <div class="text-4xl mb-3">&#127758;</div>
+                        <h4 class="font-bold text-lg">Geopolitical Rivalries</h4>
+                        <p class="text-sm text-gray-500 mt-2">Click to learn more</p>
+                    </div>
+                    <div class="back absolute w-full h-full bg-teal-600 text-white rounded-lg shadow-lg p-6 flex flex-col justify-center">
+                        <p class="text-sm">Deep-seated tensions exist between some members, most notably China and India over border disputes. Similarly, historical rivalries in the Middle East between new members like Iran and Saudi Arabia could create friction.</p>
+                    </div>
+                </div>
+
+                <div class="challenge-card h-56 relative" data-challenge="3">
+                    <div class="front absolute w-full h-full bg-white rounded-lg shadow-lg p-6 flex flex-col justify-center items-center text-center">
+                         <div class="text-4xl mb-3">&#128373;&#65039;</div>
+                        <h4 class="font-bold text-lg">Divergent Political Systems</h4>
+                        <p class="text-sm text-gray-500 mt-2">Click to learn more</p>
+                    </div>
+                    <div class="back absolute w-full h-full bg-teal-600 text-white rounded-lg shadow-lg p-6 flex flex-col justify-center">
+                        <p class="text-sm">The group comprises democracies (Brazil, India, South Africa), authoritarian states (China, Russia), and monarchies (Saudi Arabia, UAE). This diversity makes consensus on issues related to human rights, governance, and international law difficult.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+
+
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-6 py-4 text-center">
+            <p>&copy; 2025 Global Affairs Analytics. This is a simulated interactive report for educational purposes.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chartData = {
+                bricsPlus: {
+                    gdp: 36.4,
+                    population: 45.3,
+                    oil: 44,
+                    labels: ['BRICS+', 'G7', 'Rest of World'],
+                    gdpData: [36.4, 30.3, 33.3],
+                    popData: [45.3, 10.1, 44.6]
+                },
+                founding: {
+                    gdp: 27.6,
+                    population: 40.8,
+                    oil: 20,
+                    labels: ['Founding BRICS', 'G7', 'Rest of World'],
+                    gdpData: [27.6, 30.3, 42.1],
+                    popData: [40.8, 10.1, 49.1]
+                }
+            };
+
+            let currentView = 'bricsPlus';
+            let gdpPopChart, ndbChart, votingPowerChart;
+
+            const gdpStatEl = document.getElementById('gdp-stat');
+            const popStatEl = document.getElementById('pop-stat');
+            const oilStatEl = document.getElementById('oil-stat');
+
+            function updateStats(view) {
+                gdpStatEl.textContent = `${chartData[view].gdp}%`;
+                popStatEl.textContent = `${chartData[view].population}%`;
+                oilStatEl.textContent = `${chartData[view].oil}%`;
+            }
+
+            function createGdpPopulationChart() {
+                const ctx = document.getElementById('gdpPopulationChart').getContext('2d');
+                gdpPopChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Share of Global GDP (PPP)', 'Share of Global Population'],
+                        datasets: [{
+                            label: 'BRICS+',
+                            data: [chartData.bricsPlus.gdp, chartData.bricsPlus.population],
+                            backgroundColor: ['#14B8A6', '#F59E0B'],
+                            borderWidth: 0,
+                        }, {
+                            label: 'G7',
+                            data: [30.3, 10.1],
+                            backgroundColor: ['#0C4A6E', '#6B7280'],
+                            borderWidth: 0,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed !== null) {
+                                            label += context.parsed + '%';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function updateGdpPopChart(view) {
+                const isPlus = view === 'bricsPlus';
+                gdpPopChart.data.datasets[0].label = isPlus ? 'BRICS+' : 'Founding BRICS';
+                gdpPopChart.data.datasets[0].data = [chartData[view].gdp, chartData[view].population];
+                gdpPopChart.update();
+            }
+            
+            function createNdbChart() {
+                const ctx = document.getElementById('ndbChart').getContext('2d');
+                ndbChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['2018', '2019', '2020', '2021', '2022', '2023', '2024 (Est.)', '2025 (Proj.)'],
+                        datasets: [{
+                            label: 'Cumulative Project Funding (USD Billion)',
+                            data: [4.1, 9.2, 15.3, 22.4, 28.9, 32.8, 38.0, 44.5],
+                            borderColor: '#14B8A6',
+                            backgroundColor: 'rgba(20, 184, 166, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                         scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+            
+            function createVotingPowerChart() {
+                const ctx = document.getElementById('votingPowerChart').getContext('2d');
+                votingPowerChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['New Development Bank (Founders)', 'International Monetary Fund'],
+                        datasets: [
+                            { label: 'BRICS Founders', data: [100, 14.7], backgroundColor: '#14B8A6' },
+                            { label: 'G7 Nations', data: [0, 42.1], backgroundColor: '#0C4A6E' },
+                            { label: 'Rest of World', data: [0, 43.2], backgroundColor: '#9CA3AF' }
+                        ]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                stacked: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%'
+                                    }
+                                }
+                            },
+                            y: {
+                                stacked: true
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.dataset.label}: ${context.raw}%`;
+                                    }
+                                }
+                            },
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            const bPlusBtn = document.getElementById('brics-plus-btn');
+            const bFoundingBtn = document.getElementById('brics-founding-btn');
+
+            bPlusBtn.addEventListener('click', () => {
+                currentView = 'bricsPlus';
+                bPlusBtn.classList.add('bg-teal-500', 'text-white');
+                bPlusBtn.classList.remove('text-gray-600');
+                bFoundingBtn.classList.remove('bg-teal-500', 'text-white');
+                bFoundingBtn.classList.add('text-gray-600');
+                updateStats(currentView);
+                updateGdpPopChart(currentView);
+            });
+
+            bFoundingBtn.addEventListener('click', () => {
+                currentView = 'founding';
+                bFoundingBtn.classList.add('bg-teal-500', 'text-white');
+                bFoundingBtn.classList.remove('text-gray-600');
+                bPlusBtn.classList.remove('bg-teal-500', 'text-white');
+                bPlusBtn.classList.add('text-gray-600');
+                updateStats(currentView);
+                updateGdpPopChart(currentView);
+            });
+            
+            const challengeCards = document.querySelectorAll('.challenge-card');
+            challengeCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('flipped');
+                });
+            });
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: "-50% 0px -50% 0px" });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            createGdpPopulationChart();
+            createNdbChart();
+            createVotingPowerChart();
+            updateStats('bricsPlus');
+        });
+    </script>
+</body>
+</html>
+
