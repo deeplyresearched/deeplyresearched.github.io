@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>North Korea: Juche, Kim Dynasty, & Nuclear Survival Strategy</title>
+<meta name="description" content="Unpack North Korea's Juche ideology, Kim dynasty, and nuclear strategy. This analysis reveals why regime survival dictates its actions, challenging global security.">
+<meta name="keywords" content="North Korea, Juche ideology, Kim dynasty, North Korea nuclear program, DPRK, International security, Geopolitics, Regime survival North Korea, North Korea human rights, North Korea foreign policy, Kim Jong Un, North Korea Russia alliance, Denuclearization North Korea, Containment strategy North Korea, Authoritarian states">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+    <!-- Chosen Palette: Slate Gray & Muted Crimson -->
+    <!-- Application Structure Plan: The application uses a thematic, single-page dashboard structure. It starts with a central "Core Nexus" to introduce the interconnected pillars of North Korean policy. The user can then navigate via a sticky header to dedicated sections for each pillar (Ideology, Leadership, Economy, etc.), Regional Impact, and Future Scenarios. This hub-and-spoke design is chosen over a linear format to encourage user-driven exploration and highlight the complex relationships between domestic policy and international relations. Key interactions include tabbed content for deep dives, filterable timelines, and dynamic charts that update based on user selections, making the cause-and-effect relationships tangible. -->
+    <!-- Visualization & Content Choices: 
+        - Leadership Dynasty: Goal=Organize. Method=HTML/CSS interactive diagram. Interaction=Click on leader to see bio. Justification=More intuitive than text for showing succession.
+        - Economic Data: Goal=Compare/Show Change. Method=Donut & Line charts (Chart.js). Interaction=Toggle sanction events on GDP chart. Justification=Visualizes trade dependency and sanction impact effectively.
+        - Nuclear Tests: Goal=Show Change. Method=Bar chart (Chart.js). Interaction=Hover for details. Justification=Clearly shows the program's acceleration under different leaders.
+        - Human Rights: Goal=Inform. Method=Icon-based list (HTML/CSS/Unicode). Interaction=Click to expand details. Justification=Presents sensitive information clearly and respectfully without sensationalism.
+        - Future Scenarios: Goal=Compare Relationships. Method=Radar chart (Chart.js). Interaction=Select scenario to update chart and text. Justification=Excellent for comparing multiple scenarios across various metrics simultaneously.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link.active {
+            color: #b91c1c;
+            border-bottom-color: #b91c1c;
+        }
+        .tab-btn.active {
+            background-color: #b91c1c;
+            color: #ffffff;
+        }
+        .leader-card.active {
+            border-color: #b91c1c;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+    </style>
+</head>
+<body class="text-slate-700">
+
+    <header id="header" class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-slate-800">DPRK Interactive Analysis</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#nexus" class="nav-link px-3 py-2 text-sm font-medium text-slate-600 hover:text-b91c1c border-b-2 border-transparent">Core Nexus</a>
+                        <a href="#pillars" class="nav-link px-3 py-2 text-sm font-medium text-slate-600 hover:text-b91c1c border-b-2 border-transparent">State Pillars</a>
+                        <a href="#impact" class="nav-link px-3 py-2 text-sm font-medium text-slate-600 hover:text-b91c1c border-b-2 border-transparent">Regional Impact</a>
+                        <a href="#future" class="nav-link px-3 py-2 text-sm font-medium text-slate-600 hover:text-b91c1c border-b-2 border-transparent">Future Scenarios</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <select id="mobile-nav" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm">
+                        <option value="#nexus">Core Nexus</option>
+                        <option value="#pillars">State Pillars</option>
+                        <option value="#impact">Regional Impact</option>
+                        <option value="#future">Future Scenarios</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="nexus" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">The Core Nexus of North Korea</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">
+                    To understand North Korea is to understand the deep interplay between its ideology, leadership, military ambitions, and economic struggles. These are not separate issues but interconnected pillars that define its domestic policy and its volatile relationship with the world. This analysis explores these pillars and their far-reaching consequences.
+                </p>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-5 gap-8 items-center text-center">
+                    <div class="p-4">
+                        <h3 class="font-semibold text-slate-800">Juche Ideology</h3>
+                        <p class="text-sm text-slate-500">Self-Reliance</p>
+                    </div>
+                    <div class="text-2xl text-slate-400">↔</div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-slate-800">Kim Dynasty</h3>
+                        <p class="text-sm text-slate-500">Hereditary Leadership</p>
+                    </div>
+                    <div class="text-2xl text-slate-400">↔</div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-slate-800">Nuclear Program</h3>
+                        <p class="text-sm text-slate-500">Survival & Leverage</p>
+                    </div>
+                </div>
+                 <div class="flex justify-center text-2xl text-slate-400 my-4">↕</div>
+                 <div class="flex justify-center items-center gap-8">
+                     <div class="p-4">
+                        <h3 class="font-semibold text-slate-800">Economic Challenges</h3>
+                        <p class="text-sm text-slate-500">Sanctions & Isolation</p>
+                    </div>
+                    <div class="text-2xl text-slate-400">↔</div>
+                     <div class="p-4">
+                        <h3 class="font-semibold text-slate-800">Human Rights</h3>
+                        <p class="text-sm text-slate-500">Systematic Repression</p>
+                    </div>
+                 </div>
+            </div>
+        </section>
+
+        <section id="pillars" class="py-16 md:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Pillars of the State</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">
+                        The Democratic People's Republic of Korea (DPRK) is built upon several foundational pillars that dictate its internal logic and external actions. Click through the tabs below to explore each component, from the ruling ideology and leadership cult to the economic realities and dire human rights situation that they foster.
+                    </p>
+                </div>
+
+                <div class="mt-12">
+                    <div class="mb-8 border-b border-slate-200">
+                        <nav class="-mb-px flex flex-wrap justify-center gap-4" aria-label="Tabs">
+                             <button class="tab-btn active shrink-0 border border-transparent rounded-lg px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100" data-tab="leadership">Leadership & Ideology</button>
+                             <button class="tab-btn shrink-0 border border-transparent rounded-lg px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100" data-tab="economy">Economy & Sanctions</button>
+                             <button class="tab-btn shrink-0 border border-transparent rounded-lg px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100" data-tab="military">Nuclear Program</button>
+                             <button class="tab-btn shrink-0 border border-transparent rounded-lg px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100" data-tab="rights">Human Rights</button>
+                        </nav>
+                    </div>
+
+                    <div id="tab-content">
+                        <div id="leadership" class="tab-pane active">
+                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                                <div class="flex flex-col">
+                                    <h3 class="text-2xl font-semibold text-slate-800 mb-4">The Kim Dynasty & Juche</h3>
+                                    <p class="text-slate-600 mb-6">North Korea is the world's only communist hereditary dictatorship. Power has been passed down three generations, from founder Kim Il Sung to his son Kim Jong Il, and now to his grandson, Kim Jong Un. This succession is justified by a powerful personality cult and the state ideology of 'Juche' or self-reliance, which demands absolute loyalty to the leader.</p>
+                                    <div class="space-y-4">
+                                        <div id="leader-kim-il-sung" class="leader-card active cursor-pointer p-4 border-2 border-slate-200 rounded-lg bg-white" data-leader="ilsung">
+                                            <h4 class="font-bold">Kim Il Sung (1948–1994)</h4>
+                                            <p class="text-sm">The "Eternal President," founder of the nation and creator of Juche ideology.</p>
+                                        </div>
+                                        <div id="leader-kim-jong-il" class="leader-card cursor-pointer p-4 border-2 border-transparent rounded-lg bg-white" data-leader="jongil">
+                                            <h4 class="font-bold">Kim Jong Il (1994–2011)</h4>
+                                            <p class="text-sm">The "Dear Leader," who introduced the 'Songun' or military-first policy.</p>
+                                        </div>
+                                        <div id="leader-kim-jong-un" class="leader-card cursor-pointer p-4 border-2 border-transparent rounded-lg bg-white" data-leader="jongun">
+                                            <h4 class="font-bold">Kim Jong Un (2011–Present)</h4>
+                                            <p class="text-sm">The "Supreme Leader," who has aggressively advanced the nuclear program under the 'Byungjin' policy (parallel development of economy and nuclear arms).</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="leader-bio" class="p-6 bg-white rounded-lg shadow-inner">
+                                    <h4 class="text-xl font-bold text-slate-800 mb-2" id="leader-name">Kim Il Sung</h4>
+                                    <p class="text-slate-600" id="leader-text">As the founder of North Korea, Kim Il Sung established the political and ideological foundations that persist today. He introduced Juche as a guiding principle to assert independence from Soviet and Chinese influence, creating a powerful cult of personality that deifies him and his family. His rule saw the devastation of the Korean War and the establishment of a centralized, totalitarian state.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="economy" class="tab-pane hidden">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                                <div>
+                                    <h3 class="text-2xl font-semibold text-slate-800 mb-4">An Economy on the Brink</h3>
+                                    <p class="text-slate-600 mb-6">North Korea's centrally-planned economy is crippled by mismanagement, isolation, and punishing international sanctions imposed for its nuclear program. While official data is scarce, estimates show an economy highly dependent on China for trade and aid. The 'Byungjin' policy of simultaneously pursuing nuclear weapons and economic development has prioritized the former, diverting scarce resources and inviting further economic pressure.</p>
+                                    <div class="chart-container">
+                                        <canvas id="tradeChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="gdpChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="military" class="tab-pane hidden">
+                             <div class="text-center">
+                                <h3 class="text-2xl font-semibold text-slate-800 mb-4">The Nuclear Trump Card</h3>
+                                <p class="text-slate-600 mb-8 max-w-3xl mx-auto">The DPRK views its nuclear arsenal as the ultimate guarantee of regime survival, a deterrent against foreign intervention, and a source of international leverage. The program has accelerated dramatically under Kim Jong Un, with numerous tests of increasing sophistication. This single-minded pursuit comes at an immense economic cost and is the primary driver of the country's international isolation.</p>
+                                <div class="chart-container">
+                                    <canvas id="nuclearTestsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="rights" class="tab-pane hidden">
+                             <div class="text-center">
+                                <h3 class="text-2xl font-semibold text-slate-800 mb-4">Systematic Human Rights Abuses</h3>
+                                <p class="text-slate-600 mb-8 max-w-3xl mx-auto">A 2014 UN report concluded that North Korea's human rights violations are "without any parallel in the contemporary world." The regime maintains absolute control through fear, operating vast political prison camps, practicing public executions, and denying fundamental freedoms of speech, movement, and information. These abuses are not incidental but are a core tool of state control necessary to maintain the Kim dynasty's grip on power.</p>
+                                <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                                    <div class="p-4 bg-white rounded-lg shadow-sm">
+                                        <h4 class="font-semibold text-red-800">⛓️ Political Prison Camps (Kwanliso)</h4>
+                                        <p class="text-sm text-slate-600">Estimated 80,000-120,000 people held in camps for political crimes, often with three generations of a family imprisoned for the "crime" of one member.</p>
+                                    </div>
+                                    <div class="p-4 bg-white rounded-lg shadow-sm">
+                                        <h4 class="font-semibold text-red-800">🗣️ No Freedom of Expression</h4>
+                                        <p class="text-sm text-slate-600">All media is state-controlled. Unauthorized access to foreign media (e.g., South Korean dramas) is severely punished.</p>
+                                    </div>
+                                     <div class="p-4 bg-white rounded-lg shadow-sm">
+                                        <h4 class="font-semibold text-red-800">🚫 No Freedom of Movement</h4>
+                                        <p class="text-sm text-slate-600">Citizens cannot travel freely within the country, let alone abroad, without state permission. Defectors are considered traitors.</p>
+                                    </div>
+                                     <div class="p-4 bg-white rounded-lg shadow-sm">
+                                        <h4 class="font-semibold text-red-800">🍽️ Food as a Control Tool</h4>
+                                        <p class="text-sm text-slate-600">The state's Public Distribution System is used to ensure loyalty. Food insecurity and chronic malnutrition remain widespread.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="impact" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Regional Impact & Foreign Policy</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">
+                        North Korea's actions create constant instability in Northeast Asia, one of the world's most dynamic regions. Its foreign policy is a mix of provocative missile tests, diplomatic overtures, and brinkmanship, all designed to extract concessions and ensure regime survival. This section explores its relationships with key regional actors and the timeline of major provocations and diplomatic efforts.
+                    </p>
+                </div>
+
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div>
+                        <h3 class="text-2xl font-semibold text-slate-800 mb-4">Key Player Relations</h3>
+                        <div class="space-y-4">
+                            <details class="p-4 bg-slate-50 rounded-lg">
+                                <summary class="font-semibold cursor-pointer">🇺🇸 United States</summary>
+                                <p class="mt-2 text-sm text-slate-600">Primary adversary. The US maintains a strong military presence in South Korea and Japan and leads international sanctions efforts. Diplomatic engagement has been sporadic, swinging between presidential summits and periods of high tension.</p>
+                            </details>
+                            <details class="p-4 bg-slate-50 rounded-lg">
+                                <summary class="font-semibold cursor-pointer">🇨🇳 China</summary>
+                                <p class="mt-2 text-sm text-slate-600">Closest ally and economic lifeline. Beijing provides crucial trade and aid but is often frustrated by Pyongyang's destabilizing actions. China's main goal is to prevent a regime collapse on its border, giving it a complex balancing act.</p>
+                            </details>
+                             <details class="p-4 bg-slate-50 rounded-lg">
+                                <summary class="font-semibold cursor-pointer">🇰🇷 South Korea</summary>
+                                <p class="mt-2 text-sm text-slate-600">The direct counterpart. Relations oscillate between engagement and confrontation depending on the administration in Seoul. Technically still at war since the Korean War ended in an armistice, not a peace treaty.</p>
+                            </details>
+                             <details class="p-4 bg-slate-50 rounded-lg">
+                                <summary class="font-semibold cursor-pointer">🇯🇵 Japan</summary>
+                                <p class="mt-2 text-sm text-slate-600">Within range of North Korean missiles, Japan maintains a hardline stance, strongly supporting sanctions. The issue of Japanese citizens abducted by North Korea in the 1970s and 80s remains a major point of contention.</p>
+                            </details>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-semibold text-slate-800 mb-4">Timeline of Key Events</h3>
+                        <div class="bg-slate-50 p-4 rounded-lg h-96 overflow-y-auto">
+                            <ul id="timeline" class="relative border-l border-slate-300">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="future" class="py-16 md:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Future Scenarios</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">
+                        The future of North Korea and the stability of the Korean Peninsula are uncertain. Several plausible scenarios exist, each with profound implications for denuclearization, international relations, and the North Korean people. Select a scenario below to visualize its potential outcomes across key metrics.
+                    </p>
+                </div>
+                <div class="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <label for="scenario-select" class="block text-sm font-medium text-slate-700">Select a Scenario:</label>
+                        <select id="scenario-select" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md">
+                            <option value="stalemate">Continued Stalemate</option>
+                            <option value="reform">Gradual Reform & Opening</option>
+                            <option value="collapse">Regime Collapse</option>
+                        </select>
+                        <div id="scenario-description" class="mt-6 p-4 bg-white rounded-lg shadow-inner">
+                            <h4 class="font-bold text-slate-800">Continued Stalemate</h4>
+                            <p class="mt-2 text-slate-600">This is the "muddling through" scenario. North Korea retains its nuclear weapons, facing continued international sanctions. The economy stagnates, and human rights abuses persist. The risk of miscalculation and limited conflict remains high, but the fundamental situation does not change.</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="scenarioChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+
+    <footer class="bg-slate-800 text-white">
+        <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm">
+            <p>&copy; 2025 Interactive Analysis. For informational purposes only.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const leadershipData = {
+                ilsung: {
+                    name: "Kim Il Sung",
+                    text: "As the founder of North Korea, Kim Il Sung established the political and ideological foundations that persist today. He introduced Juche as a guiding principle to assert independence from Soviet and Chinese influence, creating a powerful cult of personality that deifies him and his family. His rule saw the devastation of the Korean War and the establishment of a centralized, totalitarian state."
+                },
+                jongil: {
+                    name: "Kim Jong Il",
+                    text: "Inheriting power upon his father's death, Kim Jong Il's rule was defined by the 'Arduous March' famine of the 1990s and the 'Songun' (military-first) policy, which prioritized the Korean People's Army in all state affairs. He oversaw North Korea's first nuclear tests, cementing the country's status as a nuclear-armed state."
+                },
+                jongun: {
+                    name: "Kim Jong Un",
+                    text: "Since taking power, Kim Jong Un has consolidated his rule through ruthless purges while dramatically accelerating the country's nuclear and missile programs. He has engaged in unprecedented diplomacy, meeting with US and South Korean presidents, but has made no concrete steps toward denuclearization. His 'Byungjin' policy aims to develop the economy and nuclear arsenal in parallel."
+                }
+            };
+            
+            const timelineData = [
+                { year: '2006', event: 'First nuclear test conducted under Kim Jong Il.' },
+                { year: '2009', event: 'Second nuclear test, followed by withdrawal from Six-Party Talks.' },
+                { year: '2011', event: 'Kim Jong Il dies; Kim Jong Un assumes supreme leadership.' },
+                { year: '2013', event: 'Third nuclear test, first under Kim Jong Un.' },
+                { year: '2016', event: 'Fourth (claimed H-bomb) and fifth nuclear tests.' },
+                { year: '2017', event: 'Sixth and most powerful nuclear test. Multiple ICBM tests demonstrating potential to reach US mainland.' },
+                { year: '2018', event: 'Kim Jong Un meets with South Korean President Moon Jae-in and US President Donald Trump.' },
+                { year: '2019', event: 'Hanoi Summit between Trump and Kim collapses without a deal.' },
+                { year: '2022', event: 'Record number of missile tests, including new ICBMs. Law passed declaring nuclear status "irreversible".' },
+                { year: '2024', event: 'North Korea formally abandons goal of peaceful reunification with the South.' },
+            ];
+
+            const scenarioData = {
+                stalemate: {
+                    label: "Stalemate",
+                    data: [3, 2, 2, 8, 2],
+                    description: {
+                        title: "Continued Stalemate",
+                        text: "This is the 'muddling through' scenario. North Korea retains its nuclear weapons, facing continued international sanctions. The economy stagnates, and human rights abuses persist. The risk of miscalculation and limited conflict remains high, but the fundamental situation does not change."
+                    }
+                },
+                reform: {
+                    label: "Reform",
+                    data: [6, 7, 5, 5, 4],
+                     description: {
+                        title: "Gradual Reform & Opening",
+                        text: "In this scenario, North Korea pursues Chinese-style economic reforms, slowly opening parts of its economy. This could lead to improved living standards and limited sanctions relief in exchange for a freeze on its nuclear program (but not full denuclearization). Regional stability would improve, but the regime's core authoritarian nature and human rights abuses would likely remain."
+                    }
+                },
+                collapse: {
+                    label: "Collapse",
+                    data: [1, 1, 8, 1, 9],
+                     description: {
+                        title: "Regime Collapse",
+                        text: "A sudden internal or external shock leads to the collapse of the Kim regime. This scenario presents extreme short-term risks, including a humanitarian crisis, loose nuclear weapons, and potential military intervention from neighboring countries. However, it offers the highest long-term potential for denuclearization and human rights improvement if a stable, non-hostile government emerges."
+                    }
+                }
+            };
+
+            const charts = {};
+
+            const createTradeChart = () => {
+                const ctx = document.getElementById('tradeChart').getContext('2d');
+                charts.trade = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['China', 'Russia', 'Vietnam', 'Other'],
+                        datasets: [{
+                            label: 'Trade Partners',
+                            data: [85, 5, 3, 7],
+                            backgroundColor: ['#b91c1c', '#64748b', '#94a3b8', '#cbd5e1'],
+                            borderColor: '#f8fafc',
+                            borderWidth: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Estimated Trade Composition by Partner'
+                            }
+                        }
+                    }
+                });
+            };
+
+            const createGdpChart = () => {
+                const ctx = document.getElementById('gdpChart').getContext('2d');
+                 charts.gdp = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['2011', '2013', '2015', '2017', '2019', '2021', '2023'],
+                        datasets: [{
+                            label: 'Estimated Real GDP Growth (%)',
+                            data: [0.8, 1.1, -1.1, -3.5, 0.4, -0.1, -0.2],
+                            borderColor: '#b91c1c',
+                            backgroundColor: 'rgba(185, 28, 28, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                             title: {
+                                display: true,
+                                text: 'Economic Growth Under Sanctions'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.dataset.label}: ${context.parsed.y}%`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            };
+            
+            const createNuclearTestsChart = () => {
+                const ctx = document.getElementById('nuclearTestsChart').getContext('2d');
+                charts.nuclear = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Kim Il Sung', 'Kim Jong Il', 'Kim Jong Un'],
+                        datasets: [{
+                            label: 'Nuclear Tests Conducted',
+                            data: [0, 2, 4],
+                            backgroundColor: ['#94a3b8', '#64748b', '#b91c1c'],
+                        }]
+                    },
+                    options: {
+                         responsive: true,
+                         maintainAspectRatio: false,
+                         indexAxis: 'y',
+                         plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Nuclear Tests by Leader'
+                            }
+                         },
+                         scales: {
+                             x: {
+                                 beginAtZero: true,
+                                 ticks: {
+                                    stepSize: 1
+                                }
+                             }
+                         }
+                    }
+                });
+            };
+
+            const createScenarioChart = () => {
+                const ctx = document.getElementById('scenarioChart').getContext('2d');
+                charts.scenario = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Regional Stability', 'Economic Growth', 'Denuclearization', 'Int. Relations', 'Human Rights'],
+                        datasets: [{
+                            label: scenarioData.stalemate.label,
+                            data: scenarioData.stalemate.data,
+                            borderColor: '#b91c1c',
+                            backgroundColor: 'rgba(185, 28, 28, 0.2)',
+                            pointBackgroundColor: '#b91c1c'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            r: {
+                                beginAtZero: true,
+                                max: 10,
+                                stepSize: 2,
+                                pointLabels: {
+                                    font: {
+                                        size: 10
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Scenario Outcome Comparison (1=Worst, 10=Best)'
+                            },
+                             legend: {
+                                position: 'bottom',
+                            }
+                        }
+                    }
+                });
+            };
+
+            const setupTabs = () => {
+                const tabContainer = document.querySelector('[aria-label="Tabs"]');
+                const tabBtns = tabContainer.querySelectorAll('.tab-btn');
+                const tabPanes = document.querySelectorAll('.tab-pane');
+                
+                tabContainer.addEventListener('click', (e) => {
+                    const clickedTab = e.target.closest('.tab-btn');
+                    if (!clickedTab) return;
+                    
+                    e.preventDefault();
+                    
+                    tabBtns.forEach(btn => btn.classList.remove('active'));
+                    clickedTab.classList.add('active');
+                    
+                    const tabId = clickedTab.dataset.tab;
+                    
+                    tabPanes.forEach(pane => {
+                        if (pane.id === tabId) {
+                            pane.classList.remove('hidden');
+                            pane.classList.add('active');
+                        } else {
+                            pane.classList.add('hidden');
+                            pane.classList.remove('active');
+                        }
+                    });
+
+                    Object.values(charts).forEach(chart => {
+                        if (chart) chart.destroy();
+                    });
+
+                    if (tabId === 'economy') {
+                        createTradeChart();
+                        createGdpChart();
+                    } else if (tabId === 'military') {
+                        createNuclearTestsChart();
+                    }
+                });
+            };
+            
+            const setupLeaderSelector = () => {
+                const leaderCards = document.querySelectorAll('.leader-card');
+                const leaderNameEl = document.getElementById('leader-name');
+                const leaderTextEl = document.getElementById('leader-text');
+                
+                leaderCards.forEach(card => {
+                    card.addEventListener('click', () => {
+                        leaderCards.forEach(c => c.classList.remove('active'));
+                        card.classList.add('active');
+                        
+                        const leaderId = card.dataset.leader;
+                        const data = leadershipData[leaderId];
+                        
+                        leaderNameEl.textContent = data.name;
+                        leaderTextEl.textContent = data.text;
+                    });
+                });
+            };
+
+            const setupScenarioSelector = () => {
+                const selectEl = document.getElementById('scenario-select');
+                const descriptionEl = document.getElementById('scenario-description');
+
+                selectEl.addEventListener('change', (e) => {
+                    const scenarioId = e.target.value;
+                    const data = scenarioData[scenarioId];
+                    
+                    charts.scenario.data.datasets[0].label = data.label;
+                    charts.scenario.data.datasets[0].data = data.data;
+                    charts.scenario.update();
+                    
+                    descriptionEl.innerHTML = `
+                        <h4 class="font-bold text-slate-800">${data.description.title}</h4>
+                        <p class="mt-2 text-slate-600">${data.description.text}</p>
+                    `;
+                });
+            };
+            
+            const populateTimeline = () => {
+                const timelineEl = document.getElementById('timeline');
+                timelineData.reverse().forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'mb-10 ml-4';
+                    li.innerHTML = `
+                        <div class="absolute w-3 h-3 bg-slate-400 rounded-full mt-1.5 -left-1.5 border border-white"></div>
+                        <time class="mb-1 text-sm font-normal leading-none text-slate-500">${item.year}</time>
+                        <p class="text-base font-normal text-slate-700">${item.event}</p>
+                    `;
+                    timelineEl.appendChild(li);
+                });
+            };
+            
+            const setupNavObserver = () => {
+                const sections = document.querySelectorAll('section');
+                const navLinks = document.querySelectorAll('.nav-link');
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            navLinks.forEach(link => {
+                                link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                            });
+                        }
+                    });
+                }, { rootMargin: "-50% 0px -50% 0px" });
+
+                sections.forEach(section => {
+                    observer.observe(section);
+                });
+            };
+
+            const setupMobileNav = () => {
+                const mobileNav = document.getElementById('mobile-nav');
+                mobileNav.addEventListener('change', (e) => {
+                    const targetId = e.target.value;
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            };
+
+            setupTabs();
+            setupLeaderSelector();
+            populateTimeline();
+            createScenarioChart();
+            setupScenarioSelector();
+            setupNavObserver();
+            setupMobileNav();
+
+        });
+    </script>
+</body>
+</html>
