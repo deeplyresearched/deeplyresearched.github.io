@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taiwan's Future: Sovereignty, Economy & Security Nexus</title>
+<meta name="description" content="Explore the complex interplay of Taiwan's sovereignty, its 'Silicon Shield,' and the escalating US-China geopolitical competition shaping its future security. Learn about strategic threats and regional responses.">
+<meta name="keywords" content="Taiwan security, Taiwan sovereignty, US-China relations, Taiwan semiconductors, Geopolitics Taiwan, Cross-Strait relations, Taiwan Strait, Indo-Pacific security, Taiwan economy, Silicon Shield, Porcupine defense, Taiwan blockade, Regional security architecture, Taiwan strategic importance">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+    <!-- Chosen Palette: Calm Neutrals -->
+    <!-- Application Structure Plan: The SPA is designed as a narrative journey through four thematic sections: 'The Core Tension,' 'The Economic Pillar,' 'The Political Web,' and 'Future Scenarios.' This structure was chosen to guide the user from the foundational sovereignty issue to the key factors influencing it (economy and alliances), and finally to potential outcomes. A sticky top navigation allows non-linear exploration, but the narrative flow provides a logical path for understanding the complex interplay of factors. Interactions like toggling perspectives, filtering chart data, and exploring relationship details are designed to actively engage the user in deconstructing the topic, rather than passively reading a static report. -->
+    <!-- Visualization & Content Choices: 
+        1. Sovereignty Stances -> Goal: Compare -> Method: Interactive Text Blocks -> Interaction: Toggle buttons switch between PRC and ROC viewpoints. Justification: Directly highlights the central conflict in a digestible format. Method: Vanilla JS.
+        2. Semiconductor Dominance -> Goal: Inform/Proportion -> Method: Donut Chart -> Interaction: Hover tooltips show precise market share. Justification: A powerful, immediate visual of Taiwan's global economic importance. Library: Chart.js (Canvas).
+        3. Top Trading Partners -> Goal: Compare/Analyze -> Method: Bar Chart -> Interaction: Buttons filter data between 'Exports' and 'Imports'. Justification: Reveals economic dependencies and diversification, key to understanding its stability. Library: Chart.js (Canvas).
+        4. Key Relationships -> Goal: Organize/Explore -> Method: Interactive Diagram (HTML/CSS) -> Interaction: Clicking a country updates a detailed text panel. Justification: Simplifies the complex web of alliances into an explorable map. Method: Vanilla JS + Tailwind.
+        5. Future Scenarios -> Goal: Synthesize/Explore -> Method: Expandable Cards -> Interaction: Click to reveal details of potential geopolitical paths. Justification: Encourages forward-thinking and understanding of the stakes. Method: Vanilla JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4;
+            color: #333D44;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #4A5568;
+            border-bottom-color: #4A5568;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+                max-height: 400px;
+            }
+        }
+        .scenario-card {
+            transition: all 0.3s ease-in-out;
+        }
+        .scenario-card.open {
+            background-color: #FFFFFF;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .relation-node {
+            transition: all 0.2s ease-in-out;
+        }
+        .relation-node.active, .relation-node:hover {
+            transform: scale(1.05);
+            background-color: #3B82F6;
+            color: white;
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="sticky top-0 bg-white/80 backdrop-blur-lg z-10 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-gray-800">Taiwan's Geopolitical Nexus</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#overview" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Overview</a>
+                <a href="#economy" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Economic Pillar</a>
+                <a href="#politics" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Political Web</a>
+                <a href="#scenarios" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Future Scenarios</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden focus:outline-none">
+                <span class="text-3xl">≡</span>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden">
+            <a href="#overview" class="block text-center py-2 px-4 text-sm text-gray-700 hover:bg-gray-100">Overview</a>
+            <a href="#economy" class="block text-center py-2 px-4 text-sm text-gray-700 hover:bg-gray-100">Economic Pillar</a>
+            <a href="#politics" class="block text-center py-2 px-4 text-sm text-gray-700 hover:bg-gray-100">Political Web</a>
+            <a href="#scenarios" class="block text-center py-2 px-4 text-sm text-gray-700 hover:bg-gray-100">Future Scenarios</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <section id="overview" class="mb-24 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4">The Core Tension: Sovereignty and Status</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                This section explores the fundamental issue at the heart of Taiwan's geopolitical challenge: its contested sovereignty. The differing perspectives of the People's Republic of China (PRC) and Taiwan (Republic of China, ROC) create a delicate and tense status quo that impacts global politics and trade. Here, you can interact to see both official viewpoints side-by-side.
+            </p>
+
+            <div class="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
+                <div class="flex justify-center mb-6 border-b">
+                    <button id="btn-roc" class="px-6 py-2 font-semibold text-blue-600 border-b-2 border-blue-600 focus:outline-none">Taiwan (ROC) Perspective</button>
+                    <button id="btn-prc" class="px-6 py-2 font-semibold text-gray-500 focus:outline-none">China (PRC) Perspective</button>
+                </div>
+                <div id="perspective-content">
+                    <h3 id="perspective-title" class="text-2xl font-semibold mb-3 text-gray-800"></h3>
+                    <p id="perspective-text" class="text-gray-700 leading-relaxed"></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="economy" class="mb-24 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4">The Economic Pillar: The Silicon Shield</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                Taiwan's economy is a critical factor in its geopolitical strategy. Its world-leading semiconductor industry, often called the "Silicon Shield," makes it indispensable to the global supply chain. This section visualizes Taiwan's economic might and its trade relationships, allowing you to explore the data that underpins its strategic importance.
+            </p>
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
+                    <h3 class="text-xl font-semibold mb-4 text-center">Global Semiconductor Dominance</h3>
+                    <div class="chart-container w-full h-80">
+                        <canvas id="semiconductorChart"></canvas>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-4 text-center">Taiwan produces over 60% of the world's semiconductors and over 90% of the most advanced chips.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
+                    <h3 class="text-xl font-semibold mb-4 text-center">Top Trading Partners</h3>
+                     <div class="flex space-x-2 mb-4">
+                        <button id="btn-exports" class="px-4 py-1 text-sm font-medium bg-blue-500 text-white rounded-md shadow-sm">Exports</button>
+                        <button id="btn-imports" class="px-4 py-1 text-sm font-medium bg-gray-200 text-gray-700 rounded-md">Imports</button>
+                    </div>
+                    <div class="chart-container w-full h-80">
+                        <canvas id="tradeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="politics" class="mb-24 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4">The Political Web: A Delicate Balance of Alliances</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                Taiwan navigates a complex network of international relationships. While having few formal diplomatic allies, it maintains strong unofficial ties with key global powers, most notably the United States. This interactive diagram illustrates the primary players and the nature of their relationships with Taiwan. Click on a country to understand its strategic stance.
+            </p>
+            <div class="grid lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 bg-white p-8 rounded-lg shadow-md flex flex-col justify-center items-center">
+                    <div class="w-full max-w-2xl">
+                        <div class="relative flex justify-center items-center mb-16">
+                            <div id="node-china" class="relation-node cursor-pointer absolute bg-red-100 text-red-800 p-4 rounded-full shadow-lg" style="top:0; left: 50%; transform: translateX(-50%);">China</div>
+                        </div>
+                        <div class="relative flex justify-between items-center my-10">
+                            <div id="node-usa" class="relation-node cursor-pointer bg-blue-100 text-blue-800 p-4 rounded-full shadow-lg">United States</div>
+                            <div class="border-t-2 border-dashed border-gray-300 w-1/3"></div>
+                            <div class="bg-green-600 text-white font-bold p-6 rounded-full shadow-2xl text-center">Taiwan</div>
+                            <div class="border-t-2 border-dashed border-gray-300 w-1/3"></div>
+                            <div id="node-japan" class="relation-node cursor-pointer bg-yellow-100 text-yellow-800 p-4 rounded-full shadow-lg">Japan</div>
+                        </div>
+                         <div class="relative flex justify-center items-center mt-16">
+                            <div id="node-skorea" class="relation-node cursor-pointer absolute bg-gray-100 text-gray-800 p-4 rounded-full shadow-lg" style="bottom:0; left: 50%; transform: translateX(-50%);">South Korea</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 id="relation-title" class="text-xl font-bold mb-3 text-gray-800">Select a Country</h3>
+                    <p id="relation-text" class="text-gray-600 leading-relaxed">Click on a country in the diagram to see a summary of its relationship with Taiwan and its role in regional geopolitics.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="scenarios" class="scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4">Future Scenarios: Navigating an Uncertain Path</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                Taiwan's future trajectory is subject to numerous variables, from domestic politics to shifts in global power dynamics. This section outlines several potential scenarios, each with distinct triggers and consequences. Click on each card to explore the possibilities and understand the complex calculations shaping Taiwan's path forward.
+            </p>
+            <div class="space-y-4">
+                <div id="scenario1" class="scenario-card bg-gray-50 border border-gray-200 rounded-lg p-6 cursor-pointer">
+                    <h3 class="text-lg font-semibold flex justify-between items-center">
+                        <span>Scenario 1: Continued Status Quo</span>
+                        <span class="text-xl font-light transform transition-transform duration-300">+</span>
+                    </h3>
+                    <div class="scenario-content hidden mt-4 text-gray-700">
+                        <p><strong>Description:</strong> A continuation of the current "strategic ambiguity," where Taiwan remains de facto autonomous while most of the world formally acknowledges the "One China" principle. The US continues to supply defensive arms without a formal defense treaty.</p>
+                        <p class="mt-2"><strong>Triggers:</strong> Requires careful diplomatic management by all parties and avoidance of major escalatory actions. Domestic politics in Taiwan, China, and the US remain relatively stable.</p>
+                        <p class="mt-2"><strong>Implications:</strong> Persistent military and political pressure from China. Taiwan continues to strengthen economic and informal diplomatic ties. The risk of miscalculation remains a constant threat.</p>
+                    </div>
+                </div>
+                 <div id="scenario2" class="scenario-card bg-gray-50 border border-gray-200 rounded-lg p-6 cursor-pointer">
+                    <h3 class="text-lg font-semibold flex justify-between items-center">
+                        <span>Scenario 2: Economic Integration & De-escalation</span>
+                        <span class="text-xl font-light transform transition-transform duration-300">+</span>
+                    </h3>
+                    <div class="scenario-content hidden mt-4 text-gray-700">
+                        <p><strong>Description:</strong> Cross-strait tensions ease due to increased economic interdependence and dialogue. A political settlement remains distant, but both sides prioritize economic cooperation over confrontation.</p>
+                        <p class="mt-2"><strong>Triggers:</strong> A more moderate political leadership in either Beijing or Taipei. A shared economic crisis that necessitates cooperation. Successful back-channel diplomacy.</p>
+                        <p class="mt-2"><strong>Implications:</strong> Reduced risk of military conflict. Taiwan's economy becomes more intertwined with mainland China, potentially increasing Beijing's political leverage over time. This could face domestic opposition in Taiwan from those fearing a loss of sovereignty.</p>
+                    </div>
+                </div>
+                 <div id="scenario3" class="scenario-card bg-gray-50 border border-gray-200 rounded-lg p-6 cursor-pointer">
+                    <h3 class="text-lg font-semibold flex justify-between items-center">
+                        <span>Scenario 3: Heightened Conflict or Blockade</span>
+                        <span class="text-xl font-light transform transition-transform duration-300">+</span>
+                    </h3>
+                    <div class="scenario-content hidden mt-4 text-gray-700">
+                        <p><strong>Description:</strong> China significantly increases its military pressure, possibly implementing a partial or full blockade to compel unification talks on its terms, stopping short of a full-scale invasion.</p>
+                        <p class="mt-2"><strong>Triggers:</strong> A formal declaration of independence by Taiwan. The US making an explicit security guarantee. A perception in Beijing that the window for peaceful unification is permanently closed.</p>
+                        <p class="mt-2"><strong>Implications:</strong> Severe disruption to global trade and the tech supply chain. A major international crisis involving the US and its allies. Devastating economic consequences for Taiwan and the wider region, regardless of the military outcome.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>    
+
+    <footer class="bg-gray-800 text-white mt-20">
+        <div class="container mx-auto px-6 py-4 text-center text-sm">
+            <p>This interactive analysis is for informational purposes only and synthesizes publicly available geopolitical data.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const perspectiveData = {
+                roc: {
+                    title: "Taiwan (ROC): A Sovereign State",
+                    text: "Taiwan, officially the Republic of China (ROC), asserts itself as a sovereign and independent state. It maintains its own democratically-elected government, president, constitution, and military. It argues that the ROC has been an independent state since its founding in 1912 and that the People's Republic of China (PRC) has never exercised sovereignty over Taiwan. While it doesn't seek formal independence from the historical 'China,' it strongly opposes the PRC's 'One Country, Two Systems' proposal and defends its right to self-determination and its democratic way of life."
+                },
+                prc: {
+                    title: "China (PRC): The 'One China' Principle",
+                    text: "The People's Republic of China (PRC) views Taiwan as a renegade province that must be reunified with the mainland, by force if necessary. This is based on its 'One China' principle, which posits there is only one sovereign state of China, and the PRC is its sole legitimate government. The PRC considers Taiwan part of its territory and rejects any notion of Taiwanese sovereignty. It actively works to limit Taiwan's international space and opposes any official exchanges between Taiwan and other countries."
+                }
+            };
+
+            const tradeData = {
+                exports: {
+                    labels: ['China & HK', 'ASEAN', 'USA', 'Europe', 'Japan'],
+                    datasets: [{
+                        label: 'Billions USD',
+                        data: [185, 80, 75, 40, 30],
+                        backgroundColor: '#60A5FA',
+                    }]
+                },
+                imports: {
+                    labels: ['China & HK', 'Japan', 'Europe', 'ASEAN', 'USA'],
+                    datasets: [{
+                        label: 'Billions USD',
+                        data: [85, 65, 55, 50, 45],
+                        backgroundColor: '#93C5FD',
+                    }]
+                }
+            };
+
+            const relationsData = {
+                usa: {
+                    title: "United States: Strategic Ambiguity",
+                    text: "The U.S. is Taiwan's most important international partner and security guarantor. While officially adhering to the 'One China' policy, it also operates under the Taiwan Relations Act, which commits it to providing Taiwan with defensive military capabilities. This policy of 'strategic ambiguity' is designed to deter both a PRC invasion and a formal declaration of independence from Taiwan."
+                },
+                china: {
+                    title: "China: Unification Goal",
+                    text: "The PRC is Taiwan's primary existential threat and largest trading partner. Beijing's ultimate goal is unification. It employs a mix of economic incentives ('carrots') and military/diplomatic coercion ('sticks') to achieve this objective, refusing to rule out the use of force."
+                },
+                japan: {
+                    title: "Japan: Concerned Neighbor",
+                    text: "Japan views Taiwan's security as directly linked to its own, given their geographical proximity and shared sea lanes. While not having formal diplomatic ties, Japan maintains strong economic and cultural relations with Taiwan and has become increasingly vocal about the importance of peace and stability in the Taiwan Strait."
+                },
+                 skorea: {
+                    title: "South Korea: Cautious Partner",
+                    text: "South Korea maintains a cautious approach. It has strong economic ties with both Taiwan (especially in semiconductors) and China. Due to its own security concerns with North Korea and its deep economic links with the mainland, Seoul avoids taking a strong public stance on the Taiwan issue, balancing its unofficial ties with Taiwan and its formal relationship with Beijing."
+                }
+            };
+
+            const btnRoc = document.getElementById('btn-roc');
+            const btnPrc = document.getElementById('btn-prc');
+            const perspectiveTitle = document.getElementById('perspective-title');
+            const perspectiveText = document.getElementById('perspective-text');
+
+            function updatePerspective(type) {
+                perspectiveTitle.textContent = perspectiveData[type].title;
+                perspectiveText.textContent = perspectiveData[type].text;
+                if (type === 'roc') {
+                    btnRoc.classList.add('text-blue-600', 'border-blue-600');
+                    btnRoc.classList.remove('text-gray-500');
+                    btnPrc.classList.add('text-gray-500');
+                    btnPrc.classList.remove('text-blue-600', 'border-blue-600');
+                } else {
+                    btnPrc.classList.add('text-blue-600', 'border-blue-600');
+                    btnPrc.classList.remove('text-gray-500');
+                    btnRoc.classList.add('text-gray-500');
+                    btnRoc.classList.remove('text-blue-600', 'border-blue-600');
+                }
+            }
+            btnRoc.addEventListener('click', () => updatePerspective('roc'));
+            btnPrc.addEventListener('click', () => updatePerspective('prc'));
+            updatePerspective('roc');
+
+            const semiCtx = document.getElementById('semiconductorChart').getContext('2d');
+            const semiconductorChart = new Chart(semiCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Taiwan', 'South Korea', 'China', 'Rest of World'],
+                    datasets: [{
+                        data: [65, 18, 5, 12],
+                        backgroundColor: ['#2563EB', '#60A5FA', '#BFDBFE', '#E0E7FF'],
+                        borderColor: '#F8F7F4',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: { callbacks: { label: (context) => `${context.label}: ${context.raw}%` } }
+                    }
+                }
+            });
+
+            let tradeChart;
+            const tradeCtx = document.getElementById('tradeChart').getContext('2d');
+            function createOrUpdateTradeChart(data) {
+                if(tradeChart) {
+                    tradeChart.data.labels = data.labels;
+                    tradeChart.data.datasets = data.datasets;
+                    tradeChart.update();
+                    return;
+                }
+                tradeChart = new Chart(tradeCtx, {
+                    type: 'bar',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: {
+                            x: { beginAtZero: true, grid: { display: false } },
+                            y: { grid: { display: false } }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { callbacks: { label: (context) => `${context.dataset.label}: ${context.raw}B USD` } }
+                        }
+                    }
+                });
+            }
+            createOrUpdateTradeChart(tradeData.exports);
+            
+            const btnExports = document.getElementById('btn-exports');
+            const btnImports = document.getElementById('btn-imports');
+
+            btnExports.addEventListener('click', () => {
+                createOrUpdateTradeChart(tradeData.exports);
+                btnExports.classList.add('bg-blue-500', 'text-white');
+                btnExports.classList.remove('bg-gray-200', 'text-gray-700');
+                btnImports.classList.add('bg-gray-200', 'text-gray-700');
+                btnImports.classList.remove('bg-blue-500', 'text-white');
+            });
+
+            btnImports.addEventListener('click', () => {
+                createOrUpdateTradeChart(tradeData.imports);
+                btnImports.classList.add('bg-blue-500', 'text-white');
+                btnImports.classList.remove('bg-gray-200', 'text-gray-700');
+                btnExports.classList.add('bg-gray-200', 'text-gray-700');
+                btnExports.classList.remove('bg-blue-500', 'text-white');
+            });
+
+            const relationNodes = document.querySelectorAll('.relation-node');
+            const relationTitle = document.getElementById('relation-title');
+            const relationText = document.getElementById('relation-text');
+
+            relationNodes.forEach(node => {
+                node.addEventListener('click', () => {
+                    const nodeId = node.id.split('-')[1];
+                    relationTitle.textContent = relationsData[nodeId].title;
+                    relationText.textContent = relationsData[nodeId].text;
+
+                    relationNodes.forEach(n => n.classList.remove('active'));
+                    node.classList.add('active');
+                });
+            });
+            
+            const scenarioCards = document.querySelectorAll('.scenario-card');
+            scenarioCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const content = card.querySelector('.scenario-content');
+                    const icon = card.querySelector('span:last-child');
+                    
+                    const wasOpen = card.classList.contains('open');
+
+                    scenarioCards.forEach(c => {
+                        c.classList.remove('open');
+                        c.querySelector('.scenario-content').classList.add('hidden');
+                        c.querySelector('span:last-child').classList.remove('rotate-45');
+                    });
+                    
+                    if (!wasOpen) {
+                        card.classList.add('open');
+                        content.classList.remove('hidden');
+                        icon.classList.add('rotate-45');
+                    }
+                });
+            });
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                    if (!mobileMenu.classList.contains('hidden')) {
+                         mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: "-50% 0px -50% 0px" });
+
+            sections.forEach(section => observer.observe(section));
+        });
+    </script>
+</body>
+</html>
