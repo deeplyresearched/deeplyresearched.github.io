@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brexit Trade Impact: UK-EU Deficit & New Barriers</title>
+<meta name="description" content="Explore the post-Brexit UK-EU trade landscape. Our analysis reveals how new non-tariff barriers have exacerbated the trade deficit, severely impacting goods exports while services show resilience.">
+<meta name="keywords" content="UK-EU trade, Brexit impact, UK trade deficit, Post-Brexit trade, Non-tariff barriers, UK goods exports, UK services trade, Brexit economic impact, Trade Cooperation Agreement, Customs Brexit, Rules of Origin, SPS checks UK EU, European Union trade, UK economy, Trade imbalance">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: The application is designed as a narrative-driven, single-page scrollable experience. It begins with a high-level summary (The Big Picture), then allows users to drill down into specific areas (Goods vs. Services, Sector Spotlight), provides wider context (Global Trade Shift), and concludes with key takeaways. This top-down structure guides users from general trends to specific impacts, making a complex topic more digestible. Interactions like toggles and selectors empower users to explore the data at their own pace, enhancing engagement and understanding. This is more effective than a rigid, chapter-like structure because it focuses on user-led discovery within a clear, curated path. -->
+    <!-- Visualization & Content Choices: 
+        1. Overall UK-EU Trade: Report Info -> Pre/post-Brexit trade volumes & balance. Goal -> Show change over time. Viz -> Line Chart. Interaction -> Buttons to filter Goods/Services/Total. Justification -> Best for time-series data; filters allow comparison without clutter. Library -> Chart.js.
+        2. Goods vs. Services Detail: Report Info -> Disparate impact on goods and services trade. Goal -> Compare categories directly. Viz -> Dual Bar Charts. Interaction -> Hover for details. Justification -> Bar charts excel at comparing magnitudes; side-by-side layout reinforces the contrast. Library -> Chart.js.
+        3. Sector Spotlight: Report Info -> Specific industry impacts (e.g., automotive, finance). Goal -> Organize & provide concrete examples. Viz -> Dynamic text cards and small bar charts. Interaction -> Buttons to select a sector. Justification -> Breaks down complex data into user-selectable, manageable chunks. Library -> Vanilla JS DOM manipulation + Chart.js.
+        4. Global Trade Shift: Report Info -> UK trade with EU vs. Rest of World. Goal -> Show proportional change. Viz -> Donut Chart. Interaction -> Buttons to toggle Pre/Post-Brexit views. Justification -> Ideal for showing parts of a whole and highlighting compositional shifts. Library -> Chart.js.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #333D4B;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 40vh;
+            max-height: 450px;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 45vh;
+            }
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        .nav-button.active {
+            background-color: #3B82F6;
+            color: #FFFFFF;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .sector-button.active {
+            background-color: #4A5568;
+            color: #FFFFFF;
+            transform: translateY(-2px);
+        }
+        .card {
+            background-color: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            transition: all 0.3s ease;
+        }
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+    </style>
+</head>
+<body class="antialiased">
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-10 border-b border-gray-200">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <h1 class="text-xl md:text-2xl font-bold text-gray-800">Brexit & The Trade Imbalance</h1>
+                <nav class="hidden md:flex items-center space-x-4">
+                    <a href="#overview" class="text-gray-600 hover:text-blue-600 transition">Overview</a>
+                    <a href="#deep-dive" class="text-gray-600 hover:text-blue-600 transition">Goods vs Services</a>
+                    <a href="#spotlight" class="text-gray-600 hover:text-blue-600 transition">Sector Spotlight</a>
+                    <a href="#global-context" class="text-gray-600 hover:text-blue-600 transition">Global Context</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <section id="overview" class="text-center mb-16 md:mb-24">
+            <h2 class="text-3xl md:text-5xl font-bold text-gray-900 mb-4">The Big Picture: UK-EU Trade Post-Brexit</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-8">
+                Since the UK's departure from the EU, new trade barriers have altered long-standing economic relationships. This has led to significant shifts in trade flows, particularly impacting the UK's trade balance with its largest trading partner. This section provides a high-level view of the overall trend in imports, exports, and the resulting trade deficit.
+            </p>
+            <div class="card p-4 md:p-6">
+                <div class="flex justify-center space-x-2 md:space-x-4 mb-4">
+                    <button id="btn-total" class="nav-button active px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700">Total Trade</button>
+                    <button id="btn-goods" class="nav-button px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700">Goods</button>
+                    <button id="btn-services" class="nav-button px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700">Services</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="tradeBalanceChart"></canvas>
+                </div>
+                <p id="chart-context-text" class="mt-4 text-sm text-gray-500 max-w-2xl mx-auto">This chart shows the value of UK exports to and imports from the EU, with the shaded area representing the trade balance. Use the buttons to toggle between total trade, goods only, and services only.</p>
+            </div>
+        </section>
+
+        <section id="deep-dive" class="mb-16 md:mb-24">
+            <div class="text-center">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">A Tale of Two Sectors: Goods vs. Services</h2>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-12">
+                    The post-Brexit trade agreement (TCA) primarily focused on tariff-free trade in goods, but introduced significant non-tariff barriers like customs checks. Conversely, the services sector, a cornerstone of the UK economy, lost its seamless access to the EU single market. This section compares the divergent impacts on these two critical areas.
+                </p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                <div class="card p-4 md:p-6">
+                    <h3 class="text-xl font-bold text-center mb-4">Goods Trade Impact</h3>
+                    <div class="chart-container h-72 md:h-80 max-h-[350px]">
+                        <canvas id="goodsImpactChart"></canvas>
+                    </div>
+                    <p class="mt-4 text-sm text-gray-500">Increased administrative hurdles and supply chain friction have notably suppressed UK goods exports to the EU compared to a scenario without Brexit.</p>
+                </div>
+                <div class="card p-4 md:p-6">
+                    <h3 class="text-xl font-bold text-center mb-4">Services Trade Impact</h3>
+                    <div class="chart-container h-72 md:h-80 max-h-[350px]">
+                        <canvas id="servicesImpactChart"></canvas>
+                    </div>
+                     <p class="mt-4 text-sm text-gray-500">While services trade has shown more resilience, the loss of 'passporting' rights has forced many financial and professional services firms to restructure operations.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="spotlight" class="mb-16 md:mb-24">
+            <div class="text-center">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Sector Spotlight</h2>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-8">
+                    The broad trends mask varied experiences across different industries. Some sectors faced immediate and severe disruption, while others adapted more readily. Select a sector below to explore the specific challenges and changes it has encountered since Brexit.
+                </p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8">
+                <button data-sector="automotive" class="sector-button active text-sm md:text-base font-medium px-4 py-2 bg-white border border-gray-300 rounded-full shadow-sm hover:bg-gray-100 transition">🚗 Automotive</button>
+                <button data-sector="finance" class="sector-button text-sm md:text-base font-medium px-4 py-2 bg-white border border-gray-300 rounded-full shadow-sm hover:bg-gray-100 transition">💼 Financial Services</button>
+                <button data-sector="agri-food" class="sector-button text-sm md:text-base font-medium px-4 py-2 bg-white border border-gray-300 rounded-full shadow-sm hover:bg-gray-100 transition">🌾 Agri-Food</button>
+                <button data-sector="chemicals" class="sector-button text-sm md:text-base font-medium px-4 py-2 bg-white border border-gray-300 rounded-full shadow-sm hover:bg-gray-100 transition">🧪 Chemicals</button>
+            </div>
+            <div id="sector-details" class="card max-w-4xl mx-auto p-6 md:p-8">
+                
+            </div>
+        </section>
+
+        <section id="global-context" class="mb-8 md:mb-16">
+            <div class="text-center">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Global Trade Shift: EU vs. Rest of World</h2>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-12">
+                    A central argument for Brexit was the potential to strike new trade deals globally, shifting focus away from the EU. This section examines the extent to which the UK's trading patterns have changed, comparing the share of trade with the EU versus the rest of the world before and after Brexit.
+                </p>
+            </div>
+             <div class="card p-4 md:p-6">
+                 <div class="flex justify-center space-x-2 md:space-x-4 mb-4">
+                    <button id="btn-pre-brexit" class="nav-button active px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700">Pre-Brexit (2015)</button>
+                    <button id="btn-post-brexit" class="nav-button px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700">Post-Brexit (2023)</button>
+                </div>
+                <div class="chart-container h-72 md:h-80 max-h-[400px]">
+                    <canvas id="globalTradeChart"></canvas>
+                </div>
+                <p id="global-chart-context" class="mt-4 text-sm text-gray-500 max-w-2xl mx-auto">This chart visualizes the proportion of UK's total trade with the EU versus the rest of the world. Toggle between periods to see the shift.</p>
+            </div>
+        </section>
+        
+        <section id="conclusion" class="text-center pt-8">
+             <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Key Takeaways</h2>
+             <div class="max-w-3xl mx-auto space-y-4 text-left">
+                 <div class="card p-4 flex items-start space-x-4">
+                     <span class="text-2xl font-bold text-blue-500">1</span>
+                     <p class="text-gray-700">The UK's trade deficit with the EU, especially in goods, has visibly widened post-Brexit due to non-tariff barriers impacting exports more than imports.</p>
+                 </div>
+                 <div class="card p-4 flex items-start space-x-4">
+                     <span class="text-2xl font-bold text-blue-500">2</span>
+                     <p class="text-gray-700">The UK's services sector has been more resilient but faces long-term uncertainty due to the loss of frictionless access to the EU single market.</p>
+                 </div>
+                 <div class="card p-4 flex items-start space-x-4">
+                     <span class="text-2xl font-bold text-blue-500">3</span>
+                     <p class="text-gray-700">While trade with non-EU countries has grown, it has not yet fully compensated for the reduction in trade intensity with the UK's closest and largest trading partner.</p>
+                 </div>
+             </div>
+        </section>
+
+    </main>
+    
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center text-sm">
+            <p>&copy; 2025 Trade Analysis Project. Data is illustrative and for demonstration purposes.</p>
+        </div>
+    </footer>
+
+    <script>
+        const tradeData = {
+            total: {
+                labels: ['2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+                exports: [300, 310, 280, 290, 315, 320, 325],
+                imports: [380, 390, 350, 385, 420, 440, 450]
+            },
+            goods: {
+                labels: ['2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+                exports: [170, 175, 150, 155, 165, 170, 172],
+                imports: [270, 280, 250, 285, 310, 330, 340]
+            },
+            services: {
+                labels: ['2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+                exports: [130, 135, 130, 135, 150, 150, 153],
+                imports: [110, 110, 100, 100, 110, 110, 110]
+            }
+        };
+
+        const sectorData = {
+            automotive: {
+                title: '🚗 Automotive Sector',
+                description: "The automotive industry faced severe disruption due to 'rules of origin' requirements and delays at the border. While exports of cars to the EU have fallen, imports of parts from the EU, crucial for UK factories, have become more complex and costly, impacting production.",
+                chartData: { labels: ['Pre-Brexit Avg', 'Post-Brexit Avg'], values: [45, 38], label: 'Annual Car Exports to EU (£bn)' }
+            },
+            finance: {
+                title: '💼 Financial Services',
+                description: "With the loss of 'passporting' rights, UK financial firms can no longer seamlessly serve EU clients. Many have moved assets and staff to EU hubs like Dublin, Paris, and Frankfurt. Trade continues under a more limited 'equivalence' framework, creating ongoing uncertainty.",
+                chartData: { labels: ['Pre-Brexit', 'Post-Brexit'], values: [60, 55], label: 'Financial Service Exports to EU (£bn)' }
+            },
+            'agri-food': {
+                title: '🌾 Agri-Food Sector',
+                description: "This sector has been hit hard by new Sanitary and Phytosanitary (SPS) checks, leading to significant delays and costs for perishable goods. Exports of products like shellfish and processed meats have seen a dramatic decline.",
+                chartData: { labels: ['Pre-Brexit Avg', 'Post-Brexit Avg'], values: [25, 20], label: 'Food & Live Animal Exports to EU (£bn)' }
+            },
+            chemicals: {
+                title: '🧪 Chemicals Sector',
+                description: "The UK's departure from the EU's REACH (Registration, Evaluation, Authorisation and Restriction of Chemicals) regulatory framework has created significant costs. UK firms must now register chemicals on a new, separate UK database, duplicating efforts and creating trade barriers.",
+                chartData: { labels: ['Pre-Brexit Avg', 'Post-Brexit Avg'], values: [28, 26], label: 'Chemical Exports to EU (£bn)' }
+            }
+        };
+        
+        const globalTradeData = {
+            pre: {
+                labels: ['EU', 'Rest of World'],
+                data: [48, 52]
+            },
+            post: {
+                labels: ['EU', 'Rest of World'],
+                data: [42, 58]
+            }
+        };
+
+        let tradeBalanceChart, goodsImpactChart, servicesImpactChart, sectorChart, globalTradeChart;
+
+        const chartConfigDefaults = {
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            font: { size: 12 },
+                            color: '#4A5568'
+                        }
+                    },
+                    tooltip: {
+                        enabled: true,
+                        backgroundColor: 'rgba(0,0,0,0.7)',
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: £${context.raw} bn`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#4A5568' }
+                    },
+                    y: {
+                        grid: {
+                            color: '#E2E8F0',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#4A5568',
+                            callback: function(value) {
+                                return `£${value} bn`;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        function createTradeBalanceChart(dataType) {
+            const ctx = document.getElementById('tradeBalanceChart').getContext('2d');
+            if (tradeBalanceChart) {
+                tradeBalanceChart.destroy();
+            }
+            const data = tradeData[dataType];
+            const tradeBalance = data.exports.map((e, i) => e - data.imports[i]);
+
+            tradeBalanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'UK Exports to EU',
+                        data: data.exports,
+                        borderColor: '#3B82F6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.3,
+                        borderWidth: 2,
+                        pointBackgroundColor: '#3B82F6'
+                    }, {
+                        label: 'UK Imports from EU',
+                        data: data.imports,
+                        borderColor: '#EF4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.3,
+                        borderWidth: 2,
+                        pointBackgroundColor: '#EF4444'
+                    }, {
+                        label: 'Trade Balance',
+                        data: tradeBalance,
+                        backgroundColor: 'rgba(107, 114, 128, 0.2)',
+                        borderColor: 'rgba(107, 114, 128, 0.5)',
+                        type: 'bar',
+                        order: 3
+                    }]
+                },
+                options: { ...chartConfigDefaults.options }
+            });
+        }
+        
+        function createImpactCharts() {
+            const goodsCtx = document.getElementById('goodsImpactChart').getContext('2d');
+            const servicesCtx = document.getElementById('servicesImpactChart').getContext('2d');
+
+            const commonOptions = {
+                ...chartConfigDefaults.options,
+                indexAxis: 'y',
+                scales: { y: { grid: { display: false } }, x: { ticks: { callback: v => `£${v}bn`}}}
+            };
+            
+            goodsImpactChart = new Chart(goodsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Exports', 'Imports'],
+                    datasets: [{
+                        label: 'Pre-Brexit (2019)',
+                        data: [175, 280],
+                        backgroundColor: '#60A5FA',
+                        borderColor: '#3B82F6',
+                        borderWidth: 1
+                    }, {
+                        label: 'Post-Brexit (2023)',
+                        data: [170, 330],
+                        backgroundColor: '#F87171',
+                        borderColor: '#EF4444',
+                        borderWidth: 1
+                    }]
+                },
+                options: commonOptions
+            });
+
+            servicesImpactChart = new Chart(servicesCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Exports', 'Imports'],
+                    datasets: [{
+                        label: 'Pre-Brexit (2019)',
+                        data: [135, 110],
+                        backgroundColor: '#60A5FA',
+                        borderColor: '#3B82F6',
+                        borderWidth: 1
+                    }, {
+                        label: 'Post-Brexit (2023)',
+                        data: [150, 110],
+                        backgroundColor: '#34D399',
+                        borderColor: '#10B981',
+                        borderWidth: 1
+                    }]
+                },
+                options: commonOptions
+            });
+        }
+
+        function displaySectorDetails(sector) {
+            const details = sectorData[sector];
+            const container = document.getElementById('sector-details');
+            
+            container.innerHTML = `
+                <div class="grid md:grid-cols-2 gap-6 items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-3">${details.title}</h3>
+                        <p class="text-gray-600">${details.description}</p>
+                    </div>
+                    <div class="chart-container !h-64 !max-h-[280px]">
+                        <canvas id="sectorChartCanvas"></canvas>
+                    </div>
+                </div>
+            `;
+            
+            const ctx = document.getElementById('sectorChartCanvas').getContext('2d');
+            if (sectorChart) sectorChart.destroy();
+            sectorChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: details.chartData.labels,
+                    datasets: [{
+                        label: details.chartData.label,
+                        data: details.chartData.values,
+                        backgroundColor: ['#60A5FA', '#93C5FD'],
+                        borderColor: '#3B82F6',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                     ...chartConfigDefaults.options,
+                     plugins: {
+                        ...chartConfigDefaults.options.plugins,
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+        
+        function createGlobalTradeChart(period) {
+            const ctx = document.getElementById('globalTradeChart').getContext('2d');
+             if (globalTradeChart) {
+                globalTradeChart.destroy();
+            }
+            
+            const data = globalTradeData[period];
+            
+            globalTradeChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.data,
+                        backgroundColor: ['#3B82F6', '#10B981'],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    ...chartConfigDefaults.options,
+                    cutout: '60%',
+                    scales: {},
+                    plugins: {
+                        ...chartConfigDefaults.options.plugins,
+                         tooltip: {
+                            ...chartConfigDefaults.options.plugins.tooltip,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw}% of total trade`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function setActiveButton(containerSelector, activeButton) {
+             document.querySelectorAll(`${containerSelector} button`).forEach(button => {
+                button.classList.remove('active');
+            });
+            activeButton.classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            createTradeBalanceChart('total');
+            createImpactCharts();
+            displaySectorDetails('automotive');
+            createGlobalTradeChart('pre');
+            
+            const tradeButtonsContainer = document.querySelector('#overview .flex');
+            tradeButtonsContainer.addEventListener('click', e => {
+                if (e.target.tagName === 'BUTTON') {
+                    const type = e.target.id.split('-')[1];
+                    createTradeBalanceChart(type);
+                    setActiveButton('#overview .flex', e.target);
+                }
+            });
+            
+            const sectorButtonsContainer = document.querySelector('#spotlight .flex');
+            sectorButtonsContainer.addEventListener('click', e => {
+                const button = e.target.closest('.sector-button');
+                if (button) {
+                    const sector = button.dataset.sector;
+                    displaySectorDetails(sector);
+                    setActiveButton('#spotlight .flex', button);
+                }
+            });
+            
+             const globalTradeButtonsContainer = document.querySelector('#global-context .flex');
+             globalTradeButtonsContainer.addEventListener('click', e => {
+                if (e.target.tagName === 'BUTTON') {
+                    const period = e.target.id.includes('pre') ? 'pre' : 'post';
+                    createGlobalTradeChart(period);
+                    setActiveButton('#global-context .flex', e.target);
+                }
+            });
+            
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
