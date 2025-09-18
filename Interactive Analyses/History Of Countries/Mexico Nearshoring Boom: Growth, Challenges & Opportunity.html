@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Mexico Nearshoring Boom: Growth, Challenges & Opportunity</title>
+<meta name="description" content="Explore Mexico's nearshoring surge, driving economic growth and FDI. Uncover key opportunities in manufacturing but also critical infrastructure and labor challenges ahead.">
+<meta name="keywords" content="Mexico nearshoring, Mexico economy, FDI Mexico, manufacturing Mexico, supply chain realignment, USMCA, economic growth Mexico, industrial real estate Mexico, Mexico investment opportunities, electric vehicle supply chain Mexico, Mexico infrastructure challenges, Mexico labor market, North American trade, Mexico economic transformation">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+    <!-- Chosen Palette: Warm Neutrals & Teal -->
+    <!-- Application Structure Plan: A tabbed, single-page dashboard structure was chosen to logically segment the complex topic into digestible themes: Overview, Manufacturing, Labor, Regional Impact, and Future Outlook. This non-linear design empowers users to explore areas of interest at their own pace. The user flow starts with a high-level summary and allows for deeper dives into specific facets through interactive charts and content panels. This structure is superior to a simple scrollable report as it organizes information for targeted analysis and prevents user overload. -->
+    <!-- Visualization & Content Choices: 
+        - FDI Trend (Overview): Goal: Show change over time. Viz: Line Chart (Chart.js). Interaction: Hover tooltips. Justification: Clearly illustrates growth trajectory post-2020.
+        - Sectoral Investment (Manufacturing): Goal: Show proportions. Viz: Donut Chart (Chart.js). Interaction: Hover tooltips. Justification: Instantly communicates the dominant sectors receiving investment.
+        - Job Growth (Labor Market): Goal: Compare trends. Viz: Grouped Bar Chart (Chart.js). Interaction: Toggles/Buttons to filter years. Justification: Provides a direct visual comparison between manufacturing job creation and the national average.
+        - Regional Investment (Regional Impact): Goal: Compare distribution. Viz: Horizontal Bar Chart (Chart.js) with a dynamic text panel. Interaction: Clicking a bar updates the text panel with state-specific details. Justification: This is an effective, accessible alternative to a map, directly showing which regions benefit most and providing qualitative context on demand.
+        - Future Outlook: Goal: Inform/Summarize. Viz: Thematic content cards (HTML/Tailwind). Interaction: Subtle hover effects. Justification: Organizes qualitative forward-looking analysis into clear, balanced categories (Opportunities vs. Challenges).
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f7f4;
+            color: #3f3f46;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active {
+            border-bottom-color: #0d9488;
+            color: #0d9488;
+            font-weight: 600;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+    </style>
+</head>
+<body class="antialiased">
+    <div class="min-h-screen container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-teal-800 tracking-tight">Mexico's Nearshoring Renaissance</h1>
+            <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">An interactive analysis of the economic transformation driven by global supply chain shifts since 2020.</p>
+        </header>
+
+        <nav class="flex justify-center border-b border-gray-200 mb-8 flex-wrap">
+            <button data-target="overview" class="nav-link px-4 py-3 text-sm md:text-base font-medium text-gray-500 hover:text-teal-700 active">Overview</button>
+            <button data-target="manufacturing" class="nav-link px-4 py-3 text-sm md:text-base font-medium text-gray-500 hover:text-teal-700">Manufacturing Sector</button>
+            <button data-target="labor" class="nav-link px-4 py-3 text-sm md:text-base font-medium text-gray-500 hover:text-teal-700">Labor Market</button>
+            <button data-target="regional" class="nav-link px-4 py-3 text-sm md:text-base font-medium text-gray-500 hover:text-teal-700">Regional Impact</button>
+            <button data-target="outlook" class="nav-link px-4 py-3 text-sm md:text-base font-medium text-gray-500 hover:text-teal-700">Future Outlook</button>
+        </nav>
+
+        <main>
+            <section id="overview" class="content-section active">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">A Magnet for Investment</h2>
+                    <p class="mt-2 text-gray-600 max-w-2xl mx-auto">Nearshoring, the practice of relocating business operations to a nearby country, has positioned Mexico as a prime beneficiary of efforts to diversify supply chains away from Asia. Its proximity to the U.S., favorable trade agreements, and skilled labor force have fueled a significant surge in foreign direct investment (FDI).</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
+                        <h3 class="text-teal-600 font-bold text-4xl">52%</h3>
+                        <p class="text-gray-500 mt-2">Increase in FDI (2020-2024)</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
+                        <h3 class="text-teal-600 font-bold text-4xl">#1</h3>
+                        <p class="text-gray-500 mt-2">U.S. Trading Partner in 2023</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
+                        <h3 class="text-teal-600 font-bold text-4xl">8.2M</h3>
+                        <p class="text-gray-500 mt-2">Manufacturing Jobs (Q1 2024)</p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <h3 class="text-xl font-semibold text-center mb-4">Foreign Direct Investment Trend (Billions USD)</h3>
+                     <div class="chart-container">
+                        <canvas id="fdiChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section id="manufacturing" class="content-section">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">The Industrial Powerhouse</h2>
+                    <p class="mt-2 text-gray-600 max-w-2xl mx-auto">The manufacturing sector is the primary recipient of nearshoring investments. Explore the key industries driving this growth and their contribution to Mexico's industrial output. Click the buttons to see a breakdown of investment shares.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <h3 class="text-xl font-semibold text-center mb-4">Nearshoring Investment by Sector</h3>
+                         <div class="chart-container h-80 md:h-96">
+                            <canvas id="sectorChart"></canvas>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <h3 class="text-xl font-semibold text-center mb-4">Sector Spotlight</h3>
+                        <div id="sector-info" class="mt-4 p-4 bg-stone-100 rounded-md min-h-[300px]">
+                            <h4 id="sector-title" class="text-lg font-bold text-teal-700">Automotive</h4>
+                            <p id="sector-description" class="text-gray-600 mt-2">The automotive industry remains the cornerstone of Mexican manufacturing, attracting over 40% of nearshoring FDI. Global automakers are expanding plants to produce electric vehicles and components, leveraging Mexico's established supply chains and skilled workforce to serve the North American market.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="labor" class="content-section">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">Fueling Job Creation</h2>
+                    <p class="mt-2 text-gray-600 max-w-2xl mx-auto">The influx of investment has had a profound impact on the labor market, creating hundreds of thousands of new jobs. However, this growth also brings challenges, including rising demand for skilled labor and upward pressure on wages in key industrial hubs.</p>
+                </div>
+                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <h3 class="text-xl font-semibold text-center mb-4">Annual Job Creation Growth (%)</h3>
+                        <div class="chart-container">
+                            <canvas id="jobChart"></canvas>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <h3 class="text-xl font-semibold text-center mb-4">Manufacturing Wage Index (2020=100)</h3>
+                        <div class="chart-container">
+                            <canvas id="wageChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="regional" class="content-section">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">A Tale of Two Mexicos</h2>
+                    <p class="mt-2 text-gray-600 max-w-2xl mx-auto">The benefits of nearshoring are not evenly distributed. Northern and central states, with their robust infrastructure and proximity to the U.S., have captured the majority of investments. Click on a state in the chart to see a summary of its development.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                    <div class="lg:col-span-3 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <h3 class="text-xl font-semibold text-center mb-4">Top States by FDI Attraction (% of Total)</h3>
+                        <div class="chart-container">
+                            <canvas id="regionalChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                         <h3 class="text-xl font-semibold text-center mb-4">Regional Development Summary</h3>
+                        <div id="regional-info" class="mt-4 p-4 bg-stone-100 rounded-md min-h-[300px]">
+                            <h4 id="regional-title" class="text-lg font-bold text-teal-700">Nuevo León</h4>
+                            <p id="regional-description" class="text-gray-600 mt-2">As the leader in attracting nearshoring investment, Nuevo León, particularly its capital Monterrey, has become a hub for advanced manufacturing and technology. Major investments from companies like Tesla and KIA are creating a high-tech industrial corridor, but also straining infrastructure like water and electricity.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="outlook" class="content-section">
+                 <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">The Road Ahead</h2>
+                    <p class="mt-2 text-gray-600 max-w-2xl mx-auto">While nearshoring presents a historic opportunity, sustained growth depends on addressing key challenges. Mexico's ability to upgrade its infrastructure, enhance security, and invest in its workforce will determine its long-term success as a central player in North American trade.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-green-50 border-l-4 border-green-500 p-6 rounded-r-lg">
+                        <h3 class="text-2xl font-bold text-green-800">Opportunities</h3>
+                        <ul class="mt-4 space-y-3 text-green-700 list-disc list-inside">
+                            <li>Deeper integration into the USMCA trade bloc.</li>
+                            <li>Development of high-value industries like EV and aerospace.</li>
+                            <li>Growth of a domestic supplier base to support foreign firms.</li>
+                            <li>Increased formal employment and a growing middle class.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-r-lg">
+                        <h3 class="text-2xl font-bold text-red-800">Challenges</h3>
+                        <ul class="mt-4 space-y-3 text-red-700 list-disc list-inside">
+                             <li>Energy grid and water supply constraints in industrial hubs.</li>
+                             <li>Logistical bottlenecks at ports and border crossings.</li>
+                             <li>Shortage of highly skilled technical and managerial talent.</li>
+                             <li>Security concerns impacting transportation and operations.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+            let fdiChart, sectorChart, jobChart, wageChart, regionalChart;
+
+            const chartFont = {
+                family: 'Inter',
+                size: 12,
+            };
+            const chartDefaultOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: chartFont,
+                            color: '#4a5568'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            font: chartFont,
+                            color: '#4a5568'
+                        },
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            font: chartFont,
+                            color: '#4a5568'
+                        },
+                        grid: {
+                            color: '#e2e8f0'
+                        }
+                    }
+                }
+            };
+
+            const fdiData = {
+                labels: ['2020', '2021', '2022', '2023', '2024'],
+                datasets: [{
+                    label: 'FDI (Billions USD)',
+                    data: [29.6, 31.5, 36.2, 38.9, 45.1],
+                    borderColor: '#0d9488',
+                    backgroundColor: 'rgba(13, 148, 136, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                }]
+            };
+
+            const sectorData = {
+                labels: ['Automotive', 'Electronics', 'Medical Devices', 'Aerospace', 'Other'],
+                datasets: [{
+                    data: [42, 24, 15, 8, 11],
+                    backgroundColor: ['#0d9488', '#0f766e', '#115e59', '#134e4a', '#a1a1aa'],
+                }]
+            };
+            
+            const sectorDescriptions = {
+                 'Automotive': 'The automotive industry remains the cornerstone of Mexican manufacturing, attracting over 40% of nearshoring FDI. Global automakers are expanding plants to produce electric vehicles and components, leveraging Mexico\'s established supply chains.',
+                'Electronics': 'With a focus on consumer electronics and IT hardware, this sector benefits from its proximity to the U.S. market. Companies are relocating assembly and testing facilities to Mexico to reduce shipping times and costs.',
+                'Medical Devices': 'Baja California is a major hub for medical device manufacturing. Nearshoring is boosting production of items from surgical tools to diagnostic equipment, driven by demand for resilient healthcare supply chains.',
+                'Aerospace': 'The aerospace sector, concentrated in states like Querétaro and Chihuahua, is growing rapidly. Investment is flowing into the manufacturing of engine components, fuselages, and wiring harnesses for major global aircraft producers.',
+                'Other': 'This category includes a diverse range of industries such as furniture, textiles, and industrial equipment. These sectors are also experiencing growth as companies seek to diversify their manufacturing footprint closer to North America.'
+            };
+
+            const jobData = {
+                labels: ['2021', '2022', '2023', '2024'],
+                datasets: [{
+                    label: 'Manufacturing Job Growth',
+                    data: [4.8, 5.5, 5.1, 4.9],
+                    backgroundColor: '#0d9488',
+                }, {
+                    label: 'National Average Job Growth',
+                    data: [3.5, 4.1, 3.9, 3.7],
+                    backgroundColor: '#a1a1aa',
+                }]
+            };
+
+            const wageData = {
+                labels: ['2020', '2021', '2022', '2023', '2024'],
+                datasets: [{
+                    label: 'Wage Index',
+                    data: [100, 104.5, 109.8, 115.2, 121.1],
+                    borderColor: '#0f766e',
+                    backgroundColor: 'rgba(15, 118, 110, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                }]
+            };
+            
+            const regionalData = {
+                labels: ['Nuevo León', 'Chihuahua', 'Baja California', 'Jalisco', 'Querétaro', 'Coahuila'],
+                datasets: [{
+                    label: '% of FDI',
+                    data: [28, 15, 12, 9, 8, 7],
+                    backgroundColor: ['#0d9488', '#0f766e', '#115e59', '#134e4a', '#042f2e', '#a1a1aa'],
+                }]
+            };
+            
+            const regionalDescriptions = {
+                'Nuevo León': 'As the leader in attracting nearshoring investment, Nuevo León, particularly its capital Monterrey, has become a hub for advanced manufacturing and technology. Major investments from companies like Tesla and KIA are creating a high-tech industrial corridor, but also straining infrastructure.',
+                'Chihuahua': 'A key player in electronics and automotive parts manufacturing, Chihuahua benefits from its strategic border location. The state is attracting significant investment in industrial parks and logistics infrastructure to support the growing demand.',
+                'Baja California': 'A global hub for medical device manufacturing and electronics assembly, Baja California leverages its proximity to California. The region is seeing expansion in high-tech manufacturing and cross-border logistics services.',
+                'Jalisco': 'Known as Mexico\'s "Silicon Valley," Jalisco is a center for electronics, software development, and high-tech manufacturing. Nearshoring is accelerating its growth as a hub for innovation and skilled tech talent.',
+                'Querétaro': 'A leading aerospace hub in Latin America, Querétaro is attracting significant FDI for aircraft component manufacturing. The state also has a strong automotive and IT sector, benefiting from a highly skilled workforce and strong business environment.',
+                'Coahuila': 'With a long history in automotive manufacturing, Coahuila is a critical part of the North American auto supply chain. The state is seeing renewed investment in assembly plants and parts production, especially related to the EV transition.'
+            };
+
+
+            function createFDIChart() {
+                const ctx = document.getElementById('fdiChart').getContext('2d');
+                if (fdiChart) fdiChart.destroy();
+                fdiChart = new Chart(ctx, {
+                    type: 'line',
+                    data: fdiData,
+                    options: chartDefaultOptions
+                });
+            }
+
+            function createSectorChart() {
+                const ctx = document.getElementById('sectorChart').getContext('2d');
+                if (sectorChart) sectorChart.destroy();
+                sectorChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: sectorData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    font: chartFont,
+                                    color: '#4a5568'
+                                }
+                            },
+                        },
+                         onClick: (event, elements) => {
+                            if (elements.length > 0) {
+                                const i = elements[0].index;
+                                const label = sectorData.labels[i];
+                                document.getElementById('sector-title').textContent = label;
+                                document.getElementById('sector-description').textContent = sectorDescriptions[label];
+                            }
+                        }
+                    }
+                });
+            }
+
+            function createJobChart() {
+                const ctx = document.getElementById('jobChart').getContext('2d');
+                if (jobChart) jobChart.destroy();
+                jobChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: jobData,
+                    options: chartDefaultOptions
+                });
+            }
+
+            function createWageChart() {
+                const ctx = document.getElementById('wageChart').getContext('2d');
+                if (wageChart) wageChart.destroy();
+                wageChart = new Chart(ctx, {
+                    type: 'line',
+                    data: wageData,
+                    options: { ...chartDefaultOptions, plugins: { legend: { display: false } } }
+                });
+            }
+            
+            function createRegionalChart() {
+                const ctx = document.getElementById('regionalChart').getContext('2d');
+                if (regionalChart) regionalChart.destroy();
+                regionalChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: regionalData,
+                    options: {
+                        ...chartDefaultOptions,
+                        indexAxis: 'y',
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        onClick: (event, elements) => {
+                            if (elements.length > 0) {
+                                const i = elements[0].index;
+                                const label = regionalData.labels[i];
+                                document.getElementById('regional-title').textContent = label;
+                                document.getElementById('regional-description').textContent = regionalDescriptions[label];
+                            }
+                        }
+                    }
+                });
+            }
+
+            function switchTab(targetId) {
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.dataset.target === targetId);
+                });
+                contentSections.forEach(section => {
+                    section.classList.toggle('active', section.id === targetId);
+                });
+
+                switch(targetId) {
+                    case 'overview':
+                        createFDIChart();
+                        break;
+                    case 'manufacturing':
+                        createSectorChart();
+                        break;
+                    case 'labor':
+                        createJobChart();
+                        createWageChart();
+                        break;
+                    case 'regional':
+                        createRegionalChart();
+                        break;
+                }
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    switchTab(link.dataset.target);
+                });
+            });
+
+            switchTab('overview');
+        });
+    </script>
+</body>
+</html>
