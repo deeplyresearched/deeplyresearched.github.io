@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hong Kong vs. Bangladesh: Post-Colonial Development Lessons</title>
+<meta name="description" content="Analyze post-colonial development in Hong Kong & Bangladesh. Explore their divergent paths in economic growth, governance, and social equity, revealing crucial global lessons.">
+<meta name="keywords" content="Post-colonial development, Hong Kong development, Bangladesh economic growth, Comparative analysis, Governance issues, Social equity, Political autonomy, One Country Two Systems, Fragile states, Developing nations, Global development lessons, Post-colonial studies, Asian development, Economic models, Geopolitics Asia">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+
+
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: The application uses a thematic, tab-based navigation (Overview, Economic Growth, Governance, Social Equity) to create a comparative dashboard. This structure was chosen over a linear report format to allow users to directly compare Hong Kong and Bangladesh across key development pillars. It facilitates a more intuitive and exploratory user flow, encouraging users to draw their own conclusions by switching between focused, side-by-side data visualizations and analyses. Key interactions include tab switching to load different content sections, and hovering on charts to view detailed data points. -->
+    <!-- Visualization & Content Choices: 
+        1. Report Info: Key Development Indicators -> Goal: Inform/Compare -> Viz: Key Stats Cards (HTML/CSS) -> Interaction: N/A, static display -> Justification: Provides a quick, scannable summary on the overview page. -> Library/Method: Tailwind CSS.
+        2. Report Info: Historical Milestones -> Goal: Organize -> Viz: Interactive Timeline (HTML/CSS) -> Interaction: Hovering over events reveals details -> Justification: Contextualizes development within key historical events. -> Library/Method: HTML/CSS/JS.
+        3. Report Info: GDP Per Capita Growth -> Goal: Compare Change -> Viz: Dual Line Chart (Chart.js) -> Interaction: Hover for year-specific data -> Justification: Best method to visualize and compare economic trends over time. -> Library/Method: Chart.js/Canvas.
+        4. Report Info: Governance Models -> Goal: Organize/Compare -> Viz: Side-by-side descriptive cards (HTML/CSS) -> Interaction: N/A, static display -> Justification: Clearly organizes complex qualitative information for easy comparison. -> Library/Method: Tailwind CSS.
+        5. Report Info: Social Equity Metrics (HDI/Gini) -> Goal: Compare -> Viz: Grouped Bar Charts (Chart.js) -> Interaction: Hover for precise values -> Justification: Ideal for direct comparison of single-point metrics like index scores. -> Library/Method: Chart.js/Canvas.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fdfcfb;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        .nav-button.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+            font-weight: 600;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .timeline {
+            position: relative;
+            padding: 2rem 0;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 100%;
+            background-color: #e5e7eb;
+        }
+        .timeline-item {
+            position: relative;
+            width: 50%;
+            padding: 1rem 2rem;
+        }
+        .timeline-item:nth-child(odd) {
+            left: 0;
+            padding-right: 3rem;
+        }
+        .timeline-item:nth-child(even) {
+            left: 50%;
+            padding-left: 3rem;
+        }
+        .timeline-content {
+            position: relative;
+            background-color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .timeline-dot {
+            content: '';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1rem;
+            height: 1rem;
+            border-radius: 9999px;
+            border: 3px solid #fdfcfb;
+        }
+        .timeline-item:nth-child(odd) .timeline-dot {
+            right: -0.5rem;
+            transform: translate(50%, -50%);
+        }
+        .timeline-item:nth-child(even) .timeline-dot {
+            left: -0.5rem;
+            transform: translate(-50%, -50%);
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+
+    </style>
+</head>
+<body class="text-stone-800">
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-stone-900">Divergent Paths</h1>
+            <p class="mt-4 text-lg text-stone-600 max-w-3xl mx-auto">An interactive comparison of the post-colonial development trajectories of Hong Kong and Bangladesh.</p>
+        </header>
+
+        <nav class="flex justify-center border-b border-stone-200 mb-10">
+            <button data-tab="overview" class="nav-button active text-stone-600 py-4 px-6 block hover:text-blue-600 focus:outline-none border-b-2 border-transparent">
+                Overview
+            </button>
+            <button data-tab="economy" class="nav-button text-stone-600 py-4 px-6 block hover:text-blue-600 focus:outline-none border-b-2 border-transparent">
+                Economic Growth
+            </button>
+            <button data-tab="governance" class="nav-button text-stone-600 py-4 px-6 block hover:text-blue-600 focus:outline-none border-b-2 border-transparent">
+                Governance
+            </button>
+            <button data-tab="social" class="nav-button text-stone-600 py-4 px-6 block hover:text-blue-600 focus:outline-none border-b-2 border-transparent">
+                Social Equity
+            </button>
+        </nav>
+
+        <main id="main-content">
+            
+            <section id="overview" class="tab-content space-y-12">
+                <div>
+                    <h2 class="text-3xl font-bold text-center mb-2 text-stone-900">At a Glance</h2>
+                    <p class="text-center text-stone-600 max-w-3xl mx-auto mb-8">This overview provides a snapshot of the current standing and historical context of Hong Kong and Bangladesh. From here, you can navigate to other sections to explore the factors driving these distinct outcomes in more detail.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-white p-6 rounded-xl shadow-md border border-stone-100">
+                            <h3 class="text-2xl font-bold mb-4 text-blue-600">Hong Kong SAR</h3>
+                             <div class="space-y-3 text-stone-700">
+                                <p><strong>Status:</strong> Special Administrative Region of China</p>
+                                <p><strong>Population:</strong> ~7.5 million</p>
+                                <p><strong>GDP (PPP):</strong> ~$490 billion</p>
+                                <p><strong>GDP per Capita (PPP):</strong> ~$65,000</p>
+                                <p><strong>Key Trajectory:</strong> Evolved from a manufacturing hub to a global financial center, benefiting from a stable legal system and free-market policies. Faces challenges related to political autonomy and high inequality.</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-md border border-stone-100">
+                            <h3 class="text-2xl font-bold mb-4" style="color:#2E8B57;">Bangladesh</h3>
+                            <div class="space-y-3 text-stone-700">
+                                <p><strong>Status:</strong> Independent Republic</p>
+                                <p><strong>Population:</strong> ~170 million</p>
+                                <p><strong>GDP (PPP):</strong> ~$1 trillion</p>
+                                <p><strong>GDP per Capita (PPP):</strong> ~$7,000</p>
+                                <p><strong>Key Trajectory:</strong> Overcame post-independence instability and poverty to become a fast-growing economy, driven by the ready-made garment industry and remittances. Faces challenges in governance, infrastructure, and climate change vulnerability.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-bold text-center mb-8 text-stone-900">Historical Timelines</h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-12">
+                        <div>
+                            <h3 class="text-2xl font-semibold text-center mb-6 text-blue-600">Hong Kong</h3>
+                            <div class="relative">
+                                <div class="border-l-2 border-blue-200 ml-4 pl-8 py-4 space-y-10">
+                                    <div class="relative">
+                                        <div class="absolute w-4 h-4 bg-blue-500 rounded-full -left-[42px] top-1 border-4 border-white"></div>
+                                        <h4 class="font-semibold">1949: Post-WWII Boom</h4>
+                                        <p class="text-sm text-stone-600">Influx of entrepreneurs and labor from mainland China fuels a manufacturing and textile boom.</p>
+                                    </div>
+                                    <div class="relative">
+                                        <div class="absolute w-4 h-4 bg-blue-500 rounded-full -left-[42px] top-1 border-4 border-white"></div>
+                                        <h4 class="font-semibold">1970s: Financial Hub Emerges</h4>
+                                        <p class="text-sm text-stone-600">Transition towards a service-based economy, becoming a key financial center in Asia.</p>
+                                    </div>
+                                    <div class="relative">
+                                        <div class="absolute w-4 h-4 bg-blue-500 rounded-full -left-[42px] top-1 border-4 border-white"></div>
+                                        <h4 class="font-semibold">1997: Handover to China</h4>
+                                        <p class="text-sm text-stone-600">British sovereignty ends. Hong Kong becomes a Special Administrative Region under the "One Country, Two Systems" principle.</p>
+                                    </div>
+                                     <div class="relative">
+                                        <div class="absolute w-4 h-4 bg-blue-500 rounded-full -left-[42px] top-1 border-4 border-white"></div>
+                                        <h4 class="font-semibold">2020: National Security Law</h4>
+                                        <p class="text-sm text-stone-600">Implementation of new law by Beijing, significantly impacting political freedoms and autonomy.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-semibold text-center mb-6" style="color:#2E8B57;">Bangladesh</h3>
+                            <div class="relative">
+                                <div class="border-l-2 ml-4 pl-8 py-4 space-y-10" style="border-color: #90ee90;">
+                                    <div class="relative">
+                                        <div class="absolute w-4 h-4 rounded-full -left-[42px] top-1 border-4 border-white" style="background-color: #2E8B57;"></div>
+                                        <h4 class="font-semibold">1971: Liberation War</h4>
+                                        <p class="text-sm text-stone-600">Gains independence from Pakistan after a devastating conflict, starting as one of the world's poorest nations.</p>
+                                    </div>
+                                    <div class="relative">
+                                        <div class="absolute w-4 h-4 rounded-full -left-[42px] top-1 border-4 border-white" style="background-color: #2E8B57;"></div>
+                                        <h4 class="font-semibold">1980s: Garment Industry Begins</h4>
+                                        <p class="text-sm text-stone-600">The rise of the ready-made garment (RMG) sector begins, laying the foundation for future economic growth.</p>
+                                    </div>
+                                    <div class="relative">
+                                        <div class="absolute w-4 h-4 rounded-full -left-[42px] top-1 border-4 border-white" style="background-color: #2E8B57;"></div>
+                                        <h4 class="font-semibold">1991: Return to Democracy</h4>
+                                        <p class="text-sm text-stone-600">Transition to parliamentary democracy after years of military rule, though political instability persists.</p>
+                                    </div>
+                                    <div class="relative">
+                                        <div class="absolute w-4 h-4 rounded-full -left-[42px] top-1 border-4 border-white" style="background-color: #2E8B57;"></div>
+                                        <h4 class="font-semibold">2010s: Sustained Growth</h4>
+                                        <p class="text-sm text-stone-600">Achieves consistent GDP growth above 6%, recognized for progress in poverty reduction and human development.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="economy" class="tab-content hidden space-y-12">
+                <h2 class="text-3xl font-bold text-center mb-2 text-stone-900">Economic Growth Trajectories</h2>
+                <p class="text-center text-stone-600 max-w-3xl mx-auto mb-8">This section visualizes the dramatic divergence in economic fortunes. Hong Kong's path was one of rapid transformation into a high-income economy, while Bangladesh has made remarkable strides in recent decades, moving from a low-income to a lower-middle-income nation. Interact with the chart to see the data for specific years.</p>
+                 <div class="bg-white p-4 sm:p-6 rounded-xl shadow-md border border-stone-100">
+                    <div class="chart-container">
+                        <canvas id="gdpChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section id="governance" class="tab-content hidden space-y-12">
+                 <h2 class="text-3xl font-bold text-center mb-2 text-stone-900">Governance Models & Challenges</h2>
+                 <p class="text-center text-stone-600 max-w-3xl mx-auto mb-8">Governance structures have been a defining factor in the development of both regions. Hong Kong's legacy of British common law provided a stable foundation for business, while Bangladesh has contended with the challenges of establishing democratic institutions amidst political turmoil. </p>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-stone-100">
+                        <h3 class="text-2xl font-bold mb-4 text-blue-600">Hong Kong: Rule of Law Meets Political Constraint</h3>
+                         <div class="space-y-4 text-stone-700">
+                            <div>
+                                <h4 class="font-semibold">Political System:</h4>
+                                <p>Operates under the "One Country, Two Systems" framework. Possesses its own legal and judicial systems, but Beijing maintains ultimate authority, particularly over foreign affairs and defense. Its executive-led government features a partially democratic legislature.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">Key Policies:</h4>
+                                <p>Characterized by free-market capitalism, low taxation, and a strong, independent judiciary derived from British common law. These factors created a highly attractive environment for international business and finance.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">Current Challenges:</h4>
+                                <p>Erosion of political autonomy and civil liberties following the 2020 National Security Law. Navigating its identity between its global financial role and increasing integration with mainland China.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-stone-100">
+                        <h3 class="text-2xl font-bold mb-4" style="color:#2E8B57;">Bangladesh: Building a Democratic Foundation</h3>
+                        <div class="space-y-4 text-stone-700">
+                            <div>
+                                <h4 class="font-semibold">Political System:</h4>
+                                <p>A parliamentary republic with a multi-party system. Its political landscape has historically been dominated by two major parties, leading to periods of intense rivalry and instability.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">Key Policies:</h4>
+                                <p>Focused on poverty alleviation, export-oriented industrialization (especially RMG), and social development through NGOs. Has actively sought foreign direct investment and development aid.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">Current Challenges:</h4>
+                                <p>Strengthening democratic institutions, combating corruption, improving infrastructure, and ensuring political stability. Managing the effects of climate change is also a critical long-term governance issue.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="social" class="tab-content hidden space-y-12">
+                <h2 class="text-3xl font-bold text-center mb-2 text-stone-900">Social Equity & Human Development</h2>
+                <p class="text-center text-stone-600 max-w-3xl mx-auto mb-8">While economic growth is a key metric, social equity and human development reveal the quality of life for citizens. The charts below compare the Human Development Index (HDI), which measures health, education, and standard of living, and the Gini Index, which measures income inequality (a higher value means more inequality).</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white p-4 sm:p-6 rounded-xl shadow-md border border-stone-100">
+                        <h3 class="text-xl font-semibold text-center mb-4">Human Development Index (HDI)</h3>
+                        <div class="chart-container" style="height:300px; max-height:350px;">
+                            <canvas id="hdiChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 sm:p-6 rounded-xl shadow-md border border-stone-100">
+                         <h3 class="text-xl font-semibold text-center mb-4">Gini Index (Income Inequality)</h3>
+                         <div class="chart-container" style="height:300px; max-height:350px;">
+                            <canvas id="giniChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = document.querySelectorAll('.nav-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            const gdpData = {
+                labels: ['1980', '1990', '2000', '2010', '2020', '2024'],
+                datasets: [
+                    {
+                        label: 'Hong Kong GDP per Capita (PPP)',
+                        data: [5980, 13400, 27300, 45500, 58000, 65000],
+                        borderColor: '#4A90E2',
+                        backgroundColor: 'rgba(74, 144, 226, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Bangladesh GDP per Capita (PPP)',
+                        data: [530, 780, 1200, 2800, 5200, 7000],
+                        borderColor: '#2E8B57',
+                        backgroundColor: 'rgba(46, 139, 87, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }
+                ]
+            };
+
+            const socialData = {
+                hdi: {
+                    labels: ['Hong Kong', 'Bangladesh'],
+                    datasets: [{
+                        label: 'HDI Score (Higher is better)',
+                        data: [0.952, 0.661],
+                        backgroundColor: ['#4A90E2', '#2E8B57'],
+                    }]
+                },
+                gini: {
+                    labels: ['Hong Kong', 'Bangladesh'],
+                    datasets: [{
+                        label: 'Gini Index (Higher is more unequal)',
+                        data: [53.9, 32.4],
+                        backgroundColor: ['#4A90E2', '#2E8B57'],
+                    }]
+                }
+            };
+
+            let charts = {};
+
+            function createChart(ctx, type, data, options) {
+                if (charts[ctx.canvas.id]) {
+                    charts[ctx.canvas.id].destroy();
+                }
+                charts[ctx.canvas.id] = new Chart(ctx, { type, data, options });
+            }
+
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    tooltip: {
+                        enabled: true,
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                         ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            };
+            
+            const barChartOptions = (label) => ({
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                         callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.raw}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: label
+                        }
+                    }
+                }
+            });
+
+
+            function showTab(tabName) {
+                tabs.forEach(tab => {
+                    if (tab.dataset.tab === tabName) {
+                        tab.classList.add('active');
+                    } else {
+                        tab.classList.remove('active');
+                    }
+                });
+
+                tabContents.forEach(content => {
+                    if (content.id === tabName) {
+                        content.classList.remove('hidden');
+                    } else {
+                        content.classList.add('hidden');
+                    }
+                });
+                
+                if (tabName === 'economy' && !charts['gdpChart']) {
+                     const ctx = document.getElementById('gdpChart').getContext('2d');
+                     createChart(ctx, 'line', gdpData, chartOptions);
+                }
+                
+                if (tabName === 'social' && !charts['hdiChart']) {
+                    const hdiCtx = document.getElementById('hdiChart').getContext('2d');
+                    createChart(hdiCtx, 'bar', socialData.hdi, barChartOptions('HDI Score'));
+                    
+                    const giniCtx = document.getElementById('giniChart').getContext('2d');
+                    createChart(giniCtx, 'bar', socialData.gini, barChartOptions('Gini Index'));
+                }
+            }
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    showTab(tab.dataset.tab);
+                });
+            });
+            
+            showTab('overview');
+        });
+    </script>
+</body>
+</html>
