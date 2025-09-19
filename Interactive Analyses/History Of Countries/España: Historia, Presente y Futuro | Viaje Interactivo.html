@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>España: Historia, Presente y Futuro | Viaje Interactivo</title>
+<meta name="description" content="Explora la evolución de España con esta app interactiva. Descubre su rica historia, analiza su presente socioeconómico y político, y comprende sus desafíos y oportunidades futuras.">
+<meta name="keywords" content="Historia de España, Cultura española, Economía España, Política española, Demografía España, Energías renovables España, Futuro de España, Análisis de España, Desafíos España, Oportunidades España, Desempleo España, Turismo en España, Sociedad española, Innovación España, Monarquía parlamentaria España">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+
+    <!-- Chosen Palette: Warm Neutrals with Spanish Flag Accents -->
+    <!-- Application Structure Plan: The application is structured as a narrative journey through time with three main thematic sections: Past, Present, and Future. This non-linear, thematic structure was chosen over a simple report layout to enhance user engagement and facilitate a more intuitive exploration of Spain's complex evolution. A sticky navigation bar allows users to jump between these core themes. The 'Past' uses an interactive timeline to make history explorable. The 'Present' employs a dashboard-style grid to offer a multi-faceted snapshot of modern Spain. The 'Future' uses a comparative layout to clearly present challenges versus opportunities. This user-flow guides the user from historical context to current realities and future possibilities, making the information more digestible and memorable. -->
+    <!-- Visualization & Content Choices: 
+        - Historical Timeline: Report Info: Key historical eras -> Goal: Organize & Inform -> Viz/Method: Interactive HTML buttons/cards -> Interaction: Click to reveal details -> Justification: Encourages exploration of historical periods without overwhelming the user with text -> Library/Method: Vanilla JS.
+        - Unemployment Comparison: Report Info: Socio-economic data -> Goal: Compare -> Viz/Method: Bar Chart -> Interaction: Hover tooltips -> Justification: Provides a clear, immediate visual comparison between Spain and the EU average -> Library/Method: Chart.js (Canvas).
+        - Political System: Report Info: Governmental structure -> Goal: Organize -> Viz/Method: Structured HTML/CSS diagram -> Interaction: Static visual -> Justification: Simplifies a complex political structure into an easily understandable format -> Library/Method: Tailwind CSS.
+        - Population Pyramid: Report Info: Demographic shifts -> Goal: Show Change/Distribution -> Viz/Method: Horizontal Bar Chart -> Interaction: Hover tooltips -> Justification: Standard and highly effective for visualizing age and gender distribution, highlighting the aging population challenge -> Library/Method: Chart.js (Canvas).
+        - Renewable Energy Mix: Report Info: Energy opportunities -> Goal: Show Proportion -> Viz/Method: Donut Chart -> Interaction: Hover tooltips -> Justification: Effectively displays the part-to-whole relationship of renewable sources in the energy mix -> Library/Method: Chart.js (Canvas).
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #FDF2F2; 
+        }
+        h1, h2, h3 {
+            font-family: 'Merriweather', serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            border-bottom-color: #C02626; 
+            color: #C02626;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 1.25rem;
+            left: -0.5rem;
+            width: 1rem;
+            height: 1rem;
+            background-color: #FBBF24; 
+            border-radius: 50%;
+            border: 2px solid #C02626;
+        }
+
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <header class="bg-rose-100 shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-red-800">Evolución de España</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#pasado" class="nav-link font-semibold text-slate-700">El Pasado</a>
+                <a href="#presente" class="nav-link font-semibold text-slate-700">El Presente</a>
+                <a href="#futuro" class="nav-link font-semibold text-slate-700">El Futuro</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden focus:outline-none">
+                <span class="text-3xl">☰</span>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden bg-rose-100">
+            <a href="#pasado" class="block text-center py-2 text-slate-700">El Pasado</a>
+            <a href="#presente" class="block text-center py-2 text-slate-700">El Presente</a>
+            <a href="#futuro" class="block text-center py-2 text-slate-700">El Futuro</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <section id="hero" class="text-center py-16">
+            <h1 class="text-4xl md:text-6xl font-bold text-red-800 mb-4">Un Viaje a Través del Tiempo</h1>
+            <p class="max-w-3xl mx-auto text-lg text-slate-700">
+                Esta aplicación interactiva explora la rica historia, la vibrante realidad actual y los desafíos y oportunidades futuros de España. Navegue por las secciones para comprender cómo el pasado ha moldeado el presente y qué depara el futuro para esta nación clave en Europa.
+            </p>
+        </section>
+
+        <div class="border-t-4 border-yellow-400 my-12"></div>
+
+        <section id="pasado" class="mb-20 pt-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-red-800 mb-4">El Pasado: Forjando una Identidad</h2>
+            <p class="max-w-3xl mx-auto text-center text-slate-700 mb-12">
+                La identidad de la España moderna es un tapiz tejido con hilos de diversas culturas e hitos históricos. Desde el Imperio Romano hasta la transición a la democracia, cada época ha dejado una huella indeleble. Explore esta línea de tiempo interactiva para descubrir los momentos clave que definieron la nación.
+            </p>
+            <div class="relative">
+                <div class="absolute left-4 top-0 bottom-0 w-1 bg-red-800 rounded"></div>
+                <div id="timeline-container" class="space-y-8">
+                </div>
+            </div>
+        </section>
+
+        <div class="border-t-4 border-yellow-400 my-12"></div>
+
+        <section id="presente" class="mb-20 pt-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-red-800 mb-4">El Presente: Un Mosaico de Realidades</h2>
+            <p class="max-w-3xl mx-auto text-center text-slate-700 mb-12">
+                Hoy, España es una nación dinámica y compleja, caracterizada por su democracia parlamentaria, su economía diversa y una cultura de fama mundial. Esta sección ofrece una instantánea de sus realidades socioeconómicas, políticas y culturales actuales. Interactúe con los elementos para explorar los datos y las ideas clave.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 p-6 bg-white rounded-xl shadow-lg border border-rose-200">
+                    <h3 class="text-xl font-bold mb-2 text-slate-900">Panorama Socioeconómico</h3>
+                    <p class="text-sm text-slate-600 mb-4">Análisis de indicadores clave. La tasa de desempleo sigue siendo un desafío en comparación con la media europea.</p>
+                    <div class="chart-container">
+                        <canvas id="unemploymentChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-white rounded-xl shadow-lg border border-rose-200 flex flex-col">
+                    <h3 class="text-xl font-bold mb-2 text-slate-900">Estructura Política</h3>
+                    <p class="text-sm text-slate-600 mb-4">España es una monarquía parlamentaria con una estructura descentralizada en 17 comunidades autónomas y 2 ciudades autónomas.</p>
+                    <div class="flex-grow space-y-3 flex flex-col justify-center">
+                        <div class="bg-rose-100 p-3 rounded-lg text-center">
+                            <span class="font-bold">Jefe de Estado</span>: Rey
+                        </div>
+                        <div class="text-center font-bold text-2xl">↓</div>
+                        <div class="bg-rose-100 p-3 rounded-lg text-center">
+                             <span class="font-bold">Poder Legislativo</span>: Cortes Generales (Congreso y Senado)
+                        </div>
+                         <div class="text-center font-bold text-2xl">↓</div>
+                        <div class="bg-rose-100 p-3 rounded-lg text-center">
+                           <span class="font-bold">Poder Ejecutivo</span>: Presidente del Gobierno y Consejo de Ministros
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-3 p-6 bg-white rounded-xl shadow-lg border border-rose-200">
+                    <h3 class="text-xl font-bold mb-4 text-slate-900">Pilares Culturales</h3>
+                     <div class="flex justify-center space-x-2 md:space-x-4 mb-4 border-b-2 border-yellow-400 pb-2">
+                        <button class="culture-btn active:bg-yellow-400 bg-yellow-300 hover:bg-yellow-400 text-slate-800 font-bold py-2 px-4 rounded-full transition" data-culture="gastronomia">Gastronomía</button>
+                        <button class="culture-btn bg-yellow-300 hover:bg-yellow-400 text-slate-800 font-bold py-2 px-4 rounded-full transition" data-culture="flamenco">Flamenco</button>
+                        <button class="culture-btn bg-yellow-300 hover:bg-yellow-400 text-slate-800 font-bold py-2 px-4 rounded-full transition" data-culture="fiestas">Fiestas</button>
+                    </div>
+                    <div id="culture-content" class="text-slate-700">
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <div class="border-t-4 border-yellow-400 my-12"></div>
+
+        <section id="futuro" class="pt-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-red-800 mb-4">El Futuro: Desafíos y Oportunidades</h2>
+            <p class="max-w-3xl mx-auto text-center text-slate-700 mb-12">
+                El camino de España hacia el futuro está marcado por importantes desafíos globales y oportunidades únicas. Desde la gestión de un cambio demográfico hasta el liderazgo en energías renovables, las decisiones que se tomen hoy determinarán su trayectoria. Esta sección analiza las fuerzas clave que darán forma a la próxima generación.
+            </p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="p-6 bg-white rounded-xl shadow-lg border border-rose-200">
+                    <h3 class="text-2xl font-bold mb-4 text-slate-900 text-center">Principales Desafíos</h3>
+                     <h4 class="text-lg font-semibold mt-4 text-center">Cambio Demográfico</h4>
+                    <p class="text-sm text-slate-600 mb-4 text-center">La pirámide poblacional muestra un envejecimiento significativo, lo que plantea retos para la sostenibilidad de las pensiones y el sistema sanitario.</p>
+                    <div class="chart-container">
+                        <canvas id="populationPyramid"></canvas>
+                    </div>
+                    <ul class="mt-6 space-y-2 list-disc list-inside text-slate-700">
+                        <li><b>Sostenibilidad económica:</b> Equilibrar el gasto social con una fuerza laboral decreciente.</li>
+                        <li><b>Tensiones territoriales:</b> Gestionar las aspiraciones independentistas en regiones como Cataluña.</li>
+                        <li><b>Competitividad global:</b> Adaptar la economía a la digitalización y la inteligencia artificial.</li>
+                    </ul>
+                </div>
+                <div class="p-6 bg-white rounded-xl shadow-lg border border-rose-200">
+                    <h3 class="text-2xl font-bold mb-4 text-slate-900 text-center">Grandes Oportunidades</h3>
+                    <h4 class="text-lg font-semibold mt-4 text-center">Liderazgo en Energías Renovables</h4>
+                     <p class="text-sm text-slate-600 mb-4 text-center">España está bien posicionada para ser un líder europeo en energía limpia, con una porción significativa de su electricidad proveniente de fuentes renovables.</p>
+                    <div class="chart-container">
+                        <canvas id="renewableEnergyChart"></canvas>
+                    </div>
+                     <ul class="mt-6 space-y-2 list-disc list-inside text-slate-700">
+                        <li><b>Transición verde:</b> Aprovechar la energía solar y eólica para lograr la independencia energética.</li>
+                        <li><b>Hub tecnológico:</b> Atraer talento e inversión en el sector de la transformación digital.</li>
+                        <li><b>Influencia cultural global:</b> Capitalizar el español como segundo idioma más hablado del mundo.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+
+
+    <footer class="bg-rose-100 mt-20 py-6">
+        <div class="container mx-auto text-center text-slate-600">
+            <p>&copy; 2025 Análisis Interactivo de España. Creado como una herramienta educativa.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            const navLinks = document.querySelectorAll('.nav-link, #mobile-menu a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if(!mobileMenu.classList.contains('hidden')) {
+                         mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+
+            const sections = document.querySelectorAll('section');
+            const mainNavLinks = document.querySelectorAll('nav a.nav-link');
+
+            const options = {
+                root: null,
+                threshold: 0.3,
+                rootMargin: "-100px"
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        mainNavLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                        });
+                    }
+                });
+            }, options);
+
+            sections.forEach(section => {
+                if(section.id) observer.observe(section);
+            });
+
+
+            const timelineData = [
+                {
+                    era: "Imperio Romano (218 a.C. - 476 d.C.)",
+                    content: "Roma unificó la península ibérica, llamándola Hispania. Dejaron un legado duradero en el idioma (latín vulgar, origen del español), el derecho, la arquitectura (acueductos, teatros) y la infraestructura."
+                },
+                {
+                    era: "Al-Ándalus (711 - 1492)",
+                    content: "El dominio musulmán en la península trajo avances significativos en ciencia, matemáticas, agricultura y filosofía. Ciudades como Córdoba se convirtieron en centros de aprendizaje. Su influencia persiste en el arte (azulejos), la arquitectura (la Alhambra) y el idioma (casi 4,000 palabras de origen árabe)."
+                },
+                {
+                    era: "Reconquista y Reyes Católicos (722 - 1492)",
+                    content: "Un largo período de reinos cristianos que recuperaron el territorio. Culminó con la unión de Castilla y Aragón bajo Isabel I y Fernando II. Su reinado centralizó el poder, financió el viaje de Colón a América y estableció la Inquisición, forjando la base de la España imperial."
+                },
+                {
+                    era: "Siglo de Oro (S. XVI - S. XVII)",
+                    content: "Gracias a las riquezas del Nuevo Mundo, España se convirtió en una potencia mundial. Esta fue una era de florecimiento cultural sin precedentes, con figuras como Cervantes en la literatura ('Don Quijote') y Velázquez y El Greco en la pintura."
+                },
+                {
+                    era: "Guerra Civil y Franquismo (1936 - 1975)",
+                    content: "Un conflicto devastador que dividió al país, seguido por casi 40 años de la dictadura de Francisco Franco. Este período de aislamiento internacional y represión interna dejó profundas cicatrices sociales y políticas que aún resuenan hoy."
+                },
+                {
+                    era: "Transición y Democracia (1975 - presente)",
+                    content: "Tras la muerte de Franco, España llevó a cabo una transición pacífica a la democracia, culminando en la Constitución de 1978. La adhesión a la Comunidad Económica Europea (ahora UE) en 1986 consolidó su modernización y su lugar en Europa."
+                }
+            ];
+
+            const timelineContainer = document.getElementById('timeline-container');
+            timelineData.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = "ml-10 pl-4 relative timeline-item";
+                div.innerHTML = `
+                    <button class="timeline-btn w-full text-left p-4 bg-white rounded-xl shadow-lg border border-rose-200 hover:bg-rose-50 transition">
+                        <h3 class="text-lg font-bold text-red-700">${item.era}</h3>
+                    </button>
+                    <div class="timeline-content hidden p-4 mt-2 bg-rose-50 rounded-lg">
+                        <p>${item.content}</p>
+                    </div>
+                `;
+                timelineContainer.appendChild(div);
+            });
+
+            timelineContainer.addEventListener('click', (e) => {
+                const button = e.target.closest('.timeline-btn');
+                if (button) {
+                    const content = button.nextElementSibling;
+                    const allContents = timelineContainer.querySelectorAll('.timeline-content');
+                    
+                    allContents.forEach(c => {
+                        if (c !== content) {
+                            c.classList.add('hidden');
+                        }
+                    });
+
+                    content.classList.toggle('hidden');
+                }
+            });
+
+            const cultureData = {
+                gastronomia: {
+                    title: "Gastronomía: Un Placer Regional",
+                    content: "La cocina española es famosa por su diversidad, basada en ingredientes frescos y locales. Desde la paella valenciana hasta el pulpo a la gallega y las tapas que se disfrutan en todo el país, la comida es una parte central de la vida social y la identidad regional."
+                },
+                flamenco: {
+                    title: "Flamenco: El Alma de Andalucía",
+                    content: "Más que un baile, el flamenco es una forma de arte declarada Patrimonio Cultural Inmaterial de la Humanidad por la UNESCO. Combina cante, toque (guitarra), baile y palmas para expresar emociones profundas, desde la alegría hasta el dolor."
+                },
+                fiestas: {
+                    title: "Fiestas: Celebración y Tradición",
+                    content: "España es mundialmente conocida por sus vibrantes fiestas. Cada pueblo y ciudad tiene sus propias celebraciones, desde las Fallas de Valencia, una espectacular quema de monumentos artísticos, hasta la Feria de Abril de Sevilla y los Sanfermines de Pamplona."
+                }
+            };
+
+            const cultureContentDiv = document.getElementById('culture-content');
+            const cultureBtns = document.querySelectorAll('.culture-btn');
+
+            function updateCultureContent(cultureKey) {
+                const data = cultureData[cultureKey];
+                cultureContentDiv.innerHTML = `
+                    <h4 class="text-lg font-bold mb-2 text-red-700">${data.title}</h4>
+                    <p>${data.content}</p>
+                `;
+                 cultureBtns.forEach(btn => {
+                    btn.classList.toggle('active:bg-yellow-400', btn.dataset.culture === cultureKey);
+                    btn.classList.toggle('bg-yellow-400', btn.dataset.culture === cultureKey);
+                    btn.classList.toggle('bg-yellow-300', btn.dataset.culture !== cultureKey);
+                });
+            }
+
+            cultureBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    updateCultureContent(btn.dataset.culture);
+                });
+            });
+            updateCultureContent('gastronomia'); 
+            
+            new Chart(document.getElementById('unemploymentChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['España', 'Media UE'],
+                    datasets: [{
+                        label: 'Tasa de Desempleo (%) - 2024',
+                        data: [11.7, 6.0],
+                        backgroundColor: ['rgba(192, 38, 38, 0.6)', 'rgba(251, 191, 36, 0.6)'],
+                        borderColor: ['rgba(192, 38, 38, 1)', 'rgba(251, 191, 36, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Comparación de Tasa de Desempleo (2024)', font: { size: 16 } }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, max: 15 }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('populationPyramid'), {
+                type: 'bar',
+                data: {
+                    labels: ['80+', '70-79', '60-69', '50-59', '40-49', '30-39', '20-29', '10-19', '0-9'],
+                    datasets: [
+                        {
+                            label: 'Hombres',
+                            data: [-1.2, -1.8, -2.5, -3.5, -3.8, -3.2, -2.8, -2.2, -2.0],
+                            backgroundColor: 'rgba(251, 191, 36, 0.6)',
+                            borderColor: 'rgba(251, 191, 36, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Mujeres',
+                            data: [1.5, 2.1, 2.8, 3.7, 3.9, 3.4, 2.9, 2.3, 2.1],
+                             backgroundColor: 'rgba(192, 38, 38, 0.6)',
+                            borderColor: 'rgba(192, 38, 38, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        title: { display: true, text: 'Pirámide Poblacional de España (millones)', font: {size: 14} },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${Math.abs(context.raw).toFixed(1)}M`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return Math.abs(value);
+                                }
+                            },
+                            title: { display: true, text: 'Población (millones)'}
+                        },
+                        y: {
+                            stacked: true
+                        }
+                    }
+                }
+            });
+            
+            new Chart(document.getElementById('renewableEnergyChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Eólica', 'Solar Fotovoltaica', 'Hidráulica', 'Otras Renovables', 'No Renovables'],
+                    datasets: [{
+                        label: 'Mix Eléctrico',
+                        data: [24, 20, 10, 6, 40],
+                        backgroundColor: [
+                            'rgba(251, 191, 36, 0.8)',
+                            'rgba(252, 211, 77, 0.8)',
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(34, 197, 94, 0.7)',
+                            'rgba(107, 114, 128, 0.7)'
+                        ],
+                        hoverOffset: 4
+                    }]
+                },
+                 options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        title: { display: true, text: 'Generación Eléctrica por Fuente (%)', font: { size: 16 } }
+                    }
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
