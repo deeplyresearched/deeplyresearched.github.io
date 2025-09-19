@@ -29,9 +29,9 @@
 
   <!-- Interactive Analyses Folder -->
   <url>
-    <loc>https://deeplyresearched.github.io/Interactive%20Analyses/Anemia%20and%20it's%20types.html</loc>
-    <lastmod>2025-09-04</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://deeplyresearched.github.io/Interactive%20Analyses/Anemia%20and%20it%27s%20types.html</loc>
+    <lastmod>2025-09-19</lastmod>
+    <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
 
@@ -117,11 +117,11 @@
  </url>
  
  <url>
-  <loc>https://deeplyresearched.github.io/Interactive%20Analyses/Prolactinoma%20&amp;%20Acromegaly.html</loc>
-    <lastmod>2025-09-04</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://deeplyresearched.github.io/Interactive%20Analyses/Prolactinoma%20&amp;%20Acromegaly.html</loc>
+    <lastmod>2025-09-19</lastmod>
+    <changefreq>yearly</changefreq>
     <priority>0.7</priority>
- </url>
+  </url>
  
  <url>
   <loc>https://deeplyresearched.github.io/Interactive%20Analyses/Guide%20to%20Thyroid%20Disorders.html</loc>
@@ -179,19 +179,19 @@
     <priority>0.7</priority>
  </url>
  
- <url>
-  <loc>https://deeplyresearched.github.io/Interactive%20Analyses/Guide%20to%20Amenorrhea,%20Anomalies%20&amp;%20Infertility.html</loc>
-    <lastmod>2025-09-04</lastmod>
-    <changefreq>monthly</changefreq>
+<url>
+    <loc>https://deeplyresearched.github.io/Interactive%20Analyses/Guide%20to%20Amenorrhea,%20Anomalies%20&amp;%20Infertility.html</loc>
+    <lastmod>2025-09-19</lastmod>
+    <changefreq>yearly</changefreq>
     <priority>0.7</priority>
- </url>
- 
- <url>
-  <loc>https://deeplyresearched.github.io/Interactive%20Analyses/Tech%20dossier/Ninja%20ZX-4R.html</loc>
-    <lastmod>2025-09-04</lastmod>
-    <changefreq>monthly</changefreq>
+  </url>
+  
+<url>
+    <loc>https://deeplyresearched.github.io/Interactive%20Analyses/Tech%20dossier/Ninja%20ZX-4R.html</loc>
+    <lastmod>2025-09-19</lastmod>
+    <changefreq>yearly</changefreq>
     <priority>0.7</priority>
- </url>
+  </url>
  
  <url>
   <loc>https://deeplyresearched.github.io/Interactive%20Analyses/Tech%20dossier/Kawasaki%20Z500.html</loc>
@@ -263,13 +263,13 @@
     <priority>0.7</priority>
  </url>
  
- <url>
-  <loc>https://deeplyresearched.github.io/Interactive%20Analyses/Civic-spectrum/Titans%20Entangled:%20Apple,%20Samsung%20&amp;%20Google's%20Co-opetition.html</loc>
-    <lastmod>2025-09-04</lastmod>
-    <changefreq>monthly</changefreq>
+<url>
+    <loc>https://deeplyresearched.github.io/Interactive%20Analyses/Civic-spectrum/Titans%20Entangled:%20Apple,%20Samsung%20&amp;%20Google%27s%20Co-opetition.html</loc>
+    <lastmod>2025-09-19</lastmod>
+    <changefreq>yearly</changefreq>
     <priority>0.7</priority>
- </url>
- 
+  </url>
+  
  <url>
   <loc>https://deeplyresearched.github.io/Interactive%20Analyses/Civic-spectrum/The%20One%20Big%20Beautiful%20Bill%20Act.html</loc>
     <lastmod>2025-09-04</lastmod>
@@ -305,6 +305,7 @@
     <priority>0.7</priority>
  </url>
 </urlset>
+
 
 
 
