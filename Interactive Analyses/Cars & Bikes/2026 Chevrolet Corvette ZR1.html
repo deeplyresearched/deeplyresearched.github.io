@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 Chevrolet Corvette ZR1: An Interactive Deep Dive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+    <!-- Chosen Palette: Modern Performance -->
+    <!-- Application Structure Plan: A thematic, single-scroll SPA with a sticky anchored navigation bar. This structure creates a narrative flow, guiding the user from the high-level "wow factor" stats to deeper technical details and finally to its market context. The flow is: Hero > Key Specs > Powertrain Deep Dive > Interactive Performance Comparison > Aerodynamics Breakdown > Competitive Analysis. This was chosen because it mirrors how an enthusiast would explore a new vehicle, starting with the headline numbers and progressively drilling down into the engineering that makes them possible. Interactivity (clickable tabs, filterable charts) is used to manage information density, revealing complexity only when the user requests it, which enhances usability and comprehension. -->
+    <!-- Visualization & Content Choices: 
+        1. Report Info: Key Performance Metrics (HP, Torque, 0-60, Price). Goal: Inform/Impress. Viz: Dynamic Stat Cards. Interaction: Animated numbers on load. Justification: Provides a quick, digestible summary of the car's most important attributes right at the top. Method: HTML/Tailwind/JS.
+        2. Report Info: Powertrain Technology (Engine, Drivetrain). Goal: Explain. Viz: Tabbed Content Blocks. Interaction: User clicks tabs ("Engine," "Drivetrain") to reveal detailed descriptions. Justification: Prevents overwhelming the user with technical text; allows focused exploration of complex components. Method: HTML/JS.
+        3. Report Info: Performance Comparison vs. other cars. Goal: Compare. Viz: Interactive Bar Chart. Interaction: Buttons to filter the chart data by metric (Horsepower, Torque, 0-60 Time). Hover tooltips show precise values. Justification: A bar chart is the clearest way to visually demonstrate the ZR1's performance advantages over its rivals and predecessors. Filtering makes the comparison more direct and user-controlled. Library: Chart.js (Canvas).
+        4. Report Info: Aerodynamic Features. Goal: Organize/Explain Function. Viz: Interactive Feature List. Interaction: Clicking on a feature name reveals a description of its purpose. Justification: A clean, interactive way to break down complex aerodynamic concepts into simple, functional explanations. Method: HTML/JS.
+        5. Report Info: Competitor Specs. Goal: Contextualize. Viz: Comparison Table. Interaction: None needed, data is for quick scanning. Justification: A table is the most efficient format for a direct, multi-attribute comparison against competitors. Method: HTML/Tailwind.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F5;
+            color: #2c3e50;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 50vh;
+            max-height: 450px;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 60vh;
+                max-height: 400px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #c0392b;
+            border-bottom-color: #c0392b;
+        }
+        .tab-button {
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .tab-button.active {
+            background-color: #c0392b;
+            color: white;
+        }
+
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-gray-800">2026 Corvette ZR1</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link px-3 py-2 text-sm font-medium text-gray-700">Overview</a>
+                        <a href="#powertrain" class="nav-link px-3 py-2 text-sm font-medium text-gray-700">Powertrain</a>
+                        <a href="#performance" class="nav-link px-3 py-2 text-sm font-medium text-gray-700">Performance</a>
+                        <a href="#aero" class="nav-link px-3 py-2 text-sm font-medium text-gray-700">Aerodynamics</a>
+                        <a href="#competition" class="nav-link px-3 py-2 text-sm font-medium text-gray-700">Competition</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="relative text-center py-20 md:py-32 bg-white">
+            <div class="absolute inset-0 bg-gray-900 opacity-50"></div>
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://placehold.co/1920x1080/2c3e50/c0392b?text=ZR1');"></div>
+             <div class="relative container mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-4xl md:text-6xl font-extrabold tracking-tight text-white leading-tight">The Apex Predator Returns</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-gray-200">Chevrolet is redefining the supercar with the 2026 Corvette ZR1. This is the ultimate expression of power, engineering, and track-focused performance.</p>
+            </div>
+        </section>
+
+        <section id="overview" class="py-16 md:py-24 bg-gray-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h3 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Engineered for Dominance</h3>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">The 2026 ZR1 is not just an evolution; it's a revolution. Every component has been meticulously crafted to push the boundaries of performance. This section provides a high-level overview of the key metrics that define this new benchmark in the supercar world.</p>
+                </div>
+                <div class="mt-12 grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                        <span class="text-5xl font-bold text-[#c0392b]" id="stat-hp">0</span>
+                        <p class="mt-2 text-lg font-medium text-gray-700">Est. Horsepower</p>
+                        <p class="text-sm text-gray-500">From the all-new LT7 Twin-Turbo V8.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                        <span class="text-5xl font-bold text-[#c0392b]" id="stat-torque">0</span>
+                        <p class="mt-2 text-lg font-medium text-gray-700">Est. Torque (lb-ft)</p>
+                        <p class="text-sm text-gray-500">Unrelenting, track-ready power.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                        <span class="text-4xl font-bold text-[#c0392b]" id="stat-zero-sixty">0.0</span>s
+                        <p class="mt-2 text-lg font-medium text-gray-700">Est. 0-60 MPH</p>
+                         <p class="text-sm text-gray-500">Aided by a potential AWD system.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                        $<span class="text-5xl font-bold text-[#c0392b]" id="stat-price">0</span>k+
+                        <p class="mt-2 text-lg font-medium text-gray-700">Est. Starting Price</p>
+                        <p class="text-sm text-gray-500">The pinnacle of the Corvette lineup.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="powertrain" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h3 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">The Heart of the Beast</h3>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">At the core of the ZR1 lies a groundbreaking powertrain designed for maximum output and response. Here, we explore the two key systems that deliver its earth-shattering performance. Click the tabs below to learn more about the bespoke engine and the advanced drivetrain that puts the power to the pavement.</p>
+                </div>
+
+                <div class="max-w-3xl mx-auto mt-12">
+                    <div class="flex justify-center border-b border-gray-200">
+                        <button id="engine-tab" class="tab-button active text-gray-700 py-4 px-6 block hover:text-[#c0392b] focus:outline-none font-medium">Engine</button>
+                        <button id="drivetrain-tab" class="tab-button text-gray-700 py-4 px-6 block hover:text-[#c0392b] focus:outline-none font-medium">Drivetrain</button>
+                    </div>
+                    <div id="engine-content" class="py-6">
+                        <h4 class="text-2xl font-semibold mb-2">LT7 5.5L Twin-Turbo V8</h4>
+                        <p class="text-gray-600">The centerpiece of the ZR1 is the rumored LT7 engine. Building on the Z06's high-revving, flat-plane crank LT6, the LT7 adds two turbochargers to dramatically increase power and torque across the entire rev range. This bespoke engine is expected to produce around 850 horsepower and 825 lb-ft of torque, making it the most powerful production engine ever fitted to a Corvette. The engineering focus is on minimizing turbo lag and delivering a linear, explosive powerband suitable for both road and track domination.</p>
+                    </div>
+                    <div id="drivetrain-content" class="py-6 hidden">
+                        <h4 class="text-2xl font-semibold mb-2">Advanced All-Wheel Drive</h4>
+                        <p class="text-gray-600">To effectively harness the LT7's immense power, the ZR1 is widely expected to feature an advanced all-wheel-drive system. Drawing inspiration from the Corvette E-Ray's electrified front axle, the ZR1's system will likely be tailored for pure performance, possibly without the hybrid components. This would provide incredible launch traction for sub-2.5 second 0-60 times and enhance stability and cornering grip, allowing the driver to exploit the car's full potential in all conditions. The system will be paired with the C8's quick-shifting 8-speed dual-clutch transaxle, recalibrated for the ZR1's extreme output.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="performance" class="py-16 md:py-24 bg-gray-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h3 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">A New Performance Benchmark</h3>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">How does the 2026 ZR1 stack up against its predecessors and the world's best? This interactive chart compares the ZR1's projected figures against legendary Corvettes and its primary supercar rivals. Use the buttons below to switch between key performance metrics and see how the new king redefines the hierarchy.</p>
+                </div>
+                <div class="mt-12">
+                    <div class="flex justify-center space-x-2 md:space-x-4 mb-8">
+                        <button class="filter-btn active bg-[#c0392b] text-white px-4 py-2 rounded-md shadow">Horsepower</button>
+                        <button class="filter-btn bg-white text-gray-700 px-4 py-2 rounded-md shadow hover:bg-gray-100">Torque</button>
+                        <button class="filter-btn bg-white text-gray-700 px-4 py-2 rounded-md shadow hover:bg-gray-100">0-60 Time (s)</button>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="aero" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h3 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Sculpted for Speed</h3>
+                     <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">The ZR1's form is dictated by function. Every scoop, wing, and surface is designed to manipulate air for maximum downforce and cooling. This section breaks down the key aerodynamic components that keep the ZR1 glued to the track at extreme speeds. Click on each feature to understand its critical role.</p>
+                </div>
+                <div class="max-w-4xl mx-auto mt-12 grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+                    <div>
+                        <ul class="space-y-4">
+                            <li><button data-target="aero-front" class="aero-btn w-full text-left p-4 rounded-lg bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-[#c0392b]">Aggressive Front Splitter</button></li>
+                            <li><button data-target="aero-wing" class="aero-btn w-full text-left p-4 rounded-lg bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-[#c0392b]">Active Rear Wing</button></li>
+                            <li><button data-target="aero-body" class="aero-btn w-full text-left p-4 rounded-lg bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-[#c0392b]">Widebody & Venting</button></li>
+                            <li><button data-target="aero-underbody" class="aero-btn w-full text-left p-4 rounded-lg bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-[#c0392b]">Full Underbody Tray</button></li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg min-h-[250px]">
+                        <div id="aero-front" class="aero-content">
+                            <h4 class="text-xl font-semibold mb-2">Front Splitter & Dive Planes</h4>
+                            <p class="text-gray-600">The massive front splitter extends far forward to generate significant front-end downforce, preventing lift at high speeds and ensuring sharp turn-in. It will be complemented by dive planes on the corners of the bumper to further direct air and create stabilizing vortices.</p>
+                        </div>
+                        <div id="aero-wing" class="aero-content hidden">
+                            <h4 class="text-xl font-semibold mb-2">Active Rear Wing</h4>
+                            <p class="text-gray-600">Expected to be the centerpiece of the aero package, a large, active rear wing will adjust its angle of attack in real-time. It will flatten on straights to reduce drag for higher top speeds (like a DRS system) and increase its angle under braking and in corners for maximum downforce and stability.</p>
+                        </div>
+                        <div id="aero-body" class="aero-content hidden">
+                            <h4 class="text-xl font-semibold mb-2">Widebody & Functional Venting</h4>
+                            <p class="text-gray-600">The ZR1 will feature significantly wider fenders to house larger, stickier tires. The body will be covered in functional vents, including large side intakes to feed the turbochargers' intercoolers and fender vents to extract high-pressure air from the wheel wells, reducing lift and improving cooling.</p>
+                        </div>
+                         <div id="aero-underbody" class="aero-content hidden">
+                            <h4 class="text-xl font-semibold mb-2">Full Underbody Tray & Diffuser</h4>
+                            <p class="text-gray-600">A flat underbody will smooth airflow beneath the car, creating a low-pressure zone that effectively sucks the car to the road. This effect is amplified at the rear by a massive, aggressive diffuser that helps extract the air quickly, generating a huge portion of the car's total downforce without adding significant drag.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="competition" class="py-16 md:py-24 bg-gray-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h3 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Facing the Titans</h3>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">The Corvette ZR1 doesn't just compete; it aims to dominate. This table places the ZR1's projected specifications against some of the most formidable supercars on the planet, providing a clear perspective on its ambitious goals and its position in the automotive elite.</p>
+                </div>
+                <div class="mt-12 flow-root">
+                    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                        <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                            <table class="min-w-full divide-y divide-gray-300">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Model</th>
+                                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Engine</th>
+                                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Horsepower</th>
+                                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">0-60 MPH</th>
+                                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Est. Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200 bg-white">
+                                    <tr class="bg-red-50">
+                                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-bold text-[#c0392b] sm:pl-0">2026 Corvette ZR1 (Est.)</td>
+                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">5.5L Twin-Turbo V8</td>
+                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">~850</td>
+                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">~2.4s</td>
+                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">$180,000</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">Porsche 911 Turbo S</td>
+                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">3.7L Twin-Turbo Flat-6</td>
+                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">640</td>
+                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">2.6s</td>
+                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">$230,400</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">Ferrari 296 GTB</td>
+                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">3.0L Twin-Turbo V6 Hybrid</td>
+                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">819</td>
+                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">2.9s</td>
+                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">$338,255</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">McLaren Artura</td>
+                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">3.0L Twin-Turbo V6 Hybrid</td>
+                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">671</td>
+                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">3.0s</td>
+                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">$237,500</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+  <section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>  
+    <footer class="bg-white border-t border-gray-200">
+        <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-500">
+            <p>&copy; 2024 Interactive Report. All data is estimated based on industry analysis and reports. Not official manufacturer data.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const animateStat = (element, target, duration, isPrice = false, isDecimal = false) => {
+                const start = 0;
+                const range = target - start;
+                let startTime = null;
+
+                function animation(currentTime) {
+                    if (startTime === null) startTime = currentTime;
+                    const timeElapsed = currentTime - startTime;
+                    let progress = Math.min(timeElapsed / duration, 1);
+                    progress = Math.pow(progress, 1/2); 
+
+                    let currentValue;
+                    if (isDecimal) {
+                        currentValue = (start + range * progress).toFixed(1);
+                    } else {
+                        currentValue = Math.floor(start + range * progress);
+                    }
+                    
+                    if(isPrice) {
+                        element.textContent = Math.floor(currentValue);
+                    } else {
+                        element.textContent = currentValue;
+                    }
+
+                    if (timeElapsed < duration) {
+                        requestAnimationFrame(animation);
+                    }
+                }
+                requestAnimationFrame(animation);
+            };
+
+            const statHp = document.getElementById('stat-hp');
+            const statTorque = document.getElementById('stat-torque');
+            const statZeroSixty = document.getElementById('stat-zero-sixty');
+            const statPrice = document.getElementById('stat-price');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if(entry.isIntersecting) {
+                        animateStat(statHp, 850, 2000);
+                        animateStat(statTorque, 825, 2000);
+                        animateStat(statZeroSixty, 2.4, 2000, false, true);
+                        animateStat(statPrice, 180, 2000, true);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            observer.observe(document.getElementById('overview'));
+
+            const engineTab = document.getElementById('engine-tab');
+            const drivetrainTab = document.getElementById('drivetrain-tab');
+            const engineContent = document.getElementById('engine-content');
+            const drivetrainContent = document.getElementById('drivetrain-content');
+
+            engineTab.addEventListener('click', () => {
+                engineTab.classList.add('active');
+                drivetrainTab.classList.remove('active');
+                engineContent.classList.remove('hidden');
+                drivetrainContent.classList.add('hidden');
+            });
+
+            drivetrainTab.addEventListener('click', () => {
+                drivetrainTab.classList.add('active');
+                engineTab.classList.remove('active');
+                drivetrainContent.classList.remove('hidden');
+                engineContent.classList.add('hidden');
+            });
+
+            const performanceData = {
+                labels: ['C7 ZR1', 'C8 Z06', '911 Turbo S', '2026 ZR1 (Est.)'],
+                datasets: {
+                    'Horsepower': {
+                        label: 'Horsepower (HP)',
+                        data: [755, 670, 640, 850],
+                        backgroundColor: 'rgba(192, 57, 43, 0.7)',
+                        borderColor: 'rgba(192, 57, 43, 1)',
+                        borderWidth: 1
+                    },
+                    'Torque': {
+                        label: 'Torque (lb-ft)',
+                        data: [715, 460, 590, 825],
+                        backgroundColor: 'rgba(243, 156, 18, 0.7)',
+                        borderColor: 'rgba(243, 156, 18, 1)',
+                        borderWidth: 1
+                    },
+                    '0-60 Time (s)': {
+                        label: '0-60 Time (s)',
+                        data: [2.8, 2.6, 2.6, 2.4],
+                        backgroundColor: 'rgba(44, 62, 80, 0.7)',
+                        borderColor: 'rgba(44, 62, 80, 1)',
+                        borderWidth: 1
+                    }
+                }
+            };
+
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            const performanceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: performanceData.labels,
+                    datasets: [performanceData.datasets['Horsepower']]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#2c3e50'
+                            },
+                             grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#2c3e50'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y;
+                                        if (context.dataset.label.includes('Time')) {
+                                          label += 's';
+                                        }
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active', 'bg-[#c0392b]', 'text-white'));
+                    filterBtns.forEach(b => b.classList.add('bg-white', 'text-gray-700'));
+                    
+                    btn.classList.add('active', 'bg-[#c0392b]', 'text-white');
+                    btn.classList.remove('bg-white', 'text-gray-700');
+
+                    const filter = btn.textContent;
+                    performanceChart.data.datasets[0] = performanceData.datasets[filter];
+                    performanceChart.options.plugins.tooltip.callbacks.label = function(context) {
+                        let label = context.dataset.label || '';
+                        if (label) { label += ': '; }
+                        if (context.parsed.y !== null) {
+                             label += context.parsed.y;
+                             if(filter.includes('Time')) label += 's';
+                        }
+                        return " " + label;
+                    };
+                    performanceChart.update();
+                });
+            });
+
+            const aeroBtns = document.querySelectorAll('.aero-btn');
+            const aeroContents = document.querySelectorAll('.aero-content');
+            aeroBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetId = btn.dataset.target;
+                    
+                    aeroContents.forEach(content => {
+                        if(content.id === targetId) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 80) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>
