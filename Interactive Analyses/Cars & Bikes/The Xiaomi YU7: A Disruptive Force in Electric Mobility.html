@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Xiaomi YU7: A Disruptive Force in Electric Mobility</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+<!-- Chosen Palette: Warm Neutrals with Gemstone Green Accent -->
+<!-- Application Structure Plan: The application uses a thematic, top-down structure designed for guided exploration. It begins with a high-impact hero section to capture user attention with key metrics. A persistent navigation bar allows users to jump to specific areas of interest. The core of the app is built around interactive modules: a variant selector for performance data, tabs for design details, and a dynamic bar chart for competitive analysis. This structure was chosen over a linear report format to empower users to explore the data non-linearly, compare specifications directly, and digest complex information in manageable, interactive chunks, enhancing comprehension and engagement. -->
+<!-- Visualization & Content Choices: Key data points are presented through interactive visualizations. 1) Performance Specs: Goal is to compare variants. Method is interactive cards updated via JS DOM manipulation when a user clicks a model button. This allows for clear, uncluttered comparison. 2) Design Details: Goal is to organize a large amount of text. Method is a tabbed interface (JS show/hide) to separate exterior and interior features, preventing information overload. 3) Competitive Analysis: Goal is to directly compare the YU7 with Tesla. Method is an interactive bar chart powered by Chart.js. A dropdown allows users to select a metric, which dynamically updates the chart. This provides a far more powerful and intuitive comparison than a static table. All choices prioritize user interaction and data clarity. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+<style>
+body {
+font-family: 'Inter', sans-serif;
+background-color: #FDFBF8;
+color: #1a202c;
+}
+.chart-container {
+position: relative;
+width: 100%;
+max-width: 800px;
+margin-left: auto;
+margin-right: auto;
+height: 40vh;
+max-height: 450px;
+}
+@media (min-width: 768px) {
+.chart-container {
+height: 50vh;
+}
+}
+.nav-link {
+transition: color 0.3s, border-color 0.3s;
+}
+.nav-link:hover {
+color: #059669; 
+}
+.active-nav {
+color: #059669;
+border-bottom-color: #059669;
+}
+.stat-card {
+transition: transform 0.3s, box-shadow 0.3s;
+}
+.stat-card:hover {
+transform: translateY(-5px);
+box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+.model-btn {
+transition: all 0.3s;
+}
+.active-model-btn {
+background-color: #047857 !important;
+color: white !important;
+transform: scale(1.05);
+box-shadow: 0 4px 14px 0 rgba(5, 150, 105, 0.39);
+}
+.tab-btn {
+transition: all 0.3s;
+}
+.active-tab-btn {
+background-color: #E5E7EB;
+color: #047857;
+font-weight: 600;
+}
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+
+</style>
+</head>
+<body class="antialiased">
+
+<header class="sticky top-0 bg-white/80 backdrop-blur-lg z-50 shadow-sm">
+<nav class="container mx-auto px-6 py-3">
+<div class="flex justify-between items-center">
+<h1 class="text-2xl font-bold text-gray-800">Xiaomi <span class="text-emerald-700">YU7</span></h1>
+<div class="hidden md:flex space-x-8">
+<a href="#overview" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Overview</a>
+<a href="#performance" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Performance</a>
+<a href="#design" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Design</a>
+<a href="#technology" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Technology</a>
+<a href="#comparison" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Vs. Market</a>
+<a href="#launch" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Launch</a>
+</div>
+</div>
+</nav>
+</header>
+
+<main>
+<section id="hero" class="py-20 bg-gray-50">
+<div class="container mx-auto px-6 text-center">
+<h2 class="text-4xl md:text-6xl font-extrabold text-gray-900 leading-tight">A Disruptive Force in Electric Mobility</h2>
+<p class="mt-4 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">The Xiaomi YU7 has recalibrated the premium electric SUV market, blending hypercar performance, advanced technology, and luxury design at an unprecedented price point.</p>
+</div>
+</section>
+
+<section id="overview" class="py-16 md:py-24">
+<div class="container mx-auto px-6">
+<div class="text-center mb-12">
+<h3 class="text-3xl font-bold text-gray-800">The YU7 at a Glance</h3>
+<p class="text-gray-600 mt-2">Key metrics that define a new era of value in the EV space.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+<div class="stat-card bg-white p-8 rounded-xl shadow-md border border-gray-200">
+<div class="text-5xl font-extrabold text-emerald-700">3.23s</div>
+<p class="mt-2 text-lg font-semibold text-gray-700">0-100 km/h (Max)</p>
+<p class="text-gray-500 mt-1">Supercar acceleration in a family SUV.</p>
+</div>
+<div class="stat-card bg-white p-8 rounded-xl shadow-md border border-gray-200">
+<div class="text-5xl font-extrabold text-emerald-700">12 min</div>
+<p class="mt-2 text-lg font-semibold text-gray-700">10-80% Charge (Max)</p>
+<p class="text-gray-500 mt-1">Enabled by a standard 800V architecture.</p>
+</div>
+<div class="stat-card bg-white p-8 rounded-xl shadow-md border border-gray-200">
+<div class="text-5xl font-extrabold text-emerald-700">200k+</div>
+<p class="mt-2 text-lg font-semibold text-gray-700">Orders in 3 Minutes</p>
+<p class="text-gray-500 mt-1">Unprecedented demand signaling a market shift.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section id="performance" class="py-16 md:py-24 bg-gray-50">
+<div class="container mx-auto px-6">
+<div class="text-center mb-12">
+<h3 class="text-3xl font-bold text-gray-800">Performance Deep Dive</h3>
+<p class="text-gray-600 mt-2">Explore the specifications for each YU7 variant. Click a model below to see its detailed performance data.</p>
+</div>
+
+<div class="flex justify-center space-x-2 md:space-x-4 mb-12">
+<button class="model-btn active-model-btn text-sm md:text-base font-semibold py-3 px-6 rounded-full bg-white text-gray-700 shadow-sm border border-gray-300" data-model="standard">YU7 Standard</button>
+<button class="model-btn text-sm md:text-base font-semibold py-3 px-6 rounded-full bg-white text-gray-700 shadow-sm border border-gray-300" data-model="pro">YU7 Pro</button>
+<button class="model-btn text-sm md:text-base font-semibold py-3 px-6 rounded-full bg-white text-gray-700 shadow-sm border border-gray-300" data-model="max">YU7 Max</button>
+</div>
+
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="bg-white p-6 rounded-lg shadow-sm text-center border border-gray-200">
+<p class="text-sm text-gray-500">0-100 km/h</p>
+<p id="perf-accel" class="text-3xl font-bold text-emerald-700 mt-1">5.88s</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-sm text-center border border-gray-200">
+<p class="text-sm text-gray-500">Power</p>
+<p id="perf-power" class="text-3xl font-bold text-emerald-700 mt-1">235 kW</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-sm text-center border border-gray-200">
+<p class="text-sm text-gray-500">Range (CLTC)</p>
+<p id="perf-range" class="text-3xl font-bold text-emerald-700 mt-1">835 km</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-sm text-center border border-gray-200">
+<p class="text-sm text-gray-500">Charge (10-80%)</p>
+<p id="perf-charge" class="text-3xl font-bold text-emerald-700 mt-1">21 min</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-sm text-center border border-gray-200 col-span-2 lg:col-span-1">
+<p class="text-sm text-gray-500">Torque</p>
+<p id="perf-torque" class="text-3xl font-bold text-gray-800 mt-1">528 Nm</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-sm text-center border border-gray-200 col-span-2 lg:col-span-1">
+<p class="text-sm text-gray-500">Top Speed</p>
+<p id="perf-speed" class="text-3xl font-bold text-gray-800 mt-1">240 km/h</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-sm text-center border border-gray-200 col-span-2 lg:col-span-1">
+<p class="text-sm text-gray-500">Drivetrain</p>
+<p id="perf-drive" class="text-3xl font-bold text-gray-800 mt-1">RWD</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-sm text-center border border-gray-200 col-span-2 lg:col-span-1">
+<p class="text-sm text-gray-500">Battery</p>
+<p id="perf-battery" class="text-3xl font-bold text-gray-800 mt-1">96.3 kWh LFP</p>
+</div>
+</div>
+</div>
+</section>
+
+<section id="design" class="py-16 md:py-24">
+<div class="container mx-auto px-6">
+<div class="text-center mb-12">
+<h3 class="text-3xl font-bold text-gray-800">A Synthesis of Form and Function</h3>
+<p class="text-gray-600 mt-2">The YU7's design combines luxury aesthetics, aerodynamic efficiency, and thoughtful practicality.</p>
+</div>
+<div class="max-w-4xl mx-auto">
+<div class="flex justify-center bg-gray-100 rounded-full p-1 mb-8">
+<button class="tab-btn active-tab-btn w-1/2 py-3 rounded-full text-center" data-tab="exterior">Exterior</button>
+<button class="tab-btn w-1/2 py-3 rounded-full text-center" data-tab="interior">Interior</button>
+</div>
+<div id="tab-content-exterior">
+<div class="grid md:grid-cols-2 gap-8 items-center">
+<div>
+<h4 class="text-2xl font-bold text-gray-800">Calculated Luxury</h4>
+<p class="mt-4 text-gray-600">The exterior's resemblance to the Ferrari Purosangue is a strategic choice, instantly conveying high-performance luxury. This is supported by classic automotive proportions and a drag coefficient of just 0.245 Cd, achieved through features like active grille shutters and flush door handles.</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+<ul class="space-y-4">
+<li class="flex items-start">
+<span class="text-emerald-600 font-bold mr-3">➔</span>
+<span><strong class="text-gray-700">3.11 m² Clamshell Hood:</strong> The largest on any mass-produced vehicle, creating a seamless, premium look.</span>
+</li>
+<li class="flex items-start">
+<span class="text-emerald-600 font-bold mr-3">➔</span>
+<span><strong class="text-gray-700">Evolved Halo Taillight:</strong> Uses ultra-red lighting for a dramatic visual signature and superior visibility.</span>
+</li>
+<li class="flex items-start">
+<span class="text-emerald-600 font-bold mr-3">➔</span>
+<span><strong class="text-gray-700">Signature Colors:</strong> Offered in nine colors, including a distinctive Gemstone Green.</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="tab-content-interior" class="hidden">
+<div class="grid md:grid-cols-2 gap-8 items-center">
+<div>
+<h4 class="text-2xl font-bold text-gray-800">A Sanctuary of Comfort</h4>
+<p class="mt-4 text-gray-600">The cabin is a blend of high-quality materials, advanced comfort features, and exceptional practicality. Nappa leather, double-paned glass for a quiet ride, and extensive storage solutions create a true luxury experience.</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+<ul class="space-y-4">
+<li class="flex items-start">
+<span class="text-emerald-600 font-bold mr-3">➔</span>
+<span><strong class="text-gray-700">Zero Gravity Seats:</strong> Standard front seats with 10-point massage and up to 123° recline.</span>
+</li>
+<li class="flex items-start">
+<span class="text-emerald-600 font-bold mr-3">➔</span>
+<span><strong class="text-gray-700">Expansive Storage:</strong> 141L frunk, up to 1,758L rear trunk, and 36 cabin compartments.</span>
+</li>
+<li class="flex items-start">
+<span class="text-emerald-600 font-bold mr-3">➔</span>
+<span><strong class="text-gray-700">Smart Amenities:</strong> Optional 4.6L smart fridge and dual 80W wireless charging pads.</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="technology" class="py-16 md:py-24 bg-gray-50">
+<div class="container mx-auto px-6">
+<div class="text-center mb-12">
+<h3 class="text-3xl font-bold text-gray-800">The Technology Core</h3>
+<p class="text-gray-600 mt-2">Xiaomi's expertise in consumer electronics defines the YU7's intelligent experience.</p>
+</div>
+<div class="grid md:grid-cols-2 gap-8">
+<div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
+<h4 class="text-xl font-bold text-gray-800 mb-4">"Human x Car x Home" Ecosystem</h4>
+<p class="text-gray-600 mb-4">The YU7 is powered by Xiaomi's HyperOS, seamlessly integrating the vehicle with your digital life. It connects to Xiaomi smartphones, watches, and smart home devices, creating a unified, intelligent experience. The system also fully supports Apple CarPlay for broader compatibility.</p>
+<p class="text-gray-600"><strong class="text-gray-700">Key Display:</strong> A 1.1-meter-wide HyperVision Panoramic Display serves as an advanced head-up display for both driver and passenger.</p>
+</div>
+<div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
+<h4 class="text-xl font-bold text-gray-800 mb-4">Flagship Autonomous Hardware, Standard</h4>
+<p class="text-gray-600 mb-4">Every YU7 includes a full suite of advanced sensors, democratizing safety and future-proofing the vehicle. This multi-modal approach with LiDAR is a direct contrast to Tesla's vision-only system.</p>
+<ul class="text-gray-600 space-y-2">
+<li><span class="font-semibold text-emerald-700">●</span> 128-line Hesai LiDAR</li>
+<li><span class="font-semibold text-emerald-700">●</span> 4D Millimeter-Wave Radar</li>
+<li><span class="font-semibold text-emerald-700">●</span> 11 High-Definition Cameras</li>
+<li><span class="font-semibold text-emerald-700">●</span> 12 Ultrasonic Sensors</li>
+<li><span class="font-semibold text-emerald-700">●</span> Nvidia DRIVE AGX Thor (700 TOPS)</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+
+<section id="comparison" class="py-16 md:py-24">
+<div class="container mx-auto px-6">
+<div class="text-center mb-12">
+<h3 class="text-3xl font-bold text-gray-800">Disrupting the Market Leader</h3>
+<p class="text-gray-600 mt-2">The YU7 was engineered to outperform the Tesla Model Y. Select a metric to see a direct comparison.</p>
+</div>
+<div class="max-w-4xl mx-auto">
+<div class="mb-6">
+<label for="metric-select" class="block text-sm font-medium text-gray-700">Compare by:</label>
+<select id="metric-select" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm rounded-md shadow-sm">
+<option value="price" selected>Price (USD Approx.)</option>
+<option value="range">Range (CLTC km)</option>
+<option value="acceleration">0-100 km/h (s)</option>
+<option value="power">Power (kW)</option>
+<option value="battery">Battery Capacity (kWh)</option>
+<option value="chargeTime">Charge Time 10-80% (min)</option>
+</select>
+</div>
+<div class="chart-container">
+<canvas id="comparisonChart"></canvas>
+</div>
+</div>
+</div>
+</section>
+
+<section id="launch" class="py-16 md:py-24 bg-gray-50">
+<div class="container mx-auto px-6">
+<div class="text-center mb-12">
+<h3 class="text-3xl font-bold text-gray-800">The Launch Shockwave</h3>
+<p class="text-gray-600 mt-2">The market's reaction was historic, creating a "success catastrophe" of overwhelming demand.</p>
+</div>
+<div class="grid md:grid-cols-3 gap-8 text-center">
+<div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+<p class="text-4xl font-extrabold text-emerald-700">289,000</p>
+<p class="text-gray-600 font-semibold">Orders in the First Hour</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+<p class="text-4xl font-extrabold text-emerald-700">315,900</p>
+<p class="text-gray-600 font-semibold">Orders in 72 Hours</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+<p class="text-4xl font-extrabold text-emerald-700">60 Weeks</p>
+<p class="text-gray-600 font-semibold">Peak Customer Wait Time</p>
+</div>
+</div>
+<div class="mt-12 max-w-3xl mx-auto">
+<h4 class="text-xl font-bold text-center text-gray-800">The Production Challenge</h4>
+<p class="text-center text-gray-600 mt-2">While initial deliveries began promptly, the massive order bank highlights the immense challenge of scaling automotive manufacturing to meet explosive demand.</p>
+<div class="mt-6 bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex items-center justify-between space-x-4">
+<div>
+<p class="font-semibold text-gray-700">First Month Deliveries (July 2025)</p>
+<p class="text-3xl font-bold text-emerald-700">6,042</p>
+</div>
+<div class="text-gray-400 text-2xl">vs.</div>
+<div>
+<p class="font-semibold text-gray-700">Total 72hr Orders</p>
+<p class="text-3xl font-bold text-gray-800">315,900</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+
+<footer class="bg-gray-800 text-white py-8">
+<div class="container mx-auto px-6 text-center">
+<p>&copy; 2025 Interactive Analysis. Data synthesized from the "Xiaomi YU7: Strategic Analysis" report.</p>
+</div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+const performanceData = {
+standard: { accel: '5.88s', power: '235 kW', range: '835 km', charge: '21 min', torque: '528 Nm', speed: '240 km/h', drive: 'RWD', battery: '96.3 kWh LFP' },
+pro: { accel: '4.27s', power: '365 kW', range: '770 km', charge: '21 min', torque: '690 Nm', speed: '240 km/h', drive: 'AWD', battery: '96.3 kWh LFP' },
+max: { accel: '3.23s', power: '508 kW', range: '760 km', charge: '12 min', torque: '866 Nm', speed: '253 km/h', drive: 'AWD', battery: '101.7 kWh NMC' }
+};
+
+const modelBtns = document.querySelectorAll('.model-btn');
+modelBtns.forEach(btn => {
+btn.addEventListener('click', () => {
+modelBtns.forEach(b => b.classList.remove('active-model-btn'));
+btn.classList.add('active-model-btn');
+const model = btn.dataset.model;
+const data = performanceData[model];
+document.getElementById('perf-accel').textContent = data.accel;
+document.getElementById('perf-power').textContent = data.power;
+document.getElementById('perf-range').textContent = data.range;
+document.getElementById('perf-charge').textContent = data.charge;
+document.getElementById('perf-torque').textContent = data.torque;
+document.getElementById('perf-speed').textContent = data.speed;
+document.getElementById('perf-drive').textContent = data.drive;
+document.getElementById('perf-battery').textContent = data.battery;
+});
+});
+
+const tabBtns = document.querySelectorAll('.tab-btn');
+const tabContents = {
+exterior: document.getElementById('tab-content-exterior'),
+interior: document.getElementById('tab-content-interior')
+};
+tabBtns.forEach(btn => {
+btn.addEventListener('click', () => {
+tabBtns.forEach(b => b.classList.remove('active-tab-btn'));
+btn.classList.add('active-tab-btn');
+const tab = btn.dataset.tab;
+Object.values(tabContents).forEach(content => content.classList.add('hidden'));
+tabContents[tab].classList.remove('hidden');
+});
+});
+
+const comparisonData = {
+labels: ['YU7 Std', 'YU7 Pro', 'YU7 Max', 'Model Y RWD', 'Model Y LR', 'Model Y L'],
+datasets: {
+price: { label: 'Price (USD Approx.)', data: [35300, 39000, 46000, 36800, 43800, 47000], unit: '$' },
+range: { label: 'Range (CLTC km)', data: [835, 770, 760, 593, 719, 751], unit: ' km' },
+acceleration: { label: '0-100 km/h (s)', data: [5.88, 4.27, 3.23, null, 4.5, 4.5], unit: 's' },
+power: { label: 'Power (kW)', data: [235, 365, 508, 225, 331, 340], unit: ' kW' },
+battery: { label: 'Battery Capacity (kWh)', data: [96.3, 96.3, 101.7, 78.4, 82, 82], unit: ' kWh' },
+chargeTime: { label: 'Charge Time 10-80% (min)', data: [21, 21, 12, 21, 21, 21], unit: ' min' }
+}
+};
+
+const ctx = document.getElementById('comparisonChart').getContext('2d');
+const comparisonChart = new Chart(ctx, {
+type: 'bar',
+data: {
+labels: comparisonData.labels,
+datasets: [{
+label: comparisonData.datasets.price.label,
+data: comparisonData.datasets.price.data,
+backgroundColor: [
+'rgba(5, 150, 105, 0.7)',
+'rgba(5, 150, 105, 0.8)',
+'rgba(5, 150, 105, 0.9)',
+'rgba(75, 85, 99, 0.7)',
+'rgba(75, 85, 99, 0.8)',
+'rgba(75, 85, 99, 0.9)'
+],
+borderColor: [
+'rgba(4, 120, 87, 1)',
+'rgba(4, 120, 87, 1)',
+'rgba(4, 120, 87, 1)',
+'rgba(55, 65, 81, 1)',
+'rgba(55, 65, 81, 1)',
+'rgba(55, 65, 81, 1)'
+],
+borderWidth: 1
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+plugins: {
+legend: { display: false },
+tooltip: {
+callbacks: {
+label: function(context) {
+let label = context.dataset.label || '';
+if (label) {
+label += ': ';
+}
+if (context.parsed.y !== null) {
+const unit = comparisonData.datasets[document.getElementById('metric-select').value].unit;
+if (unit === '$') {
+label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(context.parsed.y);
+} else {
+label += context.parsed.y + unit;
+}
+}
+return label;
+}
+}
+},
+title: {
+display: true,
+text: 'Price (USD Approx.)',
+font: { size: 16 }
+}
+},
+scales: {
+y: {
+beginAtZero: true,
+ticks: {
+callback: function(value, index, values) {
+const unit = comparisonData.datasets[document.getElementById('metric-select').value].unit;
+if (unit === '$') {
+return '$' + (value / 1000) + 'k';
+}
+return value + unit;
+}
+}
+}
+}
+}
+});
+
+document.getElementById('metric-select').addEventListener('change', (event) => {
+const metric = event.target.value;
+const newDataset = comparisonData.datasets[metric];
+comparisonChart.data.datasets[0].data = newDataset.data;
+comparisonChart.data.datasets[0].label = newDataset.label;
+comparisonChart.options.plugins.title.text = newDataset.label;
+comparisonChart.update();
+});
+const navLinks = document.querySelectorAll('.nav-link');
+const sections = document.querySelectorAll('section');
+
+window.addEventListener('scroll', () => {
+let current = '';
+sections.forEach(section => {
+const sectionTop = section.offsetTop;
+if (pageYOffset >= sectionTop - 60) {
+current = section.getAttribute('id');
+}
+});
+
+navLinks.forEach(link => {
+link.classList.remove('active-nav');
+if (link.getAttribute('href') === `#${current}`) {
+link.classList.add('active-nav');
+}
+});
+});
+});
+</script>
+</body>
+</html>
+
