@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pixel 10 Series: An Interactive Analysis</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Oswald included per heading style in .explore-more-section -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous"></script>
+
+<style>
+body {
+font-family: 'Inter', sans-serif;
+background-color: #F8F7F2;
+color: #4A4A4A;
+}
+.chart-container {
+position: relative;
+width: 100%;
+max-width: 600px;
+margin-left: auto;
+margin-right: auto;
+height: 300px;
+max-height: 400px;
+}
+@media (min-width: 768px) {
+.chart-container {
+height: 350px;
+}
+}
+.nav-link {
+transition: color 0.3s, border-bottom-color 0.3s;
+}
+.nav-link:hover {
+color: #1E293B;
+}
+.nav-link.active {
+color: #1E293B;
+border-bottom: 2px solid #F4A261;
+}
+.fade-in {
+animation: fadeIn 0.8s ease-in-out forwards;
+opacity: 0;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.tab-button.active {
+background-color: #4DB0B3;
+color: #FFFFFF;
+}
+.spec-table th, .spec-table td {
+transition: background-color 0.3s;
+}
+.loader {
+border: 4px solid #f3f3f3;
+border-top: 4px solid #4DB0B3;
+border-radius: 50%;
+width: 40px;
+height: 40px;
+animation: spin 1s linear infinite;
+}
+@keyframes spin {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+#innovation-modal {
+transition: opacity 0.3s ease-in-out;
+}
+#innovation-modal-content {
+transition: transform 0.3s ease-in-out;
+}
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+</style>
+</head>
+<body class="antialiased">
+
+<header class="bg-[#F8F7F2]/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200">
+<nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex items-center justify-between h-16">
+<div class="flex-shrink-0">
+<h1 class="text-xl font-bold text-gray-800">Pixel 10 Series</h1>
+</div>
+<div class="hidden md:block">
+<div class="ml-10 flex items-baseline space-x-4">
+<a href="#tensor" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-600">Tensor G5</a>
+<a href="#lineup" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-600">The Lineup</a>
+<a href="#innovations" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-600">AI Innovations</a>
+<a href="#compare" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-600">Compare</a>
+<a href="#guide" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-600">AI Guide</a>
+</div>
+</div>
+</div>
+</nav>
+</header>
+
+<main>
+<section id="hero" class="py-20 md:py-32">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+<h2 class="text-4xl md:text-6xl font-bold tracking-tight text-gray-900">Google's Decisive Decade.</h2>
+<p class="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-gray-600">Marking its 10th anniversary, the Pixel 10 series is Google's most ambitious fusion of hardware and AI. Explore the technology that powers a new generation of proactive, helpful, and intelligent smartphones.</p>
+</div>
+</section>
+
+<section id="tensor" class="py-16 bg-[#FFFFFF] fade-in">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8">
+<div class="text-center mb-12">
+<h3 class="text-3xl font-bold text-gray-900">The Tensor G5 Revolution</h3>
+<p class="mt-4 max-w-2xl mx-auto text-md text-gray-600">The heart of the Pixel 10 is the all-new Tensor G5 chip. A strategic shift to TSMC's 3nm process, this fully custom SoC provides the foundation for every AI feature, delivering unprecedented on-device intelligence and efficiency.</p>
+</div>
+<div class="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+<div class="md:w-1/2">
+<h4 class="text-2xl font-semibold mb-4 text-gray-800">A Leap in AI Performance</h4>
+<p class="text-gray-600 mb-4">Google's strategy redefines "performance" away from raw benchmarks toward specialized AI workloads. The massive 60% leap in the Tensor Processing Unit (TPU) power is the physical manifestation of this bet, providing the horsepower for on-device AI like Magic Cue.</p>
+<ul class="space-y-2 text-gray-700">
+<li class="flex items-start"><span class="text-[#F4A261] font-bold mr-2">●</span><div><strong class="font-semibold">TSMC 3nm Process:</strong> A declaration of independence, enabling a fully custom design with huge gains in power efficiency.</div></li>
+<li class="flex items-start"><span class="text-[#F4A261] font-bold mr-2">●</span><div><strong class="font-semibold">On-Device Intelligence:</strong> Powerful enough to run Gemini Nano locally, ensuring your data stays private and secure.</div></li>
+<li class="flex items-start"><span class="text-[#F4A261] font-bold mr-2">●</span><div><strong class="font-semibold">Future-Proofed:</strong> Designed with overhead to handle complex AI models for the full 7-year update lifespan.</div></li>
+</ul>
+</div>
+<div class="md:w-1/2 w-full">
+<div class="chart-container">
+<canvas id="tensorChart"></canvas>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="lineup" class="py-16 fade-in">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8">
+<div class="text-center mb-12">
+<h3 class="text-3xl font-bold text-gray-900">Meet the Pixel 10 Family</h3>
+<p class="mt-4 max-w-2xl mx-auto text-md text-gray-600">Google's most comprehensive lineup targets every user, from the value-conscious to the power user. Select a model below to explore its key features and see how it fits into the new family.</p>
+</div>
+<div class="flex justify-center flex-wrap gap-2 mb-8" id="model-tabs">
+<button class="tab-button active px-4 py-2 text-sm font-semibold rounded-full transition-colors duration-300 bg-gray-200 text-gray-700" data-model="p10">Pixel 10</button>
+<button class="tab-button px-4 py-2 text-sm font-semibold rounded-full transition-colors duration-300 bg-gray-200 text-gray-700" data-model="p10pro">Pixel 10 Pro</button>
+<button class="tab-button px-4 py-2 text-sm font-semibold rounded-full transition-colors duration-300 bg-gray-200 text-gray-700" data-model="p10proxl">Pixel 10 Pro XL</button>
+<button class="tab-button px-4 py-2 text-sm font-semibold rounded-full transition-colors duration-300 bg-gray-200 text-gray-700" data-model="p10profold">Pixel 10 Pro Fold</button>
+</div>
+<div id="model-details-container" class="relative">
+</div>
+</div>
+</section>
+
+<section id="innovations" class="py-16 bg-[#FFFFFF] fade-in">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8">
+<div class="text-center mb-12">
+<h3 class="text-3xl font-bold text-gray-900">AI-Powered Innovations</h3>
+<p class="mt-4 max-w-2xl mx-auto text-md text-gray-600">The Tensor G5 unlocks a new class of helpful experiences. These features, powered by on-device Gemini models, transform the Pixel from a reactive tool into a proactive assistant.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<div class="bg-[#F8F7F2] p-6 rounded-lg flex flex-col">
+<h4 class="text-xl font-semibold mb-2 text-gray-800">✨ Magic Cue</h4>
+<p class="text-gray-600 flex-grow">A "digital mind reader" that anticipates your needs. It proactively surfaces relevant information from your apps—like flight details when you call an airline—right when you need it, securely on-device.</p>
+<button class="ask-gemini-btn mt-4 text-sm font-semibold text-[#4DB0B3] hover:text-[#3a8a8d]" data-feature-name="Magic Cue" data-feature-desc='A "digital mind reader" that anticipates your needs. It proactively surfaces relevant information from your apps—like flight details when you call an airline—right when you need it, securely on-device.'>✨ Ask Gemini About This</button>
+</div>
+<div class="bg-[#F8F7F2] p-6 rounded-lg flex flex-col">
+<h4 class="text-xl font-semibold mb-2 text-gray-800">📸 Camera Coach</h4>
+<p class="text-gray-600 flex-grow">Your personal AI photography tutor. It analyzes your scene in real-time and provides proactive suggestions on framing, lighting, and composition to help you take better photos.</p>
+<button class="ask-gemini-btn mt-4 text-sm font-semibold text-[#4DB0B3] hover:text-[#3a8a8d]" data-feature-name="Camera Coach" data-feature-desc="Your personal AI photography tutor. It analyzes your scene in real-time and provides proactive suggestions on framing, lighting, and composition to help you take better photos.">✨ Ask Gemini About This</button>
+</div>
+<div class="bg-[#F8F7F2] p-6 rounded-lg flex flex-col">
+<h4 class="text-xl font-semibold mb-2 text-gray-800">🔭 Pro Res Zoom (Pro Models)</h4>
+<p class="text-gray-600 flex-grow">Achieves a stunning 100x digital zoom by combining optical hardware with generative AI to intelligently fill in details and textures for remarkably sharp long-distance shots.</p>
+<button class="ask-gemini-btn mt-4 text-sm font-semibold text-[#4DB0B3] hover:text-[#3a8a8d]" data-feature-name="Pro Res Zoom" data-feature-desc="Achieves a stunning 100x digital zoom by combining optical hardware with generative AI to intelligently fill in details and textures for remarkably sharp long-distance shots.">✨ Ask Gemini About This</button>
+</div>
+<div class="bg-[#F8F7F2] p-6 rounded-lg flex flex-col">
+<h4 class="text-xl font-semibold mb-2 text-gray-800">🔋 Pixelsnap (Qi2)</h4>
+<p class="text-gray-600 flex-grow">Universal magnetic wireless charging. Adopting the open Qi2 standard makes the entire Pixel 10 series compatible with the vast ecosystem of existing MagSafe accessories.</p>
+<button class="ask-gemini-btn mt-4 text-sm font-semibold text-[#4DB0B3] hover:text-[#3a8a8d]" data-feature-name="Pixelsnap (Qi2)" data-feature-desc="Universal magnetic wireless charging. Adopting the open Qi2 standard makes the entire Pixel 10 series compatible with the vast ecosystem of existing MagSafe accessories.">✨ Ask Gemini About This</button>
+</div>
+<div class="bg-[#F8F7F2] p-6 rounded-lg flex flex-col">
+<h4 class="text-xl font-semibold mb-2 text-gray-800">👨‍👩‍👧‍👦 Auto Best Take</h4>
+<p class="text-gray-600 flex-grow">Perfect group photos, automatically. The AI analyzes a burst of shots and seamlessly creates a single image where everyone has their eyes open and is looking their best.</p>
+<button class="ask-gemini-btn mt-4 text-sm font-semibold text-[#4DB0B3] hover:text-[#3a8a8d]" data-feature-name="Auto Best Take" data-feature-desc="Perfect group photos, automatically. The AI analyzes a burst of shots and seamlessly creates a single image where everyone has their eyes open and is looking their best.">✨ Ask Gemini About This</button>
+</div>
+<div class="bg-[#F8F7F2] p-6 rounded-lg flex flex-col">
+<h4 class="text-xl font-semibold mb-2 text-gray-800">🔒 7-Year Updates</h4>
+<p class="text-gray-600 flex-grow">An industry-leading commitment to seven years of full Android OS upgrades and security updates, ensuring your device stays secure and gets new features for years to come.</p>
+<button class="ask-gemini-btn mt-4 text-sm font-semibold text-[#4DB0B3] hover:text-[#3a8a8d]" data-feature-name="7-Year Updates" data-feature-desc="An industry-leading commitment to seven years of full Android OS upgrades and security updates, ensuring your device stays secure and gets new features for years to come.">✨ Ask Gemini About This</button>
+</div>
+</div>
+</div>
+</section>
+
+<section id="compare" class="py-16 fade-in">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8">
+<div class="text-center mb-12">
+<h3 class="text-3xl font-bold text-gray-900">Interactive Model Comparator</h3>
+<p class="mt-4 max-w-2xl mx-auto text-md text-gray-600">Can't decide? Select two or more models to see a detailed, side-by-side comparison of their specifications. This tool is designed to help you find the perfect Pixel for your needs.</p>
+</div>
+<div class="flex justify-center flex-wrap gap-4 mb-8" id="comparator-checkboxes">
+</div>
+<div class="overflow-x-auto">
+<table class="w-full min-w-[600px] text-sm text-left text-gray-500 spec-table">
+<thead id="compare-head" class="text-xs text-gray-700 uppercase bg-gray-100">
+</thead>
+<tbody id="compare-body">
+</tbody>
+</table>
+</div>
+</div>
+</section>
+
+<section id="guide" class="py-16 bg-white fade-in">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8">
+<div class="text-center mb-12">
+<h3 class="text-3xl font-bold text-gray-900">✨ AI-Powered Buyer's Guide</h3>
+<p class="mt-4 max-w-2xl mx-auto text-md text-gray-600">Describe what you need in a phone, and our Gemini-powered assistant will recommend the perfect Pixel for you. Try being specific! For example, "I'm a photographer who needs great battery life but prefers a smaller phone."</p>
+</div>
+<div class="max-w-2xl mx-auto">
+<div class="mb-4">
+<textarea id="ai-prompt-input" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-[#4DB0B3] focus:border-[#4DB0B3] transition" rows="4" placeholder="Tell us what you're looking for..."></textarea>
+</div>
+<div class="text-center">
+<button id="get-recommendation-btn" class="bg-[#4DB0B3] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#419a9d] transition-colors shadow-md">Get AI Recommendation</button>
+</div>
+<div id="ai-result-container" class="mt-8"></div>
+</div>
+</div>
+</section>
+</main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+  
+<footer class="bg-gray-800 text-white">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-sm">
+<p>&copy; 2025 Interactive Report. Data synthesized from "Google's Decisive Decade" analysis.</p>
+</div>
+</footer>
+
+<div id="innovation-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden opacity-0">
+<div id="innovation-modal-content" class="bg-white rounded-lg shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col transform scale-95">
+<div class="flex items-center justify-between p-4 border-b">
+<h3 id="modal-title" class="text-lg font-bold text-gray-800">Ask about...</h3>
+<button id="modal-close-btn" class="text-gray-500 hover:text-gray-800">&times;</button>
+</div>
+<div id="modal-chat-log" class="p-4 flex-grow overflow-y-auto space-y-4"></div>
+<div class="p-4 border-t">
+<form id="modal-chat-form" class="flex items-center gap-2">
+<input type="text" id="modal-chat-input" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4DB0B3] focus:border-[#4DB0B3]" placeholder="Ask a question...">
+<button type="submit" class="bg-[#4DB0B3] text-white font-bold p-2 rounded-lg hover:bg-[#419a9d] transition-colors">Send</button>
+</form>
+</div>
+</div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+const pixelData = {
+p10: {
+name: "Pixel 10",
+tagline: "The New Value Champion",
+description: "The star of the family, redefining value with a 5x optical telephoto lens and a brilliant 120Hz display, all starting at $799. It's an aggressive move to capture the mainstream market.",
+price: "$799",
+specs: {
+"Display": "6.3\" Actua OLED, 120Hz",
+"RAM": "12GB",
+"Storage": "128GB / 256GB",
+"Rear Cameras": "48MP Wide, 13MP UW, 10.8MP Tele (5x)",
+"Battery": "4,970mAh",
+"Wired Charging": "30W",
+"Wireless Charging": "15W Qi2 (Pixelsnap)",
+}
+},
+p10pro: {
+name: "Pixel 10 Pro",
+tagline: "The Compact Flagship",
+description: "For users who demand the absolute best tech in a one-handed form factor. It elevates the experience with a superior LTPO display, more RAM, and a more advanced camera system.",
+price: "$999",
+specs: {
+"Display": "6.3\" Super Actua, 1-120Hz LTPO",
+"RAM": "16GB",
+"Storage": "128GB / 256GB / 512GB / 1TB",
+"Rear Cameras": "50MP Wide, 48MP UW, 48MP Tele (5x)",
+"Battery": "4,870mAh",
+"Wired Charging": "30W",
+"Wireless Charging": "15W Qi2 (Pixelsnap)",
+}
+},
+p10proxl: {
+name: "Pixel 10 Pro XL",
+tagline: "The Ultimate Pixel Experience",
+description: "The no-compromise flagship for power users. It features the largest display, biggest battery, and fastest charging speeds in the series, starting with 256GB of storage.",
+price: "$1,199",
+specs: {
+"Display": "6.8\" Super Actua, 1-120Hz LTPO",
+"RAM": "16GB",
+"Storage": "256GB / 512GB / 1TB",
+"Rear Cameras": "50MP Wide, 48MP UW, 48MP Tele (5x)",
+"Battery": "5,200mAh",
+"Wired Charging": "45W",
+"Wireless Charging": "25W Qi2.2 (Pixelsnap)",
+}
+},
+p10profold: {
+name: "Pixel 10 Pro Fold",
+tagline: "A New Foldable Standard",
+description: "Google's halo device, engineered for durability with a more robust hinge and a full IP68 rating. It showcases the best of Google's hardware and software for multitasking professionals.",
+price: "$1,799",
+specs: {
+"Display": "6.4\" Cover / 8.0\" Inner Flex",
+"RAM": "16GB",
+"Storage": "256GB / 512GB / 1TB",
+"Rear Cameras": "48MP Wide, 48MP UW, 48MP Tele (5x)",
+"Battery": "Up to 30+ hours",
+"Wired Charging": "50% in 30 mins",
+"Wireless Charging": "Qi2 (Pixelsnap)",
+}
+}
+};
+
+const specOrder = ["Display", "RAM", "Storage", "Rear Cameras", "Battery", "Wired Charging", "Wireless Charging"];
+
+function setupTensorChart() {
+    const ctx = document.getElementById('tensorChart').getContext('2d');
+    new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['CPU Performance', 'TPU (AI) Performance'],
+        datasets: [{
+            label: '% Gain over Tensor G4',
+            data: [34, 60],
+            backgroundColor: [
+                'rgba(77, 176, 179, 0.6)',
+                'rgba(244, 162, 97, 0.6)'
+            ],
+            borderColor: [
+                'rgba(77, 176, 179, 1)',
+                'rgba(244, 162, 97, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        scales: {
+        x: {
+            beginAtZero: true,
+            grid: {
+            color: 'rgba(200, 200, 200, 0.2)'
+            },
+            ticks: {
+            callback: function(value) {
+                return value + '%'
+            }
+            }
+        },
+        y: {
+            grid: {
+            display: false
+            }
+        }
+        },
+        plugins: {
+        legend: {
+            display: false
+        },
+        tooltip: {
+            callbacks: {
+            label: function(context) {
+                return ` ${context.dataset.label}: ${context.raw}%`;
+            }
+            }
+        }
+        },
+        animation: {
+        duration: 1500,
+        easing: 'easeInOutQuart'
+        }
+    }
+    });
+}
+
+const modelDetailsContainer = document.getElementById('model-details-container');
+const modelTabs = document.getElementById('model-tabs');
+
+function renderModelDetails(modelKey) {
+    const model = pixelData[modelKey];
+    const content = `
+    <div class="model-card bg-white p-8 rounded-lg shadow-lg border border-gray-200 transition-opacity duration-500" style="opacity: 0;">
+    <div class="flex flex-col md:flex-row gap-8">
+    <div class="md:w-2/5">
+    <h4 class="text-2xl font-bold text-gray-900">${model.name}</h4>
+    <p class="text-md font-semibold text-[#4DB0B3] mt-1">${model.tagline}</p>
+    <p class="mt-4 text-gray-600">${model.description}</p>
+    <p class="mt-4 text-3xl font-bold text-gray-800">${model.price}</p>
+    </div>
+    <div class="md:w-3/5">
+    <h5 class="text-lg font-semibold mb-3 text-gray-800">Key Specifications</h5>
+    <ul class="space-y-2">
+    ${specOrder.map(key => `
+    <li class="flex justify-between border-b pb-2">
+    <span class="font-semibold text-gray-700">${key}</span>
+    <span class="text-right text-gray-600">${model.specs[key]}</span>
+    </li>
+    `).join('')}
+    </ul>
+    </div>
+    </div>
+    </div>
+    `;
+    modelDetailsContainer.innerHTML = content;
+    setTimeout(() => {
+        if (modelDetailsContainer.firstChild) {
+            modelDetailsContainer.firstChild.style.opacity = 1;
+        }
+    }, 50);
+}
+
+modelTabs.addEventListener('click', (e) => {
+    if (e.target.classList.contains('tab-button')) {
+        const currentlyActive = modelTabs.querySelector('.active');
+        if (currentlyActive) currentlyActive.classList.remove('active');
+        e.target.classList.add('active');
+        renderModelDetails(e.target.dataset.model);
+    }
+});
+
+const comparatorCheckboxesContainer = document.getElementById('comparator-checkboxes');
+const compareHead = document.getElementById('compare-head');
+const compareBody = document.getElementById('compare-body');
+let selectedModels = ['p10', 'p10pro'];
+
+function renderComparator() {
+    comparatorCheckboxesContainer.innerHTML = Object.keys(pixelData).map(key => `
+    <label class="flex items-center space-x-2 cursor-pointer">
+    <input type="checkbox" data-model="${key}" class="form-checkbox h-5 w-5 rounded text-[#4DB0B3] focus:ring-[#4DB0B3]" ${selectedModels.includes(key) ? 'checked' : ''}>
+    <span class="text-gray-700 font-medium">${pixelData[key].name}</span>
+    </label>
+    `).join('');
+    compareHead.innerHTML = `
+    <tr>
+    <th scope="col" class="px-6 py-3">Feature</th>
+    ${selectedModels.map(key => `<th scope="col" class="px-6 py-3 text-center">${pixelData[key].name}</th>`).join('')}
+    </tr>
+    `;
+    const allSpecKeys = ["price", ...specOrder];
+    compareBody.innerHTML = allSpecKeys.map((specKey, index) => `
+    <tr class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} border-b">
+    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">${specKey === 'price' ? 'Starting Price' : specKey}</th>
+    ${selectedModels.map(modelKey => `
+    <td class="px-6 py-4 text-center">${specKey === 'price' ? pixelData[modelKey].price : (pixelData[modelKey].specs[specKey] || 'N/A')}</td>
+    `).join('')}
+    </tr>
+    `).join('');
+}
+comparatorCheckboxesContainer.addEventListener('change', (e) => {
+    if(e.target.type === 'checkbox') {
+        const modelKey = e.target.dataset.model;
+        if (e.target.checked) {
+            if (!selectedModels.includes(modelKey)) {
+                selectedModels.push(modelKey);
+            }
+        } else {
+            if (selectedModels.length > 2) {
+                selectedModels = selectedModels.filter(m => m !== modelKey);
+            } else {
+                e.target.checked = true;
+            }
+        }
+        renderComparator();
+    }
+});
+
+async function callGeminiApi(prompt, maxRetries = 3) {
+    // NOTE: Add your Gemini API key below if you want this to work live:
+    const apiKey = "";
+    if (!apiKey) throw new Error("Gemini API key missing. Please add an API key.");
+    let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+    const payload = { contents: chatHistory };
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+    for (let i = 0; i < maxRetries; i++) {
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            if (result.candidates && result.candidates.length > 0 &&
+                result.candidates[0].content && result.candidates[0].content.parts &&
+                result.candidates[0].content.parts.length > 0) {
+                return result.candidates[0].content.parts[0].text;
+            } else {
+                throw new Error("Invalid response structure from API.");
+            }
+        } catch (error) {
+            if (i === maxRetries - 1) throw error;
+            await new Promise(res => setTimeout(res, Math.pow(2, i) * 1000));
+        }
+    }
+}
+
+const getRecommendationBtn = document.getElementById('get-recommendation-btn');
+const aiPromptInput = document.getElementById('ai-prompt-input');
+const aiResultContainer = document.getElementById('ai-result-container');
+
+getRecommendationBtn.addEventListener('click', async () => {
+    const userInput = aiPromptInput.value.trim();
+    if (!userInput) {
+        aiResultContainer.innerHTML = `<p class="text-red-500 text-center">Please tell us what you're looking for.</p>`;
+        return;
+    }
+    aiResultContainer.innerHTML = `<div class="flex justify-center"><div class="loader"></div></div>`;
+    getRecommendationBtn.disabled = true;
+    const systemPrompt = `You are an expert assistant for Google Pixel phones. Your task is to recommend one of the four Pixel 10 models based on the user's needs. Here is the data for the available models: ${JSON.stringify(pixelData)}.
+Analyze the user's request: "${userInput}".
+Based on your analysis, choose the single best model for the user. Your response MUST be a valid JSON object with two keys: "recommendation" (the key for the model, e.g., "p10pro") and "reasoning" (a paragraph explaining why you chose that model, highlighting how its specific features meet the user's stated needs). Do not include any other text or formatting.`;
+    try {
+        const responseText = await callGeminiApi(systemPrompt);
+        const cleanedText = responseText.replace(/``````/g, '').trim();
+        const result = JSON.parse(cleanedText);
+        const recommendedModelKey = result.recommendation;
+        const reasoning = result.reasoning;
+        if (pixelData[recommendedModelKey]) {
+            const model = pixelData[recommendedModelKey];
+            aiResultContainer.innerHTML = `
+            <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 shadow-md fade-in">
+            <h4 class="text-xl font-bold text-gray-900">Our Recommendation: ${model.name}</h4>
+            <p class="text-md font-semibold text-[#4DB0B3] mt-1">${model.tagline}</p>
+            <p class="mt-4 text-gray-700">${reasoning}</p>
+            </div>
+            `;
+        } else {
+            throw new Error("API returned an invalid model key.");
+        }
+    } catch (error) {
+        aiResultContainer.innerHTML = `<p class="text-red-500 text-center">Sorry, we couldn't get a recommendation at this time. Please try again later.</p>`;
+    } finally {
+        getRecommendationBtn.disabled = false;
+    }
+});
+
+const innovationModal = document.getElementById('innovation-modal');
+const innovationModalContent = document.getElementById('innovation-modal-content');
+const modalTitle = document.getElementById('modal-title');
+const modalCloseBtn = document.getElementById('modal-close-btn');
+const modalChatLog = document.getElementById('modal-chat-log');
+const modalChatForm = document.getElementById('modal-chat-form');
+const modalChatInput = document.getElementById('modal-chat-input');
+let currentFeatureName = '';
+let currentFeatureDesc = '';
+
+function openModal(featureName, featureDesc) {
+    currentFeatureName = featureName;
+    currentFeatureDesc = featureDesc;
+    modalTitle.textContent = `Ask about ${featureName}`;
+    modalChatLog.innerHTML = `<div class="p-3 bg-gray-100 rounded-lg text-sm">Hello! How can I help you understand ${featureName}?</div>`;
+    innovationModal.classList.remove('hidden');
+    setTimeout(() => {
+        innovationModal.classList.remove('opacity-0');
+        innovationModalContent.classList.remove('scale-95');
+    }, 10);
+}
+
+function closeModal() {
+    innovationModal.classList.add('opacity-0');
+    innovationModalContent.classList.add('scale-95');
+    setTimeout(() => {
+        innovationModal.classList.add('hidden');
+    }, 300);
+}
+
+document.querySelectorAll('.ask-gemini-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const featureName = btn.dataset.featureName;
+        const featureDesc = btn.dataset.featureDesc;
+        openModal(featureName, featureDesc);
+    });
+});
+
+modalCloseBtn.addEventListener('click', closeModal);
+innovationModal.addEventListener('click', (e) => {
+    if (e.target === innovationModal) {
+        closeModal();
+    }
+});
+
+modalChatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const userQuestion = modalChatInput.value.trim();
+    if (!userQuestion) return;
+    modalChatLog.innerHTML += `<div class="p-3 bg-blue-100 rounded-lg text-sm text-right ml-auto max-w-xs">${userQuestion}</div>`;
+    modalChatInput.value = '';
+    modalChatLog.scrollTop = modalChatLog.scrollHeight;
+    modalChatLog.innerHTML += `<div id="modal-loader" class="flex justify-start"><div class="loader w-8 h-8"></div></div>`;
+    modalChatLog.scrollTop = modalChatLog.scrollHeight;
+    const prompt = `You are a friendly and knowledgeable Google product expert. You are explaining a specific feature of the new Pixel 10. The feature is **${currentFeatureName}**: "${currentFeatureDesc}". A user has the following question: "${userQuestion}". Please answer their question clearly and concisely in a conversational tone, relating it back to the feature's purpose.`;
+    try {
+        const responseText = await callGeminiApi(prompt);
+        document.getElementById('modal-loader').remove();
+        modalChatLog.innerHTML += `<div class="p-3 bg-gray-100 rounded-lg text-sm max-w-xs">${responseText}</div>`;
+    } catch (error) {
+        document.getElementById('modal-loader').remove();
+        modalChatLog.innerHTML += `<div class="p-3 bg-red-100 text-red-700 rounded-lg text-sm max-w-xs">Sorry, I couldn't get an answer right now. Please try again.</div>`;
+    }
+    modalChatLog.scrollTop = modalChatLog.scrollHeight;
+});
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+const navLinks = document.querySelectorAll('.nav-link');
+const sections = document.querySelectorAll('section');
+
+function onScroll() {
+    let currentSection = '';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (window.pageYOffset >= sectionTop - 80) {
+            currentSection = section.getAttribute('id');
+        }
+    });
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href').substring(1) === currentSection) {
+            link.classList.add('active');
+        }
+    });
+}
+
+window.addEventListener('scroll', onScroll);
+
+setupTensorChart();
+renderModelDetails('p10');
+renderComparator();
+});
+</script>
+
+</body>
+</html>
