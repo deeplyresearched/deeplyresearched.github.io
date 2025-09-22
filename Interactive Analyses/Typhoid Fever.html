@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Typhoid Fever: An Interactive Guide</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+
+<!-- Chosen Palette: Public Health Clarity -->
+<!-- Application Structure Plan: The application is structured into thematic, navigable sections to transform the dense Q&A format into an intuitive user journey. A sticky navigation bar allows users to jump to specific topics like Symptoms, Prevention, or Comparison, which is more user-friendly than linear scrolling. The structure prioritizes actionable information (Prevention) and clarifies complex topics through interactive visualizations (Symptom Timeline, Vaccine Comparison chart). This task-oriented design helps users quickly find relevant information and better understand key concepts like symptom progression and prevention strategies. -->
+<!-- Visualization & Content Choices: 
+- Report Info: Key statistics (9M cases, 110k deaths). Goal: Inform/Impact. Viz: Large, bold text in the hero section. Interaction: None. Justification: Immediately establishes the topic's importance. Method: HTML/Tailwind.
+- Report Info: Symptom progression through 4 stages. Goal: Show Change. Viz: An interactive timeline and a Chart.js line chart showing the characteristic "stepwise" fever. Interaction: Clicking on a stage reveals details. Justification: Visually represents the disease's progression over time, which is more effective than a text list. Library: Chart.js.
+- Report Info: Comparison of Typhoid vs. Food Poisoning. Goal: Compare. Viz: An interactive side-by-side card layout. Interaction: Users can click feature buttons (e.g., 'Onset', 'Symptoms') to highlight the differences for that specific feature. Justification: Actively engages the user in comparing the two illnesses, improving comprehension over a static table. Method: HTML/CSS/JS.
+- Report Info: Vaccine effectiveness and duration. Goal: Compare/Inform. Viz: Chart.js horizontal bar chart. Interaction: Tooltips on hover. Justification: Allows for quick, visual comparison of vaccine options, making complex data easily digestible. Library: Chart.js.
+- Report Info: Three tiers of prevention. Goal: Organize/Inform. Viz: Icon-driven card layout. Interaction: Cards expand on click to show details. Justification: Organizes a large amount of information cleanly, allowing users to explore without being overwhelmed. Method: HTML/CSS/JS.
+-->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+<style>
+body {
+font-family: 'Inter', sans-serif;
+background-color: #f8fafc; /* slate-50 */
+}
+.nav-link {
+transition: color 0.3s, border-color 0.3s;
+}
+.nav-link.active {
+color: #2563eb; /* blue-600 */
+border-bottom-color: #2563eb;
+}
+.stage-card.active {
+transform: translateY(-5px);
+box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+border-color: #2563eb;
+}
+.comparison-btn.active {
+background-color: #2563eb;
+color: white;
+}
+.chart-container {
+position: relative;
+width: 100%;
+max-width: 800px;
+margin-left: auto;
+margin-right: auto;
+height: 300px;
+max-height: 400px;
+}
+@media (min-width: 768px) {
+.chart-container {
+height: 400px;
+}
+}
+.loader {
+border: 4px solid #f3f3f3;
+border-top: 4px solid #3498db;
+border-radius: 50%;
+width: 30px;
+height: 30px;
+animation: spin 1s linear infinite;
+}
+@keyframes spin {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+
+
+</style>
+</head>
+<body class="text-slate-700">
+
+<header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+<nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex items-center justify-between h-16">
+<div class="flex-shrink-0">
+<h1 class="text-xl font-bold text-blue-600">Typhoid Guide</h1>
+</div>
+<div class="hidden md:block">
+<div class="ml-10 flex items-baseline space-x-4">
+<a href="#overview" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-blue-600 border-b-2 border-transparent">Overview</a>
+<a href="#symptoms" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-blue-600 border-b-2 border-transparent">Symptoms</a>
+<a href="#advisor" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-blue-600 border-b-2 border-transparent">Symptom Advisor</a>
+<a href="#comparison" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-blue-600 border-b-2 border-transparent">Comparison</a>
+<a href="#prevention" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-blue-600 border-b-2 border-transparent">Prevention</a>
+<a href="#treatment" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-blue-600 border-b-2 border-transparent">Treatment</a>
+</div>
+</div>
+<div class="md:hidden">
+<select id="mobile-nav" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+<option value="#overview">Overview</option>
+<option value="#symptoms">Symptoms</option>
+<option value="#advisor">Symptom Advisor</option>
+<option value="#comparison">Comparison</option>
+<option value="#prevention">Prevention</option>
+<option value="#treatment">Treatment</option>
+</select>
+</div>
+</div>
+</nav>
+</header>
+
+<main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+<section class="text-center mb-16">
+<h2 class="text-3xl md:text-5xl font-bold text-slate-800 mb-4">Understanding Typhoid Fever</h2>
+<p class="max-w-3xl mx-auto text-lg text-slate-600 mb-8">An in-depth guide to a preventable, life-threatening disease. Knowledge is your first line of defense.</p>
+<div class="flex flex-col md:flex-row justify-center items-center gap-8">
+<div class="bg-white p-6 rounded-lg shadow-md text-center">
+<p class="text-4xl font-bold text-blue-600">9 Million</p>
+<p class="text-slate-500">People affected annually</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-md text-center">
+<p class="text-4xl font-bold text-red-500">110,000</p>
+<p class="text-slate-500">Deaths per year</p>
+</div>
+</div>
+</section>
+
+<div id="overview" class="pt-16 -mt-16 mb-16">
+<h3 class="text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center">Disease Overview</h3>
+<div class="grid md:grid-cols-2 gap-8 items-start">
+<div class="bg-white p-8 rounded-lg shadow-lg">
+<h4 class="text-xl font-semibold mb-3 text-blue-700">What is Typhoid Fever?</h4>
+<p class="mb-4">Typhoid fever is a systemic, life-threatening infection caused by the bacterium *Salmonella Typhi*. Uniquely, this bacterium only infects and replicates within humans. After ingestion of contaminated food or water, the bacteria multiply in the intestines and then invade the bloodstream, spreading to organs like the liver, spleen, and bone marrow. This systemic spread is why symptoms are widespread and not just confined to the gut.</p>
+<p class="text-sm text-slate-500 p-3 bg-slate-50 rounded-md">Because *S. Typhi* is a human-only pathogen, breaking the chain of human-to-human transmission through sanitation, vaccination, and treatment could lead to its complete eradication, much like smallpox.</p>
+</div>
+<div class="bg-white p-8 rounded-lg shadow-lg">
+<h4 class="text-xl font-semibold mb-3 text-blue-700">How is it Spread?</h4>
+<p class="mb-4">The primary mode of transmission is the **fecal-oral route**. This occurs when someone consumes food or water contaminated with fecal matter from an infected person. This is most common in regions with poor sanitation and unsafe water supplies.</p>
+<div class="border-l-4 border-amber-400 pl-4">
+<h5 class="font-semibold">The Role of Asymptomatic Carriers</h5>
+<p class="text-slate-600">A small number of people who recover from Typhoid continue to harbor the bacteria, often in their gallbladder, without any symptoms. These "chronic carriers" can shed the bacteria in their stool for years, unknowingly spreading the disease and making them a hidden reservoir of infection.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="symptoms" class="pt-16 -mt-16 mb-16">
+<h3 class="text-2xl md:text-3xl font-bold text-slate-800 mb-2 text-center">Progression of Symptoms (Untreated)</h3>
+<p class="text-center text-slate-600 mb-8 max-w-2xl mx-auto">If left untreated, Typhoid fever classically progresses through four distinct stages. Prompt antibiotic treatment can halt this progression. Click on a stage to see details.</p>
+<div id="stages-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+</div>
+<div id="stage-details" class="bg-white p-6 rounded-lg shadow-lg min-h-[150px] transition-all duration-300">
+</div>
+<div class="mt-12">
+<h4 class="text-xl font-semibold mb-4 text-center text-blue-700">Visualizing the "Stepwise" Fever</h4>
+<p class="text-center text-slate-600 mb-6 max-w-2xl mx-auto">A key early sign is a fever that gradually increases each day. This chart illustrates a typical fever pattern during the first week of an untreated infection.</p>
+<div class="chart-container bg-white p-4 rounded-lg shadow-lg">
+<canvas id="feverChart"></canvas>
+</div>
+</div>
+</div>
+
+<div id="advisor" class="pt-16 -mt-16 mb-16">
+<h3 class="text-2xl md:text-3xl font-bold text-slate-800 mb-2 text-center">AI Symptom Advisor</h3>
+<p class="text-center text-slate-600 mb-8 max-w-3xl mx-auto">Describe your symptoms below to get an AI-powered educational perspective. <strong class="text-red-600">This is not a medical diagnosis.</strong> Always consult a doctor for health concerns.</p>
+<div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+<textarea id="symptom-input" class="w-full p-3 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" rows="3" placeholder="e.g., high fever for 3 days, headache, feeling very tired..."></textarea>
+<button id="analyze-symptoms-btn" class="mt-4 w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center disabled:bg-slate-400">
+<span class="mr-2">✨ Analyze My Symptoms</span>
+</button>
+<div id="symptom-result" class="mt-4 p-4 bg-slate-50 rounded-md border border-slate-200 min-h-[100px]">
+<p class="text-slate-500">Your educational analysis will appear here...</p>
+</div>
+</div>
+</div>
+
+<div id="comparison" class="pt-16 -mt-16 mb-16">
+<h3 class="text-2xl md:text-3xl font-bold text-slate-800 mb-2 text-center">Typhoid vs. Common Food Poisoning</h3>
+<p class="text-center text-slate-600 mb-8 max-w-3xl mx-auto">While both can be caused by contaminated food, these are fundamentally different illnesses. Typhoid is a systemic blood infection, while food poisoning is typically a localized gut illness. Use the buttons below to compare key features.</p>
+<div class="text-center mb-6 flex flex-wrap justify-center gap-2">
+<button data-feature="agent" class="comparison-btn px-4 py-2 text-sm font-medium rounded-full bg-slate-200 hover:bg-blue-500 hover:text-white transition-colors duration-200 active">Causative Agent</button>
+<button data-feature="site" class="comparison-btn px-4 py-2 text-sm font-medium rounded-full bg-slate-200 hover:bg-blue-500 hover:text-white transition-colors duration-200">Site of Infection</button>
+<button data-feature="onset" class="comparison-btn px-4 py-2 text-sm font-medium rounded-full bg-slate-200 hover:bg-blue-500 hover:text-white transition-colors duration-200">Onset</button>
+<button data-feature="symptoms" class="comparison-btn px-4 py-2 text-sm font-medium rounded-full bg-slate-200 hover:bg-blue-500 hover:text-white transition-colors duration-200">Primary Symptom</button>
+<button data-feature="complications" class="comparison-btn px-4 py-2 text-sm font-medium rounded-full bg-slate-200 hover:bg-blue-500 hover:text-white transition-colors duration-200">Complications</button>
+</div>
+<div class="grid md:grid-cols-2 gap-8">
+<div class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-blue-500">
+<h4 class="text-xl font-semibold mb-4">Typhoid Fever</h4>
+<div id="typhoid-details" class="transition-all duration-300"></div>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-amber-500">
+<h4 class="text-xl font-semibold mb-4">Common Food Poisoning</h4>
+<div id="foodpoison-details" class="transition-all duration-300"></div>
+</div>
+</div>
+</div>
+
+<div id="prevention" class="pt-16 -mt-16 mb-16">
+<h3 class="text-2xl md:text-3xl font-bold text-slate-800 mb-2 text-center">A 3-Tiered Prevention Strategy</h3>
+<p class="text-center text-slate-600 mb-8 max-w-3xl mx-auto">No single method is 100% effective. Combining vaccination, food and water discipline, and rigorous hygiene provides the most robust protection.</p>
+<div class="grid md:grid-cols-3 gap-8">
+<div class="bg-white p-6 rounded-lg shadow-lg text-center">
+<div class="text-4xl mb-4 text-blue-500">🛡️</div>
+<h4 class="text-lg font-semibold mb-2">Tier 1: Vaccination</h4>
+<p>A proactive shield, especially for travelers to high-risk areas. It reduces susceptibility but doesn't provide total immunity.</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-lg text-center">
+<div class="text-4xl mb-4 text-green-500">🍏</div>
+<h4 class="text-lg font-semibold mb-2">Tier 2: Food & Water Safety</h4>
+<p>Your daily defense. Following the "Boil it, cook it, peel it, or forget it" rule drastically reduces exposure to the bacteria.</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-lg text-center">
+<div class="text-4xl mb-4 text-cyan-500">💧</div>
+<h4 class="text-lg font-semibold mb-2">Tier 3: Personal Hygiene</h4>
+<p>The unbreakable foundation. Frequent and thorough handwashing is the single most effective way to prevent infection.</p>
+</div>
+</div>
+<div class="mt-12 bg-white p-6 md:p-8 rounded-lg shadow-lg">
+<h4 class="text-xl font-semibold mb-4 text-center text-blue-700">Comparing Vaccine Options</h4>
+<p class="text-center text-slate-600 mb-6 max-w-3xl mx-auto">Several vaccines are available, each with different characteristics. This chart compares key features to help inform a discussion with a healthcare provider.</p>
+<div class="chart-container">
+<canvas id="vaccineChart"></canvas>
+</div>
+</div>
+<div class="mt-12 bg-white p-6 md:p-8 rounded-lg shadow-lg">
+<h4 class="text-xl font-semibold mb-4 text-center text-blue-700">AI Travel Safety Briefing</h4>
+<p class="text-center text-slate-600 mb-6 max-w-3xl mx-auto">Enter a country you plan to visit to get a customized safety briefing focused on preventing food and water-borne illnesses like Typhoid.</p>
+<div class="max-w-xl mx-auto">
+<input id="country-input" type="text" class="w-full p-3 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="e.g., India, Nigeria, Peru...">
+<button id="generate-briefing-btn" class="mt-4 w-full bg-green-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-green-700 transition-colors flex items-center justify-center disabled:bg-slate-400">
+<span class="mr-2">✨ Generate Travel Briefing</span>
+</button>
+<div id="briefing-result" class="mt-4 p-4 bg-slate-50 rounded-md border border-slate-200 min-h-[100px]">
+<p class="text-slate-500">Your travel briefing will appear here...</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="treatment" class="pt-16 -mt-16">
+<h3 class="text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center">Diagnosis & Treatment</h3>
+<div class="grid md:grid-cols-2 gap-8">
+<div class="bg-white p-8 rounded-lg shadow-lg">
+<h4 class="text-xl font-semibold mb-3 text-blue-700">When to See a Doctor</h4>
+<p class="mb-4">If you develop a sustained fever, headache, and fatigue, especially after traveling to a high-risk country, seek prompt medical attention. Be sure to tell your doctor about your travel history.</p>
+<p>The "gold standard" for diagnosis is a **blood culture** to isolate the *S. Typhi* bacteria. After recovery, follow-up stool cultures are essential to ensure you haven't become a chronic carrier.</p>
+</div>
+<div class="bg-red-50 p-8 rounded-lg shadow-inner border border-red-200">
+<h4 class="text-xl font-semibold mb-3 text-red-700">CRITICAL: Finish Your Antibiotics</h4>
+<p class="mb-4">Stopping antibiotics early just because you feel better is dangerous. It can lead to:</p>
+<ul class="space-y-2">
+<li class="flex items-start"><span class="font-bold text-red-600 mr-2">⚠️</span> <strong>Personal Relapse:</strong> Stronger bacteria survive and cause a more severe recurrence of the illness.</li>
+<li class="flex items-start"><span class="font-bold text-red-600 mr-2">⚠️</span> <strong>Becoming a Carrier:</strong> Incomplete treatment can fail to clear bacteria from reservoirs like the gallbladder, turning you into an asymptomatic carrier who can infect others.</li>
+<li class="flex items-start"><span class="font-bold text-red-600 mr-2">⚠️</span> <strong>Antimicrobial Resistance:</strong> Surviving bacteria can develop resistance, contributing to the global crisis of drug-resistant superbugs.</li>
+</ul>
+</div>
+</div>
+</div>
+
+</main>
+
+
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+
+<footer class="bg-slate-800 text-white mt-16">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center text-sm">
+<p>This information is for educational purposes only. Always consult a healthcare professional for diagnosis and treatment.</p>
+</div>
+</footer>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+const sections = document.querySelectorAll('main > div[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+const mobileNav = document.getElementById('mobile-nav');
+
+const observerOptions = {
+root: null,
+rootMargin: '0px',
+threshold: 0.4
+};
+
+const observer = new IntersectionObserver((entries, observer) => {
+entries.forEach(entry => {
+if (entry.isIntersecting) {
+const id = entry.target.getAttribute('id');
+navLinks.forEach(link => {
+link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+});
+if (mobileNav.value !== `#${id}`) {
+mobileNav.value = `#${id}`;
+}
+}
+});
+}, observerOptions);
+
+sections.forEach(section => {
+observer.observe(section);
+});
+
+mobileNav.addEventListener('change', (e) => {
+window.location.hash = e.target.value;
+});
+
+const stagesData = [
+{ 
+title: "Stage 1 (Week 1)", 
+details: "The illness begins with a 'stepwise' fever that increases daily, reaching 39-40°C (102-104°F). This is accompanied by malaise, headache, muscle aches, and sometimes a dry cough." 
+},
+{ 
+title: "Stage 2 (Week 2)", 
+details: "The high fever persists. Abdominal pain intensifies, and constipation or diarrhea may occur. Faint, rose-colored spots might appear on the chest and abdomen." 
+},
+{ 
+title: "Stage 3 (Week 3)", 
+details: "This is the most dangerous phase. The patient can become delirious and unresponsive. Life-threatening complications like intestinal perforation and severe hemorrhage are most likely to occur." 
+},
+{ 
+title: "Stage 4 (Recovery)", 
+details: "If the patient survives, the fever gradually subsides and their condition slowly improves. However, they may still be contagious and could become a long-term carrier." 
+}
+];
+
+const stagesContainer = document.getElementById('stages-container');
+const stageDetails = document.getElementById('stage-details');
+
+stagesData.forEach((stage, index) => {
+const card = document.createElement('div');
+card.className = 'stage-card bg-white p-4 rounded-lg shadow-md cursor-pointer border-2 border-transparent hover:border-blue-500 hover:shadow-xl transition-all duration-300';
+card.dataset.index = index;
+card.innerHTML = `<h5 class="font-semibold text-center">${stage.title}</h5>`;
+stagesContainer.appendChild(card);
+});
+
+const stageCards = document.querySelectorAll('.stage-card');
+
+function updateStageDetails(index) {
+const stage = stagesData[index];
+stageDetails.innerHTML = `<h5 class="font-bold text-lg mb-2">${stage.title}</h5><p>${stage.details}</p>`;
+stageCards.forEach((c, i) => {
+c.classList.toggle('active', i == index);
+});
+}
+
+stagesContainer.addEventListener('click', (e) => {
+const card = e.target.closest('.stage-card');
+if (card) {
+updateStageDetails(card.dataset.index);
+}
+});
+
+updateStageDetails(0);
+
+const comparisonData = {
+agent: {
+typhoid: "Caused exclusively by *Salmonella Typhi* bacteria.",
+foodpoison: "Caused by many different bacteria (*E. coli*, non-typhoidal *Salmonella*), viruses (Norovirus), or parasites."
+},
+site: {
+typhoid: "A **systemic infection** affecting the bloodstream and multiple organs.",
+foodpoison: "A **localized illness** typically confined to the gastrointestinal tract."
+},
+onset: {
+typhoid: "Gradual onset over a long incubation period of **6-30 days**.",
+foodpoison: "Sudden, acute onset over a short incubation period of **minutes to a few days**."
+},
+symptoms: {
+typhoid: "A prolonged, high, 'stepwise' fever is the primary symptom, with headache and weakness.",
+foodpoison: "Dominated by acute vomiting, severe cramps, and profuse, watery diarrhea."
+},
+complications: {
+typhoid: "Severe, life-threatening issues like **intestinal perforation, hemorrhage, and delirium**.",
+foodpoison: "The main complication is **dehydration** from fluid loss."
+}
+};
+
+const comparisonBtns = document.querySelectorAll('.comparison-btn');
+const typhoidDetails = document.getElementById('typhoid-details');
+const foodpoisonDetails = document.getElementById('foodpoison-details');
+
+function updateComparison(feature) {
+typhoidDetails.innerHTML = `<p>${comparisonData[feature].typhoid}</p>`;
+foodpoisonDetails.innerHTML = `<p>${comparisonData[feature].foodpoison}</p>`;
+comparisonBtns.forEach(btn => {
+btn.classList.toggle('active', btn.dataset.feature === feature);
+});
+}
+
+comparisonBtns.forEach(btn => {
+btn.addEventListener('click', () => {
+updateComparison(btn.dataset.feature);
+});
+});
+
+updateComparison('agent');
+const feverCtx = document.getElementById('feverChart').getContext('2d');
+new Chart(feverCtx, {
+type: 'line',
+data: {
+labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+datasets: [{
+label: 'Typical Fever (°C)',
+data: [38.0, 38.5, 39.0, 39.2, 39.8, 40.0, 40.0],
+borderColor: '#ef4444', // red-500
+backgroundColor: 'rgba(239, 68, 68, 0.1)',
+tension: 0.4,
+fill: true,
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+scales: {
+y: {
+beginAtZero: false,
+min: 37,
+max: 41,
+title: {
+display: true,
+text: 'Body Temperature (°C)'
+}
+},
+x: {
+title: {
+display: true,
+text: 'Day of Illness'
+}
+}
+},
+plugins: {
+tooltip: {
+callbacks: {
+label: function(context) {
+let label = context.dataset.label || '';
+if (label) {
+label += ': ';
+}
+if (context.parsed.y !== null) {
+label += context.parsed.y.toFixed(1) + ' °C';
+}
+return label;
+}
+}
+}
+}
+}
+});
+
+const vaccineCtx = document.getElementById('vaccineChart').getContext('2d');
+new Chart(vaccineCtx, {
+type: 'bar',
+data: {
+labels: ['Typhoid Conjugate (TCV)', 'Vi Polysaccharide (ViCPS)', 'Oral Live (Ty21a)'],
+datasets: [
+{
+label: 'High-End Effectiveness (%)',
+data: [85, 80, 80],
+backgroundColor: '#3b82f6', // blue-500
+borderColor: '#2563eb',
+borderWidth: 1
+},
+{
+label: 'Protection Duration (Years)',
+data: [4, 2, 5],
+backgroundColor: '#60a5fa', // blue-400
+borderColor: '#3b82f6',
+borderWidth: 1
+}
+]
+},
+options: {
+indexAxis: 'y',
+responsive: true,
+maintainAspectRatio: false,
+scales: {
+x: {
+beginAtZero: true,
+title: {
+display: true,
+text: 'Value (Percent or Years)'
+}
+}
+},
+plugins: {
+title: {
+display: false,
+text: 'Vaccine Comparison'
+},
+tooltip: {
+callbacks: {
+label: function(context) {
+let label = context.dataset.label || '';
+if (label) {
+label += ': ';
+}
+if (context.parsed.x !== null) {
+label += context.parsed.x;
+if (label.includes('Effectiveness')) {
+label += '%';
+} else {
+label += ' years';
+}
+}
+return label;
+}
+}
+}
+}
+}
+});
+
+const analyzeSymptomsBtn = document.getElementById('analyze-symptoms-btn');
+const symptomInput = document.getElementById('symptom-input');
+const symptomResult = document.getElementById('symptom-result');
+const generateBriefingBtn = document.getElementById('generate-briefing-btn');
+const countryInput = document.getElementById('country-input');
+const briefingResult = document.getElementById('briefing-result');
+
+async function callGemini(prompt, button, resultContainer) {
+button.disabled = true;
+resultContainer.innerHTML = '<div class="flex justify-center items-center"><div class="loader"></div></div>';
+let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+const payload = { contents: chatHistory };
+const apiKey = "";
+const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+try {
+const response = await fetch(apiUrl, {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify(payload)
+});
+if (!response.ok) {
+throw new Error(`API request failed with status ${response.status}`);
+}
+
+const result = await response.json();
+if (result.candidates && result.candidates.length > 0 &&
+result.candidates[0].content && result.candidates[0].content.parts &&
+result.candidates[0].content.parts.length > 0) {
+const text = result.candidates[0].content.parts[0].text;
+resultContainer.innerHTML = text.replace(/\n/g, '<br>');
+} else {
+throw new Error("Invalid response structure from API.");
+}
+} catch (error) {
+console.error("Gemini API Error:", error);
+resultContainer.innerHTML = `<p class="text-red-500">Sorry, something went wrong. Please try again later.</p>`;
+} finally {
+button.disabled = false;
+}
+}
+
+analyzeSymptomsBtn.addEventListener('click', () => {
+const symptoms = symptomInput.value.trim();
+if (!symptoms) {
+symptomResult.innerHTML = '<p class="text-amber-600">Please enter your symptoms first.</p>';
+return;
+}
+const prompt = `Based on the following user-described symptoms: "${symptoms}", provide a brief educational analysis in the context of Typhoid fever. Do NOT give a diagnosis. Explain which symptoms are consistent with early-stage Typhoid (like sustained fever, headache, fatigue) and which might suggest something else. Start with a clear, bold disclaimer that this is NOT medical advice and they MUST consult a doctor. Keep the tone helpful and educational, not alarming. Structure the response in a few short paragraphs.`;
+callGemini(prompt, analyzeSymptomsBtn, symptomResult);
+});
+
+generateBriefingBtn.addEventListener('click', () => {
+const country = countryInput.value.trim();
+if (!country) {
+briefingResult.innerHTML = '<p class="text-amber-600">Please enter a country name.</p>';
+return;
+}
+const prompt = `Generate a concise, bullet-point travel safety briefing for a traveler visiting "${country}". The briefing should focus specifically on preventing Typhoid and other food and water-borne illnesses. Include actionable advice on: 1. Safe drinking water practices (e.g., bottled, boiled, filtered). 2. Safe food choices (e.g., what to eat, what to avoid like street food, salads, ice). 3. Personal hygiene tips. Keep the language simple and direct.`;
+callGemini(prompt, generateBriefingBtn, briefingResult);
+});
+});
+</script>
+</body>
+</html>
+
