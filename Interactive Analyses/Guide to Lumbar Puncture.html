@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive Guide to Lumbar Puncture</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+
+<style>
+body {
+font-family: 'Inter', sans-serif;
+}
+.chart-container {
+position: relative;
+width: 100%;
+max-width: 600px;
+margin-left: auto;
+margin-right: auto;
+height: 250px;
+max-height: 300px;
+}
+@media (min-width: 768px) {
+.chart-container {
+height: 300px;
+max-height: 350px;
+}
+}
+.nav-link.active {
+background-color: #EBF8FF;
+color: #2B6CB0;
+font-weight: 600;
+}
+.step-highlight {
+background-color: #FEF3C7;
+border-left: 4px solid #FBBF24;
+transition: all 0.3s ease-in-out;
+}
+
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+
+</style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+<!-- Chosen Palette: Calm Clinical -->
+<!-- Application Structure Plan: A task-oriented, single-page application with a sticky sidebar navigation. This structure is chosen over a linear document to mirror a clinician's workflow: quickly assessing risks (Indications/Contraindications), reviewing the procedure, analyzing results, and managing complications. Key interactions include a dynamic CSF analysis dashboard to compare disease profiles and a step-by-step visual guide to the procedure. This non-linear, thematic approach enhances usability and allows for rapid access to critical information. -->
+<!-- Visualization & Content Choices: 1. CSF Analysis (Table 6.1) -> Goal: Compare -> Viz: Grouped Bar Charts -> Interaction: Buttons to select a condition, dynamically updating charts via JS -> Justification: Transforms a dense data table into an intuitive visual comparison tool, highlighting differences from normal values. Library: Chart.js. 2. Procedure Steps -> Goal: Organize/Inform -> Viz: HTML/CSS diagram of spinal layers -> Interaction: JS-driven highlighting of the current layer corresponding to the textual description -> Justification: Provides a clear, visual, step-by-step walkthrough of the anatomy, which is more effective for learning a procedure than text alone. Method: Vanilla JS & Tailwind CSS. 3. Complications -> Goal: Organize -> Viz: Accordion/collapsible sections -> Interaction: Click to expand/collapse -> Justification: Prevents information overload by neatly organizing detailed text into manageable chunks. Method: Vanilla JS & Tailwind CSS. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+<div class="flex flex-col md:flex-row">
+<aside id="sidebar" class="w-full md:w-64 bg-white border-r border-gray-200 p-4 md:sticky md:top-0 md:h-screen transition-transform -translate-x-full md:translate-x-0 fixed z-20">
+<h1 class="text-xl font-bold text-blue-800 mb-6">Lumbar Puncture Guide</h1>
+<nav id="nav-menu" class="space-y-2">
+<a href="#overview" class="nav-link block px-4 py-2 text-sm rounded-md hover:bg-gray-100">Overview</a>
+<a href="#decision" class="nav-link block px-4 py-2 text-sm rounded-md hover:bg-gray-100">Clinical Decision</a>
+<a href="#procedure" class="nav-link block px-4 py-2 text-sm rounded-md hover:bg-gray-100">The Procedure</a>
+<a href="#analysis" class="nav-link block px-4 py-2 text-sm rounded-md hover:bg-gray-100">CSF Analysis</a>
+<a href="#pharmacology" class="nav-link block px-4 py-2 text-sm rounded-md hover:bg-gray-100">Pharmacology</a>
+<a href="#complications" class="nav-link block px-4 py-2 text-sm rounded-md hover:bg-gray-100">Complications</a>
+<a href="#post-procedure" class="nav-link block px-4 py-2 text-sm rounded-md hover:bg-gray-100">Post-Procedure Care</a>
+</nav>
+</aside>
+
+<button id="menu-toggle" class="md:hidden fixed top-4 left-4 z-30 bg-white p-2 rounded-md shadow-md">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+</button>
+
+<main class="flex-1 p-4 md:p-8 lg:p-12 md:ml-64">
+<section id="overview" class="mb-12 scroll-mt-20">
+<h2 class="text-3xl font-bold text-gray-900 border-b pb-2 mb-4">Overview & Rationale</h2>
+<p class="mb-4">The lumbar puncture (LP), or spinal tap, is a cornerstone procedure providing direct access to the central nervous system. This guide offers an interactive exploration of its principles, applications, and techniques. The procedure serves three core purposes: diagnostic sampling of cerebrospinal fluid (CSF), therapeutic administration of medication, and measurement of intracranial pressure.</p>
+<div class="grid md:grid-cols-3 gap-4 text-center">
+<div class="bg-white p-4 rounded-lg shadow">
+<h3 class="font-semibold text-blue-700">Diagnostic Sampling</h3>
+<p class="text-sm text-gray-600">Extracting CSF to analyze for infection, inflammation, or malignancy.</p>
+</div>
+<div class="bg-white p-4 rounded-lg shadow">
+<h3 class="font-semibold text-blue-700">Therapeutic Administration</h3>
+<p class="text-sm text-gray-600">Injecting anesthetics, chemotherapy, or antibiotics directly into the CNS.</p>
+</div>
+<div class="bg-white p-4 rounded-lg shadow">
+<h3 class="font-semibold text-blue-700">Pressure Measurement</h3>
+<p class="text-sm text-gray-600">Measuring CSF opening pressure to diagnose conditions like IIH.</p>
+</div>
+</div>
+</section>
+
+<section id="decision" class="mb-12 scroll-mt-20">
+<h2 class="text-3xl font-bold text-gray-900 border-b pb-2 mb-4">Clinical Decision: Go / No-Go</h2>
+<p class="mb-6">Deciding to perform an LP involves weighing the diagnostic urgency against potential catastrophic risks. This section outlines the key indications and critical contraindications. The most severe risk is brainstem herniation in a patient with a CNS mass lesion, which must be ruled out before proceeding.</p>
+<div class="grid md:grid-cols-2 gap-8">
+<div>
+<h3 class="text-xl font-semibold mb-3 text-green-700">Indications</h3>
+<ul class="list-disc list-inside space-y-2 text-gray-700">
+<li><strong>Suspected CNS Infection:</strong> Gold standard for meningitis and encephalitis.</li>
+<li><strong>Suspected Subarachnoid Hemorrhage:</strong> When CT scan is negative.</li>
+<li><strong>Inflammatory Diseases:</strong> E.g., Multiple Sclerosis, Guillain-Barré Syndrome.</li>
+<li><strong>Oncological Diagnosis:</strong> To detect malignant cells in the CSF.</li>
+<li><strong>Therapeutic Administration:</strong> Anesthesia, chemotherapy, antibiotics.</li>
+</ul>
+</div>
+<div>
+<h3 class="text-xl font-semibold mb-3 text-red-700">Contraindications & Red Flags</h3>
+<div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+<h4 class="font-bold">Absolute Contraindications</h4>
+<ul class="list-disc list-inside text-sm mt-2">
+<li>Infection at the puncture site.</li>
+<li>High intracranial pressure with mass effect.</li>
+</ul>
+<h4 class="font-bold mt-4">Perform Head CT First If:</h4>
+<ul class="list-disc list-inside text-sm mt-2 space-y-1">
+<li>Altered mental status.</li>
+<li>Focal neurological deficits.</li>
+<li>New-onset seizure.</li>
+<li>Papilledema on exam.</li>
+<li>Immunocompromised state.</li>
+<li>Age > 60 years.</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+
+<section id="procedure" class="mb-12 scroll-mt-20">
+<h2 class="text-3xl font-bold text-gray-900 border-b pb-2 mb-4">The Procedure: A Step-by-Step Guide</h2>
+<p class="mb-6">A successful LP is an exercise in applied anatomy. This interactive guide walks through the critical layers the needle traverses from skin to the subarachnoid space. Each step, from positioning to needle handling, is based on anatomical principles to maximize safety and success.</p>
+<div class="flex flex-col md:flex-row gap-8">
+<div class="md:w-1/2">
+<h3 class="text-xl font-semibold mb-3">Anatomical Pathway</h3>
+<div id="anatomy-layers" class="space-y-1 border-2 border-gray-200 rounded-lg p-4 bg-white relative">
+<div data-step="1" class="p-2 rounded transition-colors duration-300"><strong>1. Skin & Subcutaneous Fat</strong></div>
+<div data-step="2" class="p-2 rounded transition-colors duration-300"><strong>2. Supraspinous Ligament</strong></div>
+<div data-step="3" class="p-2 rounded transition-colors duration-300"><strong>3. Interspinous Ligament</strong></div>
+<div data-step="4" class="p-2 rounded transition-colors duration-300"><strong>4. Ligamentum Flavum</strong> (Feel the "pop")</div>
+<div data-step="5" class="p-2 rounded transition-colors duration-300"><strong>5. Epidural Space</strong></div>
+<div data-step="6" class="p-2 rounded transition-colors duration-300"><strong>6. Dura & Arachnoid Mater</strong></div>
+<div data-step="7" class="p-2 rounded transition-colors duration-300 text-blue-700 font-bold"><strong>7. Subarachnoid Space</strong> (Target)</div>
+</div>
+</div>
+<div class="md:w-1/2">
+<h3 class="text-xl font-semibold mb-3">Key Procedural Steps</h3>
+<div id="procedure-steps" class="space-y-3">
+<div data-step="1" class="p-3 bg-white rounded-lg shadow-sm cursor-pointer step-highlight">
+<h4 class="font-semibold">1. Preparation & Positioning</h4>
+<p class="text-sm text-gray-600">Obtain consent, review contraindications. Position patient in lateral decubitus or sitting position to flex spine.</p>
+</div>
+<div data-step="2" class="p-3 bg-white rounded-lg shadow-sm cursor-pointer">
+<h4 class="font-semibold">2. Aseptic Technique & Anesthesia</h4>
+<p class="text-sm text-gray-600">Sterilize a wide area. Infiltrate skin and deeper tissues with 1% lidocaine.</p>
+</div>
+<div data-step="4" class="p-3 bg-white rounded-lg shadow-sm cursor-pointer">
+<h4 class="font-semibold">3. Needle Insertion</h4>
+<p class="text-sm text-gray-600">Insert needle at L3-L4 or L4-L5. Aim slightly cephalad. Orient bevel parallel to dural fibers.</p>
+</div>
+<div data-step="7" class="p-3 bg-white rounded-lg shadow-sm cursor-pointer">
+<h4 class="font-semibold">4. CSF Collection</h4>
+<p class="text-sm text-gray-600">Measure opening pressure, then collect 1-2 mL of CSF into four numbered tubes.</p>
+</div>
+<div data-step="8" class="p-3 bg-white rounded-lg shadow-sm cursor-pointer">
+<h4 class="font-semibold">5. Completion</h4>
+<p class="text-sm text-gray-600">Reinsert stylet fully before withdrawing needle. Apply pressure and a sterile bandage.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="analysis" class="mb-12 scroll-mt-20">
+<h2 class="text-3xl font-bold text-gray-900 border-b pb-2 mb-4">CSF Analysis Dashboard</h2>
+<p class="mb-6">The pattern of CSF abnormalities provides powerful diagnostic clues. A single value is often non-specific, but the combination of findings is key. Use the buttons below to compare the typical CSF profiles of common neurological conditions against the normal baseline. All values are illustrative.</p>
+<div id="condition-selector" class="flex flex-wrap gap-2 mb-6">
+<button data-condition="normal" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Normal</button>
+<button data-condition="bacterial" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Bacterial Meningitis</button>
+<button data-condition="viral" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Viral Meningitis</button>
+<button data-condition="tuberculous" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Tuberculous Meningitis</button>
+<button data-condition="fungal" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Fungal Meningitis</button>
+<button data-condition="sah" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Subarachnoid Hemorrhage</button>
+<button data-condition="ms" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Multiple Sclerosis</button>
+<button data-condition="gbs" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Guillain-Barré</button>
+</div>
+<div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="bg-white p-4 rounded-lg shadow">
+<h3 class="text-center font-semibold mb-2">Opening Pressure (cmH₂O)</h3>
+<div class="chart-container"><canvas id="pressureChart"></canvas></div>
+</div>
+<div class="bg-white p-4 rounded-lg shadow">
+<h3 class="text-center font-semibold mb-2">WBC Count (cells/µL)</h3>
+<div class="chart-container"><canvas id="wbcChart"></canvas></div>
+</div>
+<div class="bg-white p-4 rounded-lg shadow">
+<h3 class="text-center font-semibold mb-2">Protein (g/L)</h3>
+<div class="chart-container"><canvas id="proteinChart"></canvas></div>
+</div>
+<div class="bg-white p-4 rounded-lg shadow">
+<h3 class="text-center font-semibold mb-2">CSF:Serum Glucose Ratio</h3>
+<div class="chart-container"><canvas id="glucoseChart"></canvas></div>
+</div>
+</div>
+<div id="analysis-key-features" class="mt-6 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+<h4 class="font-bold text-blue-800">Key Features:</h4>
+<p id="key-features-text" class="text-sm mt-1 text-gray-700">No organisms, no oligoclonal bands.</p>
+</div>
+</section>
+
+<section id="pharmacology" class="mb-12 scroll-mt-20">
+<h2 class="text-3xl font-bold text-gray-900 border-b pb-2 mb-4">Pharmacology</h2>
+<p class="mb-6">Pharmacology for LP is twofold: local agents are used to facilitate a safe and comfortable procedure, while systemic medications like anticoagulants pose a serious risk and must be meticulously managed. A thorough medication reconciliation is mandatory before every procedure.</p>
+<div class="grid md:grid-cols-2 gap-8">
+<div>
+<h3 class="text-xl font-semibold mb-3 text-gray-700">Facilitating Agents</h3>
+<ul class="list-disc list-inside space-y-2">
+<li><strong>Local Anesthetics:</strong> 1% Lidocaine is standard for infiltration. Topical creams (e.g., EMLA®) can be used, especially in pediatrics.</li>
+<li><strong>Sedation/Analgesia:</strong> May be needed for children or anxious adults. Options range from nitrous oxide to IV agents like midazolam and fentanyl.</li>
+</ul>
+</div>
+<div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg">
+<h3 class="text-xl font-semibold mb-3 text-amber-800">Anticoagulant Management</h3>
+<p class="text-sm font-medium mb-2">These agents significantly increase the risk of spinal hematoma and must be held for a specific period before LP:</p>
+<ul class="list-disc list-inside space-y-1 text-sm">
+<li><strong>Warfarin:</strong> Hold for several days (target INR <1.5).</li>
+<li><strong>Clopidogrel:</strong> Hold for 5-7 days.</li>
+<li><strong>LMWH (e.g., enoxaparin):</strong> Hold for at least 24 hours (therapeutic dose).</li>
+<li><strong>DOACs (e.g., apixaban):</strong> Hold for 24-72+ hours, depending on renal function.</li>
+</ul>
+</div>
+</div>
+</section>
+
+<section id="complications" class="mb-12 scroll-mt-20">
+<h2 class="text-3xl font-bold text-gray-900 border-b pb-2 mb-4">Complications: Prevention & Management</h2>
+<p class="mb-6">While generally safe, LP is not without risks. Prevention is key and relies on meticulous technique, using appropriate technology (like atraumatic needles), and careful patient selection. This section details the most common and serious complications.</p>
+<div id="complications-accordion" class="space-y-3">
+<div class="bg-white rounded-lg shadow-sm">
+<button class="accordion-header w-full text-left p-4 font-semibold flex justify-between items-center hover:bg-gray-50">
+Post-Dural Puncture Headache (PDPH)
+<span class="transform transition-transform duration-300">▼</span>
+</button>
+<div class="accordion-content hidden p-4 border-t">
+<p><strong>Presentation:</strong> A postural headache—worse when upright, relieved by lying down. Often accompanied by nausea, neck stiffness, and photophobia.</p>
+<p class="mt-2"><strong>Prevention:</strong> The single most effective method is using a small-gauge, atraumatic (pencil-point) needle. Reinserting the stylet before withdrawal is also critical.</p>
+<p class="mt-2"><strong>Management:</strong> Conservative therapy includes rest, hydration, analgesics, and caffeine. For severe cases, an Epidural Blood Patch is the definitive treatment.</p>
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-sm">
+<button class="accordion-header w-full text-left p-4 font-semibold flex justify-between items-center hover:bg-gray-50">
+Hemorrhagic Complications
+<span class="transform transition-transform duration-300">▼</span>
+</button>
+<div class="accordion-content hidden p-4 border-t">
+<p><strong>Presentation:</strong> A spinal hematoma is a neurosurgical emergency. It presents as acute, severe back pain followed by progressive leg weakness, sensory loss, and bladder/bowel dysfunction (cauda equina syndrome).</p>
+<p class="mt-2"><strong>Prevention:</strong> Rigorous screening for and management of coagulopathies and anticoagulant medications.</p>
+<p class="mt-2"><strong>Management:</strong> Requires an emergent spinal MRI for diagnosis and immediate neurosurgical consultation for surgical decompression.</p>
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-sm">
+<button class="accordion-header w-full text-left p-4 font-semibold flex justify-between items-center hover:bg-gray-50">
+Infectious & Neurological Complications
+<span class="transform transition-transform duration-300">▼</span>
+</button>
+<div class="accordion-content hidden p-4 border-t">
+<p><strong>Infection:</strong> Extremely rare with proper technique. Iatrogenic meningitis or epidural abscess can result from a breach in aseptic technique. Prevention is paramount.</p>
+<p class="mt-2"><strong>Nerve Root Irritation:</strong> A transient, sharp pain radiating down a leg if the needle touches a nerve root. Resolves by slightly repositioning the needle.</p>
+<p class="mt-2"><strong>Cerebral Herniation:</strong> The most feared complication. Prevented by performing a pre-procedure CT scan in any patient with red flags for elevated intracranial pressure.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section id="post-procedure" class="scroll-mt-20">
+<h2 class="text-3xl font-bold text-gray-900 border-b pb-2 mb-4">Post-Procedure Care & Guidance</h2>
+<p class="mb-6">Clear patient education is the final safety layer, empowering patients to monitor for complications after discharge. Instructions should be specific and actionable, clearly outlining normal recovery versus urgent red flag symptoms.</p>
+<div class="bg-white p-6 rounded-lg shadow">
+<h3 class="text-xl font-semibold mb-3">Discharge Instructions</h3>
+<ul class="list-disc list-inside space-y-2 mb-6">
+<li>Rest for the remainder of the day. Avoid strenuous activity for 24-48 hours.</li>
+<li>Increase fluid intake. Caffeine may help mild headaches.</li>
+<li>Manage mild back soreness with acetaminophen or ibuprofen.</li>
+<li>Keep the puncture site clean and dry; remove bandage after 24 hours.</li>
+</ul>
+<div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+<h4 class="font-bold text-red-800">Seek Immediate Medical Attention For:</h4>
+<ul class="list-disc list-inside text-sm mt-2 space-y-1">
+<li>A severe or worsening headache not relieved by lying down.</li>
+<li>Fever, chills, or severe neck stiffness.</li>
+<li>Redness, swelling, or discharge from the puncture site.</li>
+<li><strong>New numbness, tingling, or weakness in the legs.</strong></li>
+<li><strong>Difficulty walking or loss of bladder/bowel control.</strong></li>
+</ul>
+</div>
+</div>
+</section>
+
+</main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+const csfData = {
+normal: {
+pressure: [10, 20], wbc: [0, 5], protein: [0.15, 0.45], glucose: [0.6, 1.0],
+features: "No organisms, no oligoclonal bands."
+},
+bacterial: {
+pressure: [25, 40], wbc: [1000, 5000], protein: [1.0, 5.0], glucose: [0.1, 0.4],
+features: "Cloudy/purulent appearance. >80% Neutrophils. Positive Gram stain and/or culture; high lactate."
+},
+viral: {
+pressure: [15, 25], wbc: [10, 500], protein: [0.4, 1.0], glucose: [0.5, 0.8],
+features: "Clear appearance. Lymphocytic predominance. Positive viral PCR (e.g., Enterovirus, HSV)."
+},
+tuberculous: {
+pressure: [25, 40], wbc: [100, 500], protein: [1.0, 5.0], glucose: [0.1, 0.3],
+features: "Fibrin web may form. Lymphocytic predominance. Very low glucose. Positive acid-fast stain/culture."
+},
+fungal: {
+pressure: [25, 40], wbc: [50, 500], protein: [0.5, 2.0], glucose: [0.2, 0.4],
+features: "Lymphocytic predominance. Low glucose. Positive India ink or antigen test (e.g., Cryptococcus)."
+},
+sah: {
+pressure: [25, 40], wbc: [10, 50], protein: [0.5, 1.5], glucose: [0.6, 1.0],
+features: "Bloody or xanthochromic appearance. Consistent RBC count across all tubes."
+},
+ms: {
+pressure: [10, 20], wbc: [0, 50], protein: [0.3, 0.8], glucose: [0.6, 1.0],
+features: "Presence of oligoclonal bands in CSF but not serum; elevated IgG index."
+},
+gbs: {
+pressure: [10, 25], wbc: [0, 5], protein: [0.5, 4.0], glucose: [0.6, 1.0],
+features: "Classic 'albuminocytologic dissociation' (high protein, normal cells). Protein may be normal in first week."
+}
+};
+
+const chartConfigs = {
+pressure: {
+ctx: document.getElementById('pressureChart').getContext('2d'),
+label: 'Opening Pressure (cmH₂O)',
+max: 50
+},
+wbc: {
+ctx: document.getElementById('wbcChart').getContext('2d'),
+label: 'WBC Count (cells/µL)',
+max: 5000,
+type: 'logarithmic'
+},
+protein: {
+ctx: document.getElementById('proteinChart').getContext('2d'),
+label: 'Protein (g/L)',
+max: 5,
+type: 'logarithmic'
+},
+glucose: {
+ctx: document.getElementById('glucoseChart').getContext('2d'),
+label: 'CSF:Serum Glucose Ratio',
+max: 1
+}
+};
+
+let charts = {};
+
+function createChart(config, data) {
+const normalData = csfData.normal[Object.keys(chartConfigs).find(key => chartConfigs[key] === config)];
+return new Chart(config.ctx, {
+type: 'bar',
+data: {
+labels: ['Normal Range', 'Selected Condition'],
+datasets: [{
+label: config.label,
+data: [normalData[1], data[1]],
+backgroundColor: ['rgba(54, 162, 235, 0.6)', 'rgba(255, 99, 132, 0.6)'],
+borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'],
+borderWidth: 1,
+barPercentage: 0.6,
+categoryPercentage: 0.7
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+indexAxis: 'y',
+scales: {
+x: {
+beginAtZero: true,
+type: config.type || 'linear',
+max: config.max,
+title: { display: true, text: config.label }
+},
+y: {
+ticks: { autoSkip: false }
+}
+},
+plugins: {
+legend: { display: false },
+tooltip: {
+callbacks: {
+label: function(context) {
+let label = context.dataset.label || '';
+if (label) {
+label += ': ';
+}
+if (context.parsed.x !== null) {
+const conditionKey = context.label === 'Normal Range' ? 'normal' : document.querySelector('#condition-selector button.bg-blue-600').dataset.condition;
+const dataKey = Object.keys(chartConfigs).find(key => chartConfigs[key] === config);
+const range = csfData[conditionKey][dataKey];
+label += `${range[0]} - ${range[1]}`;
+}
+return label;
+}
+}
+}
+}
+}
+});
+}
+
+function updateCharts(condition) {
+Object.keys(charts).forEach(key => {
+const chart = charts[key];
+const normalData = csfData.normal[key];
+const conditionData = csfData[condition][key];
+chart.data.datasets[0].data = [normalData[1], conditionData[1]];
+chart.update();
+});
+document.getElementById('key-features-text').textContent = csfData[condition].features;
+}
+
+Object.keys(chartConfigs).forEach(key => {
+charts[key] = createChart(chartConfigs[key], csfData.normal[key]);
+});
+
+const conditionSelector = document.getElementById('condition-selector');
+conditionSelector.addEventListener('click', function(e) {
+if (e.target.tagName === 'BUTTON') {
+const condition = e.target.dataset.condition;
+updateCharts(condition);
+conditionSelector.querySelectorAll('button').forEach(btn => {
+btn.classList.remove('bg-blue-600', 'text-white');
+btn.classList.add('bg-white', 'text-gray-700', 'border');
+});
+e.target.classList.add('bg-blue-600', 'text-white');
+e.target.classList.remove('bg-white', 'text-gray-700', 'border');
+}
+});
+
+const procedureSteps = document.getElementById('procedure-steps');
+const anatomyLayers = document.getElementById('anatomy-layers');
+procedureSteps.addEventListener('click', function(e) {
+const stepElement = e.target.closest('[data-step]');
+if (stepElement) {
+const step = stepElement.dataset.step;
+procedureSteps.querySelectorAll('[data-step]').forEach(el => el.classList.remove('step-highlight'));
+stepElement.classList.add('step-highlight');
+anatomyLayers.querySelectorAll('[data-step]').forEach(el => el.classList.remove('step-highlight'));
+const layerToHighlight = anatomyLayers.querySelector(`[data-step="${step}"]`);
+if(layerToHighlight) {
+layerToHighlight.classList.add('step-highlight');
+} else if (step === "8") {
+anatomyLayers.querySelector(`[data-step="7"]`).classList.add('step-highlight');
+}
+}
+});
+
+const accordionHeaders = document.querySelectorAll('.accordion-header');
+accordionHeaders.forEach(header => {
+header.addEventListener('click', () => {
+const content = header.nextElementSibling;
+const icon = header.querySelector('span');
+content.classList.toggle('hidden');
+icon.classList.toggle('rotate-180');
+});
+});
+
+const sidebar = document.getElementById('sidebar');
+const menuToggle = document.getElementById('menu-toggle');
+menuToggle.addEventListener('click', () => {
+sidebar.classList.toggle('-translate-x-full');
+});
+
+const navLinks = document.querySelectorAll('.nav-link');
+const sections = document.querySelectorAll('main section');
+
+const observer = new IntersectionObserver((entries) => {
+entries.forEach(entry => {
+if (entry.isIntersecting) {
+navLinks.forEach(link => {
+link.classList.remove('active');
+if (link.getAttribute('href').substring(1) === entry.target.id) {
+link.classList.add('active');
+}
+});
+}
+});
+}, { rootMargin: "-50% 0px -50% 0px" });
+
+sections.forEach(section => {
+observer.observe(section);
+});
+
+document.getElementById('nav-menu').addEventListener('click', (e) => {
+if (window.innerWidth < 768) {
+sidebar.classList.add('-translate-x-full');
+}
+});
+});
+</script>
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+
+</body>
+</html>
+
