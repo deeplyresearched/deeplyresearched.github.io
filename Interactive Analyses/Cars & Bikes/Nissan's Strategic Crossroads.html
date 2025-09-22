@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nissan's Strategic Crossroads: An Interactive Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+  
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: The application is designed as a top-down interactive dashboard. It starts with a high-level 'Executive Summary' to provide immediate key takeaways. The user is then guided through thematic sections: 'Ambition 2030 Plan' (the core strategy), 'Global Market Dynamics' (regional context), 'Competitive Landscape' (external pressures), and a final 'SWOT Analysis' (synthesis). This structure was chosen over a linear report format to allow users to explore areas of interest non-sequentially, facilitating a more intuitive and self-directed analysis. The flow from internal strategy to external market forces and finally to a synthesized view provides a logical and comprehensive narrative for understanding Nissan's position. -->
+    <!-- Visualization & Content Choices: 
+        - Executive Summary KPIs: Goal=Inform. Method=HTML/CSS stat cards. Interaction=None. Justification=Provide quick, scannable key metrics from the report.
+        - Ambition 2030 Investment: Goal=Inform. Method=Doughnut Chart (Chart.js). Interaction=Tooltips on hover. Justification=Effectively shows the proportional allocation of the strategic investment.
+        - Ambition 2030 Timeline: Goal=Organize. Method=Interactive HTML/CSS vertical timeline. Interaction=Clicking on a phase reveals details. Justification=Clearly presents the multi-year plan in a chronological, digestible format.
+        - Global EV Sales: Goal=Compare. Method=Bar Chart (Chart.js). Interaction=Region filter buttons dynamically update chart data and contextual text. Justification=Allows direct comparison of performance and challenges across key markets.
+        - Competitive Radar: Goal=Compare. Method=Radar Chart (Chart.js). Interaction=Dropdown to select a competitor for comparison against Nissan. Justification=Provides a multi-axial view of strengths and weaknesses against rivals, which is more insightful than a simple table.
+        - SWOT Analysis: Goal=Organize/Analyze. Method=Interactive 4-quadrant HTML grid. Interaction=Clicking a quadrant highlights it and shows detailed points. Justification=A standard, effective framework for summarizing complex strategic analysis in a visually organized manner.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4;
+            color: #212529;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #C3002F;
+            border-bottom-color: #C3002F;
+        }
+        .kpi-card {
+            background-color: #FFFFFF;
+            border: 1px solid #E0E0E0;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .btn-primary {
+            background-color: #C3002F;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #A00025;
+        }
+        .btn-secondary {
+            background-color: #E9ECEF;
+            color: #495057;
+            transition: background-color 0.3s;
+        }
+        .btn-secondary.active {
+            background-color: #495057;
+            color: white;
+        }
+        .content-section {
+            background-color: #FFFFFF;
+            border: 1px solid #E0E0E0;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 1rem;
+            left: -0.6rem;
+            width: 1.2rem;
+            height: 1.2rem;
+            background-color: #C3002F;
+            border-radius: 50%;
+            border: 3px solid #F8F7F4;
+        }
+        .swot-card {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .swot-card.active {
+            transform: scale(1.03);
+            box-shadow: 0 0 0 3px #C3002F;
+            z-index: 10;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+      /* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl md:text-2xl font-bold text-[#C3002F]">Nissan's Strategic Crossroads</h1>
+                </div>
+                <nav class="hidden md:flex md:space-x-8">
+                    <a href="#summary" class="nav-link text-gray-600 font-medium pb-1">Summary</a>
+                    <a href="#ambition" class="nav-link text-gray-600 font-medium pb-1">Ambition 2030</a>
+                    <a href="#markets" class="nav-link text-gray-600 font-medium pb-1">Markets</a>
+                    <a href="#competition" class="nav-link text-gray-600 font-medium pb-1">Competition</a>
+                    <a href="#swot" class="nav-link text-gray-600 font-medium pb-1">SWOT</a>
+                </nav>
+                <div class="md:hidden">
+                    <select id="mobile-nav" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                        <option value="#summary">Summary</option>
+                        <option value="#ambition">Ambition 2030</option>
+                        <option value="#markets">Markets</option>
+                        <option value="#competition">Competition</option>
+                        <option value="#swot">SWOT</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-12">
+
+        <section id="summary" class="scroll-mt-20">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Executive Summary</h2>
+                <p class="mt-4 text-lg text-gray-600">A high-level overview of Nissan's current strategic position in the automotive industry's evolution. This section provides key performance indicators and a snapshot of the challenges and goals driving their transformation.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="kpi-card rounded-lg p-6 text-center">
+                    <div class="text-4xl font-bold text-[#C3002F]">27</div>
+                    <p class="mt-2 font-semibold text-gray-700">New Electrified Models by 2030</p>
+                    <p class="text-sm text-gray-500">Includes 19 new all-electric vehicles (EVs).</p>
+                </div>
+                <div class="kpi-card rounded-lg p-6 text-center">
+                    <div class="text-4xl font-bold text-[#C3002F]">¥2T</div>
+                    <p class="mt-2 font-semibold text-gray-700">Investment Over 5 Years</p>
+                    <p class="text-sm text-gray-500">Focused on electrification and technology.</p>
+                </div>
+                <div class="kpi-card rounded-lg p-6 text-center">
+                    <div class="text-4xl font-bold text-[#C3002F]">55%</div>
+                    <p class="mt-2 font-semibold text-gray-700">Global Electrification Mix Goal</p>
+                    <p class="text-sm text-gray-500">Target for Nissan & Infiniti brands by FY2030.</p>
+                </div>
+                <div class="kpi-card rounded-lg p-6 text-center">
+                    <div class="text-4xl font-bold text-[#C3002F]">2028</div>
+                    <p class="mt-2 font-semibold text-gray-700">Solid-State Battery Launch</p>
+                    <p class="text-sm text-gray-500">Aiming for cost parity with gasoline vehicles.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="ambition" class="content-section rounded-lg p-6 md:p-8 scroll-mt-20">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">The "Ambition 2030" Plan</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">This is Nissan's long-term vision for empowering mobility and beyond. The plan centers on accelerating electrification, advancing autonomous technologies, and fostering a sustainable ecosystem. Here we explore the core components of this strategy, from investment allocation to key technological milestones.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <div class="chart-container">
+                    <canvas id="investmentChart"></canvas>
+                </div>
+                <div class="relative pl-6 border-l-2 border-gray-200">
+                    <div id="timeline-content">
+                        <div class="timeline-item mb-8">
+                            <h3 class="text-xl font-semibold text-gray-800">Phase 1: Foundation (2022-2024)</h3>
+                            <p class="text-gray-600 mt-2">Focus on launching key EV models like the Ariya, strengthening the e-POWER hybrid lineup, and initiating pilot programs for autonomous services. This phase establishes the manufacturing and technology base for future growth.</p>
+                        </div>
+                        <div class="timeline-item mb-8">
+                            <h3 class="text-xl font-semibold text-gray-800">Phase 2: Acceleration (2025-2027)</h3>
+                            <p class="text-gray-600 mt-2">Ramp up production of new EVs and expand battery manufacturing capacity globally. Begin deployment of next-generation ProPILOT autonomous driving systems and prepare for the introduction of solid-state batteries.</p>
+                        </div>
+                        <div class="timeline-item">
+                            <h3 class="text-xl font-semibold text-gray-800">Phase 3: Realization (2028-2030)</h3>
+                            <p class="text-gray-600 mt-2">Launch vehicles with all-solid-state batteries (ASSB), aiming for significant cost reductions. Expand vehicle intelligence and connected services, fully integrating mobility solutions into smart ecosystems.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="markets" class="content-section rounded-lg p-6 md:p-8 scroll-mt-20">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Global Market Dynamics</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">Nissan's strategy must adapt to vastly different consumer preferences, regulations, and competitive pressures in its key markets. This section allows you to explore and compare Nissan's performance, challenges, and strategic focus across Asia, Europe, and North America. Use the buttons below to filter the data.</p>
+            </div>
+            <div class="flex justify-center space-x-2 mb-8">
+                <button class="region-btn btn-secondary px-4 py-2 rounded-md font-medium" data-region="All">All Regions</button>
+                <button class="region-btn btn-secondary px-4 py-2 rounded-md font-medium" data-region="Asia">Asia</button>
+                <button class="region-btn btn-secondary px-4 py-2 rounded-md font-medium" data-region="Europe">Europe</button>
+                <button class="region-btn btn-secondary px-4 py-2 rounded-md font-medium" data-region="North America">North America</button>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 items-center">
+                <div class="lg:col-span-3 chart-container">
+                    <canvas id="salesChart"></canvas>
+                </div>
+                <div id="market-analysis" class="lg:col-span-2 bg-gray-50 p-6 rounded-lg">
+                    <h3 id="analysis-title" class="text-2xl font-bold mb-4 text-gray-800">Global Perspective</h3>
+                    <p id="analysis-text" class="text-gray-600">Nissan faces a complex global landscape. In Asia, particularly China, competition from domestic EV brands is fierce. Europe's stringent emission regulations are accelerating the EV transition, creating both an opportunity and a compliance challenge. In North America, the market is rapidly growing, but consumer preference for larger vehicles like trucks and SUVs requires a tailored electrification strategy.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="competition" class="content-section rounded-lg p-6 md:p-8 scroll-mt-20">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Competitive Landscape</h2>
+                 <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">The automotive industry is more competitive than ever, with legacy automakers and new EV players vying for market share. This interactive chart compares Nissan's strategic position against key rivals across several critical vectors, from technology to market perception. Select a competitor to see how Nissan stacks up.</p>
+            </div>
+            <div class="max-w-xs mx-auto mb-8">
+                <label for="competitor-select" class="block text-sm font-medium text-gray-700 mb-1">Compare Nissan with:</label>
+                <select id="competitor-select" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    <option value="Tesla">Tesla</option>
+                    <option value="Toyota">Toyota</option>
+                    <option value="Hyundai">Hyundai</option>
+                    <option value="Volkswagen">Volkswagen</option>
+                </select>
+            </div>
+            <div class="chart-container">
+                <canvas id="competitorChart"></canvas>
+            </div>
+        </section>
+
+        <section id="swot" class="content-section rounded-lg p-6 md:p-8 scroll-mt-20">
+             <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">SWOT Analysis & Future Outlook</h2>
+                 <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">This analysis synthesizes Nissan's internal capabilities and external market factors into a strategic overview. It highlights the core strengths Nissan can leverage, the weaknesses it must address, the market opportunities it can seize, and the threats it must navigate to succeed. Click on any quadrant to see a more detailed analysis.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="swot-card rounded-lg p-6 bg-green-50 border-green-200 border" data-swot="strengths">
+                    <h3 class="text-2xl font-bold text-green-800">Strengths</h3>
+                    <ul class="list-disc list-inside mt-2 text-green-700">
+                        <li>Early Mover Advantage (Nissan Leaf)</li>
+                        <li>Strong Alliance with Renault-Mitsubishi</li>
+                        <li>Expertise in Crossover/SUV segments</li>
+                        <li>Global manufacturing footprint</li>
+                    </ul>
+                </div>
+                <div class="swot-card rounded-lg p-6 bg-red-50 border-red-200 border" data-swot="weaknesses">
+                    <h3 class="text-2xl font-bold text-red-800">Weaknesses</h3>
+                    <ul class="list-disc list-inside mt-2 text-red-700">
+                        <li>Lagging in recent EV product cycle</li>
+                        <li>Brand perception challenges</li>
+                        <li>Dependence on Alliance for platforms</li>
+                        <li>Lower profitability vs. some rivals</li>
+                    </ul>
+                </div>
+                <div class="swot-card rounded-lg p-6 bg-blue-50 border-blue-200 border" data-swot="opportunities">
+                    <h3 class="text-2xl font-bold text-blue-800">Opportunities</h3>
+                    <ul class="list-disc list-inside mt-2 text-blue-700">
+                        <li>Solid-State Battery leadership potential</li>
+                        <li>Growing global demand for affordable EVs</li>
+                        <li>Leveraging e-POWER as a bridge technology</li>
+                        <li>Expansion of autonomous ride-sharing</li>
+                    </ul>
+                </div>
+                <div class="swot-card rounded-lg p-6 bg-yellow-50 border-yellow-200 border" data-swot="threats">
+                    <h3 class="text-2xl font-bold text-yellow-800">Threats</h3>
+                    <ul class="list-disc list-inside mt-2 text-yellow-700">
+                        <li>Intense competition from EV startups & legacy</li>
+                        <li>Geopolitical risks and supply chain disruption</li>
+                        <li>Rapidly changing battery technology</li>
+                        <li>Shifting consumer brand loyalties</li>
+                    </ul>
+                </div>
+            </div>
+             <div id="swot-details" class="mt-8 bg-gray-50 p-6 rounded-lg text-center hidden">
+                <h4 id="swot-detail-title" class="text-xl font-bold mb-2"></h4>
+                <p id="swot-detail-text" class="text-gray-700"></p>
+            </div>
+        </section>
+
+    </main>
+
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+  
+    <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-500">
+            <p>&copy; 2025 Strategic Analysis. This interactive report is for informational purposes only.</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const data = {
+        investment: {
+            labels: ['Electrification', 'Autonomous Tech', 'Manufacturing', 'R&D'],
+            data: [50, 20, 15, 15],
+        },
+        sales: {
+            'All': { labels: ['Asia', 'Europe', 'North America'], data: [450, 380, 520] },
+            'Asia': { labels: ['China', 'Japan', 'Other'], data: [250, 150, 50] },
+            'Europe': { labels: ['Germany', 'UK', 'France', 'Norway'], data: [100, 80, 75, 125] },
+            'North America': { labels: ['USA', 'Canada', 'Mexico'], data: [400, 80, 40] },
+        },
+        analysis: {
+            'All': { title: 'Global Perspective', text: 'Nissan faces a complex global landscape. In Asia, particularly China, competition from domestic EV brands is fierce. Europe\'s stringent emission regulations are accelerating the EV transition, creating both an opportunity and a compliance challenge. In North America, the market is rapidly growing, but consumer preference for larger vehicles like trucks and SUVs requires a tailored electrification strategy.' },
+            'Asia': { title: 'Focus on Asia', text: 'Success in Asia hinges on China. Nissan must compete with agile local brands on price, technology, and features. In Japan, its home market, the focus is on compact EVs and its e-POWER hybrid system. The broader Asian market requires cost-effective and durable mobility solutions.' },
+            'Europe': { title: 'Navigating Europe', text: 'Europe is a primary market for Nissan\'s electrification strategy, driven by strong government incentives and emission targets. The success of models like the Ariya and the upcoming electric Micra successor are critical. The challenge is maintaining market share against established European competitors like VW and Stellantis.' },
+            'North America': { title: 'Tackling North America', text: 'The US market is crucial. Nissan needs competitive electric SUVs and is exploring electric pickups. Success depends on battery production localization to benefit from federal incentives and managing a transition from its traditional strengths in sedans and crossovers to a fully electrified portfolio.' },
+        },
+        competitors: {
+            'Nissan': [7, 6, 8, 7, 7],
+            'Tesla': [9, 9, 6, 8, 9],
+            'Toyota': [5, 8, 9, 6, 8],
+            'Hyundai': [8, 7, 7, 8, 7],
+            'Volkswagen': [8, 7, 8, 7, 8],
+            labels: ['EV Portfolio', 'Battery Tech', 'Global Reach', 'ADAS/Autonomy', 'Brand Perception']
+        },
+        swotDetails: {
+            strengths: { title: 'Analysis of Strengths', text: 'Nissan\'s pioneering work with the Leaf provides a deep reservoir of data and experience in EV technology. The Renault-Nissan-Mitsubishi Alliance offers significant scale for platform sharing and cost reduction, which is a major asset in the capital-intensive shift to EVs.'},
+            weaknesses: { title: 'Analysis of Weaknesses', text: 'After leading with the Leaf, Nissan was slow to expand its EV lineup, allowing competitors to catch up and, in some cases, surpass them. Recent leadership and financial challenges have impacted brand image, requiring significant effort to rebuild consumer trust and excitement.'},
+            opportunities: { title: 'Analysis of Opportunities', text: 'If Nissan can deliver on its promise of cost-effective solid-state batteries by 2028, it could leapfrog competitors and fundamentally change the EV market. The e-POWER hybrid system is also a powerful tool for markets where full EV infrastructure is not yet mature.'},
+            threats: { title: 'Analysis of Threats', text: 'The market is crowded with both agile startups like Tesla and Rivian, and legacy giants like VW and GM who are investing heavily in electrification. Any disruptions to the global supply chain, particularly for batteries and semiconductors, pose a significant risk to production targets.'}
+        }
+    };
+
+    let investmentChart, salesChart, competitorChart;
+
+    const createInvestmentChart = () => {
+        const ctx = document.getElementById('investmentChart').getContext('2d');
+        investmentChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: data.investment.labels,
+                datasets: [{
+                    label: 'Investment Allocation (%)',
+                    data: data.investment.data,
+                    backgroundColor: ['#C3002F', '#495057', '#6C757D', '#ADB5BD'],
+                    borderColor: '#FFFFFF',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    title: { display: true, text: 'Ambition 2030: Investment Allocation', font: { size: 16 } }
+                }
+            }
+        });
+    };
+
+    const createSalesChart = () => {
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        salesChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.sales['All'].labels,
+                datasets: [{
+                    label: 'EV & Hybrid Sales (Units in thousands)',
+                    data: data.sales['All'].data,
+                    backgroundColor: '#C3002F',
+                    borderColor: '#A00025',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true } },
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Electrified Vehicle Sales by Region', font: { size: 16 } }
+                }
+            }
+        });
+    };
+
+    const createCompetitorChart = () => {
+        const ctx = document.getElementById('competitorChart').getContext('2d');
+        competitorChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: data.competitors.labels,
+                datasets: [
+                    {
+                        label: 'Nissan',
+                        data: data.competitors['Nissan'],
+                        backgroundColor: 'rgba(195, 0, 47, 0.2)',
+                        borderColor: '#C3002F',
+                        pointBackgroundColor: '#C3002F',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#C3002F'
+                    },
+                    {
+                        label: 'Tesla',
+                        data: data.competitors['Tesla'],
+                        backgroundColor: 'rgba(73, 80, 87, 0.2)',
+                        borderColor: '#495057',
+                        pointBackgroundColor: '#495057',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#495057'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { display: true },
+                        suggestedMin: 0,
+                        suggestedMax: 10,
+                        pointLabels: { font: { size: 12 } }
+                    }
+                },
+                plugins: {
+                    legend: { position: 'top' },
+                    title: { display: true, text: 'Competitive Positioning (Rated 1-10)', font: { size: 16 } }
+                }
+            }
+        });
+    };
+
+    const updateSalesChart = (region) => {
+        salesChart.data.labels = data.sales[region].labels;
+        salesChart.data.datasets[0].data = data.sales[region].data;
+        salesChart.update();
+
+        document.getElementById('analysis-title').innerText = data.analysis[region].title;
+        document.getElementById('analysis-text').innerText = data.analysis[region].text;
+    };
+    
+    const updateCompetitorChart = (competitor) => {
+        competitorChart.data.datasets[1].label = competitor;
+        competitorChart.data.datasets[1].data = data.competitors[competitor];
+        competitorChart.update();
+    };
+
+    createInvestmentChart();
+    createSalesChart();
+    createCompetitorChart();
+    
+    document.querySelectorAll('.region-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            document.querySelectorAll('.region-btn').forEach(btn => btn.classList.remove('active', 'btn-primary'));
+            button.classList.add('active', 'btn-primary');
+            updateSalesChart(button.dataset.region);
+        });
+    });
+    document.querySelector('.region-btn[data-region="All"]').classList.add('active', 'btn-primary');
+
+
+    document.getElementById('competitor-select').addEventListener('change', (e) => {
+        updateCompetitorChart(e.target.value);
+    });
+
+    const swotCards = document.querySelectorAll('.swot-card');
+    const swotDetailsContainer = document.getElementById('swot-details');
+    const swotDetailTitle = document.getElementById('swot-detail-title');
+    const swotDetailText = document.getElementById('swot-detail-text');
+
+    swotCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const currentActive = document.querySelector('.swot-card.active');
+            const swotType = card.dataset.swot;
+
+            if (currentActive === card) {
+                card.classList.remove('active');
+                swotDetailsContainer.classList.add('hidden');
+            } else {
+                if(currentActive) currentActive.classList.remove('active');
+                card.classList.add('active');
+                
+                swotDetailTitle.innerText = data.swotDetails[swotType].title;
+                swotDetailText.innerText = data.swotDetails[swotType].text;
+                swotDetailsContainer.classList.remove('hidden');
+            }
+        });
+    });
+
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('section');
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (pageYOffset >= sectionTop - 80) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${current}`) {
+                link.classList.add('active');
+            }
+        });
+    });
+    
+    document.getElementById('mobile-nav').addEventListener('change', function(e) {
+        window.location.hash = e.target.value;
+    });
+
+});
+</script>
+
+</body>
+</html>
