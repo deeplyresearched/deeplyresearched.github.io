@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive Report on Hydrocele</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+<!-- Chosen Palette: Calm Harmony -->
+<!-- Application Structure Plan: The SPA is structured into four logical, audience-driven sections: 'Overview', 'For Clinicians', 'For Patients', and 'Treatment'. This non-linear design replaces the report's sequential format, allowing users to navigate directly to the content most relevant to them. The 'Overview' provides a high-level summary with key stats. 'For Clinicians' uses tabs to layer deep technical information (Pathophysiology, Diagnosis), making complex data digestible. 'For Patients' employs an FAQ/accordion format for accessibility. 'Treatment' uses visual comparisons (cards, charts) to clarify options. This structure was chosen to cater to different user needs simultaneously, enhancing usability and information retention over a simple scrollable document. -->
+<!-- Visualization & Content Choices: 1. Epidemiology Data -> Goal: Compare prevalence -> Viz: Bar Chart -> Interaction: Hover for details -> Justification: Visually contrasts the two main affected age groups effectively -> Library: Chart.js. 2. Pathophysiology -> Goal: Explain core mechanisms -> Viz: Interactive Diagram (HTML/CSS) -> Interaction: Click buttons to toggle view and text -> Justification: Simplifies a complex embryological concept better than text alone. 3. Differential Diagnoses -> Goal: Compare similar conditions -> Viz: Interactive Table -> Interaction: Click row to highlight -> Justification: Facilitates direct comparison of distinguishing features. 4. Treatment Efficacy -> Goal: Compare outcomes -> Viz: Grouped Bar Chart -> Interaction: Hover for exact percentages -> Justification: Provides a clear, quantitative comparison of success vs. recurrence for key treatments -> Library: Chart.js. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+<style>
+body {
+font-family: 'Inter', sans-serif;
+background-color: #F8F7F4;
+color: #333;
+}
+.chart-container {
+position: relative;
+width: 100%;
+max-width: 600px;
+margin-left: auto;
+margin-right: auto;
+height: 300px;
+max-height: 40vh;
+}
+@media (min-width: 768px) {
+.chart-container {
+height: 350px;
+}
+}
+.nav-link {
+transition: color 0.3s, border-bottom-color 0.3s;
+}
+.nav-link.active {
+color: #3B82F6;
+border-bottom-color: #3B82F6;
+}
+.tab-btn.active {
+background-color: #3B82F6;
+color: white;
+}
+.tab-btn {
+transition: background-color 0.3s, color 0.3s;
+}
+.accordion-content {
+max-height: 0;
+overflow: hidden;
+transition: max-height 0.5s ease-in-out;
+}
+
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+</style>
+</head>
+<body class="antialiased">
+
+<header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+<nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+<h1 class="text-xl md:text-2xl font-bold text-gray-800">Interactive Guide to <span class="text-blue-600">Hydrocele</span></h1>
+<div class="hidden md:flex space-x-8">
+<a href="#overview" class="nav-link text-gray-600 hover:text-blue-600 border-b-2 border-transparent pb-1">Overview</a>
+<a href="#clinicians" class="nav-link text-gray-600 hover:text-blue-600 border-b-2 border-transparent pb-1">For Clinicians</a>
+<a href="#patients" class="nav-link text-gray-600 hover:text-blue-600 border-b-2 border-transparent pb-1">For Patients</a>
+<a href="#treatment" class="nav-link text-gray-600 hover:text-blue-600 border-b-2 border-transparent pb-1">Treatment</a>
+</div>
+<button id="mobile-menu-btn" class="md:hidden focus:outline-none">
+<div class="w-6 h-0.5 bg-gray-600 mb-1.5"></div>
+<div class="w-6 h-0.5 bg-gray-600"></div>
+</button>
+</nav>
+<div id="mobile-menu" class="hidden md:hidden px-6 pb-4 flex flex-col space-y-4">
+<a href="#overview" class="nav-link text-gray-600 hover:text-blue-600">Overview</a>
+<a href="#clinicians" class="nav-link text-gray-600 hover:text-blue-600">For Clinicians</a>
+<a href="#patients" class="nav-link text-gray-600 hover:text-blue-600">For Patients</a>
+<a href="#treatment" class="nav-link text-gray-600 hover:text-blue-600">Treatment</a>
+</div>
+</header>
+
+<main class="container mx-auto px-6 py-8 md:py-12">
+
+<section id="overview" class="mb-16 scroll-mt-20">
+<h2 class="text-3xl font-bold text-center mb-2 text-gray-800">Understanding Hydrocele at a Glance</h2>
+<p class="text-center text-gray-600 max-w-3xl mx-auto mb-10">A hydrocele is a common, typically harmless collection of fluid around a testicle, causing scrotal swelling. This section provides a high-level summary of the condition, its prevalence, and the primary populations it affects.</p>
+<div class="grid md:grid-cols-2 gap-8 items-center">
+<div class="bg-white p-6 rounded-lg shadow-md">
+<h3 class="text-xl font-semibold mb-3 text-blue-600">What is a Hydrocele? An Analogy</h3>
+<p class="text-gray-700">Imagine a small, water-filled balloon inside the scrotum. This balloon surrounds the testicle, causing a smooth, painless swelling. In newborns, it's often due to a temporary opening connecting to the abdomen. In adults, it's usually caused by an imbalance in the scrotum's natural fluid production and drainage.</p>
+</div>
+
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-blue-100 text-blue-800 p-4 rounded-lg text-center shadow">
+<div class="text-3xl font-bold">~6%</div>
+<p class="text-sm">of Male Newborns Affected</p>
+</div>
+<div class="bg-indigo-100 text-indigo-800 p-4 rounded-lg text-center shadow">
+<div class="text-3xl font-bold">~1%</div>
+<p class="text-sm">Prevalence in Adult Men</p>
+</div>
+<div class="bg-green-100 text-green-800 p-4 rounded-lg text-center shadow col-span-2">
+<div class="text-3xl font-bold">>90%</div>
+<p class="text-sm">of Infant Cases Resolve Spontaneously</p>
+</div>
+</div>
+</div>
+
+<div class="mt-12 bg-white p-6 rounded-lg shadow-md">
+<h3 class="text-xl font-semibold text-center mb-4">Bimodal Age Distribution</h3>
+<p class="text-center text-gray-600 max-w-2xl mx-auto mb-6">Hydrocele prevalence peaks at two distinct life stages: in infancy, due to congenital factors, and again in men over 40, often from acquired causes.</p>
+<div class="chart-container">
+<canvas id="epidemiologyChart"></canvas>
+</div>
+</div>
+</section>
+<hr class="my-16 border-gray-200">
+
+<section id="clinicians" class="mb-16 scroll-mt-20">
+<h2 class="text-3xl font-bold text-center mb-2 text-gray-800">Clinical Deep Dive</h2>
+<p class="text-center text-gray-600 max-w-3xl mx-auto mb-10">This section provides detailed clinical information for healthcare professionals, covering the underlying pathophysiology, diagnostic workup, and key differential diagnoses for scrotal swelling.</p>
+
+<div class="bg-white rounded-lg shadow-md p-6">
+<div class="flex justify-center border-b mb-6">
+<button class="tab-btn px-4 py-2 font-semibold rounded-t-lg active" data-tab="pathophysiology">Pathophysiology</button>
+<button class="tab-btn px-4 py-2 font-semibold rounded-t-lg" data-tab="diagnosis">Diagnosis</button>
+<button class="tab-btn px-4 py-2 font-semibold rounded-t-lg" data-tab="differentials">Differential Diagnoses</button>
+</div>
+
+<div id="pathophysiology" class="tab-content">
+<h3 class="text-xl font-semibold mb-4 text-center">Communicating vs. Non-Communicating Hydrocele</h3>
+<div class="grid md:grid-cols-2 gap-8 items-start">
+<div>
+<div class="flex justify-center space-x-4 mb-4">
+<button id="commBtn" class="px-3 py-1 text-sm font-medium bg-blue-500 text-white rounded-full shadow-sm">Communicating</button>
+<button id="nonCommBtn" class="px-3 py-1 text-sm font-medium bg-gray-200 text-gray-700 rounded-full">Non-Communicating</button>
+</div>
+<div id="diagram-container" class="relative w-full max-w-xs mx-auto aspect-square border-2 border-gray-200 rounded-lg p-4 flex items-center justify-center bg-gray-50">
+<div class="text-center">
+<div class="text-xs text-gray-500">Peritoneal Cavity</div>
+<div id="pv-channel" class="w-1 h-12 bg-blue-300 mx-auto transition-all duration-500"></div>
+<div class="w-24 h-24 bg-blue-200 rounded-full flex items-center justify-center relative">
+<div class="w-10 h-14 bg-blue-400 rounded-lg"></div>
+<div class="absolute text-xs font-semibold text-white">Testis</div>
+</div>
+<div class="text-xs text-gray-500 mt-1">Tunica Vaginalis</div>
+</div>
+</div>
+</div>
+<div id="patho-text-content" class="mt-4 md:mt-0">
+<!-- JS will populate this -->
+</div>
+</div>
+</div>
+
+<div id="diagnosis" class="tab-content hidden">
+<h3 class="text-xl font-semibold mb-6 text-center">Diagnostic Pathway</h3>
+<div class="space-y-4">
+<div class="flex items-center">
+<div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg">1</div>
+<div class="ml-4 p-4 bg-gray-100 rounded-lg flex-1">
+<h4 class="font-semibold">Clinical History & Physical Exam</h4>
+<p class="text-sm text-gray-600">Assess onset, duration, pain, and size variation. Palpate for consistency and perform transillumination.</p>
+</div>
+</div>
+<div class="h-8 w-px bg-gray-300 ml-5"></div>
+<div class="flex items-center">
+<div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg">2</div>
+<div class="ml-4 p-4 bg-gray-100 rounded-lg flex-1">
+<h4 class="font-semibold">Key Finding: Transillumination</h4>
+<p class="text-sm text-gray-600">A simple hydrocele transilluminates brightly. A solid mass (tumor) or blood (hematocele) will not.</p>
+</div>
+</div>
+<div class="h-8 w-px bg-gray-300 ml-5"></div>
+<div class="flex items-center">
+<div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg">3</div>
+<div class="ml-4 p-4 bg-gray-100 rounded-lg flex-1">
+<h4 class="font-semibold">Scrotal Ultrasonography (Gold Standard)</h4>
+<p class="text-sm text-gray-600">Indicated if diagnosis is uncertain, testis is non-palpable, or tumor is suspected. Confirms anechoic fluid and assesses testicular parenchyma.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="differentials" class="tab-content hidden">
+<h3 class="text-xl font-semibold mb-4 text-center">Comparing Scrotal Swellings</h3>
+<p class="text-center text-gray-600 max-w-2xl mx-auto mb-6">Click on a row to highlight a condition and compare its key features against others. Accurate differentiation is critical to avoid misdiagnosing a urological emergency.</p>
+<div class="overflow-x-auto">
+<table id="diff-table" class="w-full text-sm text-left">
+<thead class="bg-gray-100 text-gray-700 uppercase text-xs">
+<tr>
+<th class="px-4 py-3">Condition</th>
+<th class="px-4 py-3">Key Feature</th>
+<th class="px-4 py-3">Transilluminates?</th>
+<th class="px-4 py-3">Ultrasound Finding</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b hover:bg-blue-50 cursor-pointer">
+<td class="px-4 py-3 font-medium">Hydrocele</td>
+<td class="px-4 py-3">Painless, cystic, can get above swelling</td>
+<td class="px-4 py-3 text-green-600 font-semibold">Yes</td>
+<td class="px-4 py-3">Anechoic fluid around normal testis</td>
+</tr>
+<tr class="border-b hover:bg-blue-50 cursor-pointer">
+<td class="px-4 py-3 font-medium">Inguinal Hernia</td>
+<td class="px-4 py-3">Reducible, cough impulse, can't get above</td>
+<td class="px-4 py-3">Variable</td>
+<td class="px-4 py-3">Bowel loops/omentum in scrotum</td>
+</tr>
+<tr class="border-b hover:bg-red-50 cursor-pointer">
+<td class="px-4 py-3 font-medium text-red-600">Testicular Torsion</td>
+<td class="px-4 py-3">Acute severe pain, high-riding testis</td>
+<td class="px-4 py-3 text-red-600 font-semibold">No</td>
+<td class="px-4 py-3">Absent blood flow on Doppler</td>
+</tr>
+<tr class="border-b hover:bg-red-50 cursor-pointer">
+<td class="px-4 py-3 font-medium text-red-600">Testicular Tumor</td>
+<td class="px-4 py-3">Painless, hard, irregular mass in testis</td>
+<td class="px-4 py-3 text-red-600 font-semibold">No</td>
+<td class="px-4 py-3">Solid, hypoechoic intratesticular mass</td>
+</tr>
+<tr class="border-b hover:bg-blue-50 cursor-pointer">
+<td class="px-4 py-3 font-medium">Epididymitis</td>
+<td class="px-4 py-3">Painful, fever, tender epididymis</td>
+<td class="px-4 py-3">No</td>
+<td class="px-4 py-3">Enlarged, hyperemic epididymis</td>
+</tr>
+<tr class="hover:bg-blue-50 cursor-pointer">
+<td class="px-4 py-3 font-medium">Spermatocele</td>
+<td class="px-4 py-3">Painless cyst, separate from testis</td>
+<td class="px-4 py-3 text-green-600 font-semibold">Yes</td>
+<td class="px-4 py-3">Cyst in epididymal head</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<hr class="my-16 border-gray-200">
+
+<section id="patients" class="mb-16 scroll-mt-20">
+<h2 class="text-3xl font-bold text-center mb-2 text-gray-800">Information for Patients & Families</h2>
+<p class="text-center text-gray-600 max-w-3xl mx-auto mb-10">This section provides clear, easy-to-understand answers to common questions about hydroceles, helping you know when to seek care and what to expect.</p>
+
+<div class="grid md:grid-cols-2 gap-8">
+<div class="bg-white p-6 rounded-lg shadow-md">
+<h3 class="text-xl font-semibold mb-4 text-red-600">When to Seek Immediate Medical Care</h3>
+<p class="mb-4 text-gray-700">While most hydroceles are not dangerous, you should see a doctor right away if scrotal swelling is accompanied by any of the following "red flag" symptoms:</p>
+<ul class="space-y-3">
+<li class="flex items-start"><span class="text-red-500 font-bold mr-2 mt-1">&#10071;</span><span><strong>Sudden, severe pain</strong> in the scrotum, which could signal testicular torsion.</span></li>
+<li class="flex items-start"><span class="text-red-500 font-bold mr-2 mt-1">&#10071;</span><span>A <strong>firm or hard lump</strong> felt within the testicle itself, which requires evaluation to rule out a tumor.</span></li>
+<li class="flex items-start"><span class="text-red-500 font-bold mr-2 mt-1">&#10071;</span><span><strong>Fever, nausea, or vomiting</strong> along with the swelling, suggesting infection or an incarcerated hernia.</span></li>
+</ul>
+</div>
+<div id="faq-container" class="space-y-3">
+<div class="bg-white rounded-lg shadow-md">
+<button class="accordion-btn w-full text-left p-4 font-semibold flex justify-between items-center">
+Is a hydrocele dangerous?
+<span class="transform transition-transform duration-300">&#9662;</span>
+</button>
+<div class="accordion-content px-4 pb-4 text-gray-700">
+A simple hydrocele is not dangerous. However, it's essential to have a doctor diagnose it to rule out other serious conditions that can cause swelling, like an inguinal hernia or a testicular tumor.
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-md">
+<button class="accordion-btn w-full text-left p-4 font-semibold flex justify-between items-center">
+Will a hydrocele affect my fertility?
+<span class="transform transition-transform duration-300">&#9662;</span>
+</button>
+<div class="accordion-content px-4 pb-4 text-gray-700">
+Generally, no. A hydrocele does not usually impact a man's ability to have children. In very rare cases, an extremely large, untreated hydrocele could cause pressure that affects the testicle, but this is uncommon.
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-md">
+<button class="accordion-btn w-full text-left p-4 font-semibold flex justify-between items-center">
+Does my baby need surgery for his hydrocele?
+<span class="transform transition-transform duration-300">&#9662;</span>
+</button>
+<div class="accordion-content px-4 pb-4 text-gray-700">
+Probably not. Most hydroceles in infants disappear on their own without any treatment by the time they are 1 or 2 years old. Surgery is usually only considered if it persists beyond that age or is very large.
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-md">
+<button class="accordion-btn w-full text-left p-4 font-semibold flex justify-between items-center">
+What is recovery from hydrocele surgery like?
+<span class="transform transition-transform duration-300">&#9662;</span>
+</button>
+<div class="accordion-content px-4 pb-4 text-gray-700">
+Recovery is usually quick. You can expect some swelling, bruising, and mild discomfort for a few weeks. You will need to avoid heavy lifting and strenuous activity for about 2 to 4 weeks to allow the area to heal properly.
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<hr class="my-16 border-gray-200">
+
+<section id="treatment" class="scroll-mt-20">
+<h2 class="text-3xl font-bold text-center mb-2 text-gray-800">Comparing Treatment Options</h2>
+<p class="text-center text-gray-600 max-w-3xl mx-auto mb-10">Management depends on the patient's age, symptoms, and the type of hydrocele. This section compares the main therapeutic approaches, from conservative waiting to definitive surgery.</p>
+
+<div class="grid md:grid-cols-3 gap-8 mb-12">
+<div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-gray-400">
+<h3 class="text-xl font-semibold mb-2">Watchful Waiting</h3>
+<p class="text-sm text-gray-600 mb-4"><strong>Best for:</strong> Infants & asymptomatic adults.</p>
+<p class="text-gray-700">The standard of care for most newborns, as the condition usually resolves by age 2. Also an option for adults with small, non-bothersome hydroceles.</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-yellow-500">
+<h3 class="text-xl font-semibold mb-2">Aspiration & Sclerotherapy</h3>
+<p class="text-sm text-gray-600 mb-4"><strong>Best for:</strong> Poor surgical candidates.</p>
+<p class="text-gray-700">A minimally invasive procedure to drain fluid and inject a scarring agent. Reserved for those who wish to avoid surgery, but recurrence is common.</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-green-500">
+<h3 class="text-xl font-semibold mb-2">Hydrocelectomy (Surgery)</h3>
+<p class="text-sm text-gray-600 mb-4"><strong>Best for:</strong> Symptomatic or persistent cases.</p>
+<p class="text-gray-700">The gold standard treatment. The surgeon removes or repairs the hydrocele sac, providing a definitive cure with a very low chance of recurrence.</p>
+</div>
+</div>
+
+<div class="bg-white p-6 rounded-lg shadow-md">
+<h3 class="text-xl font-semibold text-center mb-4">Treatment Efficacy: Surgery vs. Sclerotherapy</h3>
+<p class="text-center text-gray-600 max-w-2xl mx-auto mb-6">Surgical hydrocelectomy offers a significantly higher success rate and a much lower rate of recurrence compared to aspiration with sclerotherapy.</p>
+<div class="chart-container">
+<canvas id="treatmentChart"></canvas>
+</div>
+</div>
+</section>
+
+</main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+
+<footer class="bg-gray-800 text-white mt-16">
+<div class="container mx-auto px-6 py-8 text-center">
+<p class="mb-2">A Comprehensive Urological Report on Hydrocele: An Interactive Visualization</p>
+<p class="text-xs text-gray-400">Disclaimer: This application is for educational and informational purposes only and does not constitute medical advice. The information provided is not a substitute for professional care. If you have or suspect you may have a health problem, you should consult your healthcare provider.</p>
+</div>
+</footer>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+const mobileMenu = document.getElementById('mobile-menu');
+mobileMenuBtn.addEventListener('click', () => {
+mobileMenu.classList.toggle('hidden');
+});
+
+const navLinks = document.querySelectorAll('.nav-link');
+const sections = document.querySelectorAll('section');
+
+const observerOptions = {
+root: null,
+rootMargin: '0px',
+threshold: 0.4
+};
+
+const observer = new IntersectionObserver((entries) => {
+entries.forEach(entry => {
+if (entry.isIntersecting) {
+navLinks.forEach(link => {
+link.classList.remove('active');
+if (link.getAttribute('href').substring(1) === entry.target.id) {
+link.classList.add('active');
+}
+});
+}
+});
+}, observerOptions);
+
+sections.forEach(section => {
+observer.observe(section);
+});
+navLinks.forEach(link => {
+link.addEventListener('click', () => {
+if (mobileMenu.classList.contains('hidden') === false) {
+mobileMenu.classList.add('hidden');
+}
+});
+});
+
+const tabs = document.querySelectorAll('.tab-btn');
+const tabContents = document.querySelectorAll('.tab-content');
+
+tabs.forEach(tab => {
+tab.addEventListener('click', () => {
+tabs.forEach(t => t.classList.remove('active'));
+tab.classList.add('active');
+
+tabContents.forEach(content => {
+content.classList.add('hidden');
+});
+document.getElementById(tab.dataset.tab).classList.remove('hidden');
+});
+});
+
+const diffTableRows = document.querySelectorAll('#diff-table tbody tr');
+diffTableRows.forEach(row => {
+row.addEventListener('click', () => {
+diffTableRows.forEach(r => r.style.backgroundColor = '');
+row.style.backgroundColor = '#EFF6FF';
+});
+});
+
+const accordionBtns = document.querySelectorAll('.accordion-btn');
+accordionBtns.forEach(btn => {
+btn.addEventListener('click', () => {
+const content = btn.nextElementSibling;
+const arrow = btn.querySelector('span');
+if (content.style.maxHeight) {
+content.style.maxHeight = null;
+arrow.style.transform = 'rotate(0deg)';
+} else {
+document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = null);
+document.querySelectorAll('.accordion-btn span').forEach(a => a.style.transform = 'rotate(0deg)');
+content.style.maxHeight = content.scrollHeight + "px";
+arrow.style.transform = 'rotate(180deg)';
+}
+});
+});
+
+const pathoText = {
+communicating: {
+title: "Communicating Hydrocele (Congenital)",
+text: "Arises from a failure of the processus vaginalis (a tube connecting the abdomen to the scrotum) to close after testicular descent. This allows peritoneal fluid to flow into the scrotum. The swelling size often fluctuates, increasing with activity or crying and decreasing with rest."
+},
+nonCommunicating: {
+title: "Non-Communicating Hydrocele (Acquired)",
+text: "Occurs when the processus vaginalis is closed, but there's an imbalance between fluid secretion and absorption by the tunica vaginalis. This is often idiopathic or secondary to trauma, infection, or surgery. The swelling size is generally constant."
+}
+};
+
+const commBtn = document.getElementById('commBtn');
+const nonCommBtn = document.getElementById('nonCommBtn');
+const pvChannel = document.getElementById('pv-channel');
+const pathoTextContent = document.getElementById('patho-text-content');
+
+function updatePathoView(type) {
+const content = pathoText[type];
+pathoTextContent.innerHTML = `<h4 class="font-semibold text-lg mb-2">${content.title}</h4><p class="text-gray-700">${content.text}</p>`;
+if (type === 'communicating') {
+pvChannel.style.height = '3rem';
+pvChannel.style.backgroundColor = '#93C5FD';
+commBtn.classList.add('bg-blue-500', 'text-white');
+commBtn.classList.remove('bg-gray-200', 'text-gray-700');
+nonCommBtn.classList.add('bg-gray-200', 'text-gray-700');
+nonCommBtn.classList.remove('bg-blue-500', 'text-white');
+} else {
+pvChannel.style.height = '0.25rem';
+pvChannel.style.backgroundColor = '#D1D5DB';
+nonCommBtn.classList.add('bg-blue-500', 'text-white');
+nonCommBtn.classList.remove('bg-gray-200', 'text-gray-700');
+commBtn.classList.add('bg-gray-200', 'text-gray-700');
+commBtn.classList.remove('bg-blue-500', 'text-white');
+}
+}
+
+commBtn.addEventListener('click', () => updatePathoView('communicating'));
+nonCommBtn.addEventListener('click', () => updatePathoView('nonCommunicating'));
+updatePathoView('communicating');
+
+const epiCtx = document.getElementById('epidemiologyChart').getContext('2d');
+new Chart(epiCtx, {
+type: 'bar',
+data: {
+labels: ['Newborns (0-1 yr)', 'Children (1-12 yrs)', 'Adults (>40 yrs)'],
+datasets: [{
+label: 'Prevalence of Hydrocele',
+data: [6, 0.34, 1],
+backgroundColor: ['#60A5FA', '#A5B4FC', '#3B82F6'],
+borderColor: ['#3B82F6', '#6D28D9', '#1D4ED8'],
+borderWidth: 1
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+plugins: {
+legend: { display: false },
+tooltip: {
+callbacks: {
+label: function(context) {
+return `Prevalence: ${context.raw}%`;
+}
+}
+},
+title: {
+display: false,
+text: 'Prevalence by Age Group'
+}
+},
+scales: {
+y: {
+beginAtZero: true,
+title: {
+display: true,
+text: 'Prevalence (%)'
+}
+}
+}
+}
+});
+
+const treatCtx = document.getElementById('treatmentChart').getContext('2d');
+new Chart(treatCtx, {
+type: 'bar',
+data: {
+labels: ['Aspiration & Sclerotherapy', 'Hydrocelectomy (Surgery)'],
+datasets: [
+{
+label: 'Success Rate',
+data: [84, 95],
+backgroundColor: '#4ADE80',
+},
+{
+label: 'Recurrence Rate',
+data: [44, 5],
+backgroundColor: '#F87171',
+}
+]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+scales: {
+y: {
+beginAtZero: true,
+max: 100,
+title: {
+display: true,
+text: 'Percentage (%)'
+}
+}
+},
+plugins: {
+legend: {
+position: 'top',
+},
+tooltip: {
+callbacks: {
+label: function(context) {
+return `${context.dataset.label}: ${context.raw}%`;
+}
+}
+}
+}
+}
+});
+});
+</script>
+</body>
+</html>
+
