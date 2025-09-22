@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Understanding Low Platelets in Dengue</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+<!-- Chosen Palette: Calming Neutrals with Soft Blue and Green Accents -->
+<!-- Application Structure Plan: A thematic, single-page application with a sticky top navigation bar for easy access to key sections: 1) "Meet the Crew" (Platelet Basics), 2) "How They Work" (Clotting Process), 3) "The Dengue Attack" (Triple Threat), 4) "The Fever Journey" (Interactive Timeline), 5) "AI Support" (Gemini-powered Q&A and Diet Tips), and 6) "Hospital Care" (Treatment). This structure breaks down a complex and stressful topic into digestible, non-linear parts. The addition of the AI Support section provides a dynamic, personalized layer for users to get specific questions answered and receive actionable advice, enhancing the app's utility. -->
+<!-- Visualization & Content Choices: 
+- Report Info: Platelet characteristics -> Goal: Inform -> Viz/Presentation: Icon-based cards -> Interaction: None, static display -> Justification: Quickly presents key facts in a visually appealing, easy-to-scan format. Method: HTML/Tailwind.
+- Report Info: Clotting process (Adhesion, Aggregation, Clot) -> Goal: Explain a process -> Viz/Presentation: Step-by-step interactive diagram -> Interaction: Clicking on a step reveals its description -> Justification: Breaks a complex sequence into simple, manageable steps. Method: HTML/Tailwind/JS.
+- Report Info: Dengue's three-pronged attack -> Goal: Compare/Explain -> Viz/Presentation: Three-column layout with icons -> Interaction: None, static display -> Justification: Clearly presents the three simultaneous attacks for easy comparison. Method: HTML/Tailwind.
+- Report Info: Platelet count journey through Dengue phases -> Goal: Show change over time -> Viz/Presentation: Interactive line chart -> Interaction: Hover for daily data; click buttons to highlight phases -> Justification: Visualizes the most critical data point into a predictable, reassuring story. Library: Chart.js (Canvas).
+- Gemini Feature: Dengue Q&A -> Goal: Provide personalized info -> Viz/Presentation: Input field and response area -> Interaction: User types a question, clicks a button, and receives a generated answer -> Justification: Addresses specific user concerns not covered by static content. Method: JS Fetch to Gemini API.
+- Gemini Feature: Diet Tips -> Goal: Provide actionable advice -> Viz/Presentation: Button and response area -> Interaction: User clicks a button to get a generated list of food/drink suggestions -> Justification: Offers practical, immediate help for patient care. Method: JS Fetch to Gemini API.
+- Report Info: Supportive care and transfusions -> Goal: Inform/Reassure -> Viz/Presentation: Simple two-panel text layout -> Interaction: None -> Justification: Provides clear answers to common treatment questions. Method: HTML/Tailwind.
+-->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+<style>
+body {
+font-family: 'Inter', sans-serif;
+background-color: #f8f7f4;
+color: #3d405b;
+}
+.nav-link {
+transition: all 0.3s ease;
+border-bottom: 2px solid transparent;
+}
+.nav-link:hover, .nav-link.active {
+color: #3d405b;
+border-bottom-color: #81b29a;
+}
+.phase-button.active {
+background-color: #3d405b;
+color: #ffffff;
+}
+.chart-container {
+position: relative;
+width: 100%;
+max-width: 800px;
+margin-left: auto;
+margin-right: auto;
+height: 300px;
+max-height: 50vh;
+}
+@media (min-width: 768px) {
+.chart-container {
+height: 400px;
+}
+}
+.step-item {
+cursor: pointer;
+transition: all 0.3s ease;
+border-left: 4px solid #e0e0e0;
+}
+.step-item.active {
+background-color: #eaf4f0;
+border-left-color: #81b29a;
+}
+.loader {
+border: 4px solid #f3f3f3;
+border-top: 4px solid #3d405b;
+border-radius: 50%;
+width: 32px;
+height: 32px;
+animation: spin 1s linear infinite;
+}
+@keyframes spin {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+.gemini-response ul {
+list-style-type: disc;
+padding-left: 20px;
+}
+.gemini-response li {
+margin-bottom: 8px;
+}
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+</style>
+</head>
+<body class="antialiased">
+
+<header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+<nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex items-center justify-between h-16">
+<div class="flex-shrink-0">
+<h1 class="text-xl font-bold text-[#3d405b]">Dengue & Platelets: A Guide</h1>
+</div>
+<div class="hidden md:block">
+<div class="ml-10 flex items-baseline space-x-4">
+<a href="#crew" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-500">Meet the Crew</a>
+<a href="#action" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-500">How They Work</a>
+<a href="#attack" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-500">The Dengue Attack</a>
+<a href="#journey" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-500">The Fever Journey</a>
+<a href="#ai-support" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-500">AI Support</a>
+<a href="#care" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-500">Hospital Care</a>
+</div>
+</div>
+<div class="md:hidden">
+<select id="mobile-nav" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+<option value="#crew">Meet the Crew</option>
+<option value="#action">How They Work</option>
+<option value="#attack">The Dengue Attack</option>
+<option value="#journey">The Fever Journey</option>
+<option value="#ai-support">AI Support</option>
+<option value="#care">Hospital Care</option>
+</select>
+</div>
+</div>
+</nav>
+</header>
+
+<main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+<section class="text-center mb-16">
+<h2 class="text-3xl md:text-4xl font-bold text-[#3d405b] mb-4">Understanding Your Body's First Responders</h2>
+<p class="max-w-3xl mx-auto text-lg text-gray-600">When a loved one has Dengue, hearing about "low platelets" can be scary. This guide uses a simple analogy to help you understand what's happening: think of your blood vessels as a highway system, and your platelets as the **Emergency Road Repair Crew**.</p>
+</section>
+
+<section id="crew" class="mb-16 scroll-mt-20">
+<h3 class="text-2xl md:text-3xl font-bold text-center mb-2 text-[#3d405b]">Meet the Emergency Repair Crew</h3>
+<p class="text-center text-gray-600 mb-10 max-w-2xl mx-auto">Your platelets are a highly specialized crew constantly patrolling the highways of your bloodstream. This section introduces the key facts about these essential first responders.</p>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+<div class="bg-white p-6 rounded-lg shadow-md text-center">
+<div class="text-4xl mb-4">🔬</div>
+<h4 class="font-bold text-lg mb-2">What They Are</h4>
+<p class="text-gray-600 text-sm">Tiny, colorless cell fragments, not complete cells. They are the smallest type of blood cell, designed to be nimble first responders.</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-md text-center">
+<div class="text-4xl mb-4">🏭</div>
+<h4 class="font-bold text-lg mb-2">The Headquarters</h4>
+<p class="text-gray-600 text-sm">Produced in the bone marrow, the body's central factory for all blood cells. New crews are constantly being dispatched.</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-md text-center">
+<div class="text-4xl mb-4">🐙</div>
+<h4 class="font-bold text-lg mb-2">Their Transformation</h4>
+<p class="text-gray-600 text-sm">Normally smooth discs, but when an injury occurs, they become sticky and grow tentacles to grab onto the damaged area.</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-md text-center">
+<div class="text-4xl mb-4">📊</div>
+<h4 class="font-bold text-lg mb-2">Normal Crew Strength</h4>
+<p class="text-gray-600 text-sm">A healthy person has 150,000 to 450,000 platelets per microliter of blood, ensuring a full-strength fleet is always on patrol.</p>
+</div>
+</div>
+</section>
+
+<section id="action" class="mb-16 scroll-mt-20">
+<h3 class="text-2xl md:text-3xl font-bold text-center mb-2 text-[#3d405b]">The Repair Crew in Action</h3>
+<p class="text-center text-gray-600 mb-10 max-w-2xl mx-auto">Platelets perform a rapid, three-step process to stop bleeding, much like a repair crew fixing a pothole. Click on each step below to learn how they create a natural bandage to seal injuries.</p>
+<div class="flex flex-col md:flex-row bg-white rounded-lg shadow-md overflow-hidden">
+<div class="md:w-1/3">
+<div id="step1" class="step-item p-6 active">
+<h4 class="font-bold text-lg">Phase 1: The First Responders Arrive</h4>
+<p class="text-sm text-gray-500">Platelets stick to the damaged vessel wall.</p>
+</div>
+<div id="step2" class="step-item p-6">
+<h4 class="font-bold text-lg">Phase 2: Calling for Backup</h4>
+<p class="text-sm text-gray-500">Activated platelets call more crews to the scene.</p>
+</div>
+<div id="step3" class="step-item p-6">
+<h4 class="font-bold text-lg">Phase 3: The Permanent Patch</h4>
+<p class="text-sm text-gray-500">A strong mesh is formed to create a stable clot.</p>
+</div>
+</div>
+<div class="md:w-2/3 p-8 bg-gray-50 flex items-center">
+<div id="step-content">
+<h5 class="font-bold text-xl mb-3 text-[#81b29a]">Adhesion: The First Responders Arrive</h5>
+<p class="text-gray-700">When a blood vessel is damaged, it sends out an emergency signal. The nearest platelets on patrol immediately rush to the scene. Using special "grappling hooks" on their surface, they stick directly to the edges of the damaged area, forming the first line of defense.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section id="attack" class="mb-16 scroll-mt-20">
+<h3 class="text-2xl md:text-3xl font-bold text-center mb-2 text-[#3d405b]">The Dengue Virus's Triple Threat</h3>
+<p class="text-center text-gray-600 mb-10 max-w-2xl mx-auto">The platelet count drops so fast in Dengue because the virus launches a coordinated, three-pronged attack on the repair crew. It simultaneously cuts off supply, destroys existing crews, and tricks them into being removed from duty early.</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="bg-white p-6 rounded-lg shadow-md">
+<div class="text-4xl mb-4 text-center">🚫</div>
+<h4 class="font-bold text-lg mb-2 text-center">Attack 1: Shutting Down HQ</h4>
+<p class="text-gray-600 text-sm">The virus invades the bone marrow and sabotages the machinery that produces new platelets. This cuts off the supply of reinforcements when they are needed most.</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-md">
+<div class="text-4xl mb-4 text-center">🎯</div>
+<h4 class="font-bold text-lg mb-2 text-center">Attack 2: Mistaken Identity</h4>
+<p class="text-gray-600 text-sm">The body's own immune system, in its fight against the virus, mistakenly identifies healthy platelets as enemies. It "tags" them for destruction, a case of friendly fire that depletes the crew.</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-md">
+<div class="text-4xl mb-4 text-center">📢</div>
+<h4 class="font-bold text-lg mb-2 text-center">Attack 3: Barrage of False Alarms</h4>
+<p class="text-gray-600 text-sm">The virus sends out false emergency signals that trick platelets into activating unnecessarily. These exhausted, clumped-up crews are then cleared from the bloodstream as if they were old and broken down.</p>
+</div>
+</div>
+</section>
+
+<section id="journey" class="mb-16 scroll-mt-20">
+<h3 class="text-2xl md:text-3xl font-bold text-center mb-2 text-[#3d405b]">The Fever Journey: A Predictable Path</h3>
+<p class="text-center text-gray-600 mb-10 max-w-2xl mx-auto">The platelet count in Dengue follows a predictable pattern of falling and then rising. This chart shows a typical 10-day journey. Understanding this timeline can help reduce anxiety by showing that the drop is an expected part of the process. Click the buttons to learn about each phase.</p>
+<div class="bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-md">
+<div class="chart-container">
+<canvas id="plateletChart"></canvas>
+</div>
+<div class="mt-8 flex flex-wrap justify-center gap-2 md:gap-4">
+<button id="btn-febrile" class="phase-button active px-4 py-2 text-sm font-semibold bg-gray-200 text-gray-800 rounded-full transition">Febrile Phase (Days 1-3)</button>
+<button id="btn-critical" class="phase-button px-4 py-2 text-sm font-semibold bg-gray-200 text-gray-800 rounded-full transition">Critical Phase (Days 4-7)</button>
+<button id="btn-recovery" class="phase-button px-4 py-2 text-sm font-semibold bg-gray-200 text-gray-800 rounded-full transition">Recovery Phase (Days 8-10+)</button>
+</div>
+<div id="phase-info" class="mt-6 p-6 bg-blue-50/50 border-l-4 border-blue-400 rounded-r-lg">
+<h4 id="phase-title" class="font-bold text-lg text-blue-800 mb-2">Febrile Phase: The Battle Begins</h4>
+<p id="phase-description" class="text-gray-700">During the first few days of high fever, the platelet count is usually stable or may just begin a slow decline. In our analogy, the first reports of sabotage are coming in, but the repair crew strength is still near normal.</p>
+</div>
+</div>
+</section>
+<section id="ai-support" class="mb-16 scroll-mt-20">
+<h3 class="text-2xl md:text-3xl font-bold text-center mb-2 text-[#3d405b]">AI-Powered Support</h3>
+<p class="text-center text-gray-600 mb-10 max-w-2xl mx-auto">Get personalized information and practical tips to help support your loved one's recovery. These tools use AI to provide helpful, easy-to-understand responses.</p>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<div class="bg-white p-6 rounded-lg shadow-md">
+<h4 class="font-bold text-xl mb-3 text-center text-[#81b29a]">Recovery Diet Helper</h4>
+<p class="text-center text-gray-600 text-sm mb-4">Click the button below to get a list of recommended foods and drinks that are gentle on the stomach and help with hydration during Dengue recovery.</p>
+<div class="text-center">
+<button id="get-diet-tips" class="bg-[#3d405b] text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90 transition">✨ Get Recovery Diet Tips</button>
+</div>
+<div id="diet-tips-loader" class="hidden justify-center mt-4"><div class="loader"></div></div>
+<div id="diet-tips-response" class="mt-4 text-sm text-gray-700 gemini-response"></div>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-md">
+<h4 class="font-bold text-xl mb-3 text-center text-[#e07a5f]">Ask a Question</h4>
+<p class="text-center text-gray-600 text-sm mb-4">Have a specific question? Type it below or use a suggestion. Please remember this is for informational purposes and not a substitute for professional medical advice.</p>
+<div class="flex flex-wrap gap-2 justify-center mb-4">
+<button class="preset-question bg-gray-200 text-xs text-gray-700 px-3 py-1 rounded-full hover:bg-gray-300">What are the warning signs?</button>
+<button class="preset-question bg-gray-200 text-xs text-gray-700 px-3 py-1 rounded-full hover:bg-gray-300">How can I help at home?</button>
+</div>
+<div class="flex gap-2">
+<input type="text" id="user-question" class="flex-grow border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="e.g., Why is hydration important?">
+<button id="ask-question" class="bg-[#3d405b] text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90 transition">Ask</button>
+</div>
+<div id="qa-loader" class="hidden justify-center mt-4"><div class="loader"></div></div>
+<div id="qa-response" class="mt-4 text-sm text-gray-700 gemini-response"></div>
+</div>
+</div>
+</section>
+
+<section id="care" class="scroll-mt-20">
+<h3 class="text-2xl md:text-3xl font-bold text-center mb-2 text-[#3d405b]">How the Medical Team Provides Support</h3>
+<p class="text-center text-gray-600 mb-10 max-w-2xl mx-auto">There is no specific cure for Dengue, so treatment is "supportive." This means the medical team's goal is to manage symptoms and support the body's functions while the immune system defeats the virus. Here are the two key aspects of hospital care.</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="bg-white p-8 rounded-lg shadow-md">
+<h4 class="font-bold text-xl mb-3 text-[#81b29a]">The Core Strategy: Fluids & Monitoring</h4>
+<p class="text-gray-600 mb-4">While the low platelet count is a concern, the biggest danger is plasma leakage, where fluid leaks from blood vessels. The low platelet count is an alarm bell that this might happen.</p>
+<p class="text-gray-600">Therefore, the cornerstone of care is meticulous fluid management—either orally or by IV drip—to keep the "highways" in top condition and prevent a dangerous drop in blood pressure.</p>
+</div>
+<div class="bg-white p-8 rounded-lg shadow-md">
+<h4 class="font-bold text-xl mb-3 text-[#e07a5f]">About Platelet Transfusions</h4>
+<p class="text-gray-600 mb-4">A common question is whether a transfusion can help. Transfusions are generally **not** given just for a low number. They are reserved for cases of severe, life-threatening bleeding.</p>
+<p class="text-gray-600">This is because transfused platelets are also attacked by the same immune processes. The true, lasting solution is the body's own recovery and the bone marrow getting its "headquarters" back online.</p>
+</div>
+</div>
+</section>
+</main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+
+<footer class="bg-white mt-16 border-t">
+<div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center text-gray-600">
+<h4 class="font-bold text-xl mb-2 text-[#3d405b]">The Path to Recovery is a Natural Process</h4>
+<p class="max-w-3xl mx-auto">A low platelet count in Dengue is an expected and temporary part of the body's fight against the virus. The predictable pattern of decline followed by a steady rise is a sign of victory. The body's "Emergency Road Repair Crew" will be rebuilt, and the "highways" will be fully restored.</p>
+</div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+const stepItems = document.querySelectorAll('.step-item');
+const stepContent = document.getElementById('step-content');
+const stepData = {
+step1: {
+title: 'Adhesion: The First Responders Arrive',
+description: 'When a blood vessel is damaged, it sends out an emergency signal. The nearest platelets on patrol immediately rush to the scene. Using special "grappling hooks" on their surface, they stick directly to the edges of the damaged area, forming the first line of defense.'
+},
+step2: {
+title: 'Aggregation: Calling for Backup',
+description: 'Once attached, the first platelets activate and release chemical signals, calling for more crews. A swarm of additional platelets arrives, sticking to each other to form a temporary plug that blocks the leak.'
+},
+step3: {
+title: 'The Clot: The Permanent Patch',
+description: 'This plug triggers a chain reaction that creates a strong, fibrous mesh called fibrin. This mesh reinforces the plug, like setting asphalt, creating a stable, durable clot that completely seals the damage—the body’s own natural bandage.'
+}
+};
+
+stepItems.forEach(item => {
+item.addEventListener('click', () => {
+stepItems.forEach(i => i.classList.remove('active'));
+item.classList.add('active');
+const data = stepData[item.id];
+stepContent.innerHTML = `
+<h5 class="font-bold text-xl mb-3 text-[#81b29a]">${data.title}</h5>
+<p class="text-gray-700">${data.description}</p>
+`;
+});
+});
+
+const phaseInfo = {
+febrile: {
+title: 'Febrile Phase: The Battle Begins',
+description: 'During the first few days of high fever, the platelet count is usually stable or may just begin a slow decline. In our analogy, the first reports of sabotage are coming in, but the repair crew strength is still near normal.',
+bgColor: 'bg-blue-50/50',
+borderColor: 'border-blue-400',
+titleColor: 'text-blue-800'
+},
+critical: {
+title: 'Critical Phase: The Crew is Overwhelmed',
+description: 'As the fever breaks, the platelet count drops sharply, reaching its lowest point. This is the most dangerous phase. All three viral attacks are at their peak, the crew is understaffed, and reinforcements are cut off.',
+bgColor: 'bg-red-50/50',
+borderColor: 'border-red-400',
+titleColor: 'text-red-800'
+},
+recovery: {
+title: 'Recovery Phase: Rebuilding the Fleet',
+description: 'After the critical phase, the virus is being defeated. The bone marrow "headquarters" gets back online and starts producing new platelets at an accelerated rate. The count rises steadily, a sure sign of recovery.',
+bgColor: 'bg-green-50/50',
+borderColor: 'border-green-400',
+titleColor: 'text-green-800'
+}
+};
+
+const btnFebrile = document.getElementById('btn-febrile');
+const btnCritical = document.getElementById('btn-critical');
+const btnRecovery = document.getElementById('btn-recovery');
+const phaseInfoContainer = document.getElementById('phase-info');
+const phaseTitle = document.getElementById('phase-title');
+const phaseDescription = document.getElementById('phase-description');
+const phaseButtons = [btnFebrile, btnCritical, btnRecovery];
+
+function updatePhaseInfo(phase) {
+const data = phaseInfo[phase];
+phaseButtons.forEach(btn => btn.classList.remove('active'));
+document.getElementById(`btn-${phase}`).classList.add('active');
+
+phaseInfoContainer.className = `mt-6 p-6 rounded-r-lg ${data.bgColor} border-l-4 ${data.borderColor}`;
+phaseTitle.className = `font-bold text-lg mb-2 ${data.titleColor}`;
+phaseTitle.textContent = data.title;
+phaseDescription.textContent = data.description;
+}
+
+btnFebrile.addEventListener('click', () => updatePhaseInfo('febrile'));
+btnCritical.addEventListener('click', () => updatePhaseInfo('critical'));
+btnRecovery.addEventListener('click', () => updatePhaseInfo('recovery'));
+
+const ctx = document.getElementById('plateletChart').getContext('2d');
+const plateletData = {
+labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7', 'Day 8', 'Day 9', 'Day 10'],
+datasets: [{
+label: 'Platelet Count (x1000)',
+data: [250, 220, 180, 110, 60, 50, 70, 120, 200, 300],
+borderColor: '#3d405b',
+backgroundColor: 'rgba(61, 64, 91, 0.1)',
+fill: true,
+tension: 0.4,
+pointBackgroundColor: '#3d405b',
+pointRadius: 5,
+pointHoverRadius: 8
+}]
+};
+
+const chartPlugins = {
+id: 'customCanvasBackgroundColor',
+beforeDraw: (chart) => {
+const {
+ctx,
+chartArea: { top, bottom, left, right, width, height },
+scales: { x, y }
+} = chart;
+ctx.save();
+const febrileEnd = x.getPixelForValue(2.5);
+const criticalEnd = x.getPixelForValue(6.5);
+ctx.fillStyle = 'rgba(239, 246, 255, 0.7)';
+ctx.fillRect(left, top, febrileEnd - left, height);
+ctx.fillStyle = 'rgba(254, 242, 242, 0.7)';
+ctx.fillRect(febrileEnd, top, criticalEnd - febrileEnd, height);
+ctx.fillStyle = 'rgba(240, 253, 244, 0.7)';
+ctx.fillRect(criticalEnd, top, right - criticalEnd, height);
+ctx.restore();
+}
+};
+const plateletChart = new Chart(ctx, {
+type: 'line',
+data: plateletData,
+options: {
+responsive: true,
+maintainAspectRatio: false,
+scales: {
+y: { beginAtZero: true, title: { display: true, text: 'Platelets per microliter (x1000)' }, max: 450 },
+x: { grid: { display: false } }
+},
+plugins: {
+legend: { display: false },
+tooltip: {
+enabled: true,
+callbacks: {
+title: (context) => context[0].label,
+label: (context) => `Count: ${context.parsed.y * 1000}`
+}
+}
+}
+},
+plugins: [chartPlugins]
+});
+const mobileNav = document.getElementById('mobile-nav');
+mobileNav.addEventListener('change', (e) => { window.location.hash = e.target.value; });
+
+const sections = document.querySelectorAll('section');
+const navLinks = document.querySelectorAll('.nav-link');
+const observer = new IntersectionObserver((entries) => {
+entries.forEach(entry => {
+if (entry.isIntersecting) {
+navLinks.forEach(link => {
+link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+});
+}
+});
+}, { rootMargin: "-50% 0px -50% 0px" });
+sections.forEach(section => { observer.observe(section); });
+
+const getDietTipsBtn = document.getElementById('get-diet-tips');
+const dietTipsLoader = document.getElementById('diet-tips-loader');
+const dietTipsResponse = document.getElementById('diet-tips-response');
+const askQuestionBtn = document.getElementById('ask-question');
+const userQuestionInput = document.getElementById('user-question');
+const qaLoader = document.getElementById('qa-loader');
+const qaResponse = document.getElementById('qa-response');
+const presetQuestions = document.querySelectorAll('.preset-question');
+
+const apiKey = ""; 
+const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+async function callGemini(prompt, loader, responseEl) {
+loader.style.display = 'flex';
+responseEl.innerHTML = '';
+let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+const payload = { contents: chatHistory };
+
+try {
+const response = await fetch(apiUrl, {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify(payload)
+});
+
+if (!response.ok) {
+throw new Error(`API error: ${response.statusText}`);
+}
+
+const result = await response.json();
+if (result.candidates && result.candidates.length > 0 &&
+result.candidates[0].content && result.candidates[0].content.parts &&
+result.candidates[0].content.parts.length > 0) {
+const text = result.candidates[0].content.parts[0].text;
+responseEl.innerHTML = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*/g, '<li>');
+} else {
+responseEl.textContent = 'Sorry, I could not get a response. Please try again.';
+}
+} catch (error) {
+responseEl.textContent = 'An error occurred. Please check your connection and try again.';
+} finally {
+loader.style.display = 'none';
+}
+}
+
+getDietTipsBtn.addEventListener('click', () => {
+const prompt = "As a helpful assistant for a family member of a Dengue patient, generate a list of recommended foods and drinks for recovery. The tone should be reassuring and simple. Focus on hydration and easily digestible items. Format the response with clear headings for 'Hydrating Fluids' and 'Easy-to-Digest Foods' and use bullet points for the items.";
+callGemini(prompt, dietTipsLoader, dietTipsResponse);
+});
+
+const handleQuestion = (question) => {
+if (!question.trim()) return;
+const prompt = `As a helpful assistant for a family member of a Dengue patient, please answer the following question in simple, non-medical terms. The tone should be clear, calm, and reassuring. Question: "${question}"`;
+callGemini(prompt, qaLoader, qaResponse);
+};
+
+askQuestionBtn.addEventListener('click', () => {
+handleQuestion(userQuestionInput.value);
+});
+userQuestionInput.addEventListener('keypress', (e) => {
+if (e.key === 'Enter') {
+handleQuestion(userQuestionInput.value);
+}
+});
+
+presetQuestions.forEach(button => {
+button.addEventListener('click', () => {
+const question = button.textContent;
+userQuestionInput.value = question;
+handleQuestion(question);
+});
+});
+});
+</script>
+</body>
+</html>
+
