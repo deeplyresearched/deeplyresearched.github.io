@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferrari 296 GTB - Interactive Experience</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+  
+    <!-- Chosen Palette: Rosso Corsa & Neutrals -->
+    <!-- Application Structure Plan: The SPA is designed as a thematic dashboard. It starts with a high-impact hero section for key stats, followed by a clear navigation bar for non-linear exploration. The structure is broken into logical themes: 'Powertrain', 'Performance', 'Aerodynamics', and 'Design'. This approach was chosen over a linear report format to cater to car enthusiasts who may want to jump directly to the specs or technology that interests them most. The user flow is guided by curiosity, allowing users to compare engine components, analyze performance metrics against rivals, and interact with features like driving modes, which provides a more engaging and efficient way to absorb the information than passive reading. -->
+    <!-- Visualization & Content Choices: 
+    - Report Info: Powertrain power breakdown (V6 vs Electric). Goal: Compare. Viz: Horizontal Bar Chart (Chart.js). Interaction: Buttons to toggle between V6, Electric, and Combined views, updating chart and text. Justification: Visually demonstrates the hybrid system's composition effectively.
+    - Report Info: 0-100km/h comparison. Goal: Compare. Viz: Vertical Bar Chart (Chart.js). Interaction: Hover tooltips for precise data. Justification: Provides crucial competitive context in a familiar, easy-to-digest format.
+    - Report Info: Driving modes. Goal: Organize/Inform. Viz: Interactive HTML/CSS buttons. Interaction: Click to reveal description. Justification: A clean, space-saving UI pattern that encourages user interaction to learn more.
+    - Report Info: Key stats (power, speed). Goal: Inform. Viz: Large typographic cards. Interaction: None. Justification: Grabs attention and communicates headline figures with immediate clarity.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f1f2f6;
+            color: #1F2937;
+        }
+        h1, h2, h3 {
+            font-family: 'Roboto Condensed', sans-serif;
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-color 0.3s ease;
+        }
+        .stat-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .mode-button.active {
+            background-color: #D40000 !important;
+            color: white !important;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <header class="bg-gray-900 text-white sticky top-0 z-50 shadow-lg">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-red-600">FERRARI 296 GTB</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#powertrain" class="nav-link text-gray-300 hover:text-white border-b-2 border-transparent hover:border-red-600">Powertrain</a>
+                <a href="#performance" class="nav-link text-gray-300 hover:text-white border-b-2 border-transparent hover:border-red-600">Performance</a>
+                <a href="#dynamics" class="nav-link text-gray-300 hover:text-white border-b-2 border-transparent hover:border-red-600">Dynamics</a>
+                <a href="#design" class="nav-link text-gray-300 hover:text-white border-b-2 border-transparent hover:border-red-600">Design</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 md:px-6 py-8">
+        
+        <section id="hero" class="text-center my-8">
+            <h2 class="text-5xl font-bold uppercase tracking-wider text-gray-800">Defining Fun to Drive</h2>
+            <p class="text-lg text-gray-600 mt-4 max-w-3xl mx-auto">An evolution of Ferrari's mid-rear-engined two-seater berlinetta, the 296 GTB redefines the entire concept of fun behind the wheel, guaranteeing pure emotions not just when pushing the car to its limits, but also in day-to-day driving.</p>
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="stat-card bg-white p-6 rounded-lg shadow-md border-t-4 border-red-600">
+                    <h3 class="text-xl font-semibold text-gray-500">Maximum Power</h3>
+                    <p class="text-5xl font-bold text-gray-900 mt-2">830 <span class="text-2xl">cv</span></p>
+                </div>
+                <div class="stat-card bg-white p-6 rounded-lg shadow-md border-t-4 border-red-600">
+                    <h3 class="text-xl font-semibold text-gray-500">Top Speed</h3>
+                    <p class="text-5xl font-bold text-gray-900 mt-2">&gt;330 <span class="text-2xl">km/h</span></p>
+                </div>
+                <div class="stat-card bg-white p-6 rounded-lg shadow-md border-t-4 border-red-600">
+                    <h3 class="text-xl font-semibold text-gray-500">0-100 km/h</h3>
+                    <p class="text-5xl font-bold text-gray-900 mt-2">2.9 <span class="text-2xl">s</span></p>
+                </div>
+            </div>
+        </section>
+
+        <div class="w-full border-t border-gray-300 my-16"></div>
+
+        <section id="powertrain" class="my-16 scroll-mt-20">
+            <h2 class="text-4xl font-bold text-center mb-4 text-gray-800">The Hybrid Revolution</h2>
+            <p class="text-lg text-gray-600 text-center max-w-3xl mx-auto mb-12">The 296 GTB is the first Ferrari road car to sport a V6 turbo with a V angle of 120° between the cylinder banks, coupled with a plug-in electric motor. This section allows you to explore the power distribution between the internal combustion engine and the electric motor.</p>
+            
+            <div class="bg-white p-8 rounded-lg shadow-xl">
+                <div class="flex flex-col md:flex-row gap-8">
+                    <div class="md:w-1/3">
+                        <h3 class="text-2xl font-bold mb-4">Power Source Breakdown</h3>
+                        <div class="space-y-4" id="powertrain-controls">
+                            <button data-source="combined" class="w-full text-left p-3 rounded-md bg-red-600 text-white font-bold transition">Combined Output</button>
+                            <button data-source="v6" class="w-full text-left p-3 rounded-md bg-gray-200 hover:bg-gray-300 transition">V6 Engine</button>
+                            <button data-source="electric" class="w-full text-left p-3 rounded-md bg-gray-200 hover:bg-gray-300 transition">Electric Motor</button>
+                        </div>
+                        <div id="powertrain-details" class="mt-6 p-4 bg-gray-50 rounded-md">
+                        </div>
+                    </div>
+                    <div class="md:w-2/3">
+                        <div class="chart-container h-80 md:h-96">
+                            <canvas id="powerChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <div class="w-full border-t border-gray-300 my-16"></div>
+
+        <section id="performance" class="my-16 scroll-mt-20">
+            <h2 class="text-4xl font-bold text-center mb-4 text-gray-800">Unmatched Performance</h2>
+            <p class="text-lg text-gray-600 text-center max-w-3xl mx-auto mb-12">The integration of the hybrid system not only provides incredible power but also enables precise control and thrilling acceleration. Explore the car's performance metrics and the driving modes that tailor the experience.</p>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="bg-white p-8 rounded-lg shadow-xl">
+                    <h3 class="text-2xl font-bold text-center mb-6">Acceleration Comparison (0-100 km/h)</h3>
+                    <div class="chart-container h-80">
+                        <canvas id="accelerationChart"></canvas>
+                    </div>
+                     <p class="text-sm text-gray-500 text-center mt-4">Lower is better. Data for competitor models is based on manufacturer claims.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-lg shadow-xl">
+                    <h3 class="text-2xl font-bold text-center mb-6">eManettino Driving Modes</h3>
+                    <div class="flex justify-center gap-2 md:gap-4 mb-6" id="mode-buttons">
+                        <button class="mode-button flex-1 md:flex-initial py-2 px-4 rounded-full font-semibold border-2 border-gray-300 bg-gray-100 hover:bg-gray-200 transition active" data-mode="edrive">eDrive</button>
+                        <button class="mode-button flex-1 md:flex-initial py-2 px-4 rounded-full font-semibold border-2 border-gray-300 bg-gray-100 hover:bg-gray-200 transition" data-mode="hybrid">Hybrid</button>
+                        <button class="mode-button flex-1 md:flex-initial py-2 px-4 rounded-full font-semibold border-2 border-gray-300 bg-gray-100 hover:bg-gray-200 transition" data-mode="performance">Performance</button>
+                        <button class="mode-button flex-1 md:flex-initial py-2 px-4 rounded-full font-semibold border-2 border-gray-300 bg-gray-100 hover:bg-gray-200 transition" data-mode="qualify">Qualify</button>
+                    </div>
+                    <div id="mode-descriptions">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="w-full border-t border-gray-300 my-16"></div>
+        
+        <section id="dynamics" class="my-16 scroll-mt-20">
+            <h2 class="text-4xl font-bold text-center mb-4 text-gray-800">Aerodynamics & Chassis Dynamics</h2>
+            <p class="text-lg text-gray-600 text-center max-w-3xl mx-auto mb-12">The 296 GTB's performance is not just about power; it's about control. A suite of advanced electronic systems and active aerodynamics ensures the car is both incredibly fast and surprisingly agile.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="stat-card bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Active Rear Spoiler</h3>
+                    <p class="text-gray-700">Inspired by the LaFerrari, an active aero device generates high rear downforce. In high-downforce conditions, it delivers an extra 100 kg of downforce at 250 km/h.</p>
+                </div>
+                <div class="stat-card bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">'Tea-Tray' Front Aero</h3>
+                    <p class="text-gray-700">The front bumper design integrates a 'tea-tray' that directs hot air from the radiator away from the underbody, increasing aerodynamic efficiency and downforce over the front axle.</p>
+                </div>
+                 <div class="stat-card bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">ABS 'evo' Controller</h3>
+                    <p class="text-gray-700">A world-first in the automotive sector. It uses data from the 6-way Chassis Dynamic Sensor (6w-CDS) for more precise braking force estimation, allowing for shorter stopping distances and better repeatability.</p>
+                </div>
+                <div class="stat-card bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Brake-By-Wire</h3>
+                    <p class="text-gray-700">The brake-by-wire system allows for variable brake pedal feel and manages regenerative braking, seamlessly blending it with the hydraulic system for consistent performance under all conditions.</p>
+                </div>
+                <div class="stat-card bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Short Wheelbase</h3>
+                    <p class="text-gray-700">The 296 GTB has a wheelbase 50mm shorter than previous Ferrari mid-engined berlinettas. This significantly enhances the car's agility and responsiveness, making it feel incredibly nimble.</p>
+                </div>
+                <div class="stat-card bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Side Dynamics Control (FDE2.0)</h3>
+                    <p class="text-gray-700">Ferrari's advanced stability control system works with the electronic differential (E-Diff) and other sensors to provide maximum performance when cornering and exiting corners, especially in high-performance driving modes.</p>
+                </div>
+            </div>
+        </section>
+        
+        <div class="w-full border-t border-gray-300 my-16"></div>
+
+        <section id="design" class="my-16 scroll-mt-20">
+            <h2 class="text-4xl font-bold text-center mb-4 text-gray-800">Modern Form, Classic Inspiration</h2>
+            <p class="text-lg text-gray-600 text-center max-w-3xl mx-auto mb-12">The 296 GTB's design is a testament to modern aerodynamics while paying homage to iconic Ferraris of the past, particularly the 1963 250 LM. Its compact, clean lines define a new era of Ferrari berlinettas.</p>
+
+            <div class="bg-white p-8 rounded-lg shadow-xl">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4">Key Design Elements</h3>
+                        <ul class="space-y-4 list-disc list-inside text-gray-700">
+                            <li><strong>Visor-Effect Cockpit:</strong> The windscreen wraps around onto the side windows for a seamless, modern visor look, emphasizing the cabin's architecture.</li>
+                            <li><strong>250 LM-Inspired B-Pillar:</strong> The break in the B-pillar is a clear reference to classic models like the 250 LM, merging heritage with a modern aesthetic.</li>
+                            <li><strong>Vertical Rear Screen:</strong> A unique vertical rear screen sits between two flying buttresses, showcasing the engine bay in an unconventional and striking way.</li>
+                             <li><strong>Kamm Tail:</strong> The rear of the car features a Kamm tail design, an aerodynamic principle that reduces drag by abruptly cutting off the tail, which also adds to its muscular stance.</li>
+                            <li><strong>Single Central Exhaust:</strong> A single, large exhaust pipe is integrated centrally into the lower part of the bumper, giving the rear a clean, aggressive, and contemporary look.</li>
+                        </ul>
+                    </div>
+                     <div class="flex items-center justify-center p-4">
+                        <div class="w-full h-80 bg-gray-100 rounded-lg flex flex-col items-center justify-center text-center p-4 border-2 border-dashed border-gray-300">
+                             <span class="text-6xl text-red-600 font-bold">250 LM</span>
+                             <p class="mt-4 text-gray-600">The muscular rear haunches, B-pillar design, and overall compact form of the 296 GTB are a modern interpretation of the legendary 1963 Ferrari 250 LM.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+
+  
+    <footer class="bg-gray-900 text-white mt-16">
+        <div class="container mx-auto px-6 py-4 text-center text-gray-400">
+            <p>&copy; 2024 Ferrari 296 GTB Interactive Report. All information is for demonstrative purposes.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const powertrainData = {
+                combined: {
+                    title: 'Combined Output',
+                    description: 'The V6 engine and electric motor work in synergy to deliver a staggering total of 830 cv. This provides instantaneous throttle response and blistering acceleration across the entire rev range.',
+                    power: 830,
+                    torque: 740,
+                },
+                v6: {
+                    title: 'V6 "Piccolo V12" Engine',
+                    description: 'The 2992cc V6 twin-turbo produces 663 cv. Nicknamed the "little V12", its 120° V-angle and symmetrical firing order give it a unique and exhilarating sound profile.',
+                    power: 663,
+                    torque: 740,
+                },
+                electric: {
+                    title: 'MGU-K Electric Motor',
+                    description: 'The rear-mounted MGU-K (Motor Generator Unit, Kinetic) produces 167 cv. Derived from Formula 1 technology, it provides instant torque, fills in turbo lag, and enables all-electric driving.',
+                    power: 167,
+                    torque: 315,
+                }
+            };
+
+            const drivingModes = {
+                edrive: {
+                    title: 'eDrive Mode',
+                    description: 'The internal combustion engine is switched off. With a fully charged 7.45 kWh battery, the car can travel up to 25 km in complete silence, with a top speed of 135 km/h. Ideal for city driving.'
+                },
+                hybrid: {
+                    title: 'Hybrid Mode',
+                    description: 'This is the default mode. The power flows are managed for maximum efficiency, with the control logic deciding when to run the V6 engine. The engine assists the electric motor when more performance is demanded.'
+                },
+                performance: {
+                    title: 'Performance Mode',
+                    description: 'The V6 engine is always running and prioritizes charging the battery over efficiency, ensuring that full power is always available. This is the ideal mode for spirited driving on roads or tracks.'
+                },
+qualify: {
+                    title: 'Qualify Mode',
+                    description: 'This mode provides maximum performance by allowing the battery to discharge at its highest rate. It prioritizes ultimate lap time over maintaining battery charge, unleashing the full 830 cv.'
+                }
+            };
+            
+            let powerChartInstance;
+
+            const setupPowerChart = () => {
+                const ctx = document.getElementById('powerChart').getContext('2d');
+                powerChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['V6 Engine', 'Electric Motor', 'Combined'],
+                        datasets: [{
+                            label: 'Power (cv)',
+                            data: [powertrainData.v6.power, powertrainData.electric.power, powertrainData.combined.power],
+                            backgroundColor: [
+                                'rgba(200, 200, 200, 0.6)',
+                                'rgba(0, 150, 255, 0.6)',
+                                'rgba(212, 0, 0, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(200, 200, 200, 1)',
+                                'rgba(0, 150, 255, 1)',
+                                'rgba(212, 0, 0, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.dataset.label}: ${context.raw} cv`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Power Output (cv)'
+                                }
+                            }
+                        }
+                    }
+                });
+            };
+
+            const setupAccelerationChart = () => {
+                const ctx = document.getElementById('accelerationChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Ferrari 296 GTB', 'McLaren Artura', 'Maserati MC20'],
+                        datasets: [{
+                            label: '0-100 km/h (seconds)',
+                            data: [2.9, 3.0, 2.9],
+                            backgroundColor: [
+                                'rgba(212, 0, 0, 0.8)',
+                                'rgba(255, 135, 0, 0.8)',
+                                'rgba(0, 0, 139, 0.8)'
+                            ],
+                             borderColor: [
+                                'rgba(212, 0, 0, 1)',
+                                'rgba(255, 135, 0, 1)',
+                                'rgba(0, 0, 139, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                           legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                suggestedMin: 2.5,
+                                title: {
+                                    display: true,
+                                    text: 'Time (seconds)'
+                                }
+                            }
+                        }
+                    }
+                });
+            };
+
+            const powertrainControls = document.getElementById('powertrain-controls');
+            const powertrainDetails = document.getElementById('powertrain-details');
+
+            const updatePowertrainView = (source) => {
+                const data = powertrainData[source];
+                powertrainDetails.innerHTML = `
+                    <h4 class="text-lg font-bold text-gray-800">${data.title}</h4>
+                    <p class="text-sm text-gray-600 mt-1">${data.description}</p>
+                    <div class="mt-3 text-right">
+                        <span class="font-bold text-2xl text-red-600">${data.power} cv</span>
+                    </div>
+                `;
+
+                const highlightColor = 'rgba(212, 0, 0, 0.8)';
+                const baseColors = [
+                    'rgba(200, 200, 200, 0.6)',
+                    'rgba(0, 150, 255, 0.6)',
+                    'rgba(212, 0, 0, 0.8)'
+                ];
+                
+                let newColors = [...baseColors];
+                if (source === 'v6') newColors[0] = highlightColor;
+                if (source === 'electric') newColors[1] = highlightColor;
+                if (source === 'combined') newColors[2] = highlightColor;
+
+                powerChartInstance.data.datasets[0].backgroundColor = newColors;
+                powerChartInstance.update();
+
+                powertrainControls.querySelectorAll('button').forEach(btn => {
+                    if (btn.dataset.source === source) {
+                        btn.classList.add('bg-red-600', 'text-white');
+                        btn.classList.remove('bg-gray-200');
+                    } else {
+                        btn.classList.remove('bg-red-600', 'text-white');
+                        btn.classList.add('bg-gray-200');
+                    }
+                });
+            };
+
+            powertrainControls.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    updatePowertrainView(e.target.dataset.source);
+                }
+            });
+
+            const modeButtonsContainer = document.getElementById('mode-buttons');
+            const modeDescriptionContainer = document.getElementById('mode-descriptions');
+
+            const updateModeView = (mode) => {
+                const data = drivingModes[mode];
+                modeDescriptionContainer.innerHTML = `
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="font-bold text-lg text-gray-900">${data.title}</h4>
+                        <p class="text-gray-700 mt-2">${data.description}</p>
+                    </div>
+                `;
+
+                modeButtonsContainer.querySelectorAll('.mode-button').forEach(button => {
+                    button.classList.remove('active');
+                    if(button.dataset.mode === mode) {
+                        button.classList.add('active');
+                    }
+                });
+            };
+
+            modeButtonsContainer.addEventListener('click', (e) => {
+                const button = e.target.closest('.mode-button');
+                if (button) {
+                    updateModeView(button.dataset.mode);
+                }
+            });
+            
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            setupPowerChart();
+            setupAccelerationChart();
+            updatePowertrainView('combined');
+            updateModeView('edrive');
+        });
+    </script>
+</body>
+</html>
