@@ -12,9 +12,7 @@
     <link rel="icon" href="documents/favicon.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-936B4T5NEY"></script>
     <script>
@@ -25,324 +23,439 @@
  </script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
      crossorigin="anonymous"></script>
+
+<style>
+        /* --- CORE STYLES --- */
+        :root {
+            --primary-color: #007bff;
+            --dark-grey: #343a40;
+            --light-grey: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: var(--light-grey);
+            color: var(--dark-grey);
+        }
+
+        /* --- HEADER & SEARCH --- */
+        .site-header {
+            padding: 5rem 1.5rem;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070&auto=format&fit=crop') no-repeat center center;
+            background-size: cover;
+            text-align: center;
+            color: white;
+        }
+        
+        .site-header h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin: 0 0 1rem 0;
+            letter-spacing: 1.5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .search-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 2rem auto 0 auto;
+            position: relative;
+        }
+        
+        #search-input {
+            width: 100%;
+            padding: 1rem 3.5rem 1rem 1.5rem;
+            border-radius: 50px;
+            border: 2px solid transparent;
+            font-size: 1.1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        #search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            font-size: 1.2rem;
+        }
+
+        /* --- NEW HEADER NAVIGATION STYLES --- */
+        .header-nav {
+            margin-top: 2.5rem;
+        }
+
+        .header-nav ul {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 2.8rem 1rem;
+            gap: 1.5rem 1.8rem;
+        }
+
+        .header-nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.6rem 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50px;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            transition: background-color 0.3s ease;
+        }
+
+        .header-nav a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+
+        /* --- MASONRY GRID --- */
+        .masonry-wrapper {
+            padding: 2.5rem 1rem;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+        
+        .masonry-grid {
+            column-count: 4; /* Default for large screens */
+            column-gap: 1.25rem;
+        }
+        
+        .masonry-item {
+            display: inline-block;
+            width: 100%;
+            margin-bottom: 1.25rem;
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            background: #fff; /* Set background to white for the card itself */
+            cursor: pointer;
+        }
+        
+        .masonry-item .image-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .masonry-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* --- VISIBLE TITLE & HOVER EFFECT --- */
+        .masonry-item .title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.4rem;
+            line-height: 1.3;
+            margin: 0;
+        }
+        
+        .masonry-item .content-container {
+            padding: 1.5rem;
+        }
+        
+        .masonry-item .description {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin: 0.75rem 0 1.5rem 0;
+            color: #4a5568;
+        }
+        
+        .masonry-item .view-analysis-btn {
+            display: inline-block;
+            background-color: var(--dark-grey);
+            color: white;
+            text-decoration: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 50px;
+            text-align: center;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        .masonry-item .view-analysis-btn:hover {
+            background-color: #000;
+        }
+
+        /* The overlay with the white background */
+        .masonry-item .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98); /* Mostly opaque white */
+            backdrop-filter: blur(4px); /* Optional: adds a nice blur effect */
+            
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end; /* Align content to the bottom */
+            text-align: left;
+            padding: 1.5rem;
+            box-sizing: border-box;
+            
+            opacity: 0; /* Hidden by default */
+            transition: opacity 0.4s ease; /* Fade transition */
+        }
+        
+        .masonry-item:hover .overlay {
+            opacity: 1; /* Fade in on hover */
+        }
+        
+        .masonry-item:hover img {
+            transform: scale(1.05); /* Slight zoom on image hover */
+        }
+
+        /* --- NO RESULTS MESSAGE --- */
+        .no-results {
+            width: 100%;
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #6c757d;
+            font-size: 1.2rem;
+            column-span: all;
+        }
+        
+        /* --- RESPONSIVENESS --- */
+        @media (max-width: 1200px) { .masonry-grid { column-count: 3; } }
+        @media (max-width: 992px) { .masonry-grid { column-count: 2; } }
+        @media (max-width: 576px) { .masonry-grid { column-count: 1; } }
+
+
+
+/* PDF Library & Explore Further Section Styles */
+.pdf-library-section, .explore-further-section {
+    text-align: center;
+    background-color: #34495e;
+    color: white;
+    border-radius: 20px;
+    padding: 1.6rem 1.5rem 2rem;
+    margin: 1.5rem 2.8rem 1rem 2.8rem;
+}
+.pdf-library-section .category-title, .explore-further-section .category-title {
+    color: white;
+}
+.pdf-library-description, .explore-further-section p {
+    max-width: 600px;
+    margin: 0 auto 2rem auto;
+    font-size: 1.1em;
+    opacity: 0.9;
+    color: #bdc3c7;
+}
+.pdf-library-button {
+    display: inline-block;
+    background-color: white;
+    color: #34495e;
+    padding: 1rem 2.5rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+.pdf-library-button:hover {
+    transform: scale(1.05);
+    background-color: #f0f0f0;
+}
+
+.category-title {
+    font-size: 2.5rem;
+    font-family: 'Oswald', sans-serif;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+/* --- NEW EXPLORE & FOOTER STYLES --- */
+.explore-further-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem 0;
+    padding: 3rem 1.5rem 2rem;
+    color: white;
+}
+.footer-nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.8rem 6rem;
+    list-style: none;
+    padding:0;
+    margin: 2.5rem 0.8rem 2.5rem 0.8rem;
+}
+.footer-nav a {
+    color: #ecf0f1;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.1em;
+    transition: color 0.3s ease;
+}
+.footer-nav a:hover {
+    color: white;
+    text-decoration: underline;
+}
+.social-links {
+    margin-bottom: 1rem;
+}
+.social-links a {
+    color: #bdc3c7;
+    font-size: 1.8rem;
+    margin: 0 0.75rem;
+    transition: color 0.3s ease, transform 0.3s ease;
+    display: inline-block;
+}
+.social-links a:hover {
+    color: white;
+    transform: scale(1.1);
+}
+
+.site-footer {
+    text-align: center;
+    padding: 1.5em 0;
+    background-color: #2c3e50;
+    color: #95a5a6;
+    font-size: 0.9em;
+    margin-top: 0;
+}
+
+footer {
+    text-align: center;
+    padding: 1.5em 0;
+    background-color: #2c3e50;
+    color: white;
+    font-size: 0.9em;
+    margin-top: 2em;
+}    
+
+</style>
+
+
 </head>
 <body>
-    <header>
+
+    <header class="site-header">
         <h1>The Physician's Ledger</h1>
-        <h2>In-depth interactive analyses of medical and clinical topics.</h2>
+        <p>In-depth interactive analyses of medical and clinical topics.</p>
+        <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search all analyses (e.g., 'BMW', 'Anemia', 'France')...">
+                <i class="fas fa-search search-icon"></i>
+        </div>
 
-        <nav>
+        <nav class="header-nav">
             <ul>
-            <li><a href="index.html">The Physician's Ledger</a></li>
-            <li><a href="tech-dossier.html">The Tech Dossier</a></li>
-            <li><a href="civic-spectrum.html">The Civic Spectrum</a></li>
-            <li><a href="research-articles.html">PDF Library</a></li>
-
-            </ul>
+                 <li><a href="index.html">The Physician's Ledger</a></li>
+                 <li><a href="tech-dossier.html">The Tech Dossier</a></li>
+                 <li><a href="civic-spectrum.html">The Civic Spectrum</a></li>
+                 <li><a href="research-articles.html">PDF Library</a></li>
+           </ul>
         </nav>
     </header>
 
-    <main>
- 
-                           <section class="category-section">
-                           <h2 class="category-title">Medical Analysis</h2>   
-                           <div class="project-grid">
- <div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/687edbb2eadff5a25e0ff1514846f890e16398a3/photos/Anemia%20and%20it's%20types.jpg">
-                  <div class="project-card-content">
-                        <h4>Anemia and it's types</h4>
-                        <p>Anemia, defined as a reduction in hemoglobin concentration or red blood cell (RBC) mass, is not a singular disease but rather a clinical sign of a vast array of underlying pathologies. It represents one of the most common hematologic manifestations encountered in clinical practice, affecting nearly a quarter of the global population and standing as the third-largest cause of disability worldwide. The clinical approach to anemia is rooted in a systematic evaluation that begins with understanding its three fundamental pathophysiological origins: decreased RBC production by the bone marrow, increased RBC destruction (hemolysis), or blood loss.</p>
-                        <a href="Interactive Analyses/Anemia and it's types.html" target="_blank">View The Analysis</a>
+        <div class="masonry-wrapper">
+                    <div class="masonry-grid" id="masonry-grid">
+                    <!-- Items will be injected here by JavaScript -->
                     </div>
-                    </div>
-
-
-
- <div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/687edbb2eadff5a25e0ff1514846f890e16398a3/photos/Understanding%20Seizures.jpg">
-                    <div class="project-card-content">
-                        <h4>Understanding Seizures</h4>
-                        <p>The study of seizures and epilepsy is a cornerstone of clinical neurology, addressing phenomena that range from subtle, transient sensory disturbances to profound alterations of consciousness with dramatic motor convulsions. A seizure represents a singular event—a sudden, uncontrolled burst of electrical activity in the brain that can transiently alter behavior, movements, sensations, and consciousness. In contrast, epilepsy is a chronic neurological disorder characterized by an enduring predisposition to generate recurrent, unprovoked seizures.</p>
-                        <a href="Interactive Analyses/Understanding Seizures.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-
-
-<div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/687edbb2eadff5a25e0ff1514846f890e16398a3/photos/Amyotrophic%20Lateral%20Sclerosis.jpg">
-                    <div class="project-card-content">
-                        <h4>What is ALS? Amyotrophic Lateral Sclerosis Explained</h4>
-                        <p>Amyotrophic lateral sclerosis (ALS) is a relentless and invariably fatal neurodegenerative disease defined by the progressive loss of motor neurons, the specialized nerve cells responsible for controlling voluntary muscle function. The name itself, derived from Greek, provides a succinct pathological summary: "amyotrophic" refers to the atrophy or wasting of muscle tissue that occurs when it is deprived of nerve signals; "lateral" identifies the lateral columns of the spinal cord, where the descending motor pathways are located; and "sclerosis" describes the hardening or scarring (gliosis) that occurs as these nerve tracts degenerate and are replaced by non-neuronal cells.</p>
-                        <a href="Interactive Analyses/Understanding Amyotrophic Lateral Sclerosis.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-
-
-<div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/fd329a0725a3be5e30999160cd16cb07e32b4b9c/photos/Myasthenia%20Gravis.jpg">
-                    <div class="project-card-content">
-                        <h4>Myasthenia Gravis: Autoimmune Weakness Explained</h4>
-                        <p>Myasthenia Gravis (MG) is a chronic, autoimmune, antibody-mediated disorder of the neuromuscular junction (NMJ) clinically defined by fluctuating, fatigable weakness of the voluntary skeletal muscles. The disease represents a quintessential organ-specific autoimmune condition where a breakdown in self-tolerance leads to the production of pathogenic autoantibodies against critical proteins located on the postsynaptic muscle membrane. </p>
-                        <a href="Interactive Analyses/Myasthenia Gravis.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-
-
-
-<div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/3cb93208f93f2c6e8a9334acaf1f12c53bf600bb/photos/Multiple%20Sclerosis.jpg">
-                    <div class="project-card-content">
-                        <h4>Multiple Sclerosis (MS): Understanding the Chronic CNS Disease</h4>
-                        <p>Multiple Sclerosis (MS) is a chronic, immune-mediated disease of the central nervous system (CNS) characterized by multifocal inflammation, demyelination, and progressive neurodegeneration. The underlying pathology involves a complex interplay between genetic susceptibility and environmental triggers, culminating in an autoimmune attack against the myelin sheath and oligodendrocytes. This process disrupts nerve signal conduction and leads to axonal damage, resulting in a wide spectrum of neurological signs and symptoms.</p>
-                        <a href="Interactive Analyses/Multiple Sclerosis.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-
-
-
-<div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/c0a98517a953460a85c37b2eb7a4232a69f1cb0e/photos/Meningoencephalitis.jpg">
-                    <div class="project-card-content">
-                        <h4>Meningoencephalitis: Urgent Brain & Meninges Inflammation</h4>
-                        <p>Meningoencephalitis, the concurrent inflammation of the meninges and the brain parenchyma, represents a formidable neurological emergency. This condition, arising from a diverse spectrum of infectious and autoimmune etiologies, is characterized by a rapid clinical evolution and a high potential for devastating outcomes. The clinical presentation is a syndromic overlap of meningitis (headache, nuchal rigidity) and encephalitis (altered sensorium, seizures, focal deficits), demanding immediate diagnostic evaluation and aggressive, etiology-specific therapeutic intervention.</p>
-                        <a href="Interactive Analyses/Meningoencephalitis.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-
-
-
-<div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/d3ea6dc78d51bd16ba6d0359f26249281d862db0/photos/Ischemic%20Stroke.jpg">
-                    <div class="project-card-content">
-                        <h4>Ischemic Stroke: Global Crisis & Disability Facts</h4>
-                        <p>Ischemic stroke, a cerebrovascular event resulting from the occlusion of an artery supplying the brain, represents a paramount global health crisis. Accounting for approximately 87% of all strokes, it stands as a leading cause of mortality and the primary contributor to long-term disability in adults worldwide. The societal and individual burden, measured in both economic cost and disability-adjusted life-years, is staggering and continues to grow, particularly in low- and middle-income countries.</p>
-                        <a href="Interactive Analyses/Ischemic Stroke.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-
-
-
-
-<div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/a5796927da0e1319e9739b621a3327b4ac4f79ff/photos/Hemorrhagic%20Stroke.jpg">
-                    <div class="project-card-content">
-                        <h4>Hemorrhagic Stroke: Causes, Types & What It Is</h4>
-                        <p>A cerebrovascular accident, or stroke, is a sudden and often catastrophic neurological event that arises from a critical disruption of blood flow to the brain, leading to neuronal injury and death. While the term "stroke" is frequently used in both clinical and public spheres to describe events caused by vascular blockage, it encompasses two fundamentally distinct pathological entities: ischemic stroke and hemorrhagic stroke.</p>
-                        <a href="Interactive Analyses/Hemorrhagic Stroke.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-
-
-
-<div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/054d7ddf11e95f53cafdf4ce14ade64404f19c34/photos/Guillain-Barr%C3%A9%20Syndrome.jpg">
-                    <div class="project-card-content">
-                        <h4>Guillain-Barré Syndrome (GBS): Symptoms & Causes</h4>
-                        <p>Guillain-Barré Syndrome (GBS) is an acute, immune-mediated polyradiculoneuropathy representing the most common cause of acute flaccid paralysis worldwide. It is characterized by a rapidly progressive, relatively symmetrical ascending weakness, accompanied by diminished or absent deep tendon reflexes (areflexia). The global incidence is estimated at 1.1 to 1.9 cases per 100,000 person-years, with a strong association with antecedent infections occurring 1 to 6 weeks prior to onset, most notably the bacterium...</p>
-                        <a href="Interactive Analyses/Guillain-Barré Syndrome.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-
-
-<div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/1f2f3b186d58de14ff51aba8bcca28faa195973d/photos/Diabetic%20Ketoacidosis.jpg">
-                    <div class="project-card-content">
-                        <h4>Diabetic Ketoacidosis</h4>
-                        <p>Diabetic ketoacidosis (DKA) is an acute, life-threatening metabolic complication of diabetes mellitus, defined by the biochemical triad of hyperglycemia, high anion gap metabolic acidosis, and ketonemia. It results from a profound state of absolute or relative insulin deficiency, which precipitates a cascade of counterregulatory hormonal responses, leading to uncontrolled catabolism. While most commonly associated with type 1 diabetes (T1D), DKA can also occur in individuals with type 2 diabetes (T2D) under conditions of significant physiological stress...</p>
-                        <a href="Interactive Analyses/Diabetic Ketoacidosis (DKA).html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-
-
-
-
-<div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/77dc08be444dafb9a7e5d63cd8011f7ab5363fa5/photos/Hyperosmolar%20Hyperglycemic%20State.jpg">
-                    <div class="project-card-content">
-                        <h4>Hyperosmolar Hyperglycemic State</h4>
-                        <p>Hyperosmolar Hyperglycemic State (HHS) is a life-threatening metabolic complication of diabetes mellitus. It is defined by a clinical triad of severe hyperglycemia, profound dehydration with resulting plasma hyperosmolality, and altered consciousness, all occurring with little to no significant ketosis. As one of the most serious acute hyperglycemic emergencies, HHS primarily affects individuals with type 2 diabetes mellitus (T2DM), though it is increasingly being identified in other patient populations.</p>
-                        <a href="Interactive Analyses/Hyperosmolar Hyperglycemic State (HHS).html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-
-
-
-
-<div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/4c01b5f0b311ed159bcb6057baf101f34539887b/photos/Hypoglycemia%20and%20Hyperglycemia.jpg">
-                    <div class="project-card-content">
-                        <h4>The Dichotomy of Glycemic Dysregulation in Hypoglycemia and Hyperglycemia</h4>
-                        <p>Hypoglycemia and hyperglycemia represent two opposing poles of glycemic dysregulation, both of which are critical concerns in clinical medicine, particularly in the management of diabetes mellitus. While both conditions stem from a fundamental disruption of glucose homeostasis and insulin dynamics, they present with vastly different clinical manifestations, risk profiles, and timelines of harm. Hyperglycemia, or elevated blood glucose, is the defining characteristic of diabetes mellitus and the primary driver of its chronic microvascular and macrovascular complications, which develop insidiously over years.</p>
-                        <a href="Interactive Analyses/Hypoglycemia vs. Hyperglycemia.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-
-
-
-<div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/4e78f0143f6527f176c3190d8fe6908c86a6fde5/photos/Endocrine%20Emergencies.jpg">
-                    <div class="project-card-content">
-                        <h4>Endocrine Emergencies</h4>
-                        <p>Compare All – An integrated view that contrasts the clinical features, investigations, and management of major endocrine emergencies.
-Myxedema Coma – A life-threatening decompensation of severe hypothyroidism marked by hypothermia, cardiovascular depression, and altered consciousness.
-Thyroid Storm – An acute, fulminant exacerbation of thyrotoxicosis presenting with hypermetabolic crisis and multi-organ involvement.
-Pheocrisis – A catecholamine-driven hypertensive crisis due to pheochromocytoma or paraganglioma with potential for rapid cardiovascular collapse.</p>
-                   <a href="Interactive Analyses/Endocrine Emergencies Dashboard.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-
-
-
-<div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/3d40c932b9538103a66885b6dadff2de99476c5c/photos/Prolactinomas%20and%20Acromegaly.jpg">
-                    <div class="project-card-content">
-                        <h4>Prolactinomas and Acromegaly</h4>
-                        <p>Pituitary adenomas represent a significant portion of intracranial neoplasms, with prolactinomas and somatotroph adenomas (causing acromegaly) being the most common functionally active variants. This report provides a comprehensive clinical and pathophysiological review of these two distinct yet occasionally overlapping endocrine disorders. Prolactinomas, arising from lactotroph cells, are the most prevalent pituitary adenomas, characterized by hyperprolactinemia which leads to hypogonadism, infertility, and galactorrhea.</p>
-                        <a href="Interactive Analyses/Prolactinoma & Acromegaly.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-
-
-
-<div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/89fe398ff5be692b654dd9c6c28a5ed4729c852d/photos/Hypothyroidism%20and%20Hyperthyroidism.jpg">
-                    <div class="project-card-content">
-                        <h4>Hypothyroidism and Hyperthyroidism</h4>
-                        <p>Thyroid dysfunction, encompassing the clinical spectra of hypothyroidism and hyperthyroidism, represents one of the most common groups of endocrine disorders encountered in clinical practice. These conditions arise from insufficient or excessive production of thyroid hormones, respectively, leading to profound systemic effects on metabolism and the function of nearly every organ system. The global etiology of these disorders is largely dictated by regional iodine status. In iodine-sufficient populations, such as those in the United States and most of Europe, the predominant causes are autoimmune in nature: Hashimoto's thyroiditis is the leading cause of hypothyroidism, while Graves' disease is the primary driver of hyperthyroidism.</p>
-                        <a href="Interactive Analyses/Guide to Thyroid Disorders.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-
-
-<div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/d2a9b5acad292c99dcdba52a00ab2d7609da9f03/photos/Diabetes%20Mellitus.jpg">
-                    <div class="project-card-content">
-                        <h4>Diabetes Mellitus (DM)</h4>
-                        <p>Diabetes Mellitus (DM) represents one of the most significant global health challenges of the 21st century. It is a complex, multi-system metabolic disorder characterized by chronic hyperglycemia resulting from defects in insulin secretion, insulin action, or both. Its escalating global prevalence, now affecting over 589 million adults, places an immense burden on individuals, healthcare systems, and economies worldwide. Far from being a singular disease of elevated blood glucose, DM is now recognized as a systemic condition profoundly linked to an increased risk of severe microvascular and macrovascular complications, including cardiovascular disease, chronic kidney disease, and blindness.</p>
-                        <a href="Interactive Analyses/Guide to Diabetes Mellitus.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-
-
-
-<div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/853eb2b6d1a27c9230b1b9e7f3a909c728e0b8a3/photos/Liver%20Disorders%20in%20Pregnancy.jpg">
-                    <div class="project-card-content">
-                        <h4>Liver Disorders in Pregnancy</h4>
-                        <p>Liver disease in pregnancy encompasses a wide spectrum of conditions, complicating approximately 3% to 10% of all gestations and ranging from mild, transient laboratory abnormalities to fulminant hepatic failure with significant maternal and fetal mortality. These disorders can be broadly classified into three categories: conditions unique to pregnancy, pre-existing liver diseases exacerbated by gestation, and coincidental hepatic illnesses. The pregnancy-specific disorders, which are the most common cause of abnormal liver function tests in gravid women, include hyperemesis gravidarum...</p>
-                        <a href="Interactive Analyses/Liver Disorders in Pregnancy.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-
-
-
-
-<div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/532e03d0dee5dd636bc26b6d81e9c7b7d7335288/photos/Myocarditis.jpg">
-                    <div class="project-card-content">
-                        <h4>Introduction to Myocarditis: Definition, Classification, and Epidemiology</h4>
-                        <p>Myocarditis is an inflammatory disease of the heart muscle, known as the myocardium. This inflammation is characterized by the infiltration of immune cells into the heart tissue, which can lead to myocyte (heart muscle cell) injury, degeneration, and necrosis. The functional consequence of this myocardial damage is a potential reduction in the heart's ability to pump blood effectively, giving rise to a broad and varied spectrum of clinical manifestations, from mild...</p>
-                        <a href="Interactive Analyses/Understanding Myocarditis.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-
-
-
-<div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/a55cd560b9ec3133a5d52c63dd806960993c4763/photos/Hypertensive%20Disorders%20of%20Pregnancy.jpg">
-                    <div class="project-card-content">
-                        <h4>Hypertensive Disorders of Pregnancy</h4>
-                        <p>Hypertensive disorders of pregnancy (HDP) represent a collection of conditions that are among the leading causes of maternal and perinatal morbidity and mortality globally. Affecting approximately one in every 10 to 17 pregnancies among women aged 20 to 44 in the United States, these disorders pose a significant and growing public health challenge. The prevalence of HDP has been steadily increasing, a trend attributed in part to demographic shifts such as advanced maternal age at first pregnancy and the rising global rates of obesity and other pre-existing cardiometabolic risk factors. ...</p>
-                        <a href="Interactive Analyses/Hypertensive Disorders of Pregnancy.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-
-
-
-<div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/e69a12643480c350382378c3042f7462377f9419/photos/Diabetes%20in%20Pregnancy.jpg">
-                    <div class="project-card-content">
-                        <h4>Diabetes in Pregnancy</h4>
-                        <p>Diabetes in pregnancy encompasses a spectrum of conditions characterized by hyperglycemia, each with a distinct etiology, clinical course, and set of risks for the mother and fetus. A clear understanding of these distinctions is fundamental to appropriate clinical management. The three primary forms are Type 1 diabetes, Type 2 diabetes, and Gestational Diabetes Mellitus (GDM).. ...</p>
-                        <a href="Interactive Analyses/Diabetes in Pregnancy.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>                               
-
-
-                               
-<div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/dc14f452e294830dd9373a2925e97895d118b60d/photos/Myocardial%20Infarction.jpg">
-                    <div class="project-card-content">
-                        <h4>Myocardial Infarction</h4>
-                        <p>Myocardial infarction (MI), colloquially known as a "heart attack," is a medical emergency defined by the death of heart muscle tissue (myocardial necrosis) resulting from prolonged and severe ischemia, which is the cessation or critical reduction of blood flow to a portion of the myocardium. This event can range in severity from a clinically "silent" infarction, which may go undetected, to a catastrophic event leading to profound hemodynamic deterioration and sudden cardiac death...</p>
-                        <a href="Interactive Analyses/Guide to Myocardial Infarction.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-
-        
-<div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/789e339c61553780d40179859c8236bfc5358947/photos/Rheumatoid%20Arthritis.jpg">
-                    <div class="project-card-content">
-                        <h4>Rheumatoid Arthritis</h4>
-                        <p>Rheumatoid arthritis (RA) is a chronic, systemic autoimmune disease primarily characterized by persistent inflammation of the joints. It represents a profound failure of immune tolerance, a state in which the body's own defense system mistakenly identifies its healthy tissues as foreign invaders and launches a sustained attack against them. While its most visible manifestations are within the joints, leading to pain, swelling, and potential destruction, RA is fundamentally a systemic condition, capable of affecting a wide array of organs, including the skin, eyes, lungs, heart, and blood vessels....</p>
-                        <a href="Interactive Analyses/Guide to Rheumatoid Arthritis.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-
-
-
-
-<div class="project-card">
-                    <img src="https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/789e339c61553780d40179859c8236bfc5358947/photos/Amenorrhea%2C%20M%C3%BCllerian%20Anomalies%2C%20and%20Infertility.jpg">
-                    <div class="project-card-content">
-                        <h4>Amenorrhea, Müllerian Anomalies, and Infertility</h4>
-                        <p>The female reproductive system operates through a sophisticated and exquisitely regulated neuroendocrine feedback loop known as the Hypothalamic-Pituitary-Ovarian-Uterine (HPO-U) axis. A comprehensive understanding of its normal physiology is an essential prerequisite for diagnosing and managing its pathologies, which frequently manifest as amenorrhea and infertility. The entire system is orchestrated to achieve a singular biological goal: the monthly selection and release of a mature oocyte and the preparation of a receptive uterine environment for potential implantation.....</p>
-                        <a href="Interactive Analyses/Guide to Amenorrhea, Anomalies & Infertility.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-                       
-</section>
-
-        
-                   
-                       <section class="category-section">
-                       <h2 class="category-title">Political & Social Commentary</h2>
-                           <div class="project-grid">
+        </div>
+
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // CENTRAL DATABASE FOR ALL ANALYSES ACROSS YOUR ENTIRE SITE
+            const analysesData = [
+                // Medical Analyses
+                { title: "Anemia and its Types", description: "Anemia, defined as a reduction in hemoglobin concentration or red blood cell (RBC) mass, is not a singular disease but rather a clinical sign of a vast array of underlying pathologies. It represents one of the most common hematologic manifestations encountered in clinical practice, affecting nearly a quarter of the global population and standing as the third-largest cause of disability worldwide", link: "Interactive Analyses/Anemia and it's types.html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/687edbb2eadff5a25e0ff1514846f890e16398a3/photos/Anemia%20and%20it's%20types.jpg", tags: "medical anemia health" },
+                { title: "Understanding Seizures", description: "A cornerstone of clinical neurology, from subtle disturbances to dramatic convulsions.", link: "Interactive Analyses/Understanding Seizures.html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/687edbb2eadff5a25e0ff1514846f890e16398a3/photos/Understanding%20Seizures.jpg", tags: "medical neurology health seizures" },
+                { title: "What is ALS?", description: "A relentless and invariably fatal neurodegenerative disease defined by the progressive loss of motor neurons.", link: "Interactive Analyses/Understanding Amyotrophic Lateral Sclerosis.html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/687edbb2eadff5a25e0ff1514846f890e16398a3/photos/Amyotrophic%20Lateral%20Sclerosis.jpg", tags: "medical als neurology" },
+                { title: "Myasthenia Gravis: Autoimmune Weakness Explained", description: "Myasthenia Gravis (MG) is a chronic, autoimmune, antibody-mediated disorder of the neuromuscular junction (NMJ) clinically defined by fluctuating, fatigable weakness of the voluntary skeletal muscles. The disease represents a quintessential organ-specific autoimmune condition where a breakdown in self-tolerance leads", link: "Interactive Analyses/Myasthenia Gravis.html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/fd329a0725a3be5e30999160cd16cb07e32b4b9c/photos/Myasthenia%20Gravis.jpg" },
+                { title: "Multiple Sclerosis (MS): Understanding the Chronic CNS Disease", description: "Multiple Sclerosis (MS) is a chronic, immune-mediated disease of the central nervous system (CNS) characterized by multifocal inflammation, demyelination, and progressive neurodegeneration. The underlying pathology involves a complex interplay between genetic susceptibility and environmental triggers, culminating", link: "Interactive Analyses/Multiple Sclerosis.html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/3cb93208f93f2c6e8a9334acaf1f12c53bf600bb/photos/Multiple%20Sclerosis.jpg" },
+                { title: "Meningoencephalitis: Urgent Brain & Meninges Inflammation", description: "Meningoencephalitis, the concurrent inflammation of the meninges and the brain parenchyma, represents a formidable neurological emergency. This condition, arising from a diverse spectrum of infectious and autoimmune etiologies", link: "Interactive Analyses/Meningoencephalitis.html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/c0a98517a953460a85c37b2eb7a4232a69f1cb0e/photos/Meningoencephalitis.jpg" },
+                { title: "Ischemic Stroke: Global Crisis & Disability Facts", description: "Ischemic stroke, a cerebrovascular event resulting from the occlusion of an artery supplying the brain, represents a paramount global health crisis. Accounting for approximately 87% of all strokes", link: "Interactive Analyses/Ischemic Stroke.html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/d3ea6dc78d51bd16ba6d0359f26249281d862db0/photos/Ischemic%20Stroke.jpg" },
+                { title: "Guillain-Barré Syndrome (GBS): Symptoms & Causes", description: "Guillain-Barré Syndrome (GBS) is an acute, immune-mediated polyradiculoneuropathy representing the most common cause of acute flaccid paralysis worldwide. It is characterized by a rapidly progressive, relatively symmetrical ascending weakness, accompanied by diminished or absent deep tendon reflexes (areflexia).", link: "Interactive Analyses/Guillain-Barré Syndrome.html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/054d7ddf11e95f53cafdf4ce14ade64404f19c34/photos/Guillain-Barr%C3%A9%20Syndrome.jpg" },
+                { title: "Diabetic Ketoacidosis", description: "Diabetic ketoacidosis (DKA) is an acute, life-threatening metabolic complication of diabetes mellitus, defined by the biochemical triad of hyperglycemia, high anion gap metabolic acidosis, and ketonemia. It results from a profound state of absolute or relative insulin deficiency, which precipitates a cascade of counterregulatory hormonal responses, leading to uncontrolled catabolism. While most commonly associated with type 1 diabetes", link: "Interactive Analyses/Diabetic Ketoacidosis (DKA).html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/1f2f3b186d58de14ff51aba8bcca28faa195973d/photos/Diabetic%20Ketoacidosis.jpg"},
+                { title: "Hemorrhagic Stroke: Causes, Types & What It Is", description: "A cerebrovascular accident, or stroke, is a sudden and often catastrophic neurological event that arises from a critical disruption of blood flow to the brain, leading to neuronal injury and death. While the term stroke is frequently used in both clinical and public spheres to describe events caused by vascular blockage, it encompasses", link: "Interactive Analyses/Hemorrhagic Stroke.html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/a5796927da0e1319e9739b621a3327b4ac4f79ff/photos/Hemorrhagic%20Stroke.jpg" },
+                { title: "Hyperosmolar Hyperglycemic State", description: "Hyperosmolar Hyperglycemic State (HHS) is a life-threatening metabolic complication of diabetes mellitus. It is defined by a clinical triad of severe hyperglycemia, profound dehydration with resulting plasma hyperosmolality, and altered consciousness, all occurring with little to no significant ketosis. As one of the most serious acute hyperglycemic emergencies, HHS primarily affects individuals with type 2 diabetes mellitus (T2DM), though it is increasingly being identified in other patient populations", link: "Interactive Analyses/Hyperosmolar Hyperglycemic State (HHS).html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/77dc08be444dafb9a7e5d63cd8011f7ab5363fa5/photos/Hyperosmolar%20Hyperglycemic%20State.jpg"},
+                { title: "The Dichotomy of Glycemic Dysregulation in Hypoglycemia and Hyperglycemia", description: "Hypoglycemia and hyperglycemia represent two opposing poles of glycemic dysregulation, both of which are critical concerns in clinical medicine, particularly in the management of diabetes mellitus. While both conditions stem from a fundamental disruption of glucose homeostasis and insulin dynamics, they present with vastly different clinical manifestations, risk profiles, and timelines of harm. Hyperglycemia, or elevated blood glucose, is the defining characteristic", link: "Interactive Analyses/Hypoglycemia vs. Hyperglycemia.html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/4c01b5f0b311ed159bcb6057baf101f34539887b/photos/Hypoglycemia%20and%20Hyperglycemia.jpg"},
+                { title: "Endocrine Emergencies", description: "Compare All – An integrated view that contrasts the clinical features, investigations, and management of major endocrine emergencies", link: "Interactive Analyses/Endocrine Emergencies Dashboard.html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/4e78f0143f6527f176c3190d8fe6908c86a6fde5/photos/Endocrine%20Emergencies.jpg"},
+                { title: "Prolactinomas and Acromegaly", description: "Pituitary adenomas represent a significant portion of intracranial neoplasms, with prolactinomas and somatotroph adenomas (causing acromegaly) being the most common functionally active variants. This report provides a comprehensive clinical and pathophysiological review of these two distinct yet occasionally overlappin", link: "Interactive Analyses/Prolactinoma & Acromegaly.html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/3d40c932b9538103a66885b6dadff2de99476c5c/photos/Prolactinomas%20and%20Acromegaly.jpg"},
+                { title: "Hypothyroidism and Hyperthyroidism", description: "Thyroid dysfunction, encompassing the clinical spectra of hypothyroidism and hyperthyroidism, represents one of the most common groups of endocrine disorders encountered in clinical practice. These conditions arise from insufficient or excessive production of thyroid hormones, respectively, leading to profound systemic effects on metabolism and the function of nearly every organ system.", link: "Interactive Analyses/Guide to Thyroid Disorders.html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/89fe398ff5be692b654dd9c6c28a5ed4729c852d/photos/Hypothyroidism%20and%20Hyperthyroidism.jpg"},
+                { title: "Diabetes Mellitus (DM)", description: "Diabetes Mellitus (DM) represents one of the most significant global health challenges of the 21st century. It is a complex, multi-system metabolic disorder characterized by chronic hyperglycemia resulting from defects in insulin secretion, insulin action, or both.", link: "Interactive Analyses/Guide to Diabetes Mellitus.html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/d2a9b5acad292c99dcdba52a00ab2d7609da9f03/photos/Diabetes%20Mellitus.jpg"},
+                { title: "Liver Disorders in Pregnancy", description: "Liver disease in pregnancy encompasses a wide spectrum of conditions, complicating approximately 3% to 10% of all gestations and ranging from mild, transient laboratory abnormalities to fulminant hepatic failure with significant maternal and fetal mortality.", link: "Interactive Analyses/Liver Disorders in Pregnancy.html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/853eb2b6d1a27c9230b1b9e7f3a909c728e0b8a3/photos/Liver%20Disorders%20in%20Pregnancy.jpg"},
+                { title: "Introduction to Myocarditis: Definition, Classification, and Epidemiology", description: "Myocarditis is an inflammatory disease of the heart muscle, known as the myocardium. This inflammation is characterized by the infiltration of immune cells into the heart tissue, which can lead ", link: "Interactive Analyses/Understanding Myocarditis.html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/532e03d0dee5dd636bc26b6d81e9c7b7d7335288/photos/Myocarditis.jpg"},
+                { title: "Hypertensive Disorders of Pregnancy", description: "Hypertensive disorders of pregnancy (HDP) represent a collection of conditions that are among the leading causes of maternal and perinatal morbidity and mortality globally. Affecting approximately one in every 10 to 17 pregnancies among women aged", link: "Interactive Analyses/Hypertensive Disorders of Pregnancy.html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/a55cd560b9ec3133a5d52c63dd806960993c4763/photos/Hypertensive%20Disorders%20of%20Pregnancy.jpg"},
+                { title: "Diabetes in Pregnancy", description: "Diabetes in pregnancy encompasses a spectrum of conditions characterized by hyperglycemia, each with a distinct etiology, clinical course, and set of risks for the mother and fetus. A clear understanding of these distinctions is fundamental to ", link: "Interactive Analyses/Diabetes in Pregnancy.html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/e69a12643480c350382378c3042f7462377f9419/photos/Diabetes%20in%20Pregnancy.jpg"},
+                { title: "Myocardial Infarction", description: "Myocardial infarction (MI), colloquially known as a heart attack, is a medical emergency defined by the death of heart muscle tissue (myocardial necrosis) resulting from prolonged and severe ischemia, which is the cessation or critical ", link: "Interactive Analyses/Guide to Myocardial Infarction.html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/dc14f452e294830dd9373a2925e97895d118b60d/photos/Myocardial%20Infarction.jpg"},
+                { title: "Rheumatoid Arthritis", description: "Rheumatoid arthritis (RA) is a chronic, systemic autoimmune disease primarily characterized by persistent inflammation of the joints. It represents a profound failure of immune tolerance, a state in which the body's own defense system mistakenly identifies its healthy tissues as foreign invaders and launches a sustained attack against them. ", link: "Interactive Analyses/Guide to Rheumatoid Arthritis.html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/789e339c61553780d40179859c8236bfc5358947/photos/Rheumatoid%20Arthritis.jpg"},
+                { title: "Amenorrhea, Müllerian Anomalies, and Infertility", description: "The female reproductive system operates through a sophisticated and exquisitely regulated neuroendocrine feedback loop known as the Hypothalamic-Pituitary-Ovarian-Uterine (HPO-U) axis. A comprehensive understanding of its normal physiology is an essential prerequisite for diagnosing and ", link: "Interactive Analyses/Guide to Amenorrhea, Anomalies & Infertility.html", image: "https://raw.githubusercontent.com/deeplyresearched/deeplyresearched.github.io/789e339c61553780d40179859c8236bfc5358947/photos/Amenorrhea%2C%20M%C3%BCllerian%20Anomalies%2C%20and%20Infertility.jpg"},
                 
-<div class="project-card">
-              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQt_vxTumPrrLG3byDVo7SZ1xnItEUwXEAUWA&s">
-                <div class="project-card-content">
-                       <h4>A Portrait of India</h4>
-                       <p>India presents a study in profound, and often paradoxical, diversity. It is a nation that is simultaneously ancient and modern, a subcontinent of staggering contrasts and boundless potential. As the world's largest democracy and most populous nation, its trajectory in the 21st century is a matter of global significance. Its rapid economic ascent from a "fragile" economy to a global powerhouse is reshaping international markets, while its deep historical roots, stretching back to one of the world's earliest civilizations, provide a cultural foundation of unparalleled depth. </p>
-                       <a href="Interactive Analyses/A Portrait of India.html" target="_blank">View The Analysis</a>
-               </div>
-           </div>
-                        
-                        
-<div class="project-card">
-              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSppHMl_ouKLi1AfrI2aLPk0mgm3lbUf3YdlQ&s">
-                <div class="project-card-content">
-                       <h4>The Russian Federation</h4>
-                       <p>The Russian Federation presents a study in profound and enduring contradictions. It is at once a European and an Asian power, a nation-state with an imperial legacy, a territory of immense natural wealth that has perennially struggled with economic modernization. To comprehend contemporary Russia is to grapple with these paradoxes, which are not recent phenomena but the products of a millennium of history shaped by an unforgiving geography. </p>
-                       <a href="Interactive Analyses/The Russian Federation.html" target="_blank">View The Analysis</a>
-               </div>
-           </div>
+            
+            
+                // ADD ALL YOUR OTHER ARTICLES HERE...
+            ];
 
+            const grid = document.getElementById('masonry-grid');
+            const searchInput = document.getElementById('search-input');
 
- <div class="project-card">
-              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSppHMl_ouKLi1AfrI2aLPk0mgm3lbUf3YdlQ&s">
-                <div class="project-card-content">
-                       <h4>The Russian Federation</h4>
-                       <p>Российская Федерация представляет собой образец глубоких и устойчивых противоречий. Она одновременно является и европейской, и азиатской державой, и национальным государством с имперским наследием, территорией с огромными природными богатствами, которая постоянно борется с экономической модернизацией. Понять современную Россию – значит разобраться с этими парадоксами, которые не являются недавними явлениями, а порождением тысячелетней истории, сформированной суровой географией.</p>
-                       <a href="Interactive Analyses/Интерактивный Обзор: Российская Федерация.html" target="_blank">View The Analysis</a>
-               </div>
-           </div>
+            const renderItems = (items) => {
+                grid.innerHTML = ''; // Clear previous items
+                if (items.length === 0) {
+                    grid.innerHTML = '<p class="no-results">No analyses found matching your search.</p>';
+                    return;
+                }
+                
+                items.forEach(item => {
+                    const gridItem = document.createElement('div');
+                    gridItem.className = 'masonry-item';
+                    
+                    gridItem.innerHTML = `
+                        <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="image-container">
+                            <img src="${item.image}" alt="${item.title}" loading="lazy">
+                            <div class="overlay">
+                                <p class="description">${item.description}</p>
+                                <span class="view-analysis-btn">View Analysis</span>
+                            </div>
+                        </a>
+                        <div class="content-container">
+                            <h3 class="title">${item.title}</h3>
+                        </div>
+                    `;
+                    grid.appendChild(gridItem);
+                });
+            };
 
-             
-                </div>
-        </section>
+            const filterItems = () => {
+                const query = searchInput.value.toLowerCase().trim();
+                if (!query) {
+                    renderItems(analysesData);
+                    return;
+                }
+                
+                const filteredItems = analysesData.filter(item => 
+                    item.title.toLowerCase().includes(query) ||
+                    item.tags.toLowerCase().includes(query)
+                );
+                renderItems(filteredItems);
+            };
 
-    <section class="explore-further-section">
+            searchInput.addEventListener('input', filterItems);
+
+            // Initial render
+            renderItems(analysesData);
+        });
+    </script>
+
+ <section class="explore-further-section">
         <h3>Explore Further</h3>
         <p>Navigate to other sections or connect with me on social media.</p>
         <ul class="footer-nav">
@@ -368,57 +481,10 @@ Pheocrisis – A catecholamine-driven hypertensive crisis due to pheochromocytom
     <footer>
         <p>© 2025 @deeplyresearched</p>
     </footer>
+
 </body>
 </html>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 
+                           
