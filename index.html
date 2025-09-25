@@ -27,16 +27,21 @@
 <style>
         /* --- CORE STYLES --- */
         :root {
-            --primary-color: #007bff;
-            --dark-grey: #343a40;
-            --light-grey: #f8f9fa;
+            /* --- NEW DARK THEME VARIABLES --- */
+            --theme-bg: #1a1a1a;        /* Dark background for the page */
+            --header-bg: #0d0d0d;     /* Even darker header bg */
+            --card-bg: #2c2c2c;        /* Dark card background */
+            --text-light: #f0f0f0;     /* Light text for dark backgrounds */
+            --text-dark: #2d3748;      /* Dark text for light backgrounds (not used much) */
+            --accent-color:  #a3b1b8;  /* Your chosen accent color */
         }
         
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
-            background-color: var(--light-grey);
-            color: var(--dark-grey);
+            /* --- UPDATED BACKGROUND AND TEXT COLOR --- */
+            background-color: var(--theme-bg);
+            color: var(--text-light);
         }
 
         /* --- HEADER & SEARCH --- */
@@ -235,7 +240,7 @@
 /* PDF Library & Explore Further Section Styles */
 .pdf-library-section, .explore-further-section {
     text-align: center;
-    background-color: #34495e;
+    background-color: #2c2c2c;
     color: white;
     border-radius: 20px;
     padding: 1.6rem 1.5rem 2rem;
@@ -254,7 +259,7 @@
 .pdf-library-button {
     display: inline-block;
     background-color: white;
-    color: #34495e;
+    color: var(--text-dark);
     padding: 1rem 2.5rem;
     border-radius: 30px;
     text-decoration: none;
@@ -330,8 +335,8 @@
 footer {
     text-align: center;
     padding: 1.5em 0;
-    background-color: #2c3e50;
-    color: white;
+    background-color: var(--header-bg); /* UPDATED */
+    color: #95a5a6;
     font-size: 0.9em;
     margin-top: 2em;
 }    
@@ -486,5 +491,6 @@ footer {
 
  
                            
+
 
 
