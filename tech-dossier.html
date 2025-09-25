@@ -9,221 +9,499 @@
     <meta name="keywords" content="Tech reviews, Car reviews, Motorcycle reviews, Consumer electronics, Automotive analysis, Gaming PC build guide, Latest smartphones, Adventure motorcycles, Sports bikes, EV buying guide India, Luxury car reviews, Headphone comparisons, Future tech insights, Bike comparisons, Car comparisons">
     <link rel="canonical" href="https://deeplyresearched.github.io/tech-dossier.html" />
     <link rel="icon" href="documents/favicon.png" type="image/png">
+    <link rel="canonical" href="https://deeplyresearched.github.io/tech-dossier.html" />
+    <link rel="icon" href="documents/favicon.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-936B4T5NEY"></script>
-    <script>
+<script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-936B4T5NEY');
- </script>
+</script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
      crossorigin="anonymous"></script>
+    
+    <style>
+        /* --- CORE STYLES --- */
+        :root {
+            --tech-bg: #1a1a1a;
+            --header-bg: #0d0d0d;
+            --card-bg: #2c2c2c;
+            --text-light: #f0f0f0;
+            --text-dark: #2d3748;
+            --accent-color:  #a3b1b8 
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: var(--tech-bg);
+            color: var(--text-light);
+        }
+
+        /* --- THEMATIC HEADER --- */
+        .site-header {
+            padding: 5rem 1.5rem;
+            background: linear-gradient(rgba(13, 13, 13, 0.8), rgba(13, 13, 13, 0.8)), url('https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop') no-repeat center center;
+            background-size: cover;
+            text-align: center;
+            color: white;
+        }
+        
+        .site-header h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: clamp(2.8rem, 6vw, 4.5rem);
+            margin: 0 0 0.5rem 0;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+        }
+        
+        .site-header p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 2rem auto;
+            opacity: 0.8;
+        }
+        
+        /* --- SEARCH CONTAINER --- */
+        .search-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 2rem auto 0 auto;
+            position: relative;
+        }
+        
+        #search-input {
+            width: 100%;
+            padding: 1rem 3.5rem 1rem 1.5rem;
+            border-radius: 50px;
+            border: 2px solid transparent;
+            font-size: 1.1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        #search-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 15px rgba(0, 170, 255, 0.4);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            font-size: 1.2rem;
+        }
+
+        /* --- HEADER NAVIGATION --- */
+        .header-nav {
+            margin-top: 2.5em;
+        }
+
+        .header-nav ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 1.5rem 2.8rem 1rem;
+            gap: 1.5rem 1.8rem;
+        
+        }
+
+        .header-nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1em;
+            padding: 0.6em 1.2em;
+            border-radius: 50px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(240, 240, 240, 0.5);
+            transition: background-color 0.3s ease;
+        }
+
+        .header-nav a:hover {
+            background-color: var(--text-light);
+            color: var(--header-bg);
+            border-color: var(--text-light);
+        }
+
+        /* --- CATEGORY SECTION --- */
+        main {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 2.5rem 1rem;
+        }
+        
+        .category-wrapper {
+            margin-bottom: 3rem;
+        }
+
+        .category-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        .category-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.8rem;
+            color: var(--text-light);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 1rem;
+            display: inline-block;
+            margin: 0;
+        }
+
+        /* --- MASONRY GRID --- */
+        .masonry-grid {
+            column-count: 4;
+            column-gap: 1.25rem;
+        }
+        
+        .masonry-item {
+            display: inline-block;
+            width: 100%;
+            margin-bottom: 1.25rem;
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            background: var(--card-bg);
+        }
+        
+        .masonry-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            background-color: #333;
+        }
+        
+        .masonry-item .content-container {
+            padding: 1.5rem;
+        }
+
+        .masonry-item .title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.6rem;
+            line-height: 1.3;
+            margin: 0;
+            color: var(--text-light);
+        }
+
+        /* --- HOVER EFFECT --- */
+        .masonry-item .image-container {
+            position: relative;
+        }
+
+        .masonry-item .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            text-align: left;
+            padding: 1.5rem;
+            box-sizing: border-box;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .masonry-item:hover .overlay {
+            opacity: 1;
+        }
+        
+        .masonry-item .description {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin: 0 0 1.5rem 0;
+        }
+        
+        .masonry-item .view-analysis-btn {
+            display: inline-block;
+            background-color: var(--header-bg);
+            color: white;
+            text-decoration: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 50px;
+            font-weight: 500;
+            align-self: flex-start;
+            transition: background-color 0.3s ease;
+        }
+        
+        .masonry-item .view-analysis-btn:hover {
+            background-color: var(--accent-color);
+            color: var(--header-bg);
+        }
+        
+        /* --- FOOTER SECTIONS --- */
+        .explore-further-section, .pdf-library-section {
+            text-align: center;
+            background-color: #2c2c2c;
+            color: var(--text-light);
+            border-radius: 20px;
+            padding: 2.5rem 1.5rem;
+            margin: 4rem auto 2rem auto;
+            max-width: 1200px;
+        }
+
+        .explore-further-section h3, .pdf-library-section h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.5rem;
+            margin: 0 1rem 0;
+            color: white;
+        }
+
+        .explore-further-section p, .pdf-library-description {
+            max-width: 600px;
+            margin: 0 auto 2rem auto;
+            font-size: 1.1em;
+            opacity: 0.8;
+            color: #bdc3c7;
+        }
+
+        .footer-nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem 1.5rem;
+            list-style: none;
+            padding:0;
+            margin: 0 0 2rem 0;
+        }
+        
+        .social-links a {
+            color: #bdc3c7;
+            font-size: 1.8rem;
+            margin: 0 0.75rem;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .social-links a:hover {
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .pdf-library-button {
+            display: inline-block;
+            background-color: white;
+            color: #34495e;
+            padding: 1rem 2.5rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        .pdf-library-button:hover {
+            transform: scale(1.05);
+            background-color: #f0f0f0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5em 0;
+            background-color: var(--header-bg);
+            color: #95a5a6;
+            font-size: 0.9em;
+            margin-top: 2em;
+        }
+
+        .footer-nav a {
+        color: #ecf0f1;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 1.1em;
+        transition: color 0.3s ease;
+        }
+       
+        .footer-nav a:hover {
+        color: white;
+        text-decoration: underline;
+        }
+        
+        .no-results {
+            width: 100%;
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-light);
+            font-size: 1.2rem;
+            column-span: all;
+        }
+
+        /* --- RESPONSIVENESS --- */
+        @media (max-width: 1200px) { .masonry-grid { column-count: 3; } }
+        @media (max-width: 992px) { .masonry-grid { column-count: 2; } }
+        @media (max-width: 576px) { .masonry-grid { column-count: 1; } }
+    </style>
 </head>
 <body>
-    <header>
+
+    <header class="site-header">
         <h1>The Tech Dossier</h1>
-        <h2>Interactive analyses of consumer technology, automobiles, and motorcycles.</h2>
-        <nav>
+        <p>Interactive analyses of consumer technology, automobiles, and motorcycles.</p>
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search this page (e.g., 'BMW', 'Gaming PC', 'Sony')...">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+        <nav class="header-nav">
             <ul>
                 <li><a href="index.html">The Physician's Ledger</a></li>
                 <li><a href="tech-dossier.html">The Tech Dossier</a></li>
-                <li><a href="civic-spectrum.html">The Civic Spectrum</a></li>
-                <li><a href="research-articles.html">All PDF Reports</a></li>
+                <li><a href="civic-spectrum.html">The Civic Spectrum</a></li>           
+                <li><a href="research-articles.html">PDF Library</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
-        <section class="category-section">
-            <h2 class="category-title">Bikes</h2>
-            <div class="project-grid">
-
-           <div class="project-card">
-                    <img src="https://imgd.aeplcdn.com/664x374/n/bw/models/colors/kawasaki-select-model-metallic-spark-black-1694437893301.png?q=80">
-                    <div class="project-card-content">
-                        <h4>Kawasaki Ninja ZX-4R: The 400cc Anomaly</h4>
-                        <p>An interactive deep dive into the high-revving, inline-four legend. Explore its performance, competitors, and the core dilemma it presents to buyers.</p>
-                        <a href="Interactive Analyses/Tech dossier/Ninja ZX-4R.html" target="_blank">View The Analysis</a>
-                    </div>
-                </div>
-
-  <div class="project-card">
-                    <img src="https://imgd.aeplcdn.com/664x374/n/cw/ec/1/versions/kawasaki-z900-standard1748939089591.jpg?q=80" alt="Kawasaki Z500" class="project-card-image">
-                    <div class="project-card-content">
-                        <h4>Kawasaki Z500: Fierce Sugomi Style</h4>
-                        <p>An interactive analysis of the potent yet approachable supernaked. Compare it against rivals and explore its features and rider-focused ergonomics.</p>
-                        <a href="Interactive Analyses/Tech dossier/Kawasaki Z500.html" target="_blank">View The Analysis</a>
-                    </div>
-                </div>
-
-  <div class="project-card">
-                     <img src="https://imgd.aeplcdn.com/664x374/n/bw/models/colors/bmw-select-model-style-rallye-1676369960822.png?q=80" alt="BMW R 1250 GS" class="project-card-image">
-                    <div class="project-card-content">
-                        <h4>BMW R 1250 GS: The Definitive Adventure Machine</h4>
-                        <p>Discover the technology, performance, and spirit that make the GS an icon. An interactive look at the king of the adventure motorcycle segment.</p>
-                        <a href="Interactive Analyses/Tech dossier/BMW R 1250 GS.html" target="_blank">View The Analysis</a>
-                    </div>
-                </div>
-
-<div class="project-card">
-                     <img src="https://imgd.aeplcdn.com/0X0/n/cw/ec/129743/duke-200-right-front-three-quarter-2.jpeg?isig=0&q=80" alt="KTM Duke" class="project-card-image">
-                    <div class="project-card-content">
-                        <h4>KTM 160 Duke: A Strategic Market Correction</h4>
-                        <p>This analysis explores why KTM is pivoting to the 160cc segment in India, how it stacks up against rivals, and what it means for riders.</p>
-                        <a href="Interactive Analyses/Tech dossier/KTM 160 Duke.html" target="_blank">View The Analysis</a>
-                    </div>
-                </div>
-
- <div class="project-card">
-                     <img src="https://www.dirtbikes.cz/fotky6719/fotos/_vyr_19785_8430358697379_4.webp" alt="Adventure Motorcycle" class="project-card-image">
-                    <div class="project-card-content">
-                        <h4>The Guerrilla: CFMoto 450MT Analysis</h4>
-                        <p>A deep dive into the CFMoto 450MT, a calculated maneuver to disrupt the sub-500cc adventure motorcycle market with high-spec hardware.</p>
-                        <a href="Interactive Analyses/Tech dossier/The Guerrilla.html" target="_blank">View The Analysis</a>
-                    </div>
-                </div>
-
-
- <div class="project-card">
-                <img src="https://imgd.aeplcdn.com/664x374/n/cw/ec/1/versions/hero-xpulse-210-base1737129107170.jpg?q=80">
-                <div class="project-card-content">
-                       <h4>Hero XPulse 210</h4>
-                       <p>The Hero XPulse 210 is a highly anticipated and speculated upcoming model. The following description is based on expectations of it being an evolution of the current XPulse 200 4V, incorporating Hero's newer engine technology.</p>
-                       <a href="Interactive Analyses/Tech dossier/Hero XPulse 210.html" target="_blank">View The Analysis</a>
-               </div>
-           </div>
-
-
-<div class="project-card">
-                <img src="https://www.heromotocorp.com/content/dam/hero-commerce/in/en/products/premia/content-fragments/karizma-xmr/assets/gallery/updated/5.webp">
-                <div class="project-card-content">
-                       <h4>Hero Karizma XMR 250</h4>
-                       <p>The Hero Karizma XMR is the stunning return of an icon, rebuilt from the ground up for a new generation of riders. Blending legendary lineage with cutting-edge technology and thrilling performance</p>
-                       <a href="Interactive Analyses/Tech dossier/Hero Karizma XMR 250.html" target="_blank">View The Analysis</a>
-               </div>
-           </div>
-
-<div class="project-card">
-                <img src="https://www.royalenfield.com/content/dam/royal-enfield/motorcycles/himalayan/colors/new-studio-shots/kaza-brown/kaza-brown-000.webp">
-                <div class="project-card-content">
-                       <h4>Royal Enfield Himalayan 450</h4>
-                       <p>The Royal Enfield Himalayan 450 marks a significant evolution in the Indian manufacturer's adventure touring lineup, presenting a thoroughly modern machine that retains the rugged, go-anywhere spirit of its predecessor while addressing its key limitations</p>
-                       <a href="Interactive Analyses/Tech dossier/Royal Enfield Himalayan 450.html" target="_blank">View The Analysis</a>
-               </div>
-           </div>
-                
+        <!-- Bikes Section -->
+        <section class="category-wrapper">
+            <div class="category-header">
+                <h2 class="category-title">Bikes</h2>
             </div>
+            <div class="masonry-grid" id="bikes-grid"></div>
+        </section>
+        
+        <!-- Electronics Section -->
+        <section class="category-wrapper">
+            <div class="category-header">
+                <h2 class="category-title">Electronics</h2>
+            </div>
+            <div class="masonry-grid" id="electronics-grid"></div>
         </section>
 
-<section class="category-section">
-            <h2 class="category-title">Electronics</h2>   
-                  <div class="project-grid">
-    <div class="project-card">
-                    <img src="https://images.samsung.com/au/smartphones/galaxy-s25-ultra/buy/product_color_silverBlue_MO.png?imbypass=true" alt="Kawasaki Z500" class="project-card-image">
-                    <div class="project-card-content">
-                        <h4>Samsung Galaxy S25 Ultra</h4>
-                        <p>An interactive analysis of the potent yet approachable supernaked. Compare it against rivals and explore its features and performance -focused software.</p>
-                        <a href="Interactive Analyses/Tech dossier/Samsung Galaxy S25 Ultra.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
+        <!-- Cars Section -->
+        <section class="category-wrapper">
+            <div class="category-header">
+                <h2 class="category-title">Cars</h2>
+            </div>
+            <div class="masonry-grid" id="cars-grid"></div>
+        </section>
 
-   <div class="project-card">
-                    <img src="https://elitehubs.com/cdn/shop/articles/future-gaming-pc-build-2025_1200x.webp?v=1740829993">
-                    <div class="project-card-content">
-                <h4>2025 Gaming PC Build Guide</h4>
-                <p>In the pursuit of peak gaming performance, the term "bottleneck" is often misunderstood as a critical failure. In reality, a bottleneck is an inherent and unavoidable characteristic of any computer system; at any given moment, one component will be the limiting factor preventing infinite performance. </p>
-                  <a href="Interactive Analyses/Tech dossier/2025 Gaming PC Build Guide.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-                                                    
-
- <div class="project-card">
-                <img src="">
-                <div class="project-card-content">
-                       <h4>Sony WH-1000XM6 vs XM5</h4>
-                       <p>The 1000X Legacy For nearly a decade, Sony's 1000X series of wireless over-ear headphones has been the undisputed standard-bearer in the consumer audio market.</p>
-                       <a href="Interactive Analyses/Tech dossier/Sony WH-1000XM6 vs XM5.html" target="_blank">View The Analysis</a>
-               </div>
-              </div>
- </div>                     
-</section>
-
-
-            <section class="category-section">
-            <h2 class="category-title">Cars</h2>   
-            <div class="project-grid">
-
-    <div class="project-card">
-                    <img src="https://www.usnews.com/object/image/00000198-e2de-d2dd-adf9-eade0f620000/2026-volvo-xc60-phev-front-three-quarter-view-ak.jpg?update-time=1756152860488&size=responsive640&format=webp">
-                    <div class="project-card-content">
-                <h4>2026 Volvo XC60</h4>
-                <p>The 2026 Volvo XC60 enhances its legacy of safety, comfort, and Scandinavian design with key technological upgrades and refined styling, reinforcing its position in the competitive luxury SUV market.</p>
-                  <a href="Interactive Analyses/Cars & Bikes/2026 Volvo XC60.html" target="_blank">View The Analysis</a>
-                    </div>
-                    </div>
-
-                <div class="project-card">
-                <img src="https://images-porsche.imgix.net/-/media/5CCEFD7BFDEC44B0BFEDD8FC51856632_A716CD4802D241E3BE787EF14B813101_911-gt3-rs-side?w=1400&q=85&crop=faces%2Centropy%2Cedges&auto=format" alt="Kawasaki Z500" class="project-card-image">
-                <div class="project-card-content">
-                       <h4>Porsche 911 GT3 RS</h4>
-                       <p>Porsche has long been synonymous with exceptional automotive engineering, a reputation built on decades of pushing the boundaries of....</p>
-                       <a href="Interactive Analyses/Cars & Bikes/911 GT3 RS.html" target="_blank">View The Analysis</a>
-               </div>
-           </div>
-
-            
-<div class="project-card">
-                <img src="https://media.licdn.com/dms/image/v2/D5612AQHGS70N_iJqLw/article-cover_image-shrink_720_1280/B56ZdpJIR1HoAI-/0/1749815691921?e=2147483647&v=beta&t=Snk51xndPw3aBb1kvr9GpYQZJHedYSGqqNzv1XPlolc">
-                <div class="project-card-content">
-                       <h4>EV Buying Guide: India (2024-2025)</h4>
-                       <p>The decision to purchase an electric vehicle (EV) in India extends far beyond the vehicle's specifications and price tag. It is an investment into a rapidly evolving ecosystem shaped by government policy, infrastructure development, and market dynamics</p>
-                       <a href="Interactive Analyses/Cars & Bikes/EV Buying Guide: India (2024-2025).html" target="_blank">View The Analysis</a>
-               </div>
-           </div>
-
-<div class="project-card">
-                <img src="https://mclaren.scene7.com/is/image/mclaren/mclaren-artura-spider-2:crop-16x9?wid=1600&hei=900">
-                <div class="project-card-content">
-                       <h4>McLaren Artura Spider</h4>
-                       <p>The Artura Spider is McLaren's first-ever high-performance hybrid convertible, blending breathtaking performance, a lightweight carbon fibre architecture, and the thrill of open-top driving.</p>
-                       <a href="Interactive Analyses/Cars & Bikes/McLaren Artura Spider.html" target="_blank">View The Analysis</a>
-               </div>
-           </div>                
-
-    </div>                     
-</section>
-        
-    <section class="explore-further-section">
-        <h3>Explore Further</h3>
-        <p>Navigate to other sections or connect with me on social media.</p>
-        <ul class="footer-nav">
-            <li><a href="index.html">The Physician's Ledger</a></li>
-            <li><a href="tech-dossier.html">The Tech Dossier</a></li>
-            <li><a href="civic-spectrum.html">The Civic Spectrum</a></li>
-            <li><a href="research-articles.html">PDF Library</a></li>
-        </ul>
-        <div class="social-links">
-            <a href="#" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
-            <a href="#" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
-        </div>
-    </section>
-
-
-  <section class="category-section pdf-library-section">
-            <h2 class="category-title">Comprehensive PDF Report Library</h2>
-            <p class="pdf-library-description"> I have compiled an extensive library of detailed PDF reports covering a wide range of topics from medical careers to in-depth automotive research. Click the button below to find the detailed report of this analyse and to explore the full collection.</p>
+        <section class="explore-further-section">
+            <h3>Explore Further</h3>
+            <p>Navigate to other sections or connect with me on social media.</p>
+            <ul class="footer-nav">
+                <li><a href="index.html">The Physician's Ledger</a></li>
+                <li><a href="tech-dossier.html">The Tech Dossier</a></li>
+                <li><a href="civic-spectrum.html">The Civic Spectrum</a></li>
+                <li><a href="research-articles.html">PDF Library</a></li>
+            </ul>
+            <div class="social-links">
+                <a href="#" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+                <a href="https://www.youtube.com/@deeplyresearched" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+            </div>
+        </section>
+    
+        <section class="pdf-library-section">
+            <h2>Comprehensive PDF Report Library</h2>
+            <p class="pdf-library-description">I have compiled an extensive library of detailed PDF reports. Click the button below to find the detailed report of this analysis and to explore the full collection.</p>
             <a href="research-articles.html" class="pdf-library-button">Explore All PDF Reports</a>
         </section>
     </main>
-
+    
     <footer>
         <p>© 2025 @deeplyresearched</p>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const analysesData = {
+                bikes: [
+                    { title: "Kawasaki Ninja ZX-4R", description: "An interactive deep dive into the high-revving, inline-four legend.", link: "Interactive Analyses/Tech dossier/Ninja ZX-4R.html", image: "https://imgd.aeplcdn.com/664x3T4/n/bw/models/colors/kawasaki-select-model-metallic-spark-black-1694437893301.png?q=80", tags: "kawasaki bike motorcycle sport" },
+                    { title: "Kawasaki Z500", description: "An interactive analysis of the potent yet approachable supernaked.", link: "Interactive Analyses/Tech dossier/Kawasaki Z500.html", image: "https://imgd.aeplcdn.com/664x374/n/cw/ec/1/versions/kawasaki-z900-standard1748939089591.jpg?q=80", tags: "kawasaki bike motorcycle naked" },
+                    { title: "BMW R 1250 GS", description: "Discover the technology, performance, and spirit that make the GS an icon.", link: "Interactive Analyses/Tech dossier/BMW R 1250 GS.html", image: "https://imgd.aeplcdn.com/664x374/n/bw/models/colors/bmw-select-model-style-rallye-1676369960822.png?q=80", tags: "bmw bike motorcycle adventure" },
+                    { title: "KTM 160 Duke", description: "This analysis explores why KTM is pivoting to the 160cc segment in India.", link: "Interactive Analyses/Tech dossier/KTM 160 Duke.html", image: "https://imgd.aeplcdn.com/0X0/n/cw/ec/129743/duke-200-right-front-three-quarter-2.jpeg?isig=0&q=80", tags: "ktm duke bike motorcycle" },
+                    { title: "The Guerrilla: CFMoto 450MT", description: "A deep dive into the CFMoto 450MT, a calculated maneuver to disrupt the market.", link: "Interactive Analyses/Tech dossier/The Guerrilla.html", image: "https://www.dirtbikes.cz/fotky6719/fotos/_vyr_19785_8430358697379_4.webp", tags: "cfmoto bike adventure" },
+                    { title: "Hero XPulse 210", description: "An evolution of the current XPulse 200 4V, incorporating newer engine technology.", link: "Interactive Analyses/Tech dossier/Hero XPulse 210.html", image: "https://imgd.aeplcdn.com/664x374/n/cw/ec/1/versions/hero-xpulse-210-base1737129107170.jpg?q=80", tags: "hero xpulse bike adventure" },
+                    { title: "Hero Karizma XMR 250", description: "The stunning return of an icon, rebuilt for a new generation of riders.", link: "Interactive Analyses/Tech dossier/Hero Karizma XMR 250.html", image: "https://www.heromotocorp.com/content/dam/hero-commerce/in/en/products/premia/content-fragments/karizma-xmr/assets/gallery/updated/5.webp", tags: "hero karizma bike sport" },
+                    { title: "Royal Enfield Himalayan 450", description: "A significant evolution in the adventure touring lineup, presenting a thoroughly modern machine.", link: "Interactive Analyses/Tech dossier/Royal Enfield Himalayan 450.html", image: "https://www.royalenfield.com/content/dam/royal-enfield/motorcycles/himalayan/colors/new-studio-shots/kaza-brown/kaza-brown-000.webp", tags: "royal enfield himalayan bike adventure" }
+                ],
+                electronics: [
+                    { title: "Samsung Galaxy S25 Ultra", description: "An interactive analysis of the potent yet approachable supernaked.", link: "Interactive Analyses/Tech dossier/Samsung Galaxy S25 Ultra.html", image: "https://images.samsung.com/au/smartphones/galaxy-s25-ultra/buy/product_color_silverBlue_MO.png?imbypass=true", tags: "samsung phone smartphone android" },
+                    { title: "2025 Gaming PC Build Guide", description: "A guide to understanding and avoiding bottlenecks in PC performance.", link: "Interactive Analyses/Tech dossier/2025 Gaming PC Build Guide.html", image: "https://elitehubs.com/cdn/shop/articles/future-gaming-pc-build-2025_1200x.webp?v=1740829993", tags: "pc gaming computer build hardware" },
+                    { title: "Sony WH-1000XM6 vs XM5", description: "A look at the legacy of Sony's 1000X series of wireless headphones.", link: "Interactive Analyses/Tech dossier/Sony WH-1000XM6 vs XM5.html", image: "", tags: "sony headphones audio wh-1000xm6" }
+                ],
+                cars: [
+                    { title: "2026 Volvo XC60", description: "Enhancing a legacy of safety, comfort, and Scandinavian design.", link: "Interactive Analyses/Cars & Bikes/2026 Volvo XC60.html", image: "https://www.usnews.com/object/image/00000198-e2de-d2dd-adf9-eade0f620000/2026-volvo-xc60-phev-front-three-quarter-view-ak.jpg?update-time=1756152860488&size=responsive640&format=webp", tags: "volvo xc60 suv car" },
+                    { title: "Porsche 911 GT3 RS", description: "Porsche's reputation for exceptional engineering, pushing the boundaries.", link: "Interactive Analyses/Cars & Bikes/911 GT3 RS.html", image: "https://images-porsche.imgix.net/-/media/5CCEFD7BFDEC44B0BFEDD8FC51856632_A716CD4802D241E3BE787EF14B813101_911-gt3-rs-side?w=1400&q=85&crop=faces%2Centropy%2Cedges&auto=format", tags: "porsche 911 car sportscar" },
+                    { title: "EV Buying Guide: India (2024-2025)", description: "An investment into a rapidly evolving ecosystem shaped by policy and infrastructure.", link: "Interactive Analyses/Cars & Bikes/EV Buying Guide: India (2024-2025).html", image: "https://media.licdn.com/dms/image/v2/D5612AQHGS70N_iJqLw/article-cover_image-shrink_720_1280/B56ZdpJIR1HoAI-/0/1749815691921?e=2147483647&v=beta&t=Snk51xndPw3aBb1kvr9GpYQZJHedYSGqqNzv1XPlolc", tags: "ev electric car india guide" },
+                    { title: "McLaren Artura Spider", description: "McLaren's first-ever high-performance hybrid convertible.", link: "Interactive Analyses/Cars & Bikes/McLaren Artura Spider.html", image: "https://mclaren.scene7.com/is/image/mclaren/mclaren-artura-spider-2:crop-16x9?wid=1600&hei=900", tags: "mclaren artura car supercar" }
+                ]
+            };
+
+            const searchInput = document.getElementById('search-input');
+
+            // --- RENDER FUNCTION ---
+            const renderItems = (containerId, items) => {
+                const grid = document.getElementById(containerId);
+                if (!grid) return;
+                grid.innerHTML = '';
+                items.forEach(item => {
+                    const gridItem = document.createElement('div');
+                    gridItem.className = 'masonry-item';
+                    gridItem.innerHTML = `
+                        <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="image-container">
+                            <img src="${item.image}" alt="${item.title}" loading="lazy">
+                            <div class="overlay">
+                                <p class="description">${item.description}</p>
+                                <span class="view-analysis-btn">View Analysis</span>
+                            </div>
+                        </a>
+                        <div class="content-container">
+                            <h3 class="title">${item.title}</h3>
+                        </div>
+                    `;
+                    grid.appendChild(gridItem);
+                });
+            };
+
+            // --- SEARCH/FILTER FUNCTION ---
+            const filterAndRender = () => {
+                const query = searchInput.value.toLowerCase().trim();
+                let totalVisible = 0;
+
+                Object.keys(analysesData).forEach(category => {
+                    const gridId = `${category}-grid`;
+                    const items = analysesData[category];
+                    const categoryWrapper = document.getElementById(gridId).closest('.category-wrapper');
+
+                    const filteredItems = items.filter(item => 
+                        item.title.toLowerCase().includes(query) ||
+                        item.description.toLowerCase().includes(query) ||
+                        (item.tags && item.tags.toLowerCase().includes(query))
+                    );
+
+                    renderItems(gridId, filteredItems);
+
+                    if (filteredItems.length > 0) {
+                        categoryWrapper.style.display = 'block';
+                        totalVisible += filteredItems.length;
+                    } else {
+                        categoryWrapper.style.display = 'none';
+                    }
+                });
+                // Optional: You could add a "no results found" message here if totalVisible is 0
+            };
+
+            searchInput.addEventListener('input', filterAndRender);
+
+            // --- INITIAL RENDER ---
+            renderItems('bikes-grid', analysesData.bikes);
+            renderItems('electronics-grid', analysesData.electronics);
+            renderItems('cars-grid', analysesData.cars);
+        });
+    </script>
 </body>
 </html>
+
