@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 BMW 3-Series & M3: Electrifying Performance & Design</title>
+    <meta name="description" content="Explore the 2026 BMW 3-Series & M3, built on the Neue Klasse platform. Discover its electric-first future, radical design, megawatt M power, and advanced tech in our interactive report.">
+    <meta name="keywords" content="2026 BMW 3-Series, BMW M3 2026, BMW Neue Klasse platform, Electric BMW 3-Series, BMW i3 2026, BMW M3 EV, Future BMW models, Next-gen BMW 3-Series, BMW electric sedan, Luxury performance EV, BMW M performance, BMW Vision Neue Klasse, 800-volt EV architecture, Panoramic Vision BMW, BMW powertrain">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+  
+    <!-- Chosen Palette: Modern Executive -->
+    <!-- Application Structure Plan: The SPA is designed with a top-down thematic flow, starting with a high-level overview and progressively delving into specifics (Platform -> Design -> Powertrains -> Comparison). A sticky navigation bar allows users to either follow this logical path or jump directly to their area of interest. This structure was chosen over a simple linear report because it caters to different user behaviors; some may want a full briefing, while others might only care about the M3's performance. The interactive chart at the end serves as a data-driven summary, allowing users to synthesize the information according to their own priorities (e.g., comparing range vs. power). -->
+    <!-- Visualization & Content Choices: Report Info: Key platform benefits (range, charging speed) -> Goal: Inform -> Viz/Presentation Method: Icon-based HTML/CSS cards -> Interaction: Simple hover effects -> Justification: Easily digestible highlights of the core technology shift. Report Info: Different powertrain types (EV, ICE, M) -> Goal: Organize/Compare -> Viz/Presentation Method: JS-powered filter buttons controlling visibility of text blocks -> Interaction: Click to filter -> Justification: Allows users to focus on one powertrain category at a time, reducing cognitive load. Report Info: Estimated performance specs across models -> Goal: Compare -> Viz/Presentation Method: Chart.js Horizontal Bar Chart -> Interaction: Buttons to dynamically change the displayed metric (Power, Range, Acceleration) -> Justification: A horizontal bar chart is excellent for comparing different items on the same scale. The interactivity empowers users to directly compare models based on the criteria most important to them, making the data more personal and useful. -> Library/Method: Chart.js/Canvas. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f7f4;
+            color: #1a1a1a;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 500px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-color 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #0066cc;
+            border-bottom-color: #0066cc;
+        }
+        .btn {
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background-color: #0066cc;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0052a3;
+        }
+        .btn-secondary {
+            background-color: #e0e0e0;
+            color: #1a1a1a;
+        }
+        .btn-secondary.active {
+            background-color: #0066cc;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn-secondary:hover:not(.active) {
+            background-color: #c7c7c7;
+        }
+ 
+      /* --- FOOTER SECTIONS --- */
+        .explore-further-section, .pdf-library-section {
+            text-align: center;
+            background-color: #2c2c2c;
+            color: var(--text-light);
+            border-radius: 20px;
+            padding: 2.5rem 1.5rem;
+            margin: 4rem auto 2rem auto;
+            max-width: 1200px;
+        }
+
+        .explore-further-section h3, .pdf-library-section h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.5rem;
+            margin: 0 1rem 0;
+            color: white;
+        }
+
+        .explore-further-section p, .pdf-library-description {
+            max-width: 600px;
+            margin: 0 auto 2rem auto;
+            font-size: 1.1em;
+            opacity: 0.8;
+            color: #bdc3c7;
+        }
+
+        .footer-nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.8rem 6rem;
+            list-style: none;
+            padding:0;
+            margin: 0 0 2rem 0;
+        }
+        
+        .social-links a {
+            color: #bdc3c7;
+            font-size: 1.8rem;
+            margin: 0 0.75rem;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .social-links a:hover {
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .pdf-library-button {
+            display: inline-block;
+            background-color: white;
+            color: #34495e;
+            padding: 1rem 2.5rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        .pdf-library-button:hover {
+            transform: scale(1.05);
+            background-color: #f0f0f0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5em 0;
+            background-color: var(--header-bg);
+            color: #95a5a6;
+            font-size: 0.9em;
+            margin-top: 2em;
+        }
+
+        .footer-nav a {
+        color: #ecf0f1;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 1.1em;
+        transition: color 0.3s ease;
+        }
+       
+        .footer-nav a:hover {
+        color: white;
+        text-decoration: underline;
+        }
+        
+        .no-results {
+            width: 100%;
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-light);
+            font-size: 1.2rem;
+            column-span: all;
+        }
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="header" class="bg-white/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-gray-800">2026 3-Series</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Overview</a>
+                        <a href="#platform" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Platform</a>
+                        <a href="#design" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Design</a>
+                        <a href="#powertrains" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Powertrains</a>
+                        <a href="#comparison" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Comparison</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="overview" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900">A New Era for an Icon</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">The upcoming 2026 BMW 3-Series marks the most significant transformation in the model's history. Built on the revolutionary "Neue Klasse" architecture, it embraces an electric-first future while honoring its legacy of performance. This report explores the foundational shifts in platform, design, and power that will define the next generation of the ultimate sports sedan.</p>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                    <div class="p-6 bg-gray-50 rounded-lg">
+                        <h3 class="text-lg font-semibold text-gray-900">EV-First Architecture</h3>
+                        <p class="mt-2 text-gray-600">The "Neue Klasse" platform is a dedicated EV architecture also capable of housing advanced hybrid and petrol engines.</p>
+                    </div>
+                    <div class="p-6 bg-gray-50 rounded-lg">
+                        <h3 class="text-lg font-semibold text-gray-900">Radical Design Shift</h3>
+                        <p class="mt-2 text-gray-600">Inspired by the Vision Neue Klasse concept, expect a minimalist, digital-first aesthetic inside and out.</p>
+                    </div>
+                    <div class="p-6 bg-gray-50 rounded-lg">
+                        <h3 class="text-lg font-semibold text-gray-900">Megawatt M Power</h3>
+                        <p class="mt-2 text-gray-600">The next M3 is rumored to feature a quad-motor electric powertrain, potentially delivering over 1,300 horsepower.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="platform" class="py-16 md:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">The Foundation: Neue Klasse</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">The Neue Klasse platform is more than just a chassis; it's a complete rethink of BMW's engineering philosophy. This new architecture is the key to unlocking next-generation efficiency, performance, and digital experiences across the lineup, starting with the new 3-Series.</p>
+                </div>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-8 rounded-lg shadow-sm text-center">
+                        <div class="text-4xl text-blue-600 mb-4">🔋</div>
+                        <h3 class="text-xl font-semibold mb-2">30% More Range</h3>
+                        <p class="text-gray-600">BMW's new Gen6 round battery cells and improved aerodynamics are projected to increase driving range by up to 30% compared to current models.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-lg shadow-sm text-center">
+                        <div class="text-4xl text-blue-600 mb-4">⚡</div>
+                        <h3 class="text-xl font-semibold mb-2">30% Faster Charging</h3>
+                        <p class="text-gray-600">The 800-volt architecture will enable significantly faster DC charging, adding substantial range in just a few minutes.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-lg shadow-sm text-center">
+                        <div class="text-4xl text-blue-600 mb-4">🧠</div>
+                        <h3 class="text-xl font-semibold mb-2">"Digital Brain" Processing</h3>
+                        <p class="text-gray-600">Four new high-performance computers will manage everything from driving dynamics to the next-generation iDrive and infotainment systems.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="design" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">A Visionary Design Revolution</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">Drawing heavily from the "Vision Neue Klasse" concept, the 2026 3-Series will feature a clean, monolithic design that reinterprets classic BMW cues for a new, digital age. The focus is on expansive glass, flush surfaces, and an intelligent, interactive approach to lighting and displays.</p>
+                </div>
+                <div class="mt-12 grid md:grid-cols-2 gap-12 items-start">
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-4 text-gray-800">Exterior: Reductive & Powerful</h3>
+                        <p class="text-gray-600 mb-6">The exterior sheds complex lines for broad, clean surfaces. Expect a modern take on the "shark nose" front end, with the kidney grilles evolving into an intelligent surface for sensors and lighting signatures. Large windows and a low beltline will create a feeling of spaciousness.</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-start"><span class="text-blue-500 font-bold mr-3">›</span><span>Modern interpretation of classic kidney grille and Hofmeister kink.</span></li>
+                            <li class="flex items-start"><span class="text-blue-500 font-bold mr-3">›</span><span>Flush, sensor-based door handles for improved aerodynamics.</span></li>
+                            <li class="flex items-start"><span class="text-blue-500 font-bold mr-3">›</span><span>3D-printed light elements at the front and rear for unique visual effects.</span></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-4 text-gray-800">Interior: The Digital Experience</h3>
+                        <p class="text-gray-600 mb-6">The cabin undergoes a radical simplification. The traditional instrument cluster is replaced by "Panoramic Vision," a display projected across the entire width of the windshield. A central parallelogram-shaped touchscreen and advanced voice commands will be the primary interfaces.</p>
+                         <ul class="space-y-3">
+                            <li class="flex items-start"><span class="text-blue-500 font-bold mr-3">›</span><span>"Panoramic Vision" head-up display replaces the traditional gauge cluster.</span></li>
+                            <li class="flex items-start"><span class="text-blue-500 font-bold mr-3">›</span><span>Next-generation iDrive on a central, uniquely shaped touchscreen.</span></li>
+                            <li class="flex items-start"><span class="text-blue-500 font-bold mr-3">›</span><span>Focus on sustainable, high-quality materials and a lounge-like atmosphere.</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="powertrains" class="py-16 md:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Powering the Future</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">The 2026 3-Series will offer a diverse powertrain lineup, catering to all enthusiasts. From highly efficient all-electric models to updated mild-hybrid petrol engines and a groundbreaking electric M3, the "Power of Choice" remains a core BMW principle. Select a category below to explore the future of performance.</p>
+                </div>
+                <div class="mt-8 max-w-lg mx-auto flex justify-center space-x-2 sm:space-x-4">
+                    <button data-filter="ev" class="powertrain-filter btn btn-secondary active text-xs sm:text-base px-4 py-2 rounded-full font-semibold">All-Electric</button>
+                    <button data-filter="ice" class="powertrain-filter btn btn-secondary text-xs sm:text-base px-4 py-2 rounded-full font-semibold">Petrol & Hybrid</button>
+                    <button data-filter="m" class="powertrain-filter btn btn-secondary text-xs sm:text-base px-4 py-2 rounded-full font-semibold">The M Division</button>
+                </div>
+                <div id="powertrain-details" class="mt-8 max-w-3xl mx-auto">
+                    <div data-content="ev" class="powertrain-content bg-white p-8 rounded-lg shadow-sm">
+                        <h3 class="text-2xl font-bold mb-3">The All-Electric "i3"</h3>
+                        <p class="text-gray-600">The electric variants will be the heart of the new lineup. Leveraging the Neue Klasse platform's full potential, the new "i3" models will offer both rear-wheel drive and xDrive all-wheel drive configurations. Expect instant torque, silent cruising, and impressive range figures that make electric driving more practical than ever. These models will set a new benchmark for efficiency and performance in the premium electric sedan segment.</p>
+                    </div>
+                    <div data-content="ice" class="powertrain-content bg-white p-8 rounded-lg shadow-sm hidden">
+                        <h3 class="text-2xl font-bold mb-3">Advanced Petrol & Hybrid</h3>
+                        <p class="text-gray-600">BMW is not abandoning its heritage. Updated versions of the acclaimed B48 four-cylinder and B58 six-cylinder engines will be available. Enhanced with 48-volt mild-hybrid technology, these powerplants will be more efficient and responsive, designed to meet strict Euro 7 emissions standards while still delivering the smooth, powerful performance expected from a BMW 3-Series.</p>
+                    </div>
+                    <div data-content="m" class="powertrain-content bg-white p-8 rounded-lg shadow-sm hidden">
+                        <h3 class="text-2xl font-bold mb-3">A New Dimension of M</h3>
+                        <p class="text-gray-600">The future of the M3 is shaping up to be truly electrifying. Rumors point to a quad-motor EV variant with sophisticated torque vectoring, capable of producing up to one megawatt of power—equivalent to 1,341 horsepower. While an updated six-cylinder petrol M3 is also anticipated to continue the legacy, the electric M car promises to deliver a level of performance and dynamic control previously unimaginable.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="comparison" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Model Performance Comparison</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">Explore the estimated performance figures for the upcoming 2026 3-Series lineup. Use the buttons below to dynamically update the chart and compare the models based on peak horsepower, estimated range, or acceleration. All data is based on industry reports and expert projections.</p>
+                </div>
+                <div class="mt-8 flex justify-center space-x-2 sm:space-x-4">
+                     <button data-metric="hp" class="metric-btn btn btn-primary px-4 py-2 rounded-md font-semibold">Horsepower</button>
+                     <button data-metric="range" class="metric-btn btn btn-secondary px-4 py-2 rounded-md font-semibold">Est. Range (mi)</button>
+                     <button data-metric="accel" class="metric-btn btn btn-secondary px-4 py-2 rounded-md font-semibold">0-60 mph (sec)</button>
+                </div>
+                <div class="mt-8 chart-container">
+                    <canvas id="modelComparisonChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="explore-further-section">
+            <h3>Explore Further</h3>
+            <p>Navigate to other sections or connect with me on social media.</p>
+            <ul class="footer-nav">
+                <li><a href="index.html">The Physician's Ledger</a></li>
+                <li><a href="tech-dossier.html">The Tech Dossier</a></li>
+                <li><a href="civic-spectrum.html">The Civic Spectrum</a></li>
+                <li><a href="research-articles.html">PDF Library</a></li>
+            </ul>
+            <div class="social-links">
+                <a href="#" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+                <a href="https://www.youtube.com/@deeplyresearched" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+            </div>
+        </section>
+    
+        <section class="pdf-library-section">
+            <h2>Comprehensive PDF Report Library</h2>
+            <p class="pdf-library-description">I have compiled an extensive library of detailed PDF reports. Click the button below to find the detailed report of this analysis and to explore the full collection.</p>
+            <a href="research-articles.html" class="pdf-library-button">Explore All PDF Reports</a>
+        </section>
+      
+    </main>
+    
+    <footer class="bg-gray-800 text-white">
+        <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-sm text-gray-400">Interactive report created for informational purposes. All data for the 2026 BMW 3-Series is speculative and based on public reports and rumors as of September 2025.</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const modelData = {
+        '330i': { name: '330i (Petrol)', hp: 275, range: null, accel: 5.4, type: 'ice' },
+        'M340i': { name: 'M340i (Petrol)', hp: 400, range: null, accel: 4.1, type: 'ice' },
+        'i3 RWD': { name: 'i3 40 (RWD)', hp: 350, range: 450, accel: 5.2, type: 'ev' },
+        'i3 xDrive': { name: 'i3 50 xDrive', hp: 480, range: 420, accel: 4.3, type: 'ev' },
+        'M3 ICE': { name: 'M3 (Petrol)', hp: 540, range: null, accel: 3.4, type: 'm' },
+        'M3 EV': { name: 'M3 (Electric)', hp: 1341, range: 350, accel: 2.0, type: 'm' }
+    };
+
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('main section');
+
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.4
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').substring(1) === entry.target.id) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+        });
+    }, observerOptions);
+
+    sections.forEach(section => {
+        observer.observe(section);
+    });
+
+    const powertrainFilters = document.querySelectorAll('.powertrain-filter');
+    const powertrainContents = document.querySelectorAll('.powertrain-content');
+
+    powertrainFilters.forEach(filter => {
+        filter.addEventListener('click', () => {
+            const filterType = filter.dataset.filter;
+            
+            powertrainFilters.forEach(f => f.classList.remove('active'));
+            filter.classList.add('active');
+            
+            powertrainContents.forEach(content => {
+                if (content.dataset.content === filterType) {
+                    content.classList.remove('hidden');
+                } else {
+                    content.classList.add('hidden');
+                }
+            });
+        });
+    });
+
+    const ctx = document.getElementById('modelComparisonChart').getContext('2d');
+    let comparisonChart;
+    let currentMetric = 'hp';
+
+    const metricConfig = {
+        hp: { label: 'Peak Horsepower (HP)', color: 'rgba(0, 102, 204, 0.8)', hoverColor: 'rgba(0, 102, 204, 1)' },
+        range: { label: 'Estimated Range (miles)', color: 'rgba(0, 150, 136, 0.8)', hoverColor: 'rgba(0, 150, 136, 1)' },
+        accel: { label: '0-60 mph Time (seconds)', color: 'rgba(255, 87, 34, 0.8)', hoverColor: 'rgba(255, 87, 34, 1)' }
+    };
+
+    function createChart(metric) {
+        const config = metricConfig[metric];
+        const data = Object.values(modelData).filter(d => d[metric] !== null);
+        
+        if (comparisonChart) {
+            comparisonChart.destroy();
+        }
+
+        comparisonChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.map(d => d.name),
+                datasets: [{
+                    label: config.label,
+                    data: data.map(d => d[metric]),
+                    backgroundColor: config.color,
+                    borderColor: config.hoverColor,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.x !== null) {
+                                    label += context.parsed.x;
+                                    if (metric === 'hp') label += ' HP';
+                                    if (metric === 'range') label += ' mi';
+                                    if (metric === 'accel') label += ' s';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: config.label,
+                            font: { size: 14 }
+                        }
+                    },
+                    y: {
+                        ticks: {
+                             autoSkip: false,
+                             font: { size: 12 }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    const metricBtns = document.querySelectorAll('.metric-btn');
+    metricBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            currentMetric = btn.dataset.metric;
+            metricBtns.forEach(b => {
+                b.classList.remove('btn-primary');
+                b.classList.add('btn-secondary');
+            });
+            btn.classList.add('btn-primary');
+            btn.classList.remove('btn-secondary');
+            createChart(currentMetric);
+        });
+    });
+
+    createChart('hp');
+});
+</script>
+</body>
+</html>
+
