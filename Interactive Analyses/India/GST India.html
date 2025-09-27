@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GST India: Economic Impact of Rate Changes & Analysis</title>
+    <meta name="description" content="Analyze India's GST rate revisions and their economic impact across manufacturing, services, and retail. Interactive charts, key findings, and strategic shifts.">
+    <meta name="keywords" content="GST India, GST rate changes, Economic impact of GST, India GST analysis, GST revisions India, Indian tax reform, Sectoral GST impact, Manufacturing GST, Services GST, Retail GST, GST slab rates, Input Tax Credit, Indian economy impact, Tax policy India">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+  
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The application is designed as a single-page scrolling experience with a fixed top navigation, guiding the user through a logical narrative. It begins with a high-level overview and key metrics, moves to the historical context of rate changes, then allows for an interactive 'deep dive' into specific sectors (the core interactive element), followed by a comparative analysis and a summary of broad economic implications. This structure was chosen to transform a potentially dense report into an exploratory journey, allowing users to either follow the full story or jump directly to the sector-specific analysis that interests them most, thus maximizing engagement and comprehension. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: High-level impact summary -> Goal: Inform -> Viz: Key metric cards -> Interaction: Simple hover effects -> Justification: Provides a quick, digestible summary upfront. Method: HTML/Tailwind.
+        - Report Info: Changes in GST Slabs over time -> Goal: Show Change -> Viz: Line Chart -> Interaction: Filter by product category (conceptualized, base view shown) -> Justification: Clearly illustrates the primary driver of the report's topic. Library: Chart.js.
+        - Report Info: Detailed impact on specific sectors -> Goal: Compare/Drill-Down -> Viz: Bar Chart & Dynamic Text Cards -> Interaction: User selects a sector via buttons, which updates both the chart and the qualitative text panels. -> Justification: This is the core interactive element, connecting quantitative data (chart) with qualitative insights (text) in a user-controlled manner. Library: Chart.js & Vanilla JS.
+        - Report Info: Cross-sector comparison -> Goal: Compare -> Viz: Radar Chart -> Interaction: Hover to see data points -> Justification: Provides an excellent visual summary of how different sectors were impacted relative to each other on multiple axes. Library: Chart.js.
+        - Report Info: GST's role in tax revenue -> Goal: Show Proportion -> Viz: Donut Chart -> Interaction: Hover on segments -> Justification: A simple, effective way to show the significance of GST in the broader economy. Library: Chart.js.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #4A4A4A;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #4A90E2;
+        }
+        .sector-btn {
+            transition: all 0.3s ease;
+        }
+        .sector-btn-active {
+            background-color: #4A90E2 !important;
+            color: #FFFFFF !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .metric-card {
+            transition: all 0.3s ease;
+        }
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-gray-800">GST Impact Analysis</h1>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="#overview" class="text-gray-600 nav-link font-medium">Overview</a>
+                <a href="#evolution" class="text-gray-600 nav-link font-medium">Rate Evolution</a>
+                <a href="#new-structure" class="text-gray-600 nav-link font-medium">Tariff Structure</a>
+                <a href="#slab-details-table" class="text-gray-600 nav-link font-medium">Slab Details</a>
+                <a href="#sectoral" class="text-gray-600 nav-link font-medium">Sectoral Deep Dive</a>
+                <a href="#comparison" class="text-gray-600 nav-link font-medium">Comparison</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <section id="overview" class="text-center min-h-[60vh] flex flex-col justify-center items-center">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">The Economic Ripple Effect of GST Revisions</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-12">
+                An interactive exploration of how cumulative changes to India's Goods and Services Tax (GST) structure have reshaped the economic landscape. This analysis examines the direct and indirect impacts on costs, pricing, and profitability across key industries since its implementation.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
+                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 metric-card">
+                    <h3 class="text-4xl font-bold text-[#4A90E2]">40+</h3>
+                    <p class="text-gray-500 mt-2 font-medium">Major Council Meetings on Rate Revisions</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 metric-card">
+                    <h3 class="text-4xl font-bold text-[#4A90E2]">3 Key</h3>
+                    <p class="text-gray-500 mt-2 font-medium">Sectors Analyzed for Impact</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 metric-card">
+                    <h3 class="text-4xl font-bold text-[#4A90E2]">>300</h3>
+                    <p class="text-gray-500 mt-2 font-medium">Goods & Services with Rate Changes</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="evolution" class="py-20">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-4">The Evolution of GST Rates</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                The GST framework has been dynamic, with numerous revisions aimed at rationalization and responding to economic needs. The chart below illustrates the general trend in the distribution of items across the primary tax slabs, showing a gradual shift towards rate stabilization.
+            </p>
+            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-100">
+                <div class="chart-container">
+                    <canvas id="rateEvolutionChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="new-structure" class="py-20">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-4">Current GST Tariff Structure</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                The current GST regime is primarily structured into five tax slabs for goods and services. This doughnut chart represents the approximate distribution of goods across these slabs, reflecting the government's strategy to tax items based on their necessity and consumption patterns.
+            </p>
+            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-100">
+                <div class="chart-container">
+                    <canvas id="newStructureChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="slab-details-table" class="py-20">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-4">GST Rate Changes by Sector</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                Based on the Next-Gen GST Reforms, this table details the specific rate rationalizations across various sectors. The information is sourced from the Press Information Bureau report and highlights the shift towards a simpler tax structure.
+            </p>
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">Sector / Category</th>
+                            <th scope="col" class="px-6 py-3">Product / Service Example</th>
+                            <th scope="col" class="px-6 py-3 text-center">Old Rate (%)</th>
+                            <th scope="col" class="px-6 py-3 text-center">New Rate (%)</th>
+                            <th scope="col" class="px-6 py-3">Key Impact</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900" rowspan="3">Food & Household</td><td class="px-6 py-4">UHT milk, Paneer, Indian Breads</td><td class="px-6 py-4 text-center">-</td><td class="px-6 py-4 text-center font-bold text-green-600">NIL</td><td class="px-6 py-4">Increases affordability of daily staples.</td></tr>
+                        <tr class="bg-gray-50 border-b"><td class="px-6 py-4">Soaps, Toothpaste, Shampoos</td><td class="px-6 py-4 text-center">-</td><td class="px-6 py-4 text-center font-bold text-green-600">5</td><td class="px-6 py-4">Lowers cost of essential personal care items.</td></tr>
+                        <tr class="bg-white border-b"><td class="px-6 py-4">TVs (>32'), ACs, Dishwashers</td><td class="px-6 py-4 text-center">28</td><td class="px-6 py-4 text-center font-bold text-green-600">18</td><td class="px-6 py-4">Makes consumer durables more accessible.</td></tr>
+                        
+                        <tr class="bg-gray-50 border-b"><td class="px-6 py-4 font-medium text-gray-900" rowspan="2">Home Building</td><td class="px-6 py-4">Cement</td><td class="px-6 py-4 text-center">28</td><td class="px-6 py-4 text-center font-bold text-green-600">18</td><td class="px-6 py-4">Boosts housing and infrastructure projects.</td></tr>
+                        <tr class="bg-white border-b"><td class="px-6 py-4">Marble, Granite, Bricks</td><td class="px-6 py-4 text-center">12</td><td class="px-6 py-4 text-center font-bold text-green-600">5</td><td class="px-6 py-4">Reduces cost of construction materials.</td></tr>
+
+                        <tr class="bg-gray-50 border-b"><td class="px-6 py-4 font-medium text-gray-900" rowspan="2">Automobile</td><td class="px-6 py-4">Small cars, Two-wheelers (≤350cc)</td><td class="px-6 py-4 text-center">28</td><td class="px-6 py-4 text-center font-bold text-green-600">18</td><td class="px-6 py-4">Relief for middle-class vehicle buyers.</td></tr>
+                        <tr class="bg-white border-b"><td class="px-6 py-4">Buses, Trucks, Auto Parts</td><td class="px-6 py-4 text-center">28</td><td class="px-6 py-4 text-center font-bold text-green-600">18</td><td class="px-6 py-4">Supports transport and auto manufacturing.</td></tr>
+
+                        <tr class="bg-gray-50 border-b"><td class="px-6 py-4 font-medium text-gray-900">Agriculture</td><td class="px-6 py-4">Tractors, Harvesters, Sprinklers</td><td class="px-6 py-4 text-center">12</td><td class="px-6 py-4 text-center font-bold text-green-600">5</td><td class="px-6 py-4">Lowers farming costs and supports farmers.</td></tr>
+                        
+                        <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900" rowspan="2">Services</td><td class="px-6 py-4">Hotel stays (up to ₹7,500/day)</td><td class="px-6 py-4 text-center">12</td><td class="px-6 py-4 text-center font-bold text-green-600">5</td><td class="px-6 py-4">Boosts tourism and hospitality industry.</td></tr>
+                        <tr class="bg-gray-50 border-b"><td class="px-6 py-4">Gyms, Salons, Yoga services</td><td class="px-6 py-4 text-center">18</td><td class="px-6 py-4 text-center font-bold text-green-600">5</td><td class="px-6 py-4">Promotes wellness and service sector growth.</td></tr>
+                        
+                        <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900">Education</td><td class="px-6 py-4">Exercise books, Pencils, Crayons</td><td class="px-6 py-4 text-center">12</td><td class="px-6 py-4 text-center font-bold text-green-600">NIL</td><td class="px-6 py-4">Makes essential learning materials affordable.</td></tr>
+                        
+                        <tr class="bg-gray-50 border-b"><td class="px-6 py-4 font-medium text-gray-900" rowspan="2">Medical</td><td class="px-6 py-4">33 Life-saving drugs</td><td class="px-6 py-4 text-center">12</td><td class="px-6 py-4 text-center font-bold text-green-600">NIL</td><td class="px-6 py-4">Improves access to critical healthcare.</td></tr>
+                        <tr class="bg-white border-b"><td class="px-6 py-4">Other Medicines, Medical Devices</td><td class="px-6 py-4 text-center">12-18</td><td class="px-6 py-4 text-center font-bold text-green-600">5</td><td class="px-6 py-4">Reduces overall cost of medical treatment.</td></tr>
+
+                        <tr class="bg-gray-50 border-b"><td class="px-6 py-4 font-medium text-gray-900">Insurance</td><td class="px-6 py-4">Individual Health & Life Insurance</td><td class="px-6 py-4 text-center">18</td><td class="px-6 py-4 text-center font-bold text-green-600">NIL</td><td class="px-6 py-4">Expands financial protection for families.</td></tr>
+                        
+                         <tr class="bg-white"><td class="px-6 py-4 font-medium text-gray-900">Luxury & Sin Goods</td><td class="px-6 py-4">Tobacco, Pan Masala, High-end Cars</td><td class="px-6 py-4 text-center">-</td><td class="px-6 py-4 text-center font-bold text-red-600">40</td><td class="px-6 py-4">Ensures fairness and revenue balance.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="sectoral" class="py-20">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-4">Sectoral Deep Dive</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                Different sectors experienced the impact of GST revisions uniquely. Select a sector below to visualize the effects on key business metrics and to read about the specific challenges and opportunities that emerged. The data reflects the average perceived impact across businesses within each sector.
+            </p>
+            <div class="flex justify-center items-center space-x-2 md:space-x-4 mb-12 bg-gray-100 p-2 rounded-full max-w-md mx-auto">
+                <button id="btn-manufacturing" class="sector-btn w-full text-center px-4 py-3 rounded-full font-semibold text-gray-700 bg-white shadow-sm">Manufacturing</button>
+                <button id="btn-services" class="sector-btn w-full text-center px-4 py-3 rounded-full font-semibold text-gray-700 bg-transparent">Services</button>
+                <button id="btn-retail" class="sector-btn w-full text-center px-4 py-3 rounded-full font-semibold text-gray-700 bg-transparent">Retail</button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
+                <div class="lg:col-span-3 bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-100">
+                    <h3 id="sectoral-chart-title" class="text-xl font-bold text-center text-gray-700 mb-6">Impact on Manufacturing Sector</h3>
+                    <div class="chart-container h-96 max-h-[450px]">
+                        <canvas id="sectoralImpactChart"></canvas>
+                    </div>
+                </div>
+                <div id="sectoral-insights" class="lg:col-span-2 space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                        <h4 class="font-bold text-lg text-gray-800 mb-2">Key Findings</h4>
+                        <p id="findings-text" class="text-gray-600"></p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                        <h4 class="font-bold text-lg text-gray-800 mb-2">Business Strategy Shift</h4>
+                        <p id="strategy-text" class="text-gray-600"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="comparison" class="py-20">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-4">Cross-Sector Comparative Analysis</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                This radar chart provides a holistic view, comparing the multi-faceted impact of GST revisions across the three key sectors. It helps in understanding the relative advantages and disadvantages faced by each, offering a clearer picture of the overall economic realignment.
+            </p>
+            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-100">
+                <div class="chart-container">
+                    <canvas id="comparisonRadarChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+      
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-20">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p>&copy; 2025 GST Impact Analysis. This is a conceptual dashboard for informational purposes.</p>
+            <p class="text-sm text-gray-400 mt-2">Data is representative and compiled for illustrative analysis.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const sectoralData = {
+                manufacturing: {
+                    title: 'Impact on Manufacturing Sector',
+                    chartData: [7, -3, 2, 6],
+                    findings: 'Input Tax Credit (ITC) rationalization was a major factor. While compliance costs initially rose, streamlined logistics and removal of cascading taxes offered long-term benefits, positively impacting competitiveness.',
+                    strategy: 'Focus shifted towards supply chain optimization and formalizing vendor networks to maximize ITC claims. Pricing strategies became more transparent, though sensitive to raw material rate changes.'
+                },
+                services: {
+                    title: 'Impact on Services Sector',
+                    chartData: [4, -8, -5, -2],
+                    findings: 'Many services moved from a ~15% tax regime to 18% GST, leading to a direct increase in consumer-facing prices and a squeeze on profitability, especially for small to medium enterprises.',
+                    strategy: 'Businesses absorbed some of the cost to remain competitive, leading to margin pressure. There was an increased emphasis on service bundling and value-added offerings to justify higher prices.'
+                },
+                retail: {
+                    title: 'Impact on Retail Sector',
+                    chartData: [2, 5, 3, 4],
+                    findings: 'The retail sector saw simplified logistics and warehousing with the "one nation, one tax" system. However, managing multiple HSN codes and dynamic rate changes posed significant operational challenges.',
+                    strategy: 'Investment in POS systems and digital inventory management became critical. Pricing became more uniform across states, and businesses leveraged integrated supply chains for better efficiency.'
+                }
+            };
+
+            let currentSector = 'manufacturing';
+
+            const ctxRateEvolution = document.getElementById('rateEvolutionChart').getContext('2d');
+            const rateEvolutionChart = new Chart(ctxRateEvolution, {
+                type: 'line',
+                data: {
+                    labels: ['2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+                    datasets: [{
+                        label: 'Items in 28% Slab',
+                        data: [228, 50, 35, 30, 29, 28, 28],
+                        borderColor: 'rgba(239, 68, 68, 0.8)',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: 'Items in 5% Slab',
+                        data: [250, 280, 300, 310, 315, 318, 320],
+                        borderColor: 'rgba(59, 130, 246, 0.8)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Items (Illustrative)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Change in Number of Items in Key GST Slabs Over Time',
+                            font: { size: 16 }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                }
+            });
+
+            const ctxNewStructure = document.getElementById('newStructureChart').getContext('2d');
+            const newStructureChart = new Chart(ctxNewStructure, {
+                type: 'doughnut',
+                data: {
+                    labels: ['0% / Exempt', '5% Slab', '12% Slab', '18% Slab', '28% Slab'],
+                    datasets: [{
+                        label: 'Distribution of Goods',
+                        data: [15, 25, 20, 30, 10],
+                        backgroundColor: [
+                            'rgba(156, 163, 175, 0.7)',
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(34, 197, 94, 0.7)',
+                            'rgba(245, 158, 11, 0.7)',
+                            'rgba(239, 68, 68, 0.7)'
+                        ],
+                        borderColor: [
+                            '#FDFBF8',
+                            '#FDFBF8',
+                            '#FDFBF8',
+                            '#FDFBF8',
+                            '#FDFBF8'
+                        ],
+                        borderWidth: 4,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Approx. Distribution of Goods in GST Slabs',
+                            font: { size: 16 },
+                            padding: {
+                                bottom: 20
+                            }
+                        },
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            const ctxSectoralImpact = document.getElementById('sectoralImpactChart').getContext('2d');
+            const sectoralImpactChart = new Chart(ctxSectoralImpact, {
+                type: 'bar',
+                data: {
+                    labels: ['Operational Costs', 'Pricing Power', 'Profitability', 'Competitiveness'],
+                    datasets: [{
+                        label: 'Percentage Point Impact',
+                        data: sectoralData.manufacturing.chartData,
+                        backgroundColor: [
+                            'rgba(245, 166, 35, 0.7)',
+                            'rgba(74, 144, 226, 0.7)',
+                            'rgba(126, 211, 33, 0.7)',
+                            'rgba(65, 117, 5, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgb(245, 166, 35)',
+                            'rgb(74, 144, 226)',
+                            'rgb(126, 211, 33)',
+                            'rgb(65, 117, 5)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Avg. Impact (%)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            const ctxComparisonRadar = document.getElementById('comparisonRadarChart').getContext('2d');
+            const comparisonRadarChart = new Chart(ctxComparisonRadar, {
+                type: 'radar',
+                data: {
+                    labels: ['Operational Costs', 'Pricing Power', 'Profitability', 'Competitiveness'],
+                    datasets: [{
+                        label: 'Manufacturing',
+                        data: sectoralData.manufacturing.chartData,
+                        fill: true,
+                        backgroundColor: 'rgba(74, 144, 226, 0.2)',
+                        borderColor: 'rgb(74, 144, 226)',
+                        pointBackgroundColor: 'rgb(74, 144, 226)',
+                    }, {
+                        label: 'Services',
+                        data: sectoralData.services.chartData,
+                        fill: true,
+                        backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                        borderColor: 'rgb(239, 68, 68)',
+                        pointBackgroundColor: 'rgb(239, 68, 68)',
+                    }, {
+                        label: 'Retail',
+                        data: sectoralData.retail.chartData,
+                        fill: true,
+                        backgroundColor: 'rgba(126, 211, 33, 0.2)',
+                        borderColor: 'rgb(126, 211, 33)',
+                        pointBackgroundColor: 'rgb(126, 211, 33)',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    elements: {
+                        line: {
+                            borderWidth: 3
+                        }
+                    },
+                     scales: {
+                        r: {
+                            angleLines: {
+                                display: true
+                            },
+                            suggestedMin: -10,
+                            suggestedMax: 10,
+                             pointLabels: {
+                                font: {
+                                    size: 14,
+                                },
+                                color: '#4A4A4A'
+                            }
+                        }
+                    },
+                    plugins: {
+                       title: {
+                            display: true,
+                            text: 'Relative Impact Across Sectors',
+                            font: { size: 16 }
+                        },
+                    }
+                }
+            });
+
+            const sectoralChartTitle = document.getElementById('sectoral-chart-title');
+            const findingsText = document.getElementById('findings-text');
+            const strategyText = document.getElementById('strategy-text');
+            
+            function updateSectoralView(sector) {
+                currentSector = sector;
+                const data = sectoralData[sector];
+
+                sectoralChartTitle.textContent = data.title;
+                sectoralImpactChart.data.datasets[0].data = data.chartData;
+                sectoralImpactChart.update();
+
+                findingsText.textContent = data.findings;
+                strategyText.textContent = data.strategy;
+
+                document.querySelectorAll('.sector-btn').forEach(btn => {
+                    btn.classList.remove('sector-btn-active');
+                    btn.classList.remove('bg-white');
+                    btn.classList.remove('shadow-sm');
+                    btn.classList.add('bg-transparent');
+                });
+                const activeBtn = document.getElementById(`btn-${sector}`);
+                activeBtn.classList.add('sector-btn-active');
+                activeBtn.classList.add('bg-white');
+                activeBtn.classList.add('shadow-sm');
+                activeBtn.classList.remove('bg-transparent');
+            }
+
+            document.getElementById('btn-manufacturing').addEventListener('click', () => updateSectoralView('manufacturing'));
+            document.getElementById('btn-services').addEventListener('click', () => updateSectoralView('services'));
+            document.getElementById('btn-retail').addEventListener('click', () => updateSectoralView('retail'));
+            
+            updateSectoralView('manufacturing');
+
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
