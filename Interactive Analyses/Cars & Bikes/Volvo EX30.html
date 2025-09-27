@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volvo EX30: Consumer Adoption, Market & EV Insights</title>
+    <meta name="description" content="Uncover key drivers for Volvo EX30 adoption! Explore demographic priorities, competitive analysis, and detailed features of this innovative electric SUV.">
+    <meta name="keywords" content="Volvo EX30, electric SUV, EV adoption, electric car market, Volvo electric, EX30 review, compact EV, electric vehicle comparison, sustainable electric car, EV safety features, affordable electric SUV, EV market analysis, best small electric SUV, Volvo EX30 range, EX30 interior">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+  
+    <!-- Chosen Palette: Calm Neutrals -->
+    <!-- Application Structure Plan: The application is designed as an interactive dashboard, moving from a high-level overview to a granular, user-driven exploration. It starts with an overall analysis of the EX30's appeal, then allows users to filter by specific consumer personas to see how priorities shift. This structure was chosen because it empowers users to directly compare demographic preferences, which is the core of the source report's research question. The flow encourages discovery, making the complex data more digestible and engaging than a linear document. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Overall driver importance -> Goal: Inform (Summary) -> Viz: Polar Area Chart -> Interaction: Hover for details -> Justification: Provides a striking, high-level snapshot of all key drivers at once. Library: Chart.js.
+        - Report Info: Driver importance by demographic -> Goal: Compare & Analyze -> Viz: Dynamic Bar Chart + Dynamic Text Block -> Interaction: User clicks on a persona to update both chart and text -> Justification: This is the core interactive element, directly answering the report's main question by showing how values change between groups. The linked text provides crucial qualitative context. Library: Chart.js.
+        - Report Info: Detailed feature breakdowns -> Goal: Inform (Detailed) -> Viz: Interactive Cards -> Interaction: Click to reveal details -> Justification: Organizes deep-dive information cleanly, preventing clutter on the main dashboard. Method: HTML/CSS/JS.
+        - Report Info: Competitive Landscape -> Goal: Compare -> Viz: Grouped Bar Chart -> Interaction: Hover for details -> Justification: Offers a direct, quantitative comparison against key rivals on the primary adoption drivers. Library: Chart.js.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4;
+            color: #2c3e50;
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 40vh;
+            width: 100%;
+            max-width: 500px;
+            max-height: 400px;
+        }
+        .chart-container-bar {
+            position: relative;
+            margin: auto;
+            height: 50vh;
+            width: 100%;
+            max-width: 800px;
+            max-height: 450px;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        .nav-button.active {
+            background-color: #0060A9;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 96, 169, 0.2);
+        }
+        .feature-card {
+            transition: all 0.3s ease-in-out;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .persona-button {
+            transition: all 0.3s ease;
+        }
+        .persona-button.active {
+            background-color: #34495e;
+            color: white;
+            border-color: #34495e;
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <span class="text-2xl font-bold text-[#0060A9]">Volvo EX30</span>
+                <span class="text-xl font-light text-gray-600 hidden md:block">| Consumer Adoption Analysis</span>
+            </div>
+            <div class="flex space-x-2 sm:space-x-4">
+                <button data-section="dashboard" class="nav-button active text-sm sm:text-base font-medium px-4 py-2 rounded-full text-gray-700 bg-gray-100 hover:bg-gray-200">Dashboard</button>
+                <button data-section="details" class="nav-button text-sm sm:text-base font-medium px-4 py-2 rounded-full text-gray-700 bg-gray-100 hover:bg-gray-200">Vehicle Details</button>
+                <button data-section="comparison" class="nav-button text-sm sm:text-base font-medium px-4 py-2 rounded-full text-gray-700 bg-gray-100 hover:bg-gray-200">Competitors</button>
+                <button data-section="features" class="nav-button text-sm sm:text-base font-medium px-4 py-2 rounded-full text-gray-700 bg-gray-100 hover:bg-gray-200">Deep Dive</button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <section id="dashboard" class="content-section active">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">Analyzing the Appeal of the Volvo EX30</h1>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">An interactive report on the primary drivers of consumer adoption for Volvo's small electric SUV, exploring how priorities shift across different customer profiles.</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-lg mb-12">
+                 <h2 class="text-2xl font-bold text-center text-gray-800 mb-4">Overall Adoption Drivers</h2>
+                 <p class="text-center text-gray-600 mb-6 max-w-2xl mx-auto">This chart summarizes the relative importance of five key factors in the overall market appeal of the EX30. Volvo's legacy in safety remains a powerful driver, closely followed by its competitive pricing and distinctive design.</p>
+                <div class="chart-container">
+                    <canvas id="overallDriversChart"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-lg">
+                <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Demographic Deep Dive</h2>
+                <p class="text-center text-gray-600 mb-6 max-w-3xl mx-auto">Consumer priorities are not monolithic. Select a target demographic below to see how the importance of each adoption driver changes. This reveals the specific value propositions that resonate most with different segments of the market.</p>
+                
+                <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8" id="persona-filters">
+                    <button data-persona="young_professionals" class="persona-button active font-medium border-2 border-gray-300 px-5 py-2 rounded-full text-gray-700 hover:bg-gray-200">Young Professionals</button>
+                    <button data-persona="eco_families" class="persona-button font-medium border-2 border-gray-300 px-5 py-2 rounded-full text-gray-700 hover:bg-gray-200">Eco-Conscious Families</button>
+                    <button data-persona="empty_nesters" class="persona-button font-medium border-2 border-gray-300 px-5 py-2 rounded-full text-gray-700 hover:bg-gray-200">Affluent Empty Nesters</button>
+                    <button data-persona="first_ev_buyers" class="persona-button font-medium border-2 border-gray-300 px-5 py-2 rounded-full text-gray-700 hover:bg-gray-200">First-Time EV Buyers</button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 items-center">
+                    <div class="lg:col-span-3">
+                        <div class="chart-container-bar">
+                            <canvas id="demographicChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2">
+                        <div id="persona-card" class="bg-gray-50 p-6 rounded-xl border border-gray-200 h-full">
+                            <h3 id="persona-title" class="text-xl font-bold text-gray-800 mb-3"></h3>
+                            <p id="persona-insight" class="text-gray-600 leading-relaxed"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="details" class="content-section">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">About the Volvo EX30</h1>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">A detailed look at the vehicle at the center of our analysis. The EX30 is Volvo's smallest, fastest, and most sustainable SUV to date, designed to appeal to a new generation of electric car buyers.</p>
+            </div>
+
+            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg mb-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">Scandinavian Design, Distilled</h2>
+                        <p class="text-gray-600 mb-4 leading-relaxed">The EX30 embodies minimalist design principles. Its exterior features a confident face with a closed shield grille and a digital interpretation of the "Thor's Hammer" headlights. The long wheelbase and large wheels give it a balanced and powerful stance. Inside, the focus is on a simplified, calming experience, centered around a single 12.3-inch screen and a full-width soundbar, removing the need for traditional dashboard speakers.</p>
+                        <div class="mt-6">
+                            <h3 class="text-xl font-semibold text-gray-700 mb-3">Interior "Rooms"</h3>
+                            <p class="text-gray-600">Volvo offers four distinct, curated interior design themes called "rooms," which use a variety of renewable and recycled materials like flax, wool, and denim fibres.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <img src="https://placehold.co/600x400/e2e8f0/334155?text=Volvo+EX30" alt="Volvo EX30" class="rounded-lg shadow-md w-full h-auto">
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Performance & Powertrain</h2>
+                     <ul class="space-y-4">
+                        <li>
+                            <h4 class="font-semibold text-lg text-sky-700">Single Motor Extended Range</h4>
+                            <p class="text-gray-600">Rear-wheel drive model with a 69 kWh battery, producing 268 hp. It accelerates from 0-60 mph in 5.1 seconds and targets an EPA-estimated range of around 275 miles.</p>
+                        </li>
+                        <li>
+                            <h4 class="font-semibold text-lg text-rose-700">Twin Motor Performance</h4>
+                            <p class="text-gray-600">All-wheel drive model with the same 69 kWh battery, boasting a combined 422 hp. This version is Volvo's fastest-accelerating car ever, reaching 0-60 mph in just 3.4 seconds, with a targeted range of 265 miles.</p>
+                        </li>
+                     </ul>
+                     <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-2">Efficient Charging</h3>
+                     <p class="text-gray-600">The Extended Range variants can charge at speeds up to 153 kW on a DC fast charger, allowing them to replenish from 10% to 80% battery in approximately 26.5 minutes.</p>
+                </div>
+                 <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Technology & Safety</h2>
+                     <ul class="space-y-4">
+                        <li>
+                            <h4 class="font-semibold text-lg text-violet-700">Centralized Infotainment</h4>
+                            <p class="text-gray-600">A single 12.3-inch tablet screen runs on a next-generation system powered by Google's Android Automotive OS, featuring built-in Google Maps, Google Assistant, and wireless Apple CarPlay.</p>
+                        </li>
+                        <li>
+                            <h4 class="font-semibold text-lg text-emerald-700">Safe Space Technology</h4>
+                            <p class="text-gray-600">True to its brand, the EX30 is packed with safety features. This includes a special safety system for intersections and a door opening alert that warns if you're about to open the door into the path of a cyclist or scooter.</p>
+                        </li>
+                     </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="comparison" class="content-section">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">Competitive Landscape</h1>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">How does the EX30 stack up against its main rivals in the compact electric SUV segment? This chart compares the vehicles across the five key adoption drivers, based on market perception and feature sets.</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-lg">
+                <div class="chart-container-bar" style="max-height: 550px;">
+                    <canvas id="competitorChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="content-section">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">Driver Deep Dive</h1>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">Explore the core attributes that define the Volvo EX30's market position. Each section below provides a detailed look at how the vehicle delivers on its promise of sustainability, price, technology, safety, and design.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <div class="feature-card bg-white p-6 rounded-2xl shadow-lg border border-transparent">
+                    <h3 class="text-2xl font-bold text-emerald-600 mb-3">Sustainability</h3>
+                    <p class="text-gray-600">The EX30 has the smallest carbon footprint of any Volvo to date. It utilizes a high percentage of recycled materials, including 17% recycled steel and aluminum, and 17% recycled plastics and textiles in the interior.</p>
+                </div>
+                
+                <div class="feature-card bg-white p-6 rounded-2xl shadow-lg border border-transparent">
+                    <h3 class="text-2xl font-bold text-sky-600 mb-3">Price Competitiveness</h3>
+                    <p class="text-gray-600">With a starting price around $35,000, the EX30 enters the market as one of the most affordable premium electric SUVs. This pricing strategy is designed to attract new, younger buyers to the Volvo brand and accelerate EV adoption.</p>
+                </div>
+
+                <div class="feature-card bg-white p-6 rounded-2xl shadow-lg border border-transparent">
+                    <h3 class="text-2xl font-bold text-violet-600 mb-3">Advanced Tech</h3>
+                    <p class="text-gray-600">The vehicle features a single 12.3-inch tablet-style screen powered by Google's Android Automotive OS. This centralizes controls and infotainment, offering built-in Google Maps, Google Assistant, and access to the Play Store for a smartphone-like user experience.</p>
+                </div>
+                
+                <div class="feature-card bg-white p-6 rounded-2xl shadow-lg border border-transparent">
+                    <h3 class="text-2xl font-bold text-rose-600 mb-3">Renowned Safety</h3>
+                    <p class="text-gray-600">Living up to the brand's reputation, the EX30 includes advanced safety systems like a new driver alert system that monitors face and eye movements, and a door-opening alert to prevent collisions with cyclists.</p>
+                </div>
+
+                <div class="feature-card bg-white p-6 rounded-2xl shadow-lg border border-transparent">
+                    <h3 class="text-2xl font-bold text-amber-600 mb-3">Distinctive Design</h3>
+                    <p class="text-gray-600">The EX30 embodies Scandinavian minimalism with a clean, modern aesthetic. It features a long wheelbase, large wheels, and equal overhangs. The interior uses innovative, sustainable materials to create four distinct design "rooms."</p>
+                </div>
+
+                <div class="feature-card bg-white p-6 rounded-2xl shadow-lg border border-transparent">
+                    <h3 class="text-2xl font-bold text-slate-600 mb-3">Market Context</h3>
+                    <p class="text-gray-600">The EX30 is crucial for Volvo's goal of becoming an all-electric carmaker by 2030 and achieving carbon neutrality by 2040. It targets a younger demographic, many of whom may be purchasing their first Volvo and first EV.</p>
+                </div>
+
+            </div>
+        </section>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+      
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const driverLabels = ['Safety', 'Price', 'Design', 'Sustainability', 'Tech'];
+            const personaData = {
+                young_professionals: {
+                    title: 'Young Urban Professionals (25-35)',
+                    scores: [7.8, 9.2, 9.0, 8.0, 9.5],
+                    insight: 'This group prioritizes cutting-edge technology and a stylish, minimalist design. Price competitiveness is the primary gateway, but the advanced tech suite and strong aesthetics are the key differentiators that drive their final decision.'
+                },
+                eco_families: {
+                    title: 'Eco-Conscious Families (35-50)',
+                    scores: [9.8, 8.5, 7.5, 9.6, 7.0],
+                    insight: 'For this demographic, safety and sustainability are non-negotiable. The EX30\'s top-tier safety features and its significant use of recycled materials are paramount. They are less focused on performance tech and more on practical, safe, and environmentally responsible transportation.'
+                },
+                empty_nesters: {
+                    title: 'Affluent Empty Nesters (55+)',
+                    scores: [9.5, 8.0, 8.8, 8.2, 8.5],
+                    insight: 'This segment values comfort, brand reputation, and ease of use. Volvo\'s legacy in safety is a huge draw, combined with a premium design aesthetic. While not as price-sensitive, they appreciate the value proposition and the modern, but not overly complex, tech interface.'
+                },
+                first_ev_buyers: {
+                    title: 'First-Time EV Buyers (All Ages)',
+                    scores: [8.5, 9.7, 8.0, 8.8, 8.2],
+                    insight: 'Price is the most significant barrier for this group, making the EX30\'s affordability a massive draw. Sustainability and the promise of lower running costs are also highly influential. They seek a straightforward, reassuring entry into the world of electric vehicles, where safety and value are key.'
+                }
+            };
+            
+            const competitorData = {
+                labels: ['Price', 'Tech', 'Safety', 'Sustainability', 'Design'],
+                datasets: [
+                    {
+                        label: 'Volvo EX30',
+                        data: [8.8, 8.7, 9.4, 9.1, 8.9],
+                        backgroundColor: 'rgba(0, 96, 169, 0.8)',
+                        borderColor: 'rgba(0, 96, 169, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Tesla Model Y',
+                        data: [7.5, 9.5, 8.8, 8.0, 7.8],
+                        backgroundColor: 'rgba(204, 0, 0, 0.7)',
+                        borderColor: 'rgba(204, 0, 0, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Hyundai Ioniq 5',
+                        data: [8.2, 8.5, 8.5, 8.3, 9.2],
+                        backgroundColor: 'rgba(0, 63, 135, 0.7)',
+                        borderColor: 'rgba(0, 63, 135, 1)',
+                        borderWidth: 1
+                    },
+                     {
+                        label: 'VW ID.4',
+                        data: [8.0, 7.8, 8.7, 8.1, 7.5],
+                        backgroundColor: 'rgba(0, 133, 202, 0.7)',
+                        borderColor: 'rgba(0, 133, 202, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            };
+
+            let demographicChart, overallDriversChart, competitorChart;
+
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 14,
+                                family: 'Inter'
+                            },
+                            padding: 20
+                        }
+                    },
+                    tooltip: {
+                        bodyFont: {
+                            family: 'Inter'
+                        },
+                        titleFont: {
+                            family: 'Inter'
+                        }
+                    }
+                }
+            };
+
+            function createOverallChart() {
+                const ctx = document.getElementById('overallDriversChart').getContext('2d');
+                overallDriversChart = new Chart(ctx, {
+                    type: 'polarArea',
+                    data: {
+                        labels: driverLabels,
+                        datasets: [{
+                            label: 'Importance Score',
+                            data: [9.4, 8.8, 8.9, 9.1, 8.7],
+                            backgroundColor: [
+                                'rgba(205, 92, 92, 0.7)',
+                                'rgba(70, 130, 180, 0.7)',
+                                'rgba(218, 165, 32, 0.7)',
+                                'rgba(60, 179, 113, 0.7)',
+                                'rgba(123, 104, 238, 0.7)'
+                            ]
+                        }]
+                    },
+                    options: { ...chartOptions }
+                });
+            }
+
+            function createDemographicChart() {
+                const ctx = document.getElementById('demographicChart').getContext('2d');
+                demographicChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: driverLabels,
+                        datasets: [{
+                            label: 'Importance Score (out of 10)',
+                            data: [],
+                            backgroundColor: [
+                                'rgba(205, 92, 92, 0.7)',
+                                'rgba(70, 130, 180, 0.7)',
+                                'rgba(218, 165, 32, 0.7)',
+                                'rgba(60, 179, 113, 0.7)',
+                                'rgba(123, 104, 238, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgba(205, 92, 92, 1)',
+                                'rgba(70, 130, 180, 1)',
+                                'rgba(218, 165, 32, 1)',
+                                'rgba(60, 179, 113, 1)',
+                                'rgba(123, 104, 238, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        ...chartOptions,
+                        indexAxis: 'y',
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                max: 10,
+                                grid: {
+                                    display: true,
+                                    color: '#E5E7EB'
+                                }
+                            },
+                             y: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        },
+                        plugins: {
+                           legend: { display: false }
+                        }
+                    }
+                });
+            }
+
+            function createCompetitorChart() {
+                 const ctx = document.getElementById('competitorChart').getContext('2d');
+                 competitorChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: competitorData,
+                    options: {
+                        ...chartOptions,
+                         scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 10,
+                                title: {
+                                    display: true,
+                                    text: 'Perceived Score (out of 10)',
+                                    font: { size: 14 }
+                                }
+                            }
+                        }
+                    }
+                 });
+            }
+
+            function updatePersonaView(personaKey) {
+                const data = personaData[personaKey];
+                if (!data) return;
+
+                document.getElementById('persona-title').innerText = data.title;
+                document.getElementById('persona-insight').innerText = data.insight;
+
+                demographicChart.data.datasets[0].data = data.scores;
+                demographicChart.update();
+
+                document.querySelectorAll('#persona-filters .persona-button').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.persona === personaKey);
+                });
+            }
+            
+            document.getElementById('persona-filters').addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const personaKey = e.target.dataset.persona;
+                    updatePersonaView(personaKey);
+                }
+            });
+
+            document.querySelector('nav').addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const sectionId = e.target.dataset.section;
+                    
+                    document.querySelectorAll('.content-section').forEach(section => {
+                        section.classList.toggle('active', section.id === sectionId);
+                    });
+
+                    document.querySelectorAll('.nav-button').forEach(button => {
+                         button.classList.toggle('active', button.dataset.section === sectionId);
+                    });
+                }
+            });
+            
+            createOverallChart();
+            createDemographicChart();
+            createCompetitorChart();
+            updatePersonaView('young_professionals'); 
+        });
+    </script>
+</body>
+</html>
+
