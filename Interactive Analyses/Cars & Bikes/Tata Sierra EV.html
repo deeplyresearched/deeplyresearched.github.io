@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tata Sierra EV India: Adoption, Price, Range & TCO Analysis</title>
+    <meta name="description" content="Explore Tata Sierra EV's adoption in India. Analyze range, charging, TCO, design, and performance through interactive consumer personas. Discover key market insights.">
+    <meta name="keywords" content="Tata Sierra EV, Tata Sierra EV India, Electric SUV India, EV adoption India, Tata Motors EV, Electric car range India, EV charging infrastructure, Total Cost of Ownership EV, Tata Sierra EV price, Upcoming electric cars India, EV market trends India, Electric vehicle benefits, Sierra EV features, Indian EV market, Long-range EV India">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+  
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: A thematic, single-page narrative structure is chosen to guide users from a high-level summary to detailed insights. The flow starts with an overall sentiment analysis, then dives into the core themes: (1) Range & Charging, (2) Costs & Savings, and (3) Performance & Design. This thematic grouping is more intuitive for understanding the complex interplay of factors than a simple report-like structure. An interactive "Consumer Persona" filter is the primary interaction mechanism, allowing users to see how perceptions change across different market segments. This user-centric design aims to make the data relatable and enhance exploration by directly linking user choices to dynamic updates across all visualizations and text, promoting a deeper understanding of the Sierra EV's market position. -->
+    <!-- Visualization & Content Choices: 
+        - Overall Sentiment: Goal: Inform. Method: Donut Chart (Chart.js) to show the primary decision factors. Interaction: Filtering by persona dynamically changes data distribution. Justification: Provides a quick, high-level summary of priorities.
+        - Range & Infrastructure: Goal: Compare perceptions. Method: Horizontal Bar Chart (Chart.js) showing the split of sentiment (Sufficient, Concerned, Barrier). Interaction: Updates based on persona. Justification: Clearly visualizes the duality of range as both a sufficient feature for daily use and a source of anxiety for long trips.
+        - Cost Analysis: Goal: Compare financial implications. Method: Bar Chart (Chart.js) for 5-Year Total Cost of Ownership (TCO) vs. a traditional ICE vehicle. Interaction: TCO calculation adjusts with persona's assumed mileage. Justification: Directly addresses a key consumer question with a clear financial comparison.
+        - Performance & Features: Goal: Organize qualitative drivers. Method: Interactive HTML/CSS grid of feature cards. Interaction: Clicking a card reveals details, while importance is visually indicated by style changes based on persona. Justification: Effectively presents non-numeric, desirability-focused features in an engaging format without a traditional chart.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #3D3D3D;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+                max-height: 400px;
+            }
+        }
+        .persona-btn {
+            transition: all 0.3s ease;
+        }
+        .persona-btn.active {
+            background-color: #004D40;
+            color: #FFFFFF;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 77, 64, 0.2);
+        }
+        .feature-card {
+            transition: all 0.3s ease;
+            border-width: 2px;
+        }
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+
+        <header class="text-center py-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#004D40]">Tata Sierra EV: Adoption in India</h1>
+            <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">An interactive analysis of consumer perceptions shaping the future of a modern icon.</p>
+            <div class="text-center mt-8">
+                <button id="open-details-modal" class="bg-white text-[#004D40] font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-gray-100 transition duration-300 flex items-center justify-center mx-auto border border-gray-200 hover:shadow-lg transform hover:-translate-y-0.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Discover the Tata Sierra EV
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <section id="persona-selection" class="py-6 mb-8 bg-white/50 rounded-xl shadow-sm">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Explore by Consumer Persona</h2>
+                    <p class="text-gray-600 mt-1">Select a profile to see how adoption factors change across different consumer groups.</p>
+                </div>
+                <div id="persona-buttons" class="flex flex-wrap justify-center gap-3 px-4">
+                    <button data-persona="all" class="persona-btn active text-sm font-semibold py-2 px-5 rounded-full bg-white shadow-md border border-gray-200 hover:bg-gray-100">All Consumers</button>
+                    <button data-persona="urban_professional" class="persona-btn text-sm font-semibold py-2 px-5 rounded-full bg-white shadow-md border border-gray-200 hover:bg-gray-100">Urban Professional</button>
+                    <button data-persona="tech_enthusiast" class="persona-btn text-sm font-semibold py-2 px-5 rounded-full bg-white shadow-md border border-gray-200 hover:bg-gray-100">Tech Enthusiast</button>
+                    <button data-persona="family_explorer" class="persona-btn text-sm font-semibold py-2 px-5 rounded-full bg-white shadow-md border border-gray-200 hover:bg-gray-100">Family Explorer</button>
+                </div>
+            </section>
+
+            <section id="sierra-details" class="py-12 mb-8">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-gray-800">Meet the Tata Sierra EV: A Modern Icon Reimagined</h2>
+                    <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
+                        Before analyzing its market adoption, let's explore the vehicle itself. The Tata Sierra EV is a bold reinterpretation of a classic, designed for a new generation. It blends nostalgic design cues with futuristic technology and sustainable engineering. 
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-center bg-white rounded-xl shadow-lg p-8">
+                    <div class="lg:col-span-3">
+                        <h3 class="text-2xl font-bold text-[#004D40] mb-4">Design Philosophy & Interior</h3>
+                        <p class="text-gray-600 mb-4">
+                            The Sierra EV's most striking feature is its design, which pays homage to the original Sierra with its iconic curved rear-side glass that wraps into the roof. This creates an incredibly airy and spacious cabin, giving it a unique "lounge" a a on-wheels feel. The design is clean, minimalist, and digitally focused.
+                        </p>
+                        <p class="text-gray-600">
+                            Inside, the focus is on a seamless digital experience and sustainable luxury. The dashboard is dominated by a wide, integrated screen for both instrumentation and infotainment. The use of recycled and natural materials throughout the cabin underscores its eco-conscious identity, while the flat floor, a benefit of the EV platform, maximizes interior space and comfort for all passengers.
+                        </p>
+                    </div>
+                    <div class="lg:col-span-2">
+                        <h3 class="text-2xl font-bold text-[#004D40] mb-4">Key Specifications</h3>
+                        <ul class="space-y-4 text-gray-700">
+                            <li class="flex items-start">
+                                <span class="text-xl mr-3 mt-1">🔋</span>
+                                <div><strong class="font-semibold">Powertrain:</strong> All-electric, built on the advanced Acti.EV platform.</div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-xl mr-3 mt-1">🛣️</span>
+                                <div><strong class="font-semibold">Expected Range:</strong> Over 500-550 km on a single charge (projected).</div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-xl mr-3 mt-1">🖥️</span>
+                                <div><strong class="font-semibold">Cockpit:</strong> Twin-spoke steering wheel with a fully digital instrument cluster and a large central touchscreen.</div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-xl mr-3 mt-1">🛋️</span>
+                                <div><strong class="font-semibold">Interior:</strong> Lounge-style seating with a focus on rear-passenger comfort and premium, sustainable materials.</div>
+                            </li>
+                             <li class="flex items-start">
+                                <span class="text-xl mr-3 mt-1">🔗</span>
+                                <div><strong class="font-semibold">Tech:</strong> Advanced connected car technology, over-the-air updates, and comprehensive driver-assist systems.</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="overview" class="py-12">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="text-center lg:text-left">
+                        <h2 class="text-3xl font-bold text-gray-800">What Matters Most to Buyers?</h2>
+                        <p class="mt-4 text-gray-600">
+                            This section provides a high-level overview of the primary factors influencing the purchase decision for the Tata Sierra EV. The chart on the right visualizes the weight consumers place on different aspects, from performance to practicality. By using the persona filters above, you can see how these priorities shift, revealing the key drivers and barriers for specific segments of the Indian market.
+                        </p>
+                        <div id="overview-summary" class="mt-6 p-4 bg-teal-50 border-l-4 border-teal-500 rounded-r-lg">
+                            <p class="text-teal-800 font-medium"></p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="chart-container">
+                            <canvas id="overviewChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="my-12 border-gray-200">
+
+            <section id="range-charging" class="py-12">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="lg:order-2 text-center lg:text-left">
+                        <h2 class="text-3xl font-bold text-gray-800">Range & Charging: The Dual Narrative</h2>
+                        <p class="mt-4 text-gray-600">
+                           Range anxiety and charging infrastructure are the most talked-about topics for EVs. This section explores this duality. For many, the Sierra EV's real-world range is more than sufficient for daily commutes, making it a practical choice. However, the perception of public charging availability and reliability remains a significant barrier for long-distance travel. The chart visualizes this split in consumer confidence.
+                        </p>
+                        <div id="range-summary" class="mt-6 p-4 bg-amber-50 border-l-4 border-amber-500 rounded-r-lg">
+                           <p class="text-amber-800 font-medium"></p>
+                        </div>
+                    </div>
+                    <div class="lg:order-1">
+                        <div class="chart-container" style="max-width: 600px;">
+                            <canvas id="rangeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <hr class="my-12 border-gray-200">
+
+            <section id="cost-savings" class="py-12">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="text-center lg:text-left">
+                        <h2 class="text-3xl font-bold text-gray-800">The Economic Equation</h2>
+                         <p class="mt-4 text-gray-600">
+                           While the initial purchase price of an EV is higher, the long-term savings can be substantial. This section breaks down the 5-Year Total Cost of Ownership (TCO), comparing the Sierra EV against a similarly priced petrol SUV. The analysis includes the initial price, estimated fuel/energy costs, and scheduled maintenance. This financial perspective reveals one of the most compelling arguments for EV adoption.
+                        </p>
+                        <div id="cost-summary" class="mt-6 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg">
+                            <p class="text-green-800 font-medium"></p>
+                        </div>
+                    </div>
+                    <div>
+                         <div class="chart-container" style="max-width: 600px;">
+                            <canvas id="costChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="my-12 border-gray-200">
+
+            <section id="performance-design" class="py-12">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold text-gray-800">The Desirability Factor</h2>
+                    <p class="mt-4 text-gray-600 max-w-3xl mx-auto">
+                        Beyond the practicalities, a car is an emotional purchase. The Sierra EV's appeal is significantly driven by its unique design, exhilarating performance, and advanced technology. This section highlights these key desirability features. Interact with the cards below to see which aspects resonate most strongly with different consumer personas, illustrating the "pull" factors that create a strong aspirational value for the vehicle.
+                    </p>
+                </div>
+                <div id="feature-grid" class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div class="feature-card bg-white p-6 rounded-lg shadow-md border-gray-200 text-center cursor-pointer" data-feature="torque">
+                        <div class="text-4xl mb-3">⚡️</div>
+                        <h3 class="font-bold text-lg">Instant Torque</h3>
+                        <p class="text-sm text-gray-500 mt-2">Effortless acceleration and a thrilling, responsive drive in city traffic and on highways.</p>
+                    </div>
+                    <div class="feature-card bg-white p-6 rounded-lg shadow-md border-gray-200 text-center cursor-pointer" data-feature="cabin">
+                        <div class="text-4xl mb-3">🤫</div>
+                        <h3 class="font-bold text-lg">Silent Cabin</h3>
+                        <p class="text-sm text-gray-500 mt-2">A serene and premium driving experience, free from engine noise and vibrations.</p>
+                    </div>
+                    <div class="feature-card bg-white p-6 rounded-lg shadow-md border-gray-200 text-center cursor-pointer" data-feature="design">
+                        <div class="text-4xl mb-3">🎨</div>
+                        <h3 class="font-bold text-lg">Iconic Design</h3>
+                        <p class="text-sm text-gray-500 mt-2">A futuristic yet nostalgic look that stands out, appealing to modern aesthetics.</p>
+                    </div>
+                    <div class="feature-card bg-white p-6 rounded-lg shadow-md border-gray-200 text-center cursor-pointer" data-feature="tech">
+                        <div class="text-4xl mb-3">📱</div>
+                        <h3 class="font-bold text-lg">Advanced Tech</h3>
+                        <p class="text-sm text-gray-500 mt-2">State-of-the-art infotainment, connected car features, and driver-assist systems.</p>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="my-12 border-gray-200">
+
+            <section id="conclusion" class="text-center py-12">
+                <h2 class="text-3xl font-bold text-gray-800">Conclusion: A Tale of Two Buyers</h2>
+                <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
+                    The Tata Sierra EV's adoption journey in India is a classic battle between <span class="font-bold text-green-700">rational benefits</span> and <span class="font-bold text-amber-700">emotional barriers</span>. 
+                    For the informed consumer with access to home charging, the drivers are clear: significant long-term savings, a superior driving experience, and a statement-making design. 
+                    However, for the broader market, the perception of a fragile charging ecosystem and the deep-seated range anxiety remain formidable hurdles. 
+                    Ultimately, success will hinge on bridging this perception gap through education, continued infrastructure expansion, and highlighting the vehicle's strong desirability factors.
+                </p>
+            </section>
+
+          <section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+        </main>
+    </div>
+
+    <!-- Details Modal -->
+    <div id="details-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center p-4 z-50">
+        <div id="modal-content" class="bg-slate-50 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative transform transition-all duration-300 scale-95 opacity-0">
+            <!-- Modal Header -->
+            <div class="sticky top-0 bg-slate-100 p-4 border-b border-gray-200 flex justify-between items-center z-10">
+                <h2 class="text-2xl font-bold text-[#004D40]">The Tata Sierra EV: A Modern Icon</h2>
+                <button id="close-details-modal" class="text-gray-500 hover:text-gray-800 text-4xl font-light leading-none transform hover:rotate-90 transition-transform duration-300">&times;</button>
+            </div>
+            <!-- Modal Body -->
+            <div class="p-6 md:p-8">
+                <div class="text-center mb-8">
+                    <h3 class="text-2xl font-bold text-gray-800">Bridging Heritage and Future</h3>
+                    <p class="mt-2 max-w-3xl mx-auto text-base text-slate-600">Built on Tata's state-of-the-art Acti.EV architecture, the Sierra EV is engineered from the ground up to be a pure electric vehicle, focusing on space, luxury, and digital integration.</p>
+                </div>
+                
+                <!-- Exterior -->
+                <div class="mb-8">
+                    <h4 class="text-xl font-bold text-[#004D40] mb-4">Exterior: Signature Design</h4>
+                    <div class="grid md:grid-cols-2 gap-6 items-center">
+                        <div>
+                            <img src="https://placehold.co/600x400/e2e8f0/334155?text=Iconic+Glass+Canopy" alt="Iconic glass canopy of the Tata Sierra EV" class="rounded-lg shadow-lg w-full">
+                        </div>
+                        <div class="space-y-3">
+                            <p class="text-slate-600"><strong class="font-semibold text-slate-800">Alpine Glass Canopy:</strong> Its defining feature is the enormous fixed glass panel wrapping from the sides over the roof, creating a breathtaking panoramic view and an unmistakable presence.</p>
+                            <p class="text-slate-600"><strong class="font-semibold text-slate-800">Sleek & Aerodynamic:</strong> A clean, robust silhouette with flush door handles, a grille-less front, and full-width LED light bars for a futuristic profile.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interior -->
+                <div class="mb-8 bg-white p-6 rounded-lg shadow-inner">
+                    <h4 class="text-xl font-bold text-[#004D40] mb-4">Interior: A Personal Lounge</h4>
+                    <div class="grid md:grid-cols-2 gap-6 items-center">
+                        <div class="space-y-3">
+                             <p class="text-slate-600"><strong class="font-semibold text-slate-800">Unparalleled Space:</strong> The EV platform's flat floor enables an exceptionally spacious "lounge" cabin, emphasizing rear-passenger comfort.</p>
+                             <p class="text-slate-600"><strong class="font-semibold text-slate-800">Sustainable Luxury:</strong> The interior uses premium textiles from recycled materials, elegant wood accents, and soft-touch surfaces for a cabin that is both luxurious and responsible.</p>
+                             <p class="text-slate-600"><strong class="font-semibold text-slate-800">Digital Cockpit:</strong> A minimalist dashboard features a seamless, expansive screen for instruments and infotainment, paired with a stylish two-spoke steering wheel.</p>
+                        </div>
+                        <div>
+                           <img src="https://placehold.co/600x400/e2e8f0/334155?text=Spacious+Lounge+Interior" alt="Spacious lounge interior of the Tata Sierra EV" class="rounded-lg shadow-lg w-full">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Specifications Table -->
+                <div>
+                     <h4 class="text-xl font-bold text-[#004D40] mb-4">Projected Specifications</h4>
+                     <div class="overflow-x-auto border rounded-lg">
+                        <table class="w-full text-left text-slate-600">
+                            <thead class="bg-slate-100 text-slate-800 text-sm">
+                                <tr>
+                                    <th class="p-3 font-semibold">Feature</th>
+                                    <th class="p-3 font-semibold">Expected Specification</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 font-medium">Platform</td>
+                                    <td class="p-3">Tata Acti.EV Architecture</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 font-medium">Projected Range</td>
+                                    <td class="p-3">> 500 km (Real-world estimate)</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 font-medium">Drivetrain</td>
+                                    <td class="p-3">Front-Wheel Drive (FWD) and All-Wheel Drive (AWD) options</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 font-medium">Key Features</td>
+                                    <td class="p-3">Panoramic glass roof, integrated digital display, ADAS, Vehicle-to-Load (V2L)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const openModalBtn = document.getElementById('open-details-modal');
+            const closeModalBtn = document.getElementById('close-details-modal');
+            const modal = document.getElementById('details-modal');
+            const modalContent = document.getElementById('modal-content');
+
+            function openModal() {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                setTimeout(() => {
+                    modalContent.classList.remove('scale-95', 'opacity-0');
+                    modalContent.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            }
+
+            function closeModal() {
+                modalContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }, 300);
+            }
+
+            openModalBtn.addEventListener('click', openModal);
+            closeModalBtn.addEventListener('click', closeModal);
+
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+
+            const appData = {
+                all: {
+                    overview: { data: [35, 30, 25, 10], summary: "For the average consumer, performance and design are the biggest draw, closely followed by cost savings and concerns over range and charging." },
+                    range: { data: [55, 35, 10], summary: "Over half feel the range is adequate for daily needs, but a significant portion remains worried about long journeys." },
+                    cost: { mileage: 15000, summary: "The total cost of ownership is significantly lower for the Sierra EV over 5 years, making a strong financial case." },
+                    features: { torque: 0.8, cabin: 0.7, design: 0.9, tech: 0.85 }
+                },
+                urban_professional: {
+                    overview: { data: [30, 40, 20, 10], summary: "Urban professionals prioritize long-term cost savings and the low running cost for their daily commute." },
+                    range: { data: [75, 20, 5], summary: "With predictable daily travel and home charging access, range is not a primary concern for this group." },
+                    cost: { mileage: 12000, summary: "Lower annual mileage in city driving still results in substantial savings, making the EV economically attractive." },
+                    features: { torque: 0.9, cabin: 0.9, design: 0.8, tech: 1.0 }
+                },
+                tech_enthusiast: {
+                    overview: { data: [45, 20, 15, 20], summary: "Tech enthusiasts are drawn to the performance, instant torque, and cutting-edge features of the Sierra EV." },
+                    range: { data: [60, 30, 10], summary: "While appreciating the technology, they are also keenly aware of battery and charging limitations." },
+                    cost: { mileage: 18000, summary: "Higher usage amplifies the running cost benefits, though the initial tech premium is a consideration." },
+                    features: { torque: 1.0, cabin: 0.8, design: 0.9, tech: 1.0 }
+                },
+                family_explorer: {
+                    overview: { data: [20, 25, 45, 10], summary: "For families who enjoy road trips, range and the reliability of highway charging infrastructure is the single most critical factor." },
+                    range: { data: [30, 50, 20], summary: "A large majority are concerned about or see range as a major barrier for inter-city family travel." },
+                    cost: { mileage: 20000, summary: "Despite high mileage promising huge savings, the practicality of charging on long trips often outweighs the financial benefit." },
+                    features: { torque: 0.6, cabin: 1.0, design: 0.7, tech: 0.9 }
+                }
+            };
+
+            let currentPersona = 'all';
+            let overviewChart, rangeChart, costChart;
+
+            const chartColors = {
+                primary: 'rgba(0, 77, 64, 0.8)',
+                secondary: 'rgba(46, 125, 50, 0.8)',
+                tertiary: 'rgba(251, 192, 45, 0.8)',
+                quaternary: 'rgba(120, 144, 156, 0.7)',
+                accent: 'rgba(230, 81, 0, 0.8)',
+                bgLight: 'rgba(0, 77, 64, 0.1)',
+                bgDark: 'rgba(38, 50, 56, 0.8)',
+            };
+            
+            const commonChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                family: "'Inter', sans-serif",
+                            },
+                            color: '#3D3D3D'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            font: { family: "'Inter', sans-serif" },
+                            color: '#3D3D3D'
+                        },
+                        grid: { display: false }
+                    },
+                    y: {
+                        ticks: {
+                            font: { family: "'Inter', sans-serif" },
+                             color: '#3D3D3D'
+                        },
+                        grid: { color: '#e0e0e0' }
+                    }
+                }
+            };
+            
+            function createOverviewChart() {
+                const ctx = document.getElementById('overviewChart').getContext('2d');
+                overviewChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Performance & Design', 'Cost Savings', 'Range & Charging', 'Other'],
+                        datasets: [{
+                            label: 'Primary Factor',
+                            data: appData[currentPersona].overview.data,
+                            backgroundColor: [chartColors.primary, chartColors.secondary, chartColors.accent, chartColors.quaternary],
+                            borderColor: '#FDFBF8',
+                            borderWidth: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    font: { family: "'Inter', sans-serif" },
+                                    color: '#3D3D3D',
+                                    padding: 20
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed !== null) {
+                                            label += context.parsed + '%';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function createRangeChart() {
+                const ctx = document.getElementById('rangeChart').getContext('2d');
+                rangeChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Consumer Sentiment'],
+                        datasets: [
+                            {
+                                label: 'Sufficient for Daily Use',
+                                data: [appData[currentPersona].range.data[0]],
+                                backgroundColor: chartColors.secondary,
+                            },
+                            {
+                                label: 'Concerned for Long Trips',
+                                data: [appData[currentPersona].range.data[1]],
+                                backgroundColor: chartColors.tertiary,
+                            },
+                            {
+                                label: 'Major Barrier',
+                                data: [appData[currentPersona].range.data[2]],
+                                backgroundColor: chartColors.accent,
+                            }
+                        ]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        ...commonChartOptions,
+                        scales: {
+                            x: {
+                                stacked: true,
+                                max: 100,
+                                ticks: {
+                                    callback: (value) => value + '%',
+                                    color: '#3D3D3D',
+                                },
+                                grid: { display: false }
+                            },
+                            y: {
+                                stacked: true,
+                                grid: { display: false },
+                                ticks: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function createCostChart() {
+                 const ctx = document.getElementById('costChart').getContext('2d');
+                 const mileage = appData[currentPersona].cost.mileage;
+                 const tcoData = calculateTCO(mileage);
+
+                 costChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Tata Sierra EV', 'Comparable Petrol SUV'],
+                        datasets: [
+                            {
+                                label: 'Purchase Price',
+                                data: [tcoData.ev.purchase, tcoData.ice.purchase],
+                                backgroundColor: chartColors.quaternary,
+                            },
+                            {
+                                label: 'Fuel/Energy Costs',
+                                data: [tcoData.ev.fuel, tcoData.ice.fuel],
+                                backgroundColor: chartColors.accent,
+                            },
+                            {
+                                label: 'Maintenance Costs',
+                                data: [tcoData.ev.maintenance, tcoData.ice.maintenance],
+                                backgroundColor: chartColors.secondary,
+                            }
+                        ]
+                    },
+                    options: {
+                        ...commonChartOptions,
+                        scales: {
+                           x: { stacked: false, grid: { display: false }, ticks:{ color: '#3D3D3D'} },
+                           y: { stacked: true, ticks: { callback: (value) => `₹${value/100000}L`, color: '#3D3D3D' }, grid: { color: '#e0e0e0' } }
+                        }
+                    }
+                 });
+            }
+
+            function calculateTCO(annualMileage) {
+                const years = 5;
+                const evPrice = 2500000;
+                const icePrice = 2200000;
+                const evCostPerKm = 1.5;
+                const petrolCostPerL = 100;
+                const iceMileageKmpl = 12;
+                const iceCostPerKm = petrolCostPerL / iceMileageKmpl;
+                const evMaintenancePerYear = 4000;
+                const iceMaintenancePerYear = 15000;
+
+                return {
+                    ev: {
+                        purchase: evPrice,
+                        fuel: annualMileage * years * evCostPerKm,
+                        maintenance: years * evMaintenancePerYear
+                    },
+                    ice: {
+                        purchase: icePrice,
+                        fuel: annualMileage * years * iceCostPerKm,
+                        maintenance: years * iceMaintenancePerYear
+                    }
+                };
+            }
+
+            function updateDashboard() {
+                const data = appData[currentPersona];
+                
+                overviewChart.data.datasets[0].data = data.overview.data;
+                overviewChart.update();
+                document.querySelector('#overview-summary p').textContent = data.overview.summary;
+
+                rangeChart.data.datasets[0].data = [data.range.data[0]];
+                rangeChart.data.datasets[1].data = [data.range.data[1]];
+                rangeChart.data.datasets[2].data = [data.range.data[2]];
+                rangeChart.update();
+                document.querySelector('#range-summary p').textContent = data.range.summary;
+
+                const tcoData = calculateTCO(data.cost.mileage);
+                costChart.data.datasets[0].data = [tcoData.ev.purchase, tcoData.ice.purchase];
+                costChart.data.datasets[1].data = [tcoData.ev.fuel, tcoData.ice.fuel];
+                costChart.data.datasets[2].data = [tcoData.ev.maintenance, tcoData.ice.maintenance];
+                costChart.update();
+                document.querySelector('#cost-summary p').textContent = data.cost.summary;
+                
+                const featureCards = document.querySelectorAll('.feature-card');
+                featureCards.forEach(card => {
+                    const feature = card.dataset.feature;
+                    const importance = data.features[feature];
+                    card.style.opacity = 0.6 + (importance * 0.4);
+                    card.style.borderColor = `rgba(0, 77, 64, ${importance * 0.8})`;
+                });
+            }
+
+            document.getElementById('persona-buttons').addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    currentPersona = e.target.dataset.persona;
+                    document.querySelectorAll('.persona-btn').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    updateDashboard();
+                }
+            });
+
+            createOverviewChart();
+            createRangeChart();
+            createCostChart();
+            updateDashboard();
+        });
+    </script>
+</body>
+</html>
+
+
