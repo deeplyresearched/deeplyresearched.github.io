@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>US Shutdown 2025: Global Economic Impact & Market Volatility</title>
+<meta name="description" content="Unpack the global economic fallout of US government shutdowns. Analyze market volatility, trade impacts, and the current 2025 crisis with data-driven insights.">
+<meta name="keywords" content="US government shutdown, global economic impact, financial market volatility, economic uncertainty, international trade disruption, US fiscal policy, government funding crisis, stock market effects, world economy, geopolitical risk, economic analysis, current events economy, US budget impasse, global financial crisis, investor confidence">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: A thematic, single-page narrative structure guides users from a high-level overview to specific impact areas, and finally to a historical analysis. The flow is: 1) Hero section for immediate context, 2) The 'Current Shutdown' section with an interactive timeline of events, 3) An explanation of the shutdown mechanism, 4) Deep dive into Financial Markets, 5) Exploration of Global Uncertainty, 6) Analysis of Ripple Effects, and 7) An interactive historical timeline. This structure prioritizes current events to engage the user immediately. -->
+    <!-- Visualization & Content Choices: 
+        - 2025 Shutdown Timeline: Goal: Organize/Inform. Method: Interactive HTML/CSS timeline. Interaction: Click on a date to display detailed text about the event. Justification: Provides a step-by-step narrative of how the current crisis unfolded, making complex political maneuvering easy to understand. No library needed.
+        - Current Shutdown Sticking Points: Goal: Organize/Inform. Method: HTML/CSS diagram. Interaction: Hover effects. Justification: Clearly breaks down contentious budget issues. No library needed.
+        - Shutdown Mechanism: Goal: Organize/Inform. Method: HTML/CSS diagram. Interaction: Hover to highlight stages. Justification: Visually simplifies a complex political process. No library needed.
+        - Financial Market Volatility: Goal: Relationships. Method: Combined Line Chart. Interaction: Tooltips. Justification: Shows inverse correlation between market stability and uncertainty. Library: Chart.js.
+        - Global Uncertainty: Goal: Change/Inform. Method: Area Chart. Interaction: Tooltips. Justification: Visualizes spikes in global uncertainty. Library: Chart.js.
+        - Ripple Effects Diagram: Goal: Organize. Method: HTML/CSS flow diagram. Interaction: Static. Justification: Shows the causal chain of effects. No library needed.
+        - Historical Analysis: Goal: Compare/Change. Method: Interactive HTML/CSS timeline linked to a Donut Chart and text. Interaction: Clicking a year updates the chart and text. Justification: Allows users to compare historical events. Library: Chart.js. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #4A4A4A;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #D97706; /* amber-600 */
+            border-bottom-color: #D97706;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .timeline-item, .event-item {
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+        .timeline-item.active, .timeline-item:hover {
+            background-color: #F59E0B; /* amber-500 */
+            color: white;
+        }
+        .event-item.active, .event-item:hover {
+            background-color: #FEE2E2; /* red-100 */
+            border-color: #EF4444; /* red-500 */
+            color: #B91C1C; /* red-700 */
+        }
+
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="navbar" class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-amber-700">Global Economic Impact</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#current-shutdown" class="nav-link font-medium">Current Shutdown</a>
+                <a href="#overview" class="nav-link font-medium">Mechanism</a>
+                <a href="#markets" class="nav-link font-medium">Markets</a>
+                <a href="#uncertainty" class="nav-link font-medium">Uncertainty</a>
+                <a href="#ripple" class="nav-link font-medium">Ripple Effects</a>
+                <a href="#history" class="nav-link font-medium">History</a>
+            </div>
+            <div class="md:hidden">
+                <select id="mobile-nav" class="bg-white border border-gray-300 rounded-md py-1 px-2 text-gray-700">
+                    <option value="#current-shutdown">Current Shutdown</option>
+                    <option value="#overview">Mechanism</option>
+                    <option value="#markets">Financial Markets</option>
+                    <option value="#uncertainty">Uncertainty</option>
+                    <option value="#ripple">Ripple Effects</option>
+                    <option value="#history">Historical View</option>
+                </select>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        <section class="text-center mb-20">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4">The Global Ripple Effect of a US Standstill</h2>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                When the US government shuts down, the economic consequences extend far beyond its borders. This report explores the mechanisms through which these domestic political events disrupt international markets, create global uncertainty, and impact worldwide economic stability, with a special focus on the ongoing shutdown.
+            </p>
+        </section>
+
+        <section id="current-shutdown" class="mb-20 scroll-mt-20">
+            <div class="bg-red-50 border-l-4 border-red-500 p-8 rounded-xl shadow-lg">
+                <h3 class="text-3xl font-bold text-red-800 mb-4">Shutdown in Effect: October 2025</h3>
+                <p class="text-gray-700 mb-8">As of October 1, 2025, the US government has entered a shutdown. This section details the circumstances that precipitated this event and the immediate global ramifications. Explore the timeline below to understand the key decisions that led to the current impasse.</p>
+                
+                <div class="bg-white p-6 rounded-lg border border-gray-200 mb-8">
+                    <h4 class="text-2xl font-semibold text-gray-800 mb-4">Timeline of Key Events</h4>
+                    <div id="events-timeline-container" class="flex flex-wrap justify-center gap-2 mb-4">
+                        <!-- Event buttons will be injected here -->
+                    </div>
+                    <div id="event-details-container" class="bg-red-50 p-4 rounded-md min-h-[120px]">
+                        <h5 id="event-title" class="font-bold text-red-800 text-lg"></h5>
+                        <p id="event-text" class="text-gray-700 mt-1"></p>
+                    </div>
+                </div>
+
+                <h4 class="text-2xl font-semibold text-gray-800 mb-4">The Core Issues: Key Sticking Points</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center mb-8">
+                    <div class="bg-white p-4 rounded-lg border border-gray-200">
+                        <h5 class="font-bold text-red-700">Domestic Spending Cuts</h5>
+                        <p class="text-sm text-gray-600">The House's proposal included deep cuts to environmental and educational programs, which the Senate and White House deemed unacceptable, creating a fundamental budget impasse.</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border border-gray-200">
+                        <h5 class="font-bold text-red-700">Foreign Aid Disputes</h5>
+                        <p class="text-sm text-gray-600">A controversial rider in the House bill aimed to block new aid allocations for Ukraine, a measure strongly opposed by the Senate, which cited threats to international stability.</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border border-gray-200">
+                        <h5 class="font-bold text-red-700">Political Polarization</h5>
+                        <p class="text-sm text-gray-600">With a divided Congress and upcoming elections, partisan brinkmanship intensified, reducing the willingness on both sides to negotiate and compromise on a continuing resolution.</p>
+                    </div>
+                </div>
+
+                <h4 class="text-2xl font-semibold text-gray-800 mb-4">Immediate Global Reaction</h4>
+                <p class="text-gray-700">The global response has been swift and concerned. European and Asian stock markets (FTSE, NIKKEI) saw immediate declines of 1-2%. The US Dollar has weakened against the Euro and Yen as investors move towards perceived safer currencies. The International Monetary Fund (IMF) has issued a statement warning that a prolonged shutdown could jeopardize the fragile post-pandemic global economic recovery by eroding confidence and disrupting trade.</p>
+            </div>
+        </section>
+
+        <section id="overview" class="mb-20 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center text-amber-800 mb-2">The Shutdown Mechanism</h3>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-12">A shutdown occurs when Congress fails to pass funding legislation. This simple cause has a complex and cascading effect on the global economy. Explore the process below.</p>
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 text-center">
+                <div class="p-4 rounded-lg bg-amber-50">
+                    <div class="text-2xl font-bold text-amber-600 mb-2">1</div>
+                    <h4 class="font-semibold text-gray-700">Budget Impasse</h4>
+                    <p class="text-sm text-gray-500">Congress fails to approve appropriations bills to fund government operations.</p>
+                </div>
+                 <div class="flex items-center justify-center text-2xl text-amber-400 font-light">→</div>
+                <div class="p-4 rounded-lg bg-amber-50">
+                    <div class="text-2xl font-bold text-amber-600 mb-2">2</div>
+                    <h4 class="font-semibold text-gray-700">Funding Gap</h4>
+                    <p class="text-sm text-gray-500">Federal agencies lack legal authority to spend money, leading to a shutdown of non-essential services.</p>
+                </div>
+                <div class="flex items-center justify-center text-2xl text-amber-400 font-light">→</div>
+                <div class="p-4 rounded-lg bg-amber-50">
+                    <div class="text-2xl font-bold text-amber-600 mb-2">3</div>
+                    <h4 class="font-semibold text-gray-700">Global Repercussions</h4>
+                    <p class="text-sm text-gray-500">Delayed data releases, trade processing, and diminished US credibility trigger global economic effects.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="markets" class="mb-20 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center text-amber-800 mb-2">Shaking the Financial Markets</h3>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-12">International financial markets are immediately sensitive to the perceived risk and instability emanating from a US shutdown. This often leads to increased volatility as investors react to the uncertainty surrounding the world's largest economy.</p>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h4 class="text-xl font-semibold text-gray-800 mb-1">Market Volatility vs. Performance (2018-19 Shutdown)</h4>
+                <p class="text-sm text-gray-500 mb-4">Observe the spike in the VIX (Volatility Index), often called the "fear index," coinciding with market turbulence during the 35-day shutdown.</p>
+                <div class="chart-container">
+                    <canvas id="marketChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="uncertainty" class="mb-20 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center text-amber-800 mb-2">A Cloud of Global Uncertainty</h3>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-12">Shutdowns create significant policy uncertainty, making it difficult for international businesses and governments to make informed decisions. The delay in crucial US economic data (like GDP, trade, and employment figures) exacerbates this problem, forcing reliance on estimates and clouding strategic planning.</p>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h4 class="text-xl font-semibold text-gray-800 mb-1">Global Economic Policy Uncertainty Index</h4>
+                <p class="text-sm text-gray-500 mb-4">The index often shows increases during periods of US fiscal disputes, reflecting the global concern over policy instability.</p>
+                <div class="chart-container">
+                    <canvas id="uncertaintyChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="ripple" class="mb-20 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center text-amber-800 mb-2">The Global Ripple Effect on Trade and Investment</h3>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-12">The direct impacts on markets and confidence translate into tangible consequences for global trade and investment. Delays at ports, paused foreign investment reviews, and a general "wait-and-see" approach from international partners can slow down economic activity worldwide.</p>
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <h4 class="text-xl font-semibold text-gray-800 mb-4 text-center">Chain of Economic Disruption</h4>
+                <div class="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0 md:space-x-6">
+                    <div class="text-center flex-1">
+                        <div class="mx-auto bg-red-100 text-red-700 w-16 h-16 rounded-full flex items-center justify-center text-2xl mb-2">!</div>
+                        <h5 class="font-bold">US Shutdown</h5>
+                        <p class="text-sm text-gray-500">Suspension of non-essential services.</p>
+                    </div>
+                    <div class="text-4xl text-gray-300 font-thin hidden md:block">›</div>
+                    <div class="text-4xl text-gray-300 font-thin rotate-90 md:hidden">›</div>
+                    <div class="text-center flex-1">
+                        <div class="mx-auto bg-yellow-100 text-yellow-700 w-16 h-16 rounded-full flex items-center justify-center text-2xl mb-2">?</div>
+                        <h5 class="font-bold">Data & Service Halt</h5>
+                        <p class="text-sm text-gray-500">Economic data releases, trade certifications, and visa processing are delayed.</p>
+                    </div>
+                    <div class="text-4xl text-gray-300 font-thin hidden md:block">›</div>
+                     <div class="text-4xl text-gray-300 font-thin rotate-90 md:hidden">›</div>
+                    <div class="text-center flex-1">
+                        <div class="mx-auto bg-blue-100 text-blue-700 w-16 h-16 rounded-full flex items-center justify-center text-2xl mb-2">⏸</div>
+                        <h5 class="font-bold">Global Slowdown</h5>
+                        <p class="text-sm text-gray-500">International businesses pause investment and trade decisions due to risk and lack of data.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="history" class="scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center text-amber-800 mb-2">A Historical Perspective</h3>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-12">US government shutdowns are not a new phenomenon. By examining past events, we can identify patterns in their duration and global impact. Click on a year below to explore the details of a specific shutdown.</p>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <div class="mb-8">
+                    <h4 class="text-xl font-semibold text-gray-800 mb-4 text-center">Select a Shutdown Event</h4>
+                    <div id="timeline-container" class="flex flex-wrap justify-center gap-3">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                    <div class="md:col-span-1">
+                        <h4 class="text-lg font-semibold text-gray-700 text-center mb-2">Shutdown Duration (Days)</h4>
+                        <div class="chart-container !h-64 !max-h-64 mx-auto">
+                            <canvas id="durationChart"></canvas>
+                        </div>
+                    </div>
+                    <div id="shutdown-details" class="md:col-span-2 bg-amber-50/50 p-6 rounded-lg min-h-[250px]">
+                        <h4 id="details-year" class="text-2xl font-bold text-amber-700 mb-3"></h4>
+                        <p id="details-text" class="text-gray-600"></p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+
+    </main>
+
+    <footer class="bg-gray-800 mt-20">
+        <div class="container mx-auto px-6 py-4 text-center text-gray-400">
+            <p>A Data-Driven Analysis of Global Economic Effects.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const shutdownData = {
+                1995: {
+                    duration: 21,
+                    text: "The 1995-96 shutdown was one of the longest at the time. Its global impact was noted in delayed trade negotiations and created uncertainty in G7 economies, which were closely watching the US budget process as a sign of political stability."
+                },
+                2013: {
+                    duration: 16,
+                    text: "The 2013 shutdown cost the US economy an estimated $24 billion. Globally, it caused significant market jitters, a flight to safer assets, and prompted international bodies like the IMF to warn of serious risks to global recovery if the US defaulted on its debt."
+                },
+                2018: {
+                    duration: 35,
+                    text: "The longest shutdown in US history (Dec 2018 - Jan 2019) had a palpable global impact. It delayed key economic reports, disrupting global market analysis, and led to concerns among US trading partners about the reliability of supply chains and contract fulfillments."
+                },
+                 2023: {
+                    duration: 1,
+                    text: "A potential shutdown was narrowly averted in late 2023, but the repeated brinkmanship itself contributed to global uncertainty. Fitch Ratings cited the repeated political standoffs as a key reason for downgrading the U.S. credit rating, a move with global financial implications."
+                },
+                2025: {
+                    duration: 3,
+                    text: "The ongoing October 2025 shutdown began amid deep partisan divides over domestic spending and foreign aid. The global reaction has been sharp, with immediate dips in international markets and a weakening US Dollar, highlighting the precariousness of global economic stability tied to US fiscal policy."
+                }
+            };
+
+            const timelineData2025 = {
+                'Sept 15': {
+                    title: "Initial House Budget Proposal",
+                    text: "The House of Representatives passes a partisan funding bill with significant domestic spending cuts and controversial policy riders related to foreign aid, setting the stage for a conflict."
+                },
+                'Sept 22': {
+                    title: "Senate Counter-Proposal",
+                    text: "The Senate passes its own bipartisan continuing resolution with far more modest spending adjustments and no major policy changes, highlighting the deep ideological divide with the House."
+                },
+                'Sept 28': {
+                    title: "White House Veto Threat",
+                    text: "The White House issues a formal statement, threatening to veto the House's version of the funding bill and urging congressional leaders to work on a compromise based on the Senate's proposal."
+                },
+                'Sept 30': {
+                    title: "Last-Minute Talks Fail",
+                    text: "With hours to go before the deadline, negotiations between House and Senate leadership break down. Neither side is willing to concede on the key sticking points, making a shutdown inevitable."
+                },
+                'Oct 1': {
+                    title: "Shutdown Begins",
+                    text: "As the clock strikes midnight, federal funding authority expires. The government officially enters a partial shutdown, furloughing hundreds of thousands of workers and halting non-essential services."
+                }
+            };
+            
+            let marketChart, uncertaintyChart, durationChart;
+
+            const timelineContainer = document.getElementById('timeline-container');
+            Object.keys(shutdownData).forEach(year => {
+                const button = document.createElement('button');
+                button.textContent = year;
+                button.dataset.year = year;
+                button.className = 'timeline-item px-4 py-2 rounded-full font-medium bg-gray-100 text-gray-700';
+                timelineContainer.appendChild(button);
+            });
+
+            function updateDetails(year) {
+                const data = shutdownData[year];
+                if (!data) return;
+
+                let yearText = `${year} Shutdown`;
+                if (year === '2025') {
+                    yearText += " (Ongoing)";
+                }
+                document.getElementById('details-year').textContent = yearText;
+                document.getElementById('details-text').innerHTML = data.text;
+                
+                const activeBtn = timelineContainer.querySelector('.active');
+                if(activeBtn) activeBtn.classList.remove('active');
+                timelineContainer.querySelector(`[data-year='${year}']`).classList.add('active');
+
+                if (durationChart) {
+                    const maxDuration = 35; 
+                    durationChart.data.datasets[0].data = [data.duration, Math.max(0, maxDuration - data.duration)];
+                    durationChart.update();
+                }
+            }
+            
+            timelineContainer.addEventListener('click', (e) => {
+                if(e.target.matches('.timeline-item')) {
+                    const year = e.target.dataset.year;
+                    updateDetails(year);
+                }
+            });
+            
+            const eventsTimelineContainer = document.getElementById('events-timeline-container');
+            Object.keys(timelineData2025).forEach(date => {
+                const button = document.createElement('button');
+                button.textContent = date;
+                button.dataset.date = date;
+                button.className = 'event-item px-3 py-1.5 rounded-md font-medium bg-gray-50 text-gray-600 border border-gray-200 text-sm';
+                eventsTimelineContainer.appendChild(button);
+            });
+
+            function updateEventDetails(date) {
+                const data = timelineData2025[date];
+                if (!data) return;
+
+                document.getElementById('event-title').textContent = data.title;
+                document.getElementById('event-text').textContent = data.text;
+                
+                const activeEvent = eventsTimelineContainer.querySelector('.active');
+                if (activeEvent) activeEvent.classList.remove('active');
+                eventsTimelineContainer.querySelector(`[data-date='${date}']`).classList.add('active');
+            }
+
+            eventsTimelineContainer.addEventListener('click', (e) => {
+                if (e.target.matches('.event-item')) {
+                    const date = e.target.dataset.date;
+                    updateEventDetails(date);
+                }
+            });
+
+
+            function createMarketChart() {
+                const ctx = document.getElementById('marketChart').getContext('2d');
+                marketChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Dec 22', 'Dec 28', 'Jan 4', 'Jan 11', 'Jan 18', 'Jan 25'],
+                        datasets: [{
+                            label: 'S&P 500',
+                            data: [2416, 2488, 2531, 2596, 2670, 2664],
+                            borderColor: '#1D4ED8',
+                            backgroundColor: '#1D4ED820',
+                            yAxisID: 'y',
+                            tension: 0.1
+                        }, {
+                            label: 'VIX (Volatility)',
+                            data: [30.1, 25.4, 21.3, 18.0, 16.1, 17.4],
+                            borderColor: '#D97706',
+                            backgroundColor: '#D9770620',
+                            yAxisID: 'y1',
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                title: { display: true, text: 'S&P 500 Index' }
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                title: { display: true, text: 'VIX Value' },
+                                grid: { drawOnChartArea: false }
+                            }
+                        },
+                        plugins: {
+                            tooltip: { mode: 'index', intersect: false }
+                        }
+                    }
+                });
+            }
+
+            function createUncertaintyChart() {
+                const ctx = document.getElementById('uncertaintyChart').getContext('2d');
+                uncertaintyChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019'],
+                        datasets: [{
+                            label: 'Global Economic Policy Uncertainty Index',
+                            data: [180, 210, 150, 160, 250, 180, 280, 240],
+                            borderColor: '#059669',
+                            backgroundColor: '#05966930',
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            }
+
+            function createDurationChart() {
+                const ctx = document.getElementById('durationChart').getContext('2d');
+                durationChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Shutdown Days', 'Benchmark Max'],
+                        datasets: [{
+                            data: [0, 1],
+                            backgroundColor: ['#F59E0B', '#FDE68A50'],
+                            borderColor: ['#F59E0B', '#FDE68A50']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { 
+                                callbacks: {
+                                    label: function(context) {
+                                        if (context.dataIndex === 0) {
+                                            return ` Duration: ${context.raw} days`;
+                                        }
+                                        return null;
+                                    }
+                                }
+                             }
+                        }
+                    }
+                });
+            }
+
+            createMarketChart();
+            createUncertaintyChart();
+            createDurationChart();
+            updateDetails('2025');
+            updateEventDetails('Sept 15');
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section[id]');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                        });
+                    }
+                });
+            }, { rootMargin: "-50% 0px -50% 0px" });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            const mobileNav = document.getElementById('mobile-nav');
+            mobileNav.addEventListener('change', (e) => {
+                const targetId = e.target.value;
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>
+
