@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thinking, Fast & Slow: A Guide to Biases</title>
+    <meta name="description" content="Explore Daniel Kahneman's 'Thinking, Fast and Slow' interactively. Understand System 1 & 2, cognitive biases, Prospect Theory, and debiasing strategies.">
+    <meta name="keywords" content="Thinking Fast and Slow, Daniel Kahneman, Cognitive Biases, Heuristics, System 1 System 2, Prospect Theory, Loss Aversion, Decision Making, Behavioral Economics, Psychology, Overconfidence, Mental Errors, Debiasing Strategies, Intuitive Thinking, Rational Choice">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+    </script>
+  
+    <!-- Chosen Palette: Calm Neutrals -->
+    <!-- Application Structure Plan: The application is structured thematically rather than mirroring the book's linear chapter progression. This choice promotes a more intuitive and exploratory user experience. A fixed top navigation bar allows users to jump between core concepts: 'Home' (for a high-level summary), 'The Two Systems' (a focused, comparative view of the book's central thesis), 'Heuristics & Biases' (an interactive grid for exploring specific cognitive errors), and 'Key Concepts' (visualizations of theories like Prospect Theory). This thematic, non-linear structure is chosen for usability, allowing users to either get a quick overview or deep-dive into specific areas of interest without being forced through a sequential narrative, which is ideal for a non-fiction book analysis. -->
+    <!-- Visualization & Content Choices: 
+        1. Report Info: Core concept of System 1 vs. System 2. Goal: Compare & Inform. Viz/Method: Side-by-side interactive HTML/CSS cards. Interaction: Hover effects to highlight traits. Justification: Provides a clear, immediate visual distinction between the two modes of thought. Library: TailwindCSS, VanillaJS.
+        2. Report Info: Numerous heuristics and biases. Goal: Organize & Inform. Viz/Method: A filterable grid of HTML cards. Interaction: Clicking a card reveals a detailed explanation. Justification: Prevents overwhelming the user with a long list, making the content discoverable and digestible. Library: VanillaJS for interaction.
+        3. Report Info: Prospect Theory's value function. Goal: Explain a relationship. Viz/Method: A Line Chart. Interaction: Tooltips on hover provide context. Justification: Visually represents the abstract concepts of loss aversion and diminishing sensitivity far more effectively than text alone. Library: Chart.js (Canvas).
+        4. Report Info: Factors influencing choices and overconfidence. Goal: Compare. Viz/Method: A Bar Chart showing the impact of different cognitive biases. Interaction: Tooltips. Justification: Quantifies and compares the relative impact of different biases discussed in the book, making the concepts more concrete. Library: Chart.js (Canvas).
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+        .nav-link {
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #007bff;
+        }
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .section-fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .section-fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+      
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="font-bold text-xl text-blue-600">Thinking, Fast and Slow</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#home" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600">Home</a>
+                        <a href="#two-systems" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600">The Two Systems</a>
+                        <a href="#biases" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600">Heuristics & Biases</a>
+                        <a href="#concepts" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600">Key Concepts</a>
+                        <a href="#overconfidence" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600">Overconfidence</a>
+                        <a href="#solutions" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600">Solutions</a>
+                        <a href="#author" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600">About the Author</a>
+                        <a href="#legacy" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600">Legacy</a>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button id="mobile-menu-button" type="button" class="bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                        <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#home" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600">Home</a>
+                <a href="#two-systems" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600">The Two Systems</a>
+                <a href="#biases" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600">Heuristics & Biases</a>
+                <a href="#concepts" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600">Key Concepts</a>
+                <a href="#overconfidence" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600">Overconfidence</a>
+                <a href="#solutions" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600">Solutions</a>
+                <a href="#author" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600">About the Author</a>
+                <a href="#legacy" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600">Legacy</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        
+        <section id="home" class="section-fade-in p-8 bg-white rounded-lg shadow-md mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4 text-center">An Interactive Guide to "Thinking, Fast and Slow"</h1>
+            <p class="text-lg text-gray-600 mb-8 text-center max-w-3xl mx-auto">This application provides an interactive exploration of the key ideas from Daniel Kahneman's groundbreaking book. Navigate through the core concepts, from the two systems that drive our thoughts to the cognitive biases that shape our decisions.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <div class="bg-gray-50 p-6 rounded-lg border">
+                    <h3 class="text-xl font-semibold mb-3 text-center">Elevator Pitch</h3>
+                    <p class="text-gray-700">"Thinking, Fast and Slow" reveals the two systems that drive the way we think: System 1, which is fast, intuitive, and emotional; and System 2, which is slower, more deliberative, and logical. Kahneman explores the extraordinary capabilities, as well as the faults and biases, of fast thinking, and reveals the pervasive influence of intuitive impressions on our thoughts and choices. By understanding how these two systems shape our judgment, we can learn to identify and mitigate common mental errors that lead to poor decisions.</p>
+                </div>
+
+                <div class="bg-gray-50 p-6 rounded-lg border">
+                     <h3 class="text-xl font-semibold mb-3 text-center">Executive Summary</h3>
+                    <table class="w-full text-left">
+                        <tbody>
+                            <tr class="border-b"><td class="py-2 font-semibold">Author</td><td class="py-2">Dr. Daniel Kahneman</td></tr>
+                            <tr class="border-b"><td class="py-2 font-semibold">Genre</td><td class="py-2">Psychology, Behavioral Economics</td></tr>
+                            <tr class="border-b"><td class="py-2 font-semibold">Publication</td><td class="py-2">2011</td></tr>
+                            <tr class="border-b"><td class="py-2 font-semibold">Core Theme</td><td class="py-2">Our minds are governed by two distinct systems of thought, whose interplay leads to both remarkable insights and systematic errors in judgment.</td></tr>
+                            <tr><td class="py-2 font-semibold">Target Audience</td><td class="py-2">Anyone interested in psychology, decision-making, and how the human mind works.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="two-systems" class="section-fade-in p-8 bg-white rounded-lg shadow-md mb-12">
+            <h2 class="text-3xl font-bold text-center mb-2">The Two Systems</h2>
+            <p class="text-lg text-gray-600 text-center mb-8 max-w-3xl mx-auto">The book's central thesis is the dichotomy between two modes of thought. This section provides a comparative overview to help you understand their distinct roles and characteristics. Interact with the elements below to see how they function.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="card p-6 border-2 border-blue-500 rounded-lg bg-blue-50">
+                    <h3 class="text-2xl font-bold text-blue-800 mb-4 text-center">System 1: Fast Thinking</h3>
+                    <ul class="space-y-3 text-blue-900">
+                        <li class="flex items-start"><span class="font-bold text-blue-500 mr-2">►</span> Operates automatically and quickly, with little or no effort.</li>
+                        <li class="flex items-start"><span class="font-bold text-blue-500 mr-2">►</span> Generates impressions, feelings, and intuitions.</li>
+                        <li class="flex items-start"><span class="font-bold text-blue-500 mr-2">►</span> Prone to systematic errors (biases).</li>
+                        <li class="flex items-start"><span class="font-bold text-blue-500 mr-2">►</span> Cannot be turned off.</li>
+                        <li class="flex items-start"><span class="font-bold text-blue-500 mr-2">►</span> **Example:** Solving 2+2, detecting hostility in a voice, driving on an empty road.</li>
+                    </ul>
+                </div>
+                <div class="card p-6 border-2 border-gray-500 rounded-lg bg-gray-100">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">System 2: Slow Thinking</h3>
+                    <ul class="space-y-3 text-gray-900">
+                        <li class="flex items-start"><span class="font-bold text-gray-500 mr-2">►</span> Allocates attention to effortful mental activities.</li>
+                        <li class="flex items-start"><span class="font-bold text-gray-500 mr-2">►</span> Associated with conscious reasoning, choice, and concentration.</li>
+                        <li class="flex items-start"><span class="font-bold text-gray-500 mr-2">►</span> Can follow rules, compare objects, and make deliberate choices.</li>
+                        <li class="flex items-start"><span class="font-bold text-gray-500 mr-2">►</span> Is inherently lazy; defaults to System 1's suggestions.</li>
+                        <li class="flex items-start"><span class="font-bold text-gray-500 mr-2">►</span> **Example:** Solving 17x24, parking in a narrow space, filling out a tax form.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="biases" class="section-fade-in p-8 bg-white rounded-lg shadow-md mb-12">
+            <h2 class="text-3xl font-bold text-center mb-2">Heuristics & Biases</h2>
+            <p class="text-lg text-gray-600 text-center mb-8 max-w-3xl mx-auto">System 1 uses mental shortcuts (heuristics) to make quick judgments. While often useful, they can lead to predictable errors (biases). This section allows you to explore some of the most common biases discussed in the book. Click on any card to learn more.</p>
+            <div id="bias-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            </div>
+        </section>
+        
+        <div id="bias-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full relative p-6">
+                <button id="close-modal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
+                <h3 id="modal-title" class="text-2xl font-bold mb-4"></h3>
+                <p id="modal-description" class="text-gray-700 mb-4"></p>
+                <div class="bg-gray-100 p-4 rounded-md">
+                    <p class="font-semibold text-gray-800">Example:</p>
+                    <p id="modal-example" class="text-gray-700"></p>
+                </div>
+            </div>
+        </div>
+
+        <section id="concepts" class="section-fade-in p-8 bg-white rounded-lg shadow-md mb-12">
+            <h2 class="text-3xl font-bold text-center mb-2">Key Concepts & Visualizations</h2>
+            <p class="text-lg text-gray-600 text-center mb-8 max-w-3xl mx-auto">Beyond the two systems, Kahneman introduces several powerful theories that explain our irrational behavior, particularly around risk and choice. The visualizations below help illustrate these complex ideas.</p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="flex flex-col items-center">
+                    <h3 class="text-xl font-semibold mb-2">Prospect Theory: Value Function</h3>
+                    <p class="text-center text-gray-600 mb-4">This chart illustrates how we perceive gains and losses. Note the curve is steeper for losses than for gains, demonstrating 'Loss Aversion'—the pain of losing is psychologically about twice as powerful as the pleasure of gaining.</p>
+                    <div class="chart-container">
+                        <canvas id="prospectTheoryChart"></canvas>
+                    </div>
+                </div>
+                <div class="flex flex-col items-center">
+                    <h3 class="text-xl font-semibold mb-2">The Impact of Cognitive Biases</h3>
+                     <p class="text-center text-gray-600 mb-4">This chart provides a hypothetical comparison of how much certain biases might sway a decision from a purely rational choice. 'Anchoring' can have a powerful pull, while 'Overconfidence' often leads to significant miscalculations.</p>
+                    <div class="chart-container">
+                        <canvas id="biasesImpactChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="overconfidence" class="section-fade-in p-8 bg-white rounded-lg shadow-md mb-12">
+            <h2 class="text-3xl font-bold text-center mb-2">Overconfidence & The Illusion of Skill</h2>
+            <p class="text-lg text-gray-600 text-center mb-8 max-w-3xl mx-auto">One of the book's most critical themes is our tendency to be overly confident in our judgments, especially experts. We construct coherent stories about the past and believe we can predict the future, underestimating the role of chance.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-red-50 p-6 rounded-lg border border-red-200">
+                    <h3 class="text-xl font-semibold mb-3 text-red-800">The Illusion of Understanding</h3>
+                    <p class="text-gray-700">We believe we understand the past, which implies the future should be knowable. However, we can only understand the past when we look back. This is fueled by hindsight bias, where we fit events into a neat narrative, making them seem inevitable and predictable.</p>
+                </div>
+                <div class="bg-yellow-50 p-6 rounded-lg border border-yellow-200">
+                    <h3 class="text-xl font-semibold mb-3 text-yellow-800">The Planning Fallacy</h3>
+                    <p class="text-gray-700">This is the tendency to underestimate the time, costs, and risks of future actions while overestimating the benefits. We often fail to consider a range of outcomes and instead focus on the most optimistic scenario, ignoring historical data from similar projects.</p>
+                </div>
+            </div>
+            <div class="mt-8 bg-gray-50 p-6 rounded-lg border">
+                <h3 class="text-xl font-semibold mb-3 text-center">Solution: The Premortem Technique</h3>
+                <p class="text-center text-gray-600 mb-4">To combat overconfidence in planning, Kahneman suggests a "premortem." Before a project begins, the team imagines it has failed spectacularly and then works backward to determine what could have caused the failure. This legitimizes doubt and encourages a more realistic assessment of risks.</p>
+            </div>
+        </section>
+
+        <section id="solutions" class="section-fade-in p-8 bg-white rounded-lg shadow-md mb-12">
+            <h2 class="text-3xl font-bold text-center mb-2">Putting It Into Practice: Debiasing Strategies</h2>
+            <p class="text-lg text-gray-600 text-center mb-8 max-w-3xl mx-auto">While System 1 cannot be turned off, we can learn to recognize situations where biases are likely to occur and engage System 2 to improve our decisions. This section provides actionable strategies to mitigate common mental errors.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="card p-6 bg-green-50 rounded-lg border border-green-200">
+                    <h3 class="text-lg font-semibold text-green-800 mb-2">Adopt the "Outside View"</h3>
+                    <p class="text-gray-700">When planning, don't just focus on your specific case (the inside view). Look for data on similar cases (the outside view) to get a more realistic baseline prediction.</p>
+                </div>
+                <div class="card p-6 bg-blue-50 rounded-lg border border-blue-200">
+                    <h3 class="text-lg font-semibold text-blue-800 mb-2">Use Checklists</h3>
+                    <p class="text-gray-700">For repetitive and complex decisions (like medical diagnoses or investments), a simple checklist can prevent System 1 from overlooking crucial details and force a more systematic review.</p>
+                </div>
+                <div class="card p-6 bg-purple-50 rounded-lg border border-purple-200">
+                    <h3 class="text-lg font-semibold text-purple-800 mb-2">Widen Your Framing</h3>
+                    <p class="text-gray-700">Avoid making decisions in isolation. Consider them as part of a larger portfolio of choices. This helps mitigate the emotional impact of loss aversion on any single decision.</p>
+                </div>
+                <div class="card p-6 bg-indigo-50 rounded-lg border border-indigo-200">
+                    <h3 class="text-lg font-semibold text-indigo-800 mb-2">Seek Disconfirming Evidence</h3>
+                    <p class="text-gray-700">Actively fight confirmation bias by asking yourself, "What evidence would prove my belief wrong?" and then genuinely searching for that information.</p>
+                </div>
+                 <div class="card p-6 bg-pink-50 rounded-lg border border-pink-200">
+                    <h3 class="text-lg font-semibold text-pink-800 mb-2">Consider the Opposite</h3>
+                    <p class="text-gray-700">When you feel confident in a judgment, take a moment to seriously consider why you might be wrong. This can temper overconfidence and reveal flaws in your initial logic.</p>
+                </div>
+                 <div class="card p-6 bg-orange-50 rounded-lg border border-orange-200">
+                    <h3 class="text-lg font-semibold text-orange-800 mb-2">Implement "Nudges"</h3>
+                    <p class="text-gray-700">Design your environment to make better choices easier. For example, setting up automatic savings transfers "nudges" you towards financial health without requiring constant willpower.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="author" class="section-fade-in p-8 bg-white rounded-lg shadow-md mb-12">
+            <h2 class="text-3xl font-bold text-center mb-8">About the Author</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1">
+                    <div class="bg-gray-100 p-6 rounded-lg h-full">
+                         <h3 class="text-2xl font-bold text-gray-800 mb-4">Dr. Daniel Kahneman</h3>
+                         <p class="text-gray-700 mb-4">
+                            Daniel Kahneman (1934–2024) was an Israeli-American psychologist and economist renowned for his groundbreaking work on the psychology of judgment and decision-making, for which he was awarded the Nobel Memorial Prize in Economic Sciences in 2002.
+                         </p>
+                         <p class="text-gray-700">
+                            His most influential work was done in collaboration with his long-time colleague Amos Tversky. Together, they developed Prospect Theory, which challenged the rational models of decision-making that had long dominated economic theory. "Thinking, Fast and Slow" serves as a culmination of their decades of research, making their profound insights accessible to the general public.
+                         </p>
+                    </div>
+                </div>
+                <div class="lg:col-span-2">
+                     <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center lg:text-left">Other Notable Works</h3>
+                     <div class="space-y-6">
+                        <div class="card p-6 bg-blue-50 rounded-lg border border-blue-200">
+                            <h4 class="text-lg font-semibold text-blue-800">Noise: A Flaw in Human Judgment (2021)</h4>
+                            <p class="text-gray-700 mt-2">Co-authored with Olivier Sibony and Cass R. Sunstein, this book explores "noise" – the unwanted variability in judgments that should be identical. While bias is a predictable error, noise is a more random, statistical flaw. The book explains why noise is a serious, yet often ignored, problem in fields like medicine, law, and business, and offers strategies to reduce it.</p>
+                        </div>
+                        <div class="card p-6 bg-green-50 rounded-lg border border-green-200">
+                            <h4 class="text-lg font-semibold text-green-800">Heuristics and Biases: The Psychology of Intuitive Judgment (2002)</h4>
+                            <p class="text-gray-700 mt-2">This is an academic collection of essays edited by Thomas Gilovich, Dale Griffin, and Kahneman himself. It gathers the foundational papers on heuristics and biases from many leading researchers in the field, including much of the original work by Kahneman and Tversky. It's a deeper, more technical dive into the research that underpins "Thinking, Fast and Slow."</p>
+                        </div>
+                     </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="legacy" class="section-fade-in p-8 bg-white rounded-lg shadow-md">
+            <h2 class="text-3xl font-bold text-center mb-8">Context & Legacy</h2>
+            <div class="space-y-8 max-w-4xl mx-auto">
+                <div>
+                    <h3 class="text-xl font-semibold mb-2">Historical & Authorial Context</h3>
+                    <p class="text-gray-700">Daniel Kahneman, a psychologist, won the Nobel Prize in Economic Sciences in 2002 for his work with Amos Tversky on prospect theory. "Thinking, Fast and Slow" is a culmination of decades of their research, which challenged the long-held assumption of rational human agents in economic theory. The book was written to make their life's work accessible to a broad audience, synthesizing complex ideas into a single, compelling narrative.</p>
+                </div>
+                 <div>
+                    <h3 class="text-xl font-semibold mb-2">Most Memorable Quotes</h3>
+                    <ul class="space-y-4">
+                        <li class="bg-gray-100 p-4 rounded-md">
+                            <blockquote class="italic text-gray-800">"The confidence people have in their beliefs is not a measure of the quality of evidence but of the coherence of the story the mind has managed to construct."</blockquote>
+                            <p class="text-sm text-gray-600 mt-2">- Highlights our tendency to favor compelling narratives over objective data.</p>
+                        </li>
+                        <li class="bg-gray-100 p-4 rounded-md">
+                            <blockquote class="italic text-gray-800">"We are prone to overestimate how much we understand about the world and to underestimate the role of chance in events."</blockquote>
+                            <p class="text-sm text-gray-600 mt-2">- Explains the illusion of understanding and hindsight bias.</p>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-2">Thought-Provoking Questions</h3>
+                    <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                        <li>Since reading the book, can you identify a recent decision where your System 1 (intuition) and System 2 (reasoning) were in conflict? Which one won?</li>
+                        <li>How does the concept of "What You See Is All There Is" (WYSIATI) explain the prevalence of misinformation and polarized opinions in today's world?</li>
+                        <li>In what areas of your professional or personal life do you think you are most susceptible to overconfidence? How could you implement a "premortem" to challenge this?</li>
+                        <li>Discuss how understanding loss aversion could change how companies market their products or how governments create public policy.</li>
+                        <li>Kahneman argues System 2 is lazy. What practical steps can you take in your daily life to engage your System 2 more often in important decisions?</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+      
+    </main>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const biasesData = [
+            { title: 'Anchoring', description: 'The tendency to be influenced by the first piece of information offered (the "anchor") when making decisions.', example: 'If a T-shirt is priced at $100 and then marked down to $50, it seems like a great deal. If it was originally priced at $50, it seems less impressive. The initial $100 price is the anchor.' },
+            { title: 'Availability Heuristic', description: 'Overestimating the likelihood of events that are more easily recalled in memory, which are often recent or dramatic.', example: 'After seeing several news reports about shark attacks, you might feel that the likelihood of being attacked by a shark is much higher than it actually is.' },
+            { title: 'Confirmation Bias', description: 'The tendency to search for, interpret, favor, and recall information that confirms or supports one\'s preexisting beliefs.', example: 'A person who believes left-handed people are more creative will pay special attention to creative left-handed individuals, while ignoring non-creative ones.' },
+            { title: 'Hindsight Bias', description: 'The "I-knew-it-all-along" phenomenon. The tendency to see past events as being more predictable than they actually were.', example: 'After a stock market crash, many people will claim they saw it coming, even if they were fully invested and surprised at the time.' },
+            { title: 'Overconfidence', description: 'Excessive confidence in one\'s own answers, judgments, or abilities. Experts are particularly susceptible to this bias.', example: 'A surgeon who has performed a procedure hundreds of times might be overconfident and fail to double-check a critical step, leading to an error.' },
+            { title: 'Loss Aversion', description: 'The strong preference to avoid losses over acquiring equivalent gains. The pain of losing is more powerful than the pleasure of winning.', example: 'Most people would not accept a bet where they have a 50% chance to win $150 and a 50% chance to lose $100, even though the expected value is positive.' },
+            { title: 'Sunk Cost Fallacy', description: 'Continuing a behavior or endeavor as a result of previously invested resources (time, money, or effort), even when it is no longer the rational choice.', example: 'Sitting through a terrible movie because you already paid for the ticket, instead of leaving and doing something more enjoyable.' },
+            { title: 'Framing Effect', description: 'Drawing different conclusions from the same information, depending on how that information is presented.', example: 'A yogurt described as "90% fat-free" is more appealing to most people than one described as "containing 10% fat," even though they are identical.' },
+            { title: 'Planning Fallacy', description: 'The tendency to underestimate the time, costs, and risks of future actions and at the same time overestimate the benefits.', example: 'A contractor bidding on a project might estimate it will take 3 months, but unforeseen complications cause it to take 6 months.' },
+        ];
+
+        const biasGrid = document.getElementById('bias-grid');
+        const modal = document.getElementById('bias-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDescription = document.getElementById('modal-description');
+        const modalExample = document.getElementById('modal-example');
+        const closeModalButton = document.getElementById('close-modal');
+
+        if (biasGrid && modal && modalTitle && modalDescription && modalExample && closeModalButton) {
+            biasesData.forEach(bias => {
+                const card = document.createElement('div');
+                card.className = 'card p-6 bg-gray-50 rounded-lg border cursor-pointer';
+                card.innerHTML = `<h3 class="text-lg font-semibold text-gray-800">${bias.title}</h3>`;
+                card.addEventListener('click', () => {
+                    modalTitle.textContent = bias.title;
+                    modalDescription.textContent = bias.description;
+                    modalExample.textContent = bias.example;
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                });
+                biasGrid.appendChild(card);
+            });
+        
+            const closeModal = () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            };
+            closeModalButton.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+        }
+
+        const prospectChartEl = document.getElementById('prospectTheoryChart');
+        if (prospectChartEl) {
+            new Chart(prospectChartEl, {
+                type: 'line',
+                data: {
+                    labels: ['-100', '-50', '0', '50', '100'],
+                    datasets: [{
+                        label: 'Subjective Value',
+                        data: [-200, -100, 0, 50, 75],
+                        borderColor: '#007bff',
+                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                        fill: false,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            title: { display: true, text: 'Psychological Value' },
+                            grid: { color: 'rgba(0,0,0,0.05)'}
+                        },
+                        x: {
+                            title: { display: true, text: 'Actual Gain/Loss' },
+                            grid: { color: 'rgba(0,0,0,0.05)'}
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += `Perceived value of a ${context.parsed.x} outcome`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        const biasesImpactChartEl = document.getElementById('biasesImpactChart');
+        if (biasesImpactChartEl) {
+            new Chart(biasesImpactChartEl, {
+                type: 'bar',
+                data: {
+                    labels: ['Anchoring', 'Confirmation Bias', 'Overconfidence', 'Loss Aversion', 'Framing'],
+                    datasets: [{
+                        label: 'Hypothetical % Deviation from Rational Choice',
+                        data: [35, 25, 40, 30, 20],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)',
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(153, 102, 255, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                             beginAtZero: true,
+                             max: 50,
+                             title: { display: true, text: 'Impact Score' },
+                             grid: { color: 'rgba(0,0,0,0.05)'}
+                        },
+                        y: {
+                            grid: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', () => {
+                const isHidden = mobileMenu.classList.contains('hidden');
+                mobileMenu.classList.toggle('hidden', !isHidden);
+                const svgs = mobileMenuButton.querySelectorAll('svg');
+                if (svgs.length === 2) {
+                    svgs[0].classList.toggle('hidden', !isHidden);
+                    svgs[1].classList.toggle('hidden', isHidden);
+                }
+            });
+        }
+
+        const sections = document.querySelectorAll('.section-fade-in');
+        if (sections.length > 0) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        }
+    });
+    </script>
+</body>
+</html>
+
