@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>An Overwiew of Crime and Punishment & Study Guide</title>
+    <meta name="description" content="Explore Dostoevsky's Crime and Punishment with our interactive guide. Dive into plot, characters, themes, and key concepts. Perfect for students and literature enthusiasts.">
+    <meta name="keywords" content="Crime and Punishment, Fyodor Dostoevsky, Dostoevsky analysis, Literary analysis, Book summary Crime and Punishment, Crime and Punishment characters, Crime and Punishment themes, Raskolnikov, Sonya Marmeladov, Russian literature classics, Philosophical fiction, Psychological novel, Classic literature study guide, Interactive literary analysis, Crime and Punishment plot">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+  
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: The application uses a fixed sidebar navigation to break the dense literary analysis into logical, thematic sections (Overview, Plot, Characters, Themes, Context, Engage). This non-linear structure allows users to explore content based on interest, which is more user-friendly than a long, linear document. Key interactions include a character relationship chart (Chart.js), an interactive plot timeline, and clickable cards for themes, all designed to encourage exploration and deeper understanding of the novel's complex elements. The goal is to transform a static report into an engaging educational tool. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Core book details -> Goal: Inform -> Viz: HTML Table -> Interaction: Static -> Justification: Clear, concise presentation of factual data.
+        - Report Info: Plot structure -> Goal: Organize/Change -> Viz: Interactive HTML/CSS Timeline -> Interaction: Click to reveal details -> Justification: Visualizes the narrative flow and makes a long summary digestible.
+        - Report Info: Character relationships -> Goal: Relationships/Organize -> Viz: Bubble Chart -> Interaction: Hover/Click to see connection details -> Justification: Effectively maps the complex social web around the protagonist, offering a quick visual summary of influence and connection -> Library: Chart.js.
+        - Report Info: Major Themes -> Goal: Inform/Organize -> Viz: HTML Cards -> Interaction: Click to expand -> Justification: Presents complex ideas in a clean, organized manner, allowing users to focus on one concept at a time.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #38332F;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Lora', serif;
+        }
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-link.active {
+            background-color: #DCCFBE;
+            color: #38332F;
+            border-left: 4px solid #A68B6A;
+        }
+        .nav-link:not(.active):hover {
+            background-color: #EFEBE5;
+            border-left: 4px solid #EFEBE5;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card {
+            background-color: #FFFFFF;
+            border: 1px solid #EFEBE5;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+            padding-left: 2rem;
+            border-left: 2px solid #DCCFBE;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -0.5rem;
+            top: 0;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            background-color: #A68B6A;
+            border: 2px solid #FDFBF8;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-64 bg-[#F5F1EC] border-r border-[#EFEBE5] p-4 md:p-0 md:pt-8 shrink-0">
+            <div class="md:sticky top-8">
+                <h1 class="text-xl font-bold text-center md:text-left md:px-4 mb-6 font-serif">Crime & Punishment</h1>
+                <nav id="main-nav" class="flex flex-row md:flex-col justify-around md:justify-start">
+                    <a href="#overview" class="nav-link active font-medium text-left p-3 md:pl-8 text-sm">Overview</a>
+                    <a href="#plot" class="nav-link font-medium text-left p-3 md:pl-8 text-sm">Plot Analysis</a>
+                    <a href="#characters" class="nav-link font-medium text-left p-3 md:pl-8 text-sm">Characters</a>
+                    <a href="#themes" class="nav-link font-medium text-left p-3 md:pl-8 text-sm">Themes & Style</a>
+                    <a href="#concepts" class="nav-link font-medium text-left p-3 md:pl-8 text-sm">Key Concepts</a>
+                    <a href="#author" class="nav-link font-medium text-left p-3 md:pl-8 text-sm">The Author</a>
+                    <a href="#context" class="nav-link font-medium text-left p-3 md:pl-8 text-sm">Context & Legacy</a>
+                    <a href="#engage" class="nav-link font-medium text-left p-3 md:pl-8 text-sm">Engage & Discuss</a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 sm:p-8 md:p-12 overflow-y-auto">
+            
+            <!-- Overview Section -->
+            <section id="overview" class="content-section active">
+                <h2 class="text-3xl font-bold mb-4">The 30,000-Foot View</h2>
+                <p class="mb-8 text-lg text-gray-600 leading-relaxed">This section provides a high-level summary of the novel's core attributes. Use this as a quick reference to understand the book's genre, themes, and intended audience before diving deeper into the analysis.</p>
+
+                <div class="card rounded-lg shadow-sm overflow-hidden mb-8">
+                    <table class="w-full text-left">
+                        <tbody class="divide-y divide-gray-200">
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 font-semibold w-1/3">Book Title & Author</td>
+                                <td class="px-6 py-4">Crime and Punishment by Fyodor Dostoevsky</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 font-semibold">Genre/Subgenre</td>
+                                <td class="px-6 py-4">Philosophical Fiction, Psychological Realism, Crime Fiction</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 font-semibold">Publication Date</td>
+                                <td class="px-6 py-4">1866</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 font-semibold">Core Theme</td>
+                                <td class="px-6 py-4">The novel explores the psychological torment and moral dilemmas of a man who believes himself above the law, ultimately arguing for redemption through suffering and confession.</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 font-semibold">Overall Tone</td>
+                                <td class="px-6 py-4">Intense, dark, introspective, philosophical, and dramatic.</td>
+                            </tr>
+                             <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 font-semibold">Target Audience</td>
+                                <td class="px-6 py-4">Readers interested in psychology, philosophy, classic Russian literature, and complex character studies.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="text-2xl font-bold mb-3 font-serif">Elevator Pitch Summary</h3>
+                <div class="card rounded-lg shadow-sm p-6">
+                    <p class="text-gray-700 leading-loose">
+                        Rodion Raskolnikov, an impoverished ex-student in St. Petersburg, formulates a theory that extraordinary individuals have the right to commit any crime. To prove his theory and solve his financial woes, he murders an old pawnbroker. Instead of liberation, the act plunges him into a feverish state of guilt, paranoia, and alienation. He is pursued not only by a cunning police investigator but by his own conscience, forcing him to confront the devastating consequences of his intellectual pride and seek redemption.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Plot Section -->
+            <section id="plot" class="content-section">
+                <h2 class="text-3xl font-bold mb-4">Detailed Plot Summary</h2>
+                 <p class="mb-8 text-lg text-gray-600 leading-relaxed">Follow the narrative arc of the story from the initial crime to its ultimate resolution. This interactive timeline highlights the key moments that drive the plot and shape Raskolnikov's psychological journey. Click on each stage to reveal a summary of the events.</p>
+                <div id="plot-timeline"></div>
+            </section>
+
+            <!-- Characters Section -->
+            <section id="characters" class="content-section">
+                <h2 class="text-3xl font-bold mb-4">Character & Setting Deep Dive</h2>
+                 <p class="mb-8 text-lg text-gray-600 leading-relaxed">Explore the key figures who populate Dostoevsky's St. Petersburg. The following chart visualizes the main relationships, while the character cards below offer detailed analyses of their motivations, arcs, and connections. The city itself also plays a crucial role, acting as a character that shapes the novel's oppressive atmosphere.</p>
+                
+                <h3 class="text-2xl font-bold mb-4 font-serif text-center">Character Relationship Map</h3>
+                <div class="chart-container mb-8">
+                    <canvas id="characterChart"></canvas>
+                </div>
+                <div id="relationship-info" class="text-center p-4 mb-8 bg-gray-100 rounded-lg min-h-[50px] text-gray-700">Hover over a character bubble to see their primary connection.</div>
+
+                <div id="character-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"></div>
+                
+                <h3 class="text-2xl font-bold mb-3 font-serif">The Setting as a Character</h3>
+                <div class="card rounded-lg shadow-sm p-6">
+                    <p class="text-gray-700 leading-loose">
+                        The setting of St. Petersburg is more than a backdrop; it's an active force in the novel. Dostoevsky portrays a city of stark contrasts: grand imperial facades hide squalid, overcrowded tenements. The oppressive summer heat, the stench of the streets, and the constant poverty mirror Raskolnikov's internal state of feverish delirium and claustrophobia. The city suffocates its inhabitants, fostering desperation, vice, and radical ideas, making it the perfect crucible for Raskolnikov's crime and subsequent punishment.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Themes & Style Section -->
+            <section id="themes" class="content-section">
+                <h2 class="text-3xl font-bold mb-4">Thematic & Stylistic Analysis</h2>
+                <p class="mb-8 text-lg text-gray-600 leading-relaxed">This section delves into the intellectual core of the novel. Explore the major philosophical themes Dostoevsky examines, the recurring symbols and motifs he employs, and the unique writing style that makes the book a masterpiece of psychological realism. Understanding these elements is key to appreciating the novel's depth and enduring power.</p>
+                
+                <h3 class="text-2xl font-bold mb-4 font-serif">Major Themes</h3>
+                <div id="themes-grid" class="space-y-4 mb-8"></div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-3 font-serif">Symbolism & Motifs</h3>
+                        <div class="card rounded-lg shadow-sm p-6">
+                            <ul class="list-disc list-inside space-y-3 text-gray-700">
+                                <li><strong>The City of St. Petersburg:</strong> Represents a modern, alienating world filled with poverty, vice, and social decay.</li>
+                                <li><strong>The Cross:</strong> A powerful symbol of suffering, faith, and redemption, particularly when Sonya gives one to Raskolnikov.</li>
+                                <li><strong>Water:</strong> Often symbolizes purification and rebirth, such as Raskolnikov's desire to throw himself into the river.</li>
+                                <li><strong>Dreams:</strong> Raskolnikov's nightmares reveal his subconscious guilt and the true horror of his actions.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold mb-3 font-serif">Author's Writing Style</h3>
+                        <div class="card rounded-lg shadow-sm p-6">
+                           <p class="text-gray-700 leading-loose">
+                            Dostoevsky's style is characterized by its intense psychological depth. He uses a limited third-person perspective that often blurs with Raskolnikov's own thoughts, creating a claustrophobic, feverish atmosphere. The prose is dense with philosophical dialogues, internal monologues, and dramatic, almost theatrical scenes. He employs stream of consciousness to immerse the reader in the protagonist's tormented mind, making the psychological punishment as real as any physical one.
+                           </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Key Concepts Section -->
+            <section id="concepts" class="content-section">
+                <h2 class="text-3xl font-bold mb-4">A Deeper Dive: Key Concepts</h2>
+                <p class="mb-8 text-lg text-gray-600 leading-relaxed">Beyond the main themes, "Crime and Punishment" is built upon a foundation of complex philosophical, psychological, and social ideas. This section elaborates on five of the most critical concepts Dostoevsky explores, providing a more profound understanding of the novel's intellectual and moral layers.</p>
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-3">1. Critique of Nihilism & Utilitarianism</h3>
+                        <div class="card rounded-lg shadow-sm p-6">
+                            <p class="text-gray-700 leading-loose">The novel is a direct response to the radical ideologies sweeping through Russia in the 1860s. Raskolnikov's "extraordinary man" theory is a perversion of these ideas. He adopts a nihilistic viewpoint—rejecting traditional morality and religion—and blends it with a crude form of utilitarianism, believing the murder of a "useless" old pawnbroker is justified if it leads to a greater good (his own career, helping the poor). Dostoevsky systematically dismantles this logic, demonstrating that abstract intellectual theories collapse when faced with the reality of human conscience and the sanctity of life. The novel argues that such ideologies lead not to liberation but to moral chaos and profound spiritual emptiness.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold mb-3">2. The Psychology of Guilt and Paranoia</h3>
+                        <div class="card rounded-lg shadow-sm p-6">
+                            <p class="text-gray-700 leading-loose">Dostoevsky is a master of psychological realism, and the novel is a clinical study of a guilty conscience. Raskolnikov's punishment is not legal but internal. After the crime, he is plunged into a feverish state where his guilt manifests physically (illness, fainting) and mentally (paranoia, vivid nightmares, obsessive thoughts). He constantly fears exposure, scrutinizing every word and glance from others. His interactions with the investigator Porfiry Petrovich are masterful depictions of psychological warfare, where Porfiry uses Raskolnikov's own guilt as the primary tool of investigation, knowing that the mind of the criminal will ultimately betray him.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold mb-3">3. Redemption Through Faith and Spirituality</h3>
+                        <div class="card rounded-lg shadow-sm p-6">
+                            <p class="text-gray-700 leading-loose">Sonya Marmeladov represents the novel's spiritual core. While Raskolnikov relies on intellect and reason, which lead him to murder, Sonya relies on an unwavering Christian faith, which allows her to endure immense suffering with compassion and hope. She is the living antithesis of his theory. The path to redemption she offers is not logical but spiritual: it requires humility, confession, acceptance of suffering, and unconditional love. The pivotal scene where she reads him the story of Lazarus is central, symbolizing the possibility of spiritual resurrection for a man who is morally dead.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold mb-3">4. Social Commentary on Urban Poverty</h3>
+                        <div class="card rounded-lg shadow-sm p-6">
+                            <p class="text-gray-700 leading-loose">The novel is a stark portrayal of the squalor and desperation of 19th-century St. Petersburg. The city is a character in itself—a place of claustrophobic tenements, dirty streets, alcoholism, and crushing poverty. Dostoevsky uses the Marmeladov family to illustrate the devastating effects of these social conditions. This environment acts as an incubator for Raskolnikov's radical idea; his crime is born not just from intellectual pride but also from the desperation of his circumstances. The novel questions whether society itself is complicit in creating the conditions that lead individuals to crime.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold mb-3">5. The Duality of Human Nature</h3>
+                        <div class="card rounded-lg shadow-sm p-6">
+                            <p class="text-gray-700 leading-loose">Dostoevsky explores the idea that human nature is a battlefield of conflicting impulses. Raskolnikov himself is a prime example: he is both a cold-blooded murderer and a compassionate man who gives his last coins to the poor. He is driven by intellectual arrogance yet capable of deep love for his family. This duality is also explored through foils like Svidrigailov, who embodies a purely sensual and amoral existence but is also capable of acts of charity before his suicide. The novel suggests that every person contains the capacity for both great evil and profound good, and the moral struggle lies in which path is chosen.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Author Section -->
+            <section id="author" class="content-section">
+                <h2 class="text-3xl font-bold mb-4">The Author: Fyodor Dostoevsky</h2>
+                <div class="flex flex-col lg:flex-row gap-8 items-start">
+                    <div class="flex-1">
+                        <p class="mb-6 text-lg text-gray-600 leading-relaxed">Fyodor Mikhailovich Dostoevsky (1821-1881) is one of the most acclaimed novelists in world literature. His works are renowned for their profound psychological depth and exploration of the human condition in the tumultuous political, social, and spiritual atmosphere of 19th-century Russia.</p>
+                        <div class="card rounded-lg shadow-sm p-6">
+                            <p class="text-gray-700 leading-loose">Dostoevsky's life was as dramatic as his novels. As a young man, he was arrested for his involvement in a utopian socialist intellectual group. He and his fellow members were subjected to a mock execution, a traumatic event that deeply influenced his later work. He was then sentenced to four years of hard labor in a Siberian prison camp, an experience that shattered his youthful idealism and deepened his Christian faith. His writing is infused with themes of crime, guilt, free will, and the search for God, making him a foundational figure in existentialist thought.</p>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-2/5">
+                        <h3 class="text-2xl font-bold mb-3">Other Major Works</h3>
+                        <div class="space-y-3">
+                            <div class="card rounded p-4 text-sm hover:bg-gray-50">
+                                <p class="font-bold">The Brothers Karamazov (1880)</p>
+                                <p class="text-gray-600">His final masterpiece, a passionate philosophical novel that explores faith, doubt, and morality through the story of three brothers.</p>
+                            </div>
+                            <div class="card rounded p-4 text-sm hover:bg-gray-50">
+                                <p class="font-bold">The Idiot (1869)</p>
+                                <p class="text-gray-600">Depicts a perfectly good man, Prince Myshkin, and the destructive impact he has on a corrupt and worldly society.</p>
+                            </div>
+                            <div class="card rounded p-4 text-sm hover:bg-gray-50">
+                                <p class="font-bold">Demons (aka The Possessed) (1872)</p>
+                                <p class="text-gray-600">A dark political satire and cautionary tale about a group of revolutionaries who descend into chaos and murder.</p>
+                            </div>
+                             <div class="card rounded p-4 text-sm hover:bg-gray-50">
+                                <p class="font-bold">Notes from Underground (1864)</p>
+                                <p class="text-gray-600">A seminal work of existentialist fiction, told from the perspective of a bitter, isolated narrator who rebels against societal norms.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Context & Legacy Section -->
+            <section id="context" class="content-section">
+                <h2 class="text-3xl font-bold mb-4">Context and Legacy</h2>
+                 <p class="mb-8 text-lg text-gray-600 leading-relaxed">A great work of literature is a product of its time. This section explores the historical and personal circumstances that shaped "Crime and Punishment." Learn about the intellectual currents of 19th-century Russia, Dostoevsky's own life experiences, and the novel's lasting impact on literature and thought.</p>
+
+                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-3 font-serif">Historical & Authorial Context</h3>
+                        <div class="card rounded-lg shadow-sm p-6 h-full">
+                           <p class="text-gray-700 leading-loose">
+                            Written in the 1860s, "Crime and Punishment" reflects a period of immense social and intellectual change in Russia following the emancipation of the serfs in 1861. New, radical Western ideas like utilitarianism and nihilism were gaining popularity among the youth, questioning traditional morality and religion. Dostoevsky, who had himself been exiled to Siberia for his involvement with radical thinkers, wrote the novel as a cautionary tale against these ideologies. His personal experiences with poverty, epilepsy, and the Russian justice system deeply inform the novel's gritty realism and exploration of suffering.
+                           </p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold mb-3 font-serif">Critical Reception & Legacy</h3>
+                        <div class="card rounded-lg shadow-sm p-6 h-full">
+                           <p class="text-gray-700 leading-loose">
+                            Upon its release, "Crime and Punishment" was a popular success, though it received mixed reviews from critics. Some praised its profound psychological insights, while others were shocked by its dark subject matter and perceived sympathy for radical ideas. Today, it is considered a masterpiece of world literature. Its deep dive into the human psyche influenced generations of writers and thinkers, including Nietzsche, Freud, and Camus, and it remains a foundational text in the study of psychology, existentialism, and moral philosophy.
+                           </p>
+                        </div>
+                    </div>
+                 </div>
+                 <h3 class="text-2xl font-bold mt-8 mb-3 font-serif">Recommended For...</h3>
+                 <div class="card rounded-lg shadow-sm p-6">
+                   <p class="text-gray-700 leading-loose">
+                    This book is highly recommended for readers who enjoy deep character studies, philosophical debates, and psychological thrillers. It is essential reading for anyone interested in Russian literature, existentialism, and the timeless questions of morality, guilt, and the potential for human redemption.
+                   </p>
+                </div>
+            </section>
+
+            <!-- Engage Section -->
+            <section id="engage" class="content-section">
+                <h2 class="text-3xl font-bold mb-4">Engaging with the Book</h2>
+                <p class="mb-8 text-lg text-gray-600 leading-relaxed">The best books are those that stay with us long after we've finished reading. This final section provides memorable quotes and thought-provoking questions to help you reflect on the novel's enduring themes and complex characters. Use these prompts for personal reflection or as a starting point for a book club discussion.</p>
+                
+                <h3 class="text-2xl font-bold mb-3 font-serif">Most Memorable Quotes</h3>
+                <div id="quotes-container" class="space-y-4 mb-8"></div>
+                
+                <h3 class="text-2xl font-bold mb-3 font-serif">Thought-Provoking Questions</h3>
+                <div id="questions-container" class="space-y-4"></div>
+            </section>
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+          
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const appData = {
+        plot: [
+            {
+                title: 'Inciting Incident',
+                content: 'Raskolnikov, tormented by poverty and his radical theory of the "extraordinary man," decides to murder the miserly pawnbroker, Alyona Ivanovna. He believes the act is morally justified because he will use her money for good and rid the world of a "louse."'
+            },
+            {
+                title: 'Rising Action',
+                content: 'After committing the murder (and also killing Alyona\'s gentle sister, Lizaveta, who stumbles upon the scene), Raskolnikov falls into a state of delirium and paranoia. He hides the stolen goods without counting them and struggles to act normally. His strange behavior draws the attention of the cunning investigator Porfiry Petrovich, who engages him in a series of psychological games. Meanwhile, Raskolnikov meets the destitute but devoutly Christian Sonya Marmeladov, who he feels a strange connection to.'
+            },
+            {
+                title: 'Climax',
+                content: 'Unable to bear the weight of his guilt and alienation, Raskolnikov confesses his crime to Sonya. He expects condemnation but is met with compassion. Sonya urges him to confess to the authorities and accept his suffering as a path to redemption. This moment marks the collapse of his intellectual theory and the beginning of his moral regeneration.'
+            },
+            {
+                title: 'Falling Action',
+                content: 'Raskolnikov is torn between confessing and saving himself. He has a final, intense confrontation with Porfiry, who reveals he knows Raskolnikov is the killer but gives him a chance to confess on his own terms. After saying goodbye to his mother and sister, and with Sonya\'s unwavering support, he walks to the police station.'
+            },
+            {
+                title: 'Resolution',
+                content: 'Raskolnikov confesses to the murders. In the epilogue, he is serving his sentence in a Siberian prison camp, with Sonya having followed him there. He is initially sullen and unrepentant, but a severe illness and a dream finally break his pride. He recognizes the depth of Sonya\'s love and his own capacity for redemption, picking up a New Testament and beginning a new, albeit difficult, chapter of his life.'
+            }
+        ],
+        characters: [
+            {
+                name: 'Rodion Raskolnikov',
+                role: 'The protagonist, an impoverished ex-student.',
+                motivation: 'To prove his theory of the "extraordinary man," who stands above conventional morality, and to escape his crushing poverty.',
+                arc: 'He transforms from an arrogant, alienated intellectual who commits murder out of pride to a man broken by guilt who finally accepts suffering as the path to redemption through faith and love.',
+                relationships: 'His journey is defined by his psychological battle with Porfiry, his spiritual connection with Sonya, his protective love for his sister Dunya, and his complex friendship with Razumikhin.'
+            },
+            {
+                name: 'Sonya Marmeladov',
+                role: 'A young woman forced into prostitution to support her family.',
+                motivation: 'Unconditional Christian faith and love for her family and for God. Her primary desire is to offer compassion and guide others towards redemption.',
+                arc: 'Sonya remains relatively static, acting as the moral and spiritual anchor of the novel. Her arc is less about personal change and more about her profound impact on Raskolnikov, guiding him from intellectual despair to spiritual hope.',
+                relationships: 'She is the daughter of the drunkard Marmeladov and becomes Raskolnikov\'s spiritual guide and love interest.'
+            },
+            {
+                name: 'Porfiry Petrovich',
+                role: 'The lead investigator assigned to the murder case.',
+                motivation: 'To uncover the truth through psychological insight rather than conventional evidence. He is fascinated by Raskolnikov\'s psychology.',
+                arc: 'Porfiry is a static character who serves as Raskolnikov\'s intellectual antagonist. He remains a brilliant and unconventional investigator throughout, more interested in saving a soul than simply securing a conviction.',
+                relationships: 'His relationship with Raskolnikov is a captivating cat-and-mouse game of wits and psychology.'
+            },
+            {
+                name: 'Dmitri Razumikhin',
+                role: 'Raskolnikov\'s loyal and good-natured friend.',
+                motivation: 'Simple decency, hard work, and loyalty to his friends. He represents a practical, compassionate alternative to Raskolnikov\'s destructive intellectualism.',
+                arc: 'Razumikhin is a stable, reliable figure who does not undergo significant change. He serves as a foil to Raskolnikov, showing that one can endure poverty and hardship without resorting to monstrous theories.',
+                relationships: 'He is Raskolnikov\'s main link to society and eventually falls in love with and marries Dunya.'
+            },
+            {
+                name: 'Dunya Raskolnikov',
+                role: 'Raskolnikov\'s intelligent, proud, and virtuous sister.',
+                motivation: 'To protect her family\'s honor and ensure their financial security, even at the cost of her own happiness.',
+                arc: 'Dunya\'s arc involves freeing herself from two morally corrupt suitors (Luzhin and Svidrigailov). She grows in her ability to assert her independence and make decisions based on love and integrity rather than sacrifice.',
+                relationships: 'She is devoted to her brother Raskolnikov, and her story is defined by her escape from Luzhin and Svidrigailov and her eventual marriage to Razumikhin.'
+            },
+            {
+                name: 'Arkady Svidrigailov',
+                role: 'Dunya\'s former employer, a wealthy and depraved man.',
+                motivation: 'The pursuit of sensual pleasure (hedonism) to escape the boredom and meaninglessness of his life.',
+                arc: 'Svidrigailov is a dark mirror of Raskolnikov—a man who truly lives without moral boundaries. His arc ends in despair; after being rejected by Dunya and finding no redemption, he commits suicide, showing the ultimate dead-end of a life without moral purpose.',
+                relationships: 'He is the menacing antagonist to Dunya and a source of twisted fascination for Raskolnikov.'
+            }
+        ],
+        themes: [
+            {
+                title: 'Alienation and Isolation',
+                content: 'Raskolnikov\'s pride and his crime sever him from humanity. He feels an impassable gulf between himself and everyone he loves. The novel vividly portrays the psychological pain of this self-imposed isolation. For example, after the murder, he cannot bear to be in the same room as his mother and sister, feeling utterly disconnected from their world of innocence.'
+            },
+            {
+                title: 'Guilt, Suffering, and Redemption',
+                content: 'Dostoevsky argues that true redemption is not found in intellectual theories but through accepting suffering and guilt. Raskolnikov\'s "punishment" is not his prison sentence but the mental anguish he endures. His path to redemption only begins when he accepts Sonya\'s view that he must confess and suffer for his sin, symbolized by him finally kneeling at the crossroads.'
+            },
+            {
+                title: 'The "Extraordinary Man" Theory',
+                content: 'The novel is a powerful critique of nihilistic and utilitarian ideas. Raskolnikov believes that "extraordinary" men like Napoleon are above the moral laws that bind ordinary people. His crime is an attempt to test this theory. The entire novel serves to dismantle this idea, showing that no one can escape the fundamental truths of human conscience and morality.'
+            }
+        ],
+        quotes: [
+            {
+                quote: "Pain and suffering are always inevitable for a large intelligence and a deep heart. The really great men must, I think, have great sadness on earth.",
+                significance: 'Spoken by Raskolnikov, this quote reveals his early, romanticized view of suffering as a mark of greatness, a belief that is brutally tested throughout the novel.'
+            },
+            {
+                quote: "Taking a new step, uttering a new word, is what people fear most.",
+                significance: 'This captures Raskolnikov\'s motivation for the crime. He sees it as a test of his own courage to transgress boundaries and prove he is not one of the fearful, ordinary masses.'
+            },
+            {
+                quote: "Go at once, this very minute, stand at the cross-roads, bow down, first kiss the earth which you have defiled and then bow down to all the world and say to all men aloud, 'I am a murderer!' Then God will send you life again.",
+                significance: 'Sonya\'s command to Raskolnikov. It encapsulates the novel\'s central theme: redemption is not an intellectual exercise but an act of profound humility, public confession, and accepted suffering.'
+            }
+        ],
+        questions: [
+            'Is Raskolnikov a monster, a victim of his circumstances, or something else entirely? Does Dostoevsky want us to sympathize with him?',
+            'What is the role of women in the novel, particularly Sonya and Dunya? How do they represent different paths for Raskolnikov?',
+            'The novel is titled "Crime and Punishment." What is the true "punishment" Raskolnikov endures? Is it his prison sentence or something internal?',
+            'Discuss the character of Svidrigailov. In what ways does he serve as a foil or a dark reflection of Raskolnikov?',
+            'Does the epilogue feel like a convincing conclusion to the novel? Is Raskolnikov\'s transformation believable?'
+        ]
+    };
+
+    const mainNav = document.getElementById('main-nav');
+    const contentSections = document.querySelectorAll('.content-section');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    mainNav.addEventListener('click', function(e) {
+        if (e.target.tagName === 'A') {
+            e.preventDefault();
+            const targetId = e.target.getAttribute('href').substring(1);
+
+            navLinks.forEach(link => link.classList.remove('active'));
+            e.target.classList.add('active');
+
+            contentSections.forEach(section => {
+                if (section.id === targetId) {
+                    section.classList.add('active');
+                } else {
+                    section.classList.remove('active');
+                }
+            });
+            window.scrollTo(0, 0);
+        }
+    });
+
+    function initPlot() {
+        const container = document.getElementById('plot-timeline');
+        let html = '';
+        appData.plot.forEach((item, index) => {
+            html += `
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <h4 class="text-xl font-bold mb-2 cursor-pointer transition hover:text-[#A68B6A]" onclick="togglePlot(this)">${item.title}</h4>
+                    <div class="text-gray-600 leading-relaxed overflow-hidden" style="max-height: 0; transition: max-height 0.5s ease-out;">
+                        <p class="p-4 bg-white/50 rounded-md">${item.content}</p>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+        const firstTitle = container.querySelector('h4');
+        if (firstTitle) {
+            togglePlot(firstTitle);
+        }
+    }
+
+    window.togglePlot = function(element) {
+        const content = element.nextElementSibling;
+        if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+            content.style.maxHeight = '0px';
+        } else {
+            document.querySelectorAll('#plot-timeline .overflow-hidden').forEach(el => el.style.maxHeight = '0px');
+            content.style.maxHeight = content.scrollHeight + 'px';
+        }
+    }
+    
+    function initCharacters() {
+        const container = document.getElementById('character-cards');
+        let html = '';
+        appData.characters.forEach(char => {
+            html += `
+                <div class="card rounded-lg shadow-sm p-6 flex flex-col">
+                    <h4 class="text-xl font-bold mb-2 font-serif">${char.name}</h4>
+                    <p class="text-sm text-gray-500 mb-3">${char.role}</p>
+                    <div class="space-y-2 text-gray-700 text-sm flex-grow">
+                        <p><strong>Motivation:</strong> ${char.motivation}</p>
+                        <p><strong>Character Arc:</strong> ${char.arc}</p>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+        initCharacterChart();
+    }
+    
+    function initCharacterChart() {
+        const ctx = document.getElementById('characterChart').getContext('2d');
+        const infoBox = document.getElementById('relationship-info');
+        
+        const characterData = [
+            { x: 5, y: 5, r: 25, label: 'Raskolnikov', relationships: 'Protagonist' },
+            { x: 8, y: 8, r: 20, label: 'Sonya', relationships: 'Raskolnikov\'s spiritual guide' },
+            { x: 2, y: 8, r: 15, label: 'Porfiry', relationships: 'Raskolnikov\'s intellectual antagonist' },
+            { x: 2, y: 2, r: 15, label: 'Razumikhin', relationships: 'Raskolnikov\'s loyal friend' },
+            { x: 5, y: 1, r: 15, label: 'Dunya', relationships: 'Raskolnikov\'s devoted sister' },
+            { x: 8, y: 2, r: 13, label: 'Svidrigailov', relationships: 'Dunya\'s tormentor, Raskolnikov\'s dark mirror' }
+        ];
+
+        new Chart(ctx, {
+            type: 'bubble',
+            data: {
+                datasets: [{
+                    label: 'Characters',
+                    data: characterData,
+                    backgroundColor: 'rgba(166, 139, 106, 0.6)',
+                    borderColor: 'rgba(166, 139, 106, 1)',
+                    borderWidth: 1,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.raw.label;
+                            }
+                        }
+                    },
+                },
+                scales: {
+                    x: { display: false, min: 0, max: 10 },
+                    y: { display: false, min: 0, max: 10 }
+                },
+                onHover: (event, chartElement) => {
+                    const canvas = event.native.target;
+                    canvas.style.cursor = chartElement[0] ? 'pointer' : 'default';
+                    if (chartElement.length > 0) {
+                        const index = chartElement[0].index;
+                        infoBox.textContent = characterData[index].relationships;
+                    } else {
+                        infoBox.textContent = 'Hover over a character bubble to see their primary connection.';
+                    }
+                }
+            }
+        });
+    }
+
+    function initThemes() {
+        const container = document.getElementById('themes-grid');
+        let html = '';
+        appData.themes.forEach(theme => {
+            html += `
+                <div class="card rounded-lg shadow-sm">
+                    <h4 class="text-lg font-bold p-4 cursor-pointer flex justify-between items-center" onclick="toggleTheme(this)">
+                        <span>${theme.title}</span>
+                        <span class="transform transition-transform duration-300">&#9662;</span>
+                    </h4>
+                    <div class="text-gray-600 leading-relaxed overflow-hidden" style="max-height: 0; transition: max-height 0.5s ease-out;">
+                         <p class="p-4 pt-0">${theme.content}</p>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+    
+    window.toggleTheme = function(element) {
+        const content = element.nextElementSibling;
+        const arrow = element.querySelector('span:last-child');
+        if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+            content.style.maxHeight = '0px';
+            arrow.style.transform = 'rotate(0deg)';
+        } else {
+            content.style.maxHeight = content.scrollHeight + 'px';
+            arrow.style.transform = 'rotate(180deg)';
+        }
+    };
+    
+    function initEngage() {
+        const quotesContainer = document.getElementById('quotes-container');
+        let quotesHtml = '';
+        appData.quotes.forEach(item => {
+            quotesHtml += `
+                 <div class="card rounded-lg shadow-sm p-6">
+                    <blockquote class="italic text-gray-800 border-l-4 border-[#A68B6A] pl-4 mb-2">"${item.quote}"</blockquote>
+                    <p class="text-sm text-gray-600 pl-5">${item.significance}</p>
+                </div>
+            `;
+        });
+        quotesContainer.innerHTML = quotesHtml;
+
+        const questionsContainer = document.getElementById('questions-container');
+        let questionsHtml = '';
+        appData.questions.forEach((q, index) => {
+             questionsHtml += `
+                 <div class="card rounded-lg shadow-sm p-4">
+                    <p class="font-medium text-gray-800"><span class="font-serif text-[#A68B6A] mr-2">${index + 1}.</span>${q}</p>
+                </div>
+            `;
+        });
+        questionsContainer.innerHTML = questionsHtml;
+    }
+    
+    initPlot();
+    initCharacters();
+    initThemes();
+    initEngage();
+});
+</script>
+
+</body>
+</html>
+
