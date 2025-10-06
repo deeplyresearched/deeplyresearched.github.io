@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Literary Review - Deeply Researched</title>
-    <!-- SEO, favicon, etc. -->
-    <meta name="description" content="An artistic and bookish collection of detailed book reports and literary analyses on various authors and their works.">
+    <title>The Literary Review: Deep Book Analysis & Reports - Deeply Researched</title>
+    <meta name="description" content="Explore deeply researched literary analyses and detailed book reports on classic and contemporary authors. Dive into profound insights and critiques.">
+    <meta name="keywords" content="literary review, book analysis, book reports, literary criticism, classic literature, contemporary literature, author analysis, book summaries, literary essays, novel analysis, deep reading, book insights, literary studies, best book reviews, critical analysis">
     <link rel="canonical" href="https://deeplyresearched.github.io/the-literary-review.html"/>
     <link rel="icon" href="documents/favicon.png" type="image/png">
     
@@ -167,6 +167,100 @@
             color: var(--header-bg);
         }
 
+  /* --- FOOTER SECTIONS --- */
+        .explore-further-section, .pdf-library-section {
+            text-align: center;
+            background-color: #2c2c2c;
+            color: var(--text-light);
+            border-radius: 20px;
+            padding: 2.5rem 1.5rem;
+            margin: 4rem auto 2rem auto;
+            max-width: 1200px;
+        }
+
+        .explore-further-section h3, .pdf-library-section h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.5rem;
+            margin: 0 1rem 0;
+            color: white;
+        }
+
+        .explore-further-section p, .pdf-library-description {
+            max-width: 600px;
+            margin: 0 auto 2rem auto;
+            font-size: 1.1em;
+            opacity: 0.8;
+            color: #bdc3c7;
+        }
+
+        .footer-nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.8rem 6rem;
+            list-style: none;
+            padding:0;
+            margin: 0 0 2rem 0;
+        }
+        
+        .social-links a {
+            color: #bdc3c7;
+            font-size: 1.8rem;
+            margin: 0 0.75rem;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .social-links a:hover {
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .pdf-library-button {
+            display: inline-block;
+            background-color: white;
+            color: #34495e;
+            padding: 1rem 2.5rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        .pdf-library-button:hover {
+            transform: scale(1.05);
+            background-color: #f0f0f0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5em 0;
+            background-color: var(--header-bg);
+            color: #95a5a6;
+            font-size: 0.9em;
+            margin-top: 2em;
+        }
+
+        .footer-nav a {
+        color: #ecf0f1;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 1.1em;
+        transition: color 0.3s ease;
+        }
+       
+        .footer-nav a:hover {
+        color: white;
+        text-decoration: underline;
+        }
+        
+        .no-results {
+            width: 100%;
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-light);
+            font-size: 1.2rem;
+            column-span: all;
+        }
+        
     </style>
 </head>
 <body>
@@ -179,7 +273,6 @@
                 <li><a href="index.html">The Physician's Ledger</a></li>
                 <li><a href="tech-dossier.html">The Tech Dossier</a></li>
                 <li><a href="civic-spectrum.html">The Civic Spectrum</a></li>
-                <!-- Add an "active" class to this link when you are on this page -->
                 <li><a href="the-literary-review.html">The Literary Review</a></li>
                 <li><a href="research-articles.html">PDF Library</a></li>
             </ul>
@@ -192,6 +285,28 @@
                 <!-- Book reports will be injected here by JavaScript -->
             </div>
         </div>
+
+<section class="explore-further-section">
+            <h3>Explore Further</h3>
+            <p>Navigate to other sections or connect with me on social media.</p>
+            <ul class="footer-nav">
+                <li><a href="index.html">The Physician's Ledger</a></li>
+                <li><a href="tech-dossier.html">The Tech Dossier</a></li>
+                <li><a href="civic-spectrum.html">The Civic Spectrum</a></li>
+                <li><a href="research-articles.html">PDF Library</a></li>
+            </ul>
+            <div class="social-links">
+                <a href="#" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+                <a href="https://www.youtube.com/@deeplyresearched" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+            </div>
+        </section>
+    
+        <section class="pdf-library-section">
+            <h2>Comprehensive PDF Report Library</h2>
+            <p class="pdf-library-description">I have compiled an extensive library of detailed PDF reports. Click the button below to find the detailed report of this analysis and to explore the full collection.</p>
+            <a href="research-articles.html" class="pdf-library-button">Explore All PDF Reports</a>
+        </section>
+        
     </main>
     
     <script>
@@ -200,10 +315,10 @@
             // Add every new report to this list.
             const bookReports = [
                 {
-                    title: "Meditations",
-                    author: "Marcus Aurelius",
-                    description: "A profound series of personal writings by the Roman Emperor, offering timeless Stoic wisdom on virtue, mortality, and the nature of the universe.",
-                    link: "#", // Link to your detailed report page
+                    title: "Thinking, Fast and Slow",
+                    author: "Daniel Kahneman",
+                    description: "Kahneman introduces several powerful theories that explain our irrational behavior, particularly around risk and choice.",
+                    link: "Thinking, Fast and Slow.html", // Link to your detailed report page
                     cover: "https://images.unsplash.com/photo-1608329388120-c822d08a1c88?q=80&w=1887&auto=format&fit=crop"
                 },
                 {
