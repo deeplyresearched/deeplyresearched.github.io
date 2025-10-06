@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Literary Review - Deeply Researched</title>
+    <!-- SEO, favicon, etc. -->
+    <meta name="description" content="An artistic and bookish collection of detailed book reports and literary analyses on various authors and their works.">
+    <link rel="canonical" href="https://deeplyresearched.github.io/the-literary-review.html"/>
+    <link rel="icon" href="documents/favicon.png" type="image/png">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CORE STYLES --- */
+        :root {
+            --dark-bg: #1a1a1a;
+            --header-bg: #0d0d0d;
+            --card-bg: #2c2c2c;
+            --text-light: #e0e0e0;
+            --accent-gold: #c5a47e;
+            --font-serif: 'Playfair Display', serif;
+            --font-sans: 'Roboto', sans-serif;
+        }
+        
+        body {
+            font-family: var(--font-sans);
+            margin: 0;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+        }
+
+        /* --- THEMATIC HEADER --- */
+        .literary-header {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=2070&auto=format&fit=crop') no-repeat center center;
+            background-size: cover;
+            padding: 5rem 1.5rem;
+            text-align: center;
+            border-bottom: 2px solid var(--accent-gold);
+        }
+        
+        .literary-header h1 {
+            font-family: var(--font-serif);
+            font-size: clamp(3rem, 7vw, 5rem);
+            margin: 0 0 0.5rem 0;
+            color: white;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+        }
+        
+        .literary-header p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 2.5rem auto;
+            opacity: 0.9;
+            color: var(--text-light);
+        }
+
+        /* --- MAIN NAVIGATION --- */
+        .header-nav ul {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            gap: 1rem;
+        }
+
+        .header-nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.6rem 1.2rem;
+            border: 1px solid rgba(197, 164, 126, 0.5);
+            border-radius: 50px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .header-nav a:hover, {
+            background-color: var(--accent-gold);
+            border-color: var(--accent-gold);
+            color: var(--header-bg);
+        }
+
+        /* --- BOOK REPORT GRID --- */
+        .reports-wrapper {
+            padding: 3rem 1rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .book-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .book-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+        }
+        
+        .book-card .cover-image {
+            width: 100%;
+            aspect-ratio: 2 / 3;
+            object-fit: cover;
+        }
+        
+        .book-card .card-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .book-card .title {
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            line-height: 1.2;
+            margin: 0 0 0.5rem 0;
+            color: white;
+        }
+        
+        .book-card .author {
+            font-size: 1rem;
+            font-style: italic;
+            color: var(--accent-gold);
+            margin: 0 0 1.5rem 0;
+        }
+
+        .book-card .description {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            flex-grow: 1;
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+        }
+        
+        .book-card .read-report-btn {
+            display: inline-block;
+            background-color: transparent;
+            color: var(--accent-gold);
+            text-decoration: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 500;
+            align-self: flex-start;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            border: 2px solid var(--accent-gold);
+        }
+        
+        .book-card .read-report-btn:hover {
+            background-color: var(--accent-gold);
+            color: var(--header-bg);
+        }
+
+    </style>
+</head>
+<body>
+
+    <header class="literary-header">
+        <h1>The Literary Review</h1>
+        <p>A curated collection of detailed reports on classic and contemporary literature.</p>
+        <nav class="header-nav">
+            <ul>
+                <li><a href="index.html">The Physician's Ledger</a></li>
+                <li><a href="tech-dossier.html">The Tech Dossier</a></li>
+                <li><a href="civic-spectrum.html">The Civic Spectrum</a></li>
+                <!-- Add an "active" class to this link when you are on this page -->
+                <li><a href="the-literary-review.html">The Literary Review</a></li>
+                <li><a href="research-articles.html">PDF Library</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="reports-wrapper">
+            <div class="reports-grid" id="reports-grid">
+                <!-- Book reports will be injected here by JavaScript -->
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // This is your database for all book reports.
+            // Add every new report to this list.
+            const bookReports = [
+                {
+                    title: "Meditations",
+                    author: "Marcus Aurelius",
+                    description: "A profound series of personal writings by the Roman Emperor, offering timeless Stoic wisdom on virtue, mortality, and the nature of the universe.",
+                    link: "#", // Link to your detailed report page
+                    cover: "https://images.unsplash.com/photo-1608329388120-c822d08a1c88?q=80&w=1887&auto=format&fit=crop"
+                },
+                {
+                    title: "Crime and Punishment",
+                    author: "Fyodor Dostoevsky",
+                    description: "A psychological masterpiece exploring the torment of a young man who commits murder, delving into themes of guilt, redemption, and morality.",
+                    link: "#",
+                    cover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=1887&auto=format&fit=crop"
+                },
+                {
+                    title: "To Kill a Mockingbird",
+                    author: "Harper Lee",
+                    description: "A powerful story of racial injustice and the loss of innocence in the American South, told through the eyes of a young girl named Scout Finch.",
+                    link: "#",
+                    cover: "https://images.unsplash.com/photo-1583361735327-7756b571128c?q=80&w=1887&auto=format&fit=crop"
+                },
+                // Add more book reports here in the same format
+            ];
+
+            const grid = document.getElementById('reports-grid');
+
+            const renderItems = (items) => {
+                grid.innerHTML = ''; // Clear previous items
+                items.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'book-card';
+                    
+                    card.innerHTML = `
+                        <img src="${item.cover}" alt="Cover of ${item.title}" class="cover-image">
+                        <div class="card-content">
+                            <h3 class="title">${item.title}</h3>
+                            <p class="author">by ${item.author}</p>
+                            <p class="description">${item.description}</p>
+                            <a href="${item.link}" class="read-report-btn">Read Full Report</a>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            };
+
+            // Initial render
+            renderItems(bookReports);
+        });
+    </script>
+</body>
+</html>
