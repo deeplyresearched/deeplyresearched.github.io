@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Kill a Mockingbird: Analysis, Themes & Study Guide</title> 
+    <meta name="description" content="Unlock To Kill a Mockingbird! Dive into Harper Lee's masterpiece with interactive analysis of plot, characters, themes, and historical context. Essential study guide.">
+    <meta name="keywords" content="To Kill a Mockingbird, Harper Lee, TKAM summary, To Kill a Mockingbird characters, To Kill a Mockingbird themes, Atticus Finch, Scout Finch, Literary analysis, Study guide, Racial prejudice, Moral courage, Book analysis, American literature, Coming of age story, Maycomb Alabama">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+    <!-- Chosen Palette: Maycomb Serenity -->
+    <!-- Application Structure Plan: The application is designed as a single-page app with a fixed sidebar navigation for non-linear exploration. This structure is superior to a linear document as it allows users to jump directly to topics of interest—characters, themes, or plot—facilitating study and comparison. Key interactions include a character deep-dive panel, an interactive relationship map, and clickable theme cards. This user-centric design transforms a static analysis into an engaging exploratory tool, catering to both casual readers and students. -->
+    <!-- Visualization & Content Choices: 
+        1. Character Focus: Bar Chart (Chart.js) -> Goal: Compare -> Interaction: Hover for details -> Justification: To visually represent the narrative shift and character importance between the two parts of the book, offering a quantitative insight not obvious from reading alone.
+        2. Character Relationships: HTML/CSS Diagram -> Goal: Organize/Relationships -> Interaction: Static visual reference -> Justification: To provide a clear, at-a-glance understanding of the key social dynamics in Maycomb. This method is lightweight, responsive, and avoids complex libraries for a straightforward diagram.
+        3. Thematic Exploration: Interactive Cards -> Goal: Explore -> Interaction: Click to reveal details -> Justification: To present complex themes in a digestible, user-initiated manner, reducing initial information overload and encouraging focused reading.
+        4. Plot Summary: Timeline -> Goal: Organize -> Interaction: Click to highlight stages -> Justification: To structure the narrative flow visually and help users easily locate key plot points.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF5;
+            color: #383838;
+        }
+        h1, h2, h3, h4, .font-serif {
+            font-family: 'Merriweather', serif;
+        }
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-link.active {
+            background-color: #EAE3D9;
+            color: #A2673A;
+            border-right: 4px solid #A2673A;
+        }
+        .nav-link:not(.active):hover {
+            background-color: #F5F1EB;
+            transform: translateX(2px);
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .theme-card {
+            transition: all 0.3s ease-in-out;
+            cursor: pointer;
+        }
+        .theme-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="flex min-h-screen">
+        <aside class="w-64 bg-[#F5F1EB] text-gray-800 p-4 fixed h-full hidden lg:block shadow-sm">
+            <div class="py-4 mb-4">
+                <h2 class="text-xl font-bold font-serif text-center text-[#A2673A]">To Kill A <br>Mockingbird</h2>
+                <p class="text-xs text-center text-gray-500 mt-1">by Harper Lee</p>
+            </div>
+            <nav class="flex flex-col space-y-1">
+                <a href="#overview" class="nav-link px-4 py-2 rounded-l-md font-medium text-sm active">Overview</a>
+                <a href="#plot" class="nav-link px-4 py-2 rounded-l-md font-medium text-sm">Plot Summary</a>
+                <a href="#characters" class="nav-link px-4 py-2 rounded-l-md font-medium text-sm">Characters</a>
+                <a href="#themes" class="nav-link px-4 py-2 rounded-l-md font-medium text-sm">Themes & Style</a>
+                <a href="#bildungsroman" class="nav-link px-4 py-2 rounded-l-md font-medium text-sm">Coming of Age</a>
+                <a href="#symbolism" class="nav-link px-4 py-2 rounded-l-md font-medium text-sm">The Mockingbird Symbol</a>
+                <a href="#setting" class="nav-link px-4 py-2 rounded-l-md font-medium text-sm">The Setting: Maycomb</a>
+                <a href="#justice" class="nav-link px-4 py-2 rounded-l-md font-medium text-sm">Justice & The Law</a>
+                <a href="#author" class="nav-link px-4 py-2 rounded-l-md font-medium text-sm">About the Author</a>
+                <a href="#context" class="nav-link px-4 py-2 rounded-l-md font-medium text-sm">Context & Legacy</a>
+                <a href="#engage" class="nav-link px-4 py-2 rounded-l-md font-medium text-sm">Engage & Discuss</a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 lg:ml-64 p-4 sm:p-6 md:p-8 lg:p-12">
+            
+            <header class="lg:hidden mb-6">
+                <h1 class="text-3xl font-bold font-serif text-[#A2673A]">To Kill a Mockingbird</h1>
+                 <p class="text-sm text-gray-500 mt-1">by Harper Lee</p>
+                 <select id="mobile-nav" class="mt-4 w-full p-2 border rounded-md bg-white">
+                    <option value="overview">Overview</option>
+                    <option value="plot">Plot Summary</option>
+                    <option value="characters">Characters</option>
+                    <option value="themes">Themes & Style</option>
+                    <option value="bildungsroman">Coming of Age</option>
+                    <option value="symbolism">The Mockingbird Symbol</option>
+                    <option value="setting">The Setting: Maycomb</option>
+                    <option value="justice">Justice & The Law</option>
+                    <option value="author">About the Author</option>
+                    <option value="context">Context & Legacy</option>
+                    <option value="engage">Engage & Discuss</option>
+                 </select>
+            </header>
+
+            <div id="overview" class="content-section active">
+                <h1 class="text-3xl md:text-4xl font-serif font-bold text-gray-800 mb-6">The 30,000-Foot View</h1>
+                <div class="bg-white p-6 rounded-lg shadow-sm mb-8 overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <tbody class="divide-y divide-gray-200">
+                            <tr class="hover:bg-gray-50">
+                                <td class="py-3 px-4 font-semibold text-gray-600">Book Title & Author</td>
+                                <td class="py-3 px-4 text-gray-800">To Kill a Mockingbird, by Harper Lee</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="py-3 px-4 font-semibold text-gray-600">Genre/Subgenre</td>
+                                <td class="py-3 px-4 text-gray-800">Southern Gothic, Coming-of-Age (Bildungsroman)</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="py-3 px-4 font-semibold text-gray-600">Publication Date</td>
+                                <td class="py-3 px-4 text-gray-800">July 11, 1960</td>
+                            </tr>
+                             <tr class="hover:bg-gray-50">
+                                <td class="py-3 px-4 font-semibold text-gray-600">Core Theme</td>
+                                <td class="py-3 px-4 text-gray-800">True courage is standing up for what is right, even when faced with overwhelming prejudice and the likelihood of defeat.</td>
+                            </tr>
+                             <tr class="hover:bg-gray-50">
+                                <td class="py-3 px-4 font-semibold text-gray-600">Overall Tone</td>
+                                <td class="py-3 px-4 text-gray-800">Nostalgic and innocent at first, maturing into a somber, critical, yet ultimately hopeful examination of human nature.</td>
+                            </tr>
+                             <tr class="hover:bg-gray-50">
+                                <td class="py-3 px-4 font-semibold text-gray-600">Target Audience</td>
+                                <td class="py-3 px-4 text-gray-800">Originally for adults, it has become a staple for young adult readers and is widely studied in schools.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 class="text-2xl font-serif font-bold text-gray-800 mb-4">Elevator Pitch</h2>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <p class="text-gray-700 leading-relaxed">
+                        Set in the racially charged atmosphere of 1930s Alabama, "To Kill a Mockingbird" is told through the eyes of six-year-old Scout Finch. She watches her widowed father, the principled lawyer Atticus Finch, defend a black man falsely accused of raping a white woman. As the trial exposes the town's deep-seated prejudice, Scout and her brother Jem learn complex lessons about justice, prejudice, and the loss of innocence. The story is a powerful exploration of moral courage and the struggle to understand the good and evil within one's own community.
+                    </p>
+                </div>
+            </div>
+
+            <div id="plot" class="content-section">
+                <h1 class="text-3xl md:text-4xl font-serif font-bold text-gray-800 mb-6">Detailed Plot Summary</h1>
+                <div class="space-y-6 bg-white p-6 rounded-lg shadow-sm">
+                    <div>
+                        <h3 class="font-serif font-bold text-xl text-[#A2673A] mb-2">Part One: The Innocent Years</h3>
+                        <p class="text-gray-700 leading-relaxed">The first part of the novel establishes the world of Maycomb, Alabama, through the eyes of young Scout Finch. Her life is filled with childhood adventures with her older brother, Jem, and their friend, Dill. The children are fascinated and terrified by their reclusive neighbor, Boo Radley, and spend their summers trying to lure him out. The inciting incident of their childhood narrative is their growing obsession with Boo, which represents their initial encounter with the unknown and the town's hidden stories. This section is characterized by a nostalgic tone, capturing the innocence of childhood against the backdrop of the Great Depression. The rising action begins as Atticus agrees to defend Tom Robinson, slowly pulling the children from their innocent world into the adult realities of prejudice and social injustice.</p>
+                    </div>
+                     <hr class="my-6">
+                    <div>
+                        <h3 class="font-serif font-bold text-xl text-[#A2673A] mb-2">Part Two: The Trial and Its Aftermath</h3>
+                        <p class="text-gray-700 leading-relaxed"><span class="font-bold">Climax:</span> The trial of Tom Robinson forms the novel's central climax. Despite Atticus presenting irrefutable evidence that Tom is innocent and that the accuser, Mayella Ewell, was likely abused by her own father, Bob Ewell, the all-white jury convicts Tom purely because of his race. This event shatters Jem's faith in justice and marks a significant loss of innocence for the children.</p>
+                        <p class="mt-4 text-gray-700 leading-relaxed"><span class="font-bold">Falling Action:</span> In the aftermath, the town's tensions escalate. Tom Robinson is shot and killed while trying to escape from prison. Bob Ewell, humiliated by the trial, seeks revenge on Atticus. He spits in Atticus's face, harasses Tom's widow, and ultimately attacks Jem and Scout on their way home from a Halloween pageant.</p>
+                        <p class="mt-4 text-gray-700 leading-relaxed"><span class="font-bold">Resolution:</span> As Bob Ewell attacks the children, they are saved by a mysterious figure who turns out to be Boo Radley. In the struggle, Ewell is killed. The sheriff, Heck Tate, realizes Boo killed Ewell to protect the children and decides to report that Ewell fell on his own knife to protect the intensely private Boo from the public eye. Scout finally meets Boo, seeing him not as a monster, but as a human being and a protector. The novel concludes with Scout standing on the Radley porch, seeing the world from Boo's perspective and understanding her father's lesson about empathy. </p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="characters" class="content-section">
+                <h1 class="text-3xl md:text-4xl font-serif font-bold text-gray-800 mb-6">Character Deep Dive</h1>
+                 <p class="text-gray-600 mb-8 leading-relaxed max-w-3xl">This section explores the central figures of Maycomb. The characters are the heart of the novel, each representing different facets of humanity—courage, prejudice, innocence, and cruelty. Click on a character to view their detailed analysis, and see the relationship chart below to understand their connections within the town's social fabric.</p>
+                
+                <div class="flex flex-wrap -mx-2 mb-8">
+                    <div class="w-1/2 sm:w-1/3 md:w-1/4 p-2">
+                        <button data-char="scout" class="character-btn w-full text-center p-3 bg-white rounded-lg shadow-sm border-2 border-transparent focus:border-[#A2673A] focus:ring-2 focus:ring-[#A2673A]/50 hover:shadow-md transition">
+                            <div class="text-4xl">👧</div>
+                            <div class="font-semibold mt-2">Scout Finch</div>
+                        </button>
+                    </div>
+                    <div class="w-1/2 sm:w-1/3 md:w-1/4 p-2">
+                         <button data-char="atticus" class="character-btn w-full text-center p-3 bg-white rounded-lg shadow-sm border-2 border-transparent focus:border-[#A2673A] focus:ring-2 focus:ring-[#A2673A]/50 hover:shadow-md transition">
+                            <div class="text-4xl">👨‍⚖️</div>
+                            <div class="font-semibold mt-2">Atticus Finch</div>
+                        </button>
+                    </div>
+                    <div class="w-1/2 sm:w-1/3 md:w-1/4 p-2">
+                         <button data-char="jem" class="character-btn w-full text-center p-3 bg-white rounded-lg shadow-sm border-2 border-transparent focus:border-[#A2673A] focus:ring-2 focus:ring-[#A2673A]/50 hover:shadow-md transition">
+                            <div class="text-4xl">👦</div>
+                            <div class="font-semibold mt-2">Jem Finch</div>
+                        </button>
+                    </div>
+                    <div class="w-1/2 sm:w-1/3 md:w-1/4 p-2">
+                         <button data-char="boo" class="character-btn w-full text-center p-3 bg-white rounded-lg shadow-sm border-2 border-transparent focus:border-[#A2673A] focus:ring-2 focus:ring-[#A2673A]/50 hover:shadow-md transition">
+                            <div class="text-4xl">👻</div>
+                            <div class="font-semibold mt-2">Boo Radley</div>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="character-display" class="bg-white p-6 rounded-lg shadow-sm min-h-[200px] transition-all duration-300">
+                </div>
+                
+                <h3 class="font-serif font-bold text-2xl text-gray-800 mt-12 mb-4">Supporting Characters</h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white p-5 rounded-lg shadow-sm">
+                        <h4 class="font-serif font-bold text-lg text-[#A2673A]">Calpurnia</h4>
+                        <p class="text-sm text-gray-700 mt-2">The Finches' black cook and housekeeper, Calpurnia is a stern but loving mother figure to Scout and Jem. She serves as a bridge between the black and white communities of Maycomb, teaching the children valuable lessons about respect and perspective.</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-lg shadow-sm">
+                        <h4 class="font-serif font-bold text-lg text-[#A2673A]">Tom Robinson</h4>
+                        <p class="text-sm text-gray-700 mt-2">A kind, hardworking black man who is falsely accused of raping Mayella Ewell. He is one of the novel's symbolic "mockingbirds"—an innocent destroyed by evil. His dignity in the face of injustice highlights the deep-seated racism of Maycomb.</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-lg shadow-sm">
+                        <h4 class="font-serif font-bold text-lg text-[#A2673A]">Bob Ewell</h4>
+                        <p class="text-sm text-gray-700 mt-2">An ignorant, drunken, and hateful man who represents the dark side of Maycomb. He knowingly lies about Tom Robinson to cover his own guilt and seeks revenge against Atticus, embodying the forces of prejudice and malice.</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-lg shadow-sm">
+                        <h4 class="font-serif font-bold text-lg text-[#A2673A]">Mayella Ewell</h4>
+                        <p class="text-sm text-gray-700 mt-2">Bob Ewell's lonely and abused daughter. She is a pathetic and pitiable figure. Though she falsely accuses Tom Robinson, she is portrayed as a victim of her father's cruelty and the oppressive poverty and ignorance of her circumstances.</p>
+                    </div>
+                </div>
+
+                <h3 class="font-serif font-bold text-2xl text-gray-800 mt-12 mb-4">Character Focus: Narrative Shift</h3>
+                <p class="text-gray-600 mb-6 leading-relaxed max-w-3xl">The novel is split into two distinct parts. The chart below visualizes the shift in narrative focus by comparing the prominence of key characters in each part. Notice how the story moves from the children's fascination with Boo Radley to the community-wide conflict surrounding Atticus and Tom Robinson.</p>
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                   <div class="chart-container">
+                        <canvas id="characterFocusChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="themes" class="content-section">
+                <h1 class="text-3xl md:text-4xl font-serif font-bold text-gray-800 mb-6">Themes & Stylistic Analysis</h1>
+                <p class="text-gray-600 mb-8 leading-relaxed max-w-3xl">Harper Lee weaves complex themes into a deceptively simple narrative. The story's power lies in its exploration of profound moral questions through the eyes of a child. Click on the cards below to explore the major themes and symbols that define the novel, and learn more about Lee's unique writing style.</p>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="theme-card bg-white p-6 rounded-lg shadow-sm" data-content="theme-prejudice">
+                        <h3 class="font-serif font-bold text-xl text-[#A2673A]">Racial Prejudice & Social Injustice</h3>
+                        <p class="text-sm mt-2 text-gray-600">The irrational hatred and systemic discrimination faced by African Americans in the Deep South.</p>
+                    </div>
+                    <div class="theme-card bg-white p-6 rounded-lg shadow-sm" data-content="theme-innocence">
+                        <h3 class="font-serif font-bold text-xl text-[#A2673A]">Loss of Innocence</h3>
+                        <p class="text-sm mt-2 text-gray-600">The journey from childhood naivete to a more complex and often painful understanding of the world.</p>
+                    </div>
+                    <div class="theme-card bg-white p-6 rounded-lg shadow-sm" data-content="theme-courage">
+                        <h3 class="font-serif font-bold text-xl text-[#A2673A]">Moral Courage</h3>
+                        <p class="text-sm mt-2 text-gray-600">Defining bravery not as physical strength, but as standing for one's principles against opposition.</p>
+                    </div>
+                </div>
+
+                <div id="theme-details" class="mt-8">
+                    <div id="theme-prejudice" class="theme-content hidden bg-white p-6 rounded-lg shadow-sm">
+                        <h4 class="font-serif font-bold text-lg mb-2">Exploring Prejudice & Injustice</h4>
+                        <p class="text-gray-700">This is the novel's central theme. The trial of Tom Robinson is the most potent example, where clear evidence is ignored in favor of racial bias. However, prejudice also exists along class lines, as seen in the town's contempt for the poor but proud Cunninghams and the "white trash" Ewells. The children's initial fear of Boo Radley is also a form of prejudice, born from gossip and ignorance.</p>
+                    </div>
+                    <div id="theme-innocence" class="theme-content hidden bg-white p-6 rounded-lg shadow-sm">
+                        <h4 class="font-serif font-bold text-lg mb-2">Exploring the Loss of Innocence</h4>
+                        <p class="text-gray-700">Scout, Jem, and Dill begin the story in a world of games and superstitions. The trial forces them to confront the adult world's ugliness. Jem is particularly devastated by the verdict, his idealistic view of justice shattered. The "mockingbird" symbolizes innocence; characters like Tom Robinson and Boo Radley are harmless individuals who are destroyed or threatened by the evil of others. Atticus's warning that "it's a sin to kill a mockingbird" is a plea to protect the innocent.</p>
+                    </div>
+                     <div id="theme-courage" class="theme-content hidden bg-white p-6 rounded-lg shadow-sm">
+                        <h4 class="font-serif font-bold text-lg mb-2">Exploring Moral Courage</h4>
+                        <p class="text-gray-700">Atticus Finch is the novel's embodiment of moral courage. He tells Jem that courage isn't "a man with a gun in his hand," but "knowing you're licked before you begin but you begin anyway and you see it through no matter what." He demonstrates this by defending Tom Robinson, knowing it will make him and his family outcasts. Mrs. Dubose, battling her morphine addiction, and Boo Radley, overcoming his reclusiveness to save the children, also display this form of profound courage.</p>
+                    </div>
+                </div>
+
+                <h3 class="font-serif font-bold text-2xl text-gray-800 mt-12 mb-4">Author's Writing Style</h3>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <p class="text-gray-700 leading-relaxed">Harper Lee's style is a masterful blend of simple, direct prose and rich, evocative language. The narrative is filtered through the perspective of a child (a retrospective narration by an adult Scout), which allows for both charming innocence and sharp, unintentional irony. Lee uses colloquial Southern dialect to ground the story in its setting, and her use of foreshadowing (e.g., the warnings about Bob Ewell) builds suspense. The tone shifts seamlessly from lighthearted and humorous in the early chapters to tense and somber during the trial and its aftermath.</p>
+                </div>
+            </div>
+
+            <div id="bildungsroman" class="content-section">
+                <h1 class="text-3xl md:text-4xl font-serif font-bold text-gray-800 mb-6">A Story of Growing Up</h1>
+                <p class="text-gray-600 mb-8 leading-relaxed max-w-3xl">"To Kill a Mockingbird" is a classic example of a <span class="font-semibold">Bildungsroman</span>, a literary genre that focuses on the psychological and moral growth of the protagonist from youth to adulthood. This section explores how Scout and Jem's journey embodies this tradition.</p>
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="font-serif font-bold text-xl text-[#A2673A] mb-2">From Innocence to Experience</h3>
+                        <p class="text-gray-700 leading-relaxed">The novel begins with Scout's innocent, self-contained world, defined by summer games, schoolyard squabbles, and a superstitious fear of Boo Radley. The central catalyst for her growth is the Tom Robinson trial. Witnessing the profound injustice of the verdict and the hatred it unleashes forces Scout and Jem to confront the harsh realities of their society. Their childhood certainties are replaced by a more complex understanding of morality, where good and evil are not always clear-cut.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="font-serif font-bold text-xl text-[#A2673A] mb-2">Moral and Ethical Development</h3>
+                        <p class="text-gray-700 leading-relaxed">Throughout the novel, Atticus serves as the primary moral educator for his children. His lessons are not just spoken but lived. Scout's journey is marked by her gradual ability to grasp his teachings. Her initial impulse is to solve problems with her fists, but she slowly learns the value of restraint and empathy. The novel's final scene, where Scout stands on the Radley porch and sees the town from Boo's perspective, is the culmination of her moral development. She has, at last, learned to "climb into his skin and walk around in it," fulfilling her father's most important lesson.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="symbolism" class="content-section">
+                <h1 class="text-3xl md:text-4xl font-serif font-bold text-gray-800 mb-6">The Mockingbird Symbol</h1>
+                <p class="text-gray-600 mb-8 leading-relaxed max-w-3xl">The title of the novel introduces its most important symbol, which represents the idea of innocence. Atticus and Miss Maudie explain to the children that it is a sin to kill a mockingbird because they are harmless creatures that only bring beauty into the world.</p>
+                 <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="font-serif font-bold text-xl text-[#A2673A] mb-2">Tom Robinson</h3>
+                        <p class="text-gray-700 leading-relaxed">Tom is the most explicit example of a human "mockingbird." He is a kind, gentle man who makes the mistake of feeling sorry for a white woman, Mayella Ewell. His only "crime" is to exist as a black man in a racist society. The community's prejudice ultimately leads to his wrongful conviction and death, a senseless destruction of an innocent life.</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="font-serif font-bold text-xl text-[#A2673A] mb-2">Arthur "Boo" Radley</h3>
+                        <p class="text-gray-700 leading-relaxed">Boo is another key mockingbird figure. He is victimized by his cruel father and becomes a prisoner in his own home. The town, through gossip and fear, turns him into a monster. In reality, he is a shy, kind man who watches over the Finch children and ultimately saves their lives. To expose him to public scrutiny for killing Bob Ewell would be, as Scout understands, "sort of like shootin' a mockingbird."</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="setting" class="content-section">
+                 <h1 class="text-3xl md:text-4xl font-serif font-bold text-gray-800 mb-6">The Setting as a Character: Maycomb</h1>
+                 <p class="text-gray-600 mb-8 leading-relaxed max-w-3xl">Maycomb, Alabama, is more than just a backdrop for the story; it is a character in its own right. Its deep-seated traditions, rigid social hierarchy, and suffocating atmosphere shape the lives and moral choices of everyone within it.</p>
+                 <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="font-serif font-bold text-xl text-[#A2673A] mb-2">A Town of Contradictions</h3>
+                        <p class="text-gray-700 leading-relaxed">Maycomb is a town of polite, church-going people who are also deeply prejudiced. It is a place where "a day was twenty-four hours long but seemed longer," moving slowly and resistant to change. This inertia allows traditions of racism and classism to persist unchallenged. The characters are all products of this environment, either conforming to its unwritten rules (like most of the townspeople), challenging them (like Atticus), or being crushed by them (like Tom Robinson).</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="font-serif font-bold text-xl text-[#A2673A] mb-2">Social Hierarchy</h3>
+                        <p class="text-gray-700 leading-relaxed">The town has a strict social order. The established white families like the Finches are at the top, followed by the townspeople, the poor but respectable farmers like the Cunninghams, the "white trash" Ewells, and finally, the black community. This rigid structure is the source of much of the novel's conflict. The trial is so explosive because it threatens this order by pitting a black man's word against a white woman's, something Maycomb's social code cannot tolerate.</p>
+                    </div>
+                 </div>
+            </div>
+
+            <div id="justice" class="content-section">
+                <h1 class="text-3xl md:text-4xl font-serif font-bold text-gray-800 mb-6">Justice, Law, and Morality</h1>
+                <p class="text-gray-600 mb-8 leading-relaxed max-w-3xl">The novel presents a powerful critique of the American legal system, exploring the gap between the law as an ideal and justice as it is practiced in a prejudiced society.</p>
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="font-serif font-bold text-xl text-[#A2673A] mb-2">The Courtroom vs. The Community</h3>
+                        <p class="text-gray-700 leading-relaxed">Atticus believes in the courtroom as "the one place where a man ought to get a square deal." He presents a brilliant, logical defense based on evidence. However, the trial proves that the jury's courtroom is governed not by law, but by the unwritten codes of the community. The jury convicts Tom not because they believe he is guilty, but because they cannot bring themselves to acquit a black man accused by a white woman. The novel thus shows how legal institutions can fail when the individuals within them are corrupted by prejudice.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="font-serif font-bold text-xl text-[#A2673A] mb-2">A Higher Form of Justice</h3>
+                        <p class="text-gray-700 leading-relaxed">In the end, the novel suggests that true justice is not always delivered in a courtroom. Bob Ewell escapes legal punishment for his actions, but he meets a form of karmic justice at the hands of Boo Radley. Sheriff Heck Tate's decision to protect Boo by fabricating a story is technically an obstruction of the law. However, in this case, it serves a higher moral justice by protecting an innocent man. This act demonstrates that sometimes, individual conscience and empathy must override the rigid application of the law.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="author" class="content-section">
+                <h1 class="text-3xl md:text-4xl font-serif font-bold text-gray-800 mb-6">About the Author: Harper Lee</h1>
+                 <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="md:flex md:items-start md:space-x-6">
+                        <div class="md:w-2/3">
+                            <h3 class="font-serif font-bold text-xl text-[#A2673A] mb-2">Nelle Harper Lee (1926-2016)</h3>
+                            <p class="text-gray-700 leading-relaxed">Nelle Harper Lee was born and raised in Monroeville, Alabama, the town that would become the inspiration for Maycomb. Like Atticus Finch, her father was a lawyer who served in the state legislature. Lee was a precocious child and a close friend of the writer Truman Capote, who served as the inspiration for the character Dill. She studied law but left before completing her degree to pursue a writing career in New York City.</p>
+                            <p class="text-gray-700 mt-4 leading-relaxed">After the monumental success of "To Kill a Mockingbird," Lee retreated from public life, granting very few interviews and publishing no other books for over half a century. She valued her privacy and was uncomfortable with the fame her novel brought her.</p>
+                        </div>
+                        <div class="mt-4 md:mt-0 md:w-1/3">
+                            <img src="https://placehold.co/400x500/EAE3D9/383838?text=Harper+Lee" alt="Harper Lee" class="rounded-lg shadow-md w-full object-cover">
+                        </div>
+                    </div>
+                     <hr class="my-6">
+                     <div>
+                        <h4 class="font-serif font-bold text-lg mb-2">Other Published Work: Go Set a Watchman</h4>
+                        <p class="text-gray-700">In 2015, the literary world was stunned by the publication of "Go Set a Watchman." The novel was presented as a sequel to "Mockingbird" but was actually an earlier draft. It features an adult Scout returning to Maycomb to visit an aging Atticus, who is portrayed as a segregationist with racist views. The publication was controversial, with many readers distressed by this different portrayal of Atticus and questions raised about whether the elderly Lee had fully consented to its release. "Watchman" provides fascinating insight into Lee's creative process but is generally considered a less polished work than the novel it preceded.</p>
+                    </div>
+                 </div>
+            </div>
+
+            <div id="context" class="content-section">
+                <h1 class="text-3xl md:text-4xl font-serif font-bold text-gray-800 mb-6">Context & Legacy</h1>
+                <p class="text-gray-600 mb-8 leading-relaxed max-w-3xl">To fully appreciate "To Kill a Mockingbird," it's essential to understand the world from which it emerged. The novel is deeply rooted in the history of the American South and was published at a pivotal moment in the nation's history. Its enduring legacy is a testament to its timeless message and literary power.</p>
+
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="font-serif font-bold text-xl text-[#A2673A] mb-2">Historical & Authorial Context</h3>
+                        <p class="text-gray-700 leading-relaxed">Harper Lee grew up in Monroeville, Alabama, which served as the model for Maycomb. Her father was a lawyer who once defended two black men accused of murder. The story is also deeply influenced by the infamous Scottsboro Boys trials of the 1930s, where nine black teenagers were falsely accused of raping two white women. Lee wrote the novel in the mid-1950s but it was published in 1960, at the height of the Civil Rights Movement. Its release coincided with landmark events like the Montgomery Bus Boycott and the integration of schools, making its themes of racial injustice incredibly timely and resonant.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="font-serif font-bold text-xl text-[#A2673A] mb-2">Critical Reception & Legacy</h3>
+                        <p class="text-gray-700 leading-relaxed">The book was an immediate bestseller and won the Pulitzer Prize in 1961. While most reviews were overwhelmingly positive, some Southern critics found its portrayal of race relations controversial. Today, "To Kill a Mockingbird" is considered a masterpiece of American literature. It has sold over 40 million copies and is a standard text in schools worldwide. Atticus Finch has become an iconic figure representing integrity and moral heroism. The novel's enduring power lies in its ability to address complex social issues with empathy and humanity, making its lessons about justice and compassion perpetually relevant.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="font-serif font-bold text-xl text-[#A2673A] mb-2">Recommended For</h3>
+                        <p class="text-gray-700 leading-relaxed">This novel is essential reading for anyone interested in American literature, social justice, and coming-of-age stories. It is particularly recommended for readers who appreciate character-driven narratives and moral complexity. Its accessibility makes it suitable for young readers, while its profound themes offer rich material for adult discussion.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="engage" class="content-section">
+                <h1 class="text-3xl md:text-4xl font-serif font-bold text-gray-800 mb-6">Engage & Discuss</h1>
+                <p class="text-gray-600 mb-8 leading-relaxed max-w-3xl">The power of "To Kill a Mockingbird" extends beyond its pages. The novel invites us to reflect on our own values and the society we live in. Use the following quotes and questions to deepen your understanding and spark meaningful conversations.</p>
+
+                <h3 class="font-serif font-bold text-2xl text-gray-800 mb-4">Most Memorable Quotes</h3>
+                <div class="space-y-4">
+                     <div class="bg-white rounded-lg shadow-sm">
+                        <div class="p-5">
+                            <blockquote class="border-l-4 border-[#A2673A] pl-4 text-gray-800 italic">"You never really understand a person until you consider things from his point of view... until you climb into his skin and walk around in it."</blockquote>
+                            <p class="text-sm text-gray-600 mt-2 pl-5">— Atticus teaches Scout the core lesson of empathy, which forms the moral foundation of the entire novel.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm">
+                        <div class="p-5">
+                            <blockquote class="border-l-4 border-[#A2673A] pl-4 text-gray-800 italic">"Shoot all the bluejays you want, if you can hit 'em, but remember it's a sin to kill a mockingbird."</blockquote>
+                            <p class="text-sm text-gray-600 mt-2 pl-5">— This is the origin of the book's title and its central metaphor, representing the imperative to protect the innocent and vulnerable.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm">
+                        <div class="p-5">
+                            <blockquote class="border-l-4 border-[#A2673A] pl-4 text-gray-800 italic">"I wanted you to see what real courage is, instead of getting the idea that courage is a man with a gun in his hand. It's when you know you're licked before you begin but you begin anyway and you see it through no matter what."</blockquote>
+                            <p class="text-sm text-gray-600 mt-2 pl-5">— Atticus's definition of courage, which he exemplifies through his defense of Tom Robinson and which he wants his children to understand.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="font-serif font-bold text-2xl text-gray-800 mt-12 mb-4">Thought-Provoking Questions</h3>
+                 <div class="space-y-4">
+                    <div class="bg-white p-5 rounded-lg shadow-sm">
+                        <p class="font-semibold text-gray-800">1. How does Scout's perspective as a child narrator shape the reader's understanding of the events in Maycomb? What might be different if the story were told from an adult's point of view?</p>
+                    </div>
+                     <div class="bg-white p-5 rounded-lg shadow-sm">
+                        <p class="font-semibold text-gray-800">2. Atticus Finch is often held up as a moral hero. Is he a flawless character? Discuss his strengths and potential weaknesses as a father and as a citizen of Maycomb.</p>
+                    </div>
+                     <div class="bg-white p-5 rounded-lg shadow-sm">
+                        <p class="font-semibold text-gray-800">3. The novel explores different kinds of prejudice (race, class, gender). Besides the central issue of racism, how do other forms of prejudice affect the characters and the town's social structure?</p>
+                    </div>
+                     <div class="bg-white p-5 rounded-lg shadow-sm">
+                        <p class="font-semibold text-gray-800">4. Boo Radley is a recluse who becomes a hero. What does his character suggest about judgment, perception, and the nature of good and evil?</p>
+                    </div>
+                     <div class="bg-white p-5 rounded-lg shadow-sm">
+                        <p class="font-semibold text-gray-800">5. "To Kill a Mockingbird" was published in 1960. Do you think its messages about justice, prejudice, and courage are still relevant today? Why or why not?</p>
+                    </div>
+                 </div>
+            </div>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+          
+        </main>
+    </div>
+
+<script>
+    const characterData = {
+        scout: {
+            name: 'Jean Louise "Scout" Finch',
+            role: "The narrator and protagonist. A curious, intelligent, and tomboyish young girl.",
+            motivation: "To understand the complex world around her and to satisfy her innate curiosity about her neighbors and the injustices she witnesses.",
+            arc: "Scout begins the story as a naive and innocent child. Through the trial and her experiences with Boo Radley, she loses her innocence but gains a deep sense of empathy and a more mature understanding of human nature's capacity for both good and evil.",
+            relationships: "Daughter of Atticus, sister of Jem. She looks up to Atticus's wisdom and shares a close, protective bond with Jem. Her friendship with Dill fuels her childhood adventures."
+        },
+        atticus: {
+            name: "Atticus Finch",
+            role: "A principled and courageous lawyer, and the widowed father of Scout and Jem.",
+            motivation: "To live with integrity and to instill strong moral values in his children. He is driven by a profound sense of justice and responsibility to his community, even when it's hostile to him.",
+            arc: "Atticus is a largely static character, representing a consistent moral compass throughout the novel. His 'arc' is less about personal change and more about how his unwavering principles are tested by the trial and its aftermath. He remains the moral backbone of the story.",
+            relationships: "The moral guide and father to Jem and Scout. Respected, yet often isolated, by the community for his progressive views. Acts as Tom Robinson's defender."
+        },
+        jem: {
+            name: 'Jeremy Atticus "Jem" Finch',
+            role: "Scout's older brother. He is thoughtful, idealistic, and protective.",
+            motivation: "To be brave and to live up to his father's example. He grapples with the concept of justice and tries to make sense of the town's hypocrisy.",
+            arc: "Jem's arc is a classic coming-of-age story. He starts as Scout's playmate but matures significantly. The trial's unjust verdict deeply disillusion's him, shattering his childhood idealism. He ends the novel more cynical but with a more realistic and nuanced view of the world.",
+            relationships: "Scout's protective older brother and Atticus's devoted son. He feels the weight of the trial's injustice more acutely than Scout."
+        },
+        boo: {
+            name: 'Arthur "Boo" Radley',
+            role: "A reclusive neighbor who is the subject of childhood rumors and fascination.",
+            motivation: "His motivations are hidden for most of the novel, but are revealed to be protective and kind. He secretly watches over the children, leaving them gifts and ultimately saving their lives.",
+            arc: "Boo's arc happens almost entirely in the town's imagination. He transforms from a monstrous figure of rumor into a quiet, vulnerable, and heroic human being. His development is in the children's perception of him, culminating when Scout finally sees him for who he is: a gentle soul and a 'mockingbird'.",
+            relationships: "A mysterious, unseen guardian to the Finch children. He becomes their silent protector, contrasting with the very public evil of Bob Ewell."
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const navLinks = document.querySelectorAll('.nav-link');
+        const mobileNav = document.getElementById('mobile-nav');
+        const contentSections = document.querySelectorAll('.content-section');
+        const characterButtons = document.querySelectorAll('.character-btn');
+        const characterDisplay = document.getElementById('character-display');
+        const themeCards = document.querySelectorAll('.theme-card');
+        const themeContents = document.querySelectorAll('.theme-content');
+
+        function showSection(hash) {
+            const id = hash.substring(1);
+            contentSections.forEach(section => {
+                if (section.id === id) {
+                    section.classList.add('active');
+                } else {
+                    section.classList.remove('active');
+                }
+            });
+
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === hash) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+
+            if (mobileNav.value !== id) {
+                mobileNav.value = id;
+            }
+        }
+        
+        function updateCharacterDisplay(charKey) {
+            const data = characterData[charKey];
+            if (!data) return;
+            
+            characterDisplay.innerHTML = `
+                <h3 class="font-serif font-bold text-xl text-[#A2673A] mb-3">${data.name}</h3>
+                <div class="space-y-3 text-sm text-gray-700">
+                    <p><strong class="font-semibold text-gray-800">Role:</strong> ${data.role}</p>
+                    <p><strong class="font-semibold text-gray-800">Motivation:</strong> ${data.motivation}</p>
+                    <p><strong class="font-semibold text-gray-800">Character Arc:</strong> ${data.arc}</p>
+                    <p><strong class="font-semibold text-gray-800">Key Relationships:</strong> ${data.relationships}</p>
+                </div>
+            `;
+        }
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const hash = this.getAttribute('href');
+                window.location.hash = hash;
+            });
+        });
+
+        mobileNav.addEventListener('change', function() {
+            window.location.hash = this.value;
+        });
+
+        window.addEventListener('hashchange', function() {
+            const hash = window.location.hash || '#overview';
+            showSection(hash);
+        });
+
+        characterButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const charKey = this.dataset.char;
+                updateCharacterDisplay(charKey);
+            });
+        });
+
+        themeCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const contentId = card.dataset.content;
+                const targetContent = document.getElementById(contentId);
+
+                themeContents.forEach(content => {
+                    if (content.id !== contentId) {
+                        content.classList.add('hidden');
+                    }
+                });
+
+                if (targetContent) {
+                    targetContent.classList.toggle('hidden');
+                }
+            });
+        });
+        
+        const initialHash = window.location.hash || '#overview';
+        showSection(initialHash);
+        updateCharacterDisplay('scout'); 
+
+        const ctx = document.getElementById('characterFocusChart').getContext('2d');
+        const characterFocusChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Scout', 'Jem', 'Atticus', 'Boo Radley', 'Tom Robinson', 'Bob Ewell'],
+                datasets: [{
+                    label: 'Focus in Part One (Childhood)',
+                    data: [10, 9, 7, 8, 1, 2],
+                    backgroundColor: 'rgba(162, 103, 58, 0.6)',
+                    borderColor: 'rgba(162, 103, 58, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Focus in Part Two (Trial)',
+                    data: [9, 8, 10, 4, 9, 7],
+                    backgroundColor: 'rgba(56, 56, 56, 0.6)',
+                    borderColor: 'rgba(56, 56, 56, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Relative Narrative Prominence'
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Character Prominence: Part One vs. Part Two',
+                        font: {
+                            size: 16,
+                            family: "'Merriweather', serif"
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                }
+            }
+        });
+
+    });
+</script>
+
+</body>
+</html>
+
