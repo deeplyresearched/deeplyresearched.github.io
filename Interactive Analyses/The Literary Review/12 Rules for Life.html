@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12 Rules for Life: An Interactive Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+</script>
+  
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: The application is designed as a tabbed interface to allow for non-linear exploration of the book's analysis. The core content—the 12 rules—is presented as an interactive grid of cards, which is more engaging than a simple list. This structure was chosen because it breaks down dense information into manageable sections (Overview, The Rules, Core Ideas, Context), empowering the user to choose their learning path and dive deep into specific areas of interest without being overwhelmed by a long, scrolling page. This prioritizes usability and focused learning over a rigid, linear presentation. -->
+    <!-- Visualization & Content Choices: 
+        - Executive Summary -> Goal: Inform -> Method: Styled HTML Table -> Interaction: None. Justification: Clear, concise presentation of key facts.
+        - The 12 Rules -> Goal: Organize & Explain -> Method: Interactive Card Grid -> Interaction: Click to reveal detailed summary for each rule. Justification: This is the book's central content; an interactive grid encourages exploration and focused reading on each specific rule, making the dense material more digestible. Library: Vanilla JS.
+        - Core Themes -> Goal: Explain Relationships -> Method: Thematic sections with icons (HTML/Unicode) -> Interaction: Content revealed on navigation click. Justification: Organizes abstract concepts like 'Order vs. Chaos' into distinct, easily navigable text blocks.
+        - Context & Legacy -> Goal: Show Change/Impact -> Method: Columnar text layout -> Interaction: None. Justification: Presents historical and critical information in a clean, readable format.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        :root {
+            --bg-main: #F5F5F5; /* Neutral Light Gray */
+            --bg-card: #FFFFFF;
+            --text-primary: #1A202C; /* Almost Black */
+            --text-secondary: #4A5568; /* Medium Gray */
+            --accent-primary: #8B0000; /* Dark Red */
+            --border-color: #E2E8F0;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+        }
+        .nav-link {
+            transition: color 0.2s, border-bottom-color 0.2s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: var(--accent-primary);
+            border-bottom-color: var(--accent-primary);
+        }
+        .rule-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid var(--border-color);
+        }
+        .rule-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .rule-card.active {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.2);
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+        .quote-block {
+            border-left: 4px solid var(--accent-primary);
+            background-color: var(--bg-card);
+        }/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */ 
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+} 
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+} 
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+} 
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+} 
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+} 
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+} 
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+} 
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800" style="font-family: 'Lora', serif;">An Interactive Guide to</h1>
+            <h2 class="text-2xl md:text-3xl font-semibold text-gray-700 mt-2">12 Rules for Life</h2>
+            <p class="text-lg text-gray-500">by Jordan B. Peterson</p>
+        </header>
+
+        <nav class="flex flex-wrap justify-center border-b border-gray-300 mb-8">
+            <button class="nav-link active py-4 px-6 text-lg font-semibold" data-target="overview">Overview</button>
+            <button class="nav-link py-4 px-6 text-lg font-semibold" data-target="rules">The 12 Rules</button>
+            <button class="nav-link py-4 px-6 text-lg font-semibold" data-target="ideas">Core Ideas</button>
+            <button class="nav-link py-4 px-6 text-lg font-semibold" data-target="author">About the Author</button>
+            <button class="nav-link py-4 px-6 text-lg font-semibold" data-target="context">Context & Legacy</button>
+            <button class="nav-link py-4 px-6 text-lg font-semibold" data-target="engage">Engage</button>
+        </nav>
+
+        <main id="main-content">
+            
+            <section id="overview" class="content-section active fade-in">
+                <div class="bg-white p-6 md:p-8 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-center text-gray-800">Part 1: The 30,000-Foot View</h3>
+                    <p class="text-center text-gray-600 mb-6">This section provides a high-level summary of the book's core attributes, tone, and intended audience, offering a quick snapshot of what "12 Rules for Life" is all about.</p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full min-w-full text-left border border-collapse border-gray-300">
+                            <tbody>
+                                <tr class="border-b"><td class="py-3 px-4 font-semibold bg-gray-50">Book Title & Author</td><td class="py-3 px-4">12 Rules for Life: An Antidote to Chaos, by Jordan B. Peterson</td></tr>
+                                <tr class="border-b"><td class="py-3 px-4 font-semibold bg-gray-50">Genre/Subgenre</td><td class="py-3 px-4">Self-Help, Philosophy, Psychology</td></tr>
+                                <tr class="border-b"><td class="py-3 px-4 font-semibold bg-gray-50">Publication Date</td><td class="py-3 px-4">January 2018</td></tr>
+                                <tr class="border-b"><td class="py-3 px-4 font-semibold bg-gray-50">Core Theme</td><td class="py-3 px-4">Embracing personal responsibility and pursuing meaning is the essential antidote to the chaos and suffering inherent in life.</td></tr>
+                                <tr class="border-b"><td class="py-3 px-4 font-semibold bg-gray-50">Overall Tone</td><td class="py-3 px-4">Didactic, paternal, academic, and urgent, blending clinical psychology with mythology and personal anecdote.</td></tr>
+                                <tr><td class="py-3 px-4 font-semibold bg-gray-50">Target Audience</td><td class="py-3 px-4">Primarily young men, but broadly aimed at anyone feeling lost, seeking personal improvement, or grappling with life's big questions.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-8">
+                        <h4 class="text-xl font-bold mb-2 text-gray-800">Elevator Pitch</h4>
+                        <p class="text-gray-700 leading-relaxed">"12 Rules for Life" argues that meaning, not happiness, is the ultimate goal for a well-lived life. Drawing from psychology, religion, myth, and personal experience, Jordan Peterson presents twelve profound rules designed to help individuals confront life's inherent chaos and suffering. By taking responsibility for one's own life, speaking truthfully, and aiming for the highest good, one can find the strength to not only endure but to thrive.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="rules" class="content-section fade-in">
+                 <div class="text-center mb-8">
+                    <h3 class="text-2xl font-bold text-gray-800">Part 2: The 12 Rules Explained</h3>
+                    <p class="text-gray-600 mt-2 max-w-3xl mx-auto">This is the core of the book. Each rule is a chapter dedicated to a specific principle for living a more meaningful life. Click on any rule below to read a summary of its main argument and key ideas.</p>
+                </div>
+                <div id="rules-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                </div>
+                <div id="rule-details" class="mt-8 p-6 bg-white rounded-lg shadow-md min-h-[100px] transition-opacity duration-300">
+                    <p class="text-center text-gray-500">Select a rule above to see the details.</p>
+                </div>
+            </section>
+
+            <section id="ideas" class="content-section fade-in">
+                <div class="bg-white p-6 md:p-8 rounded-lg shadow-md">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-800">Part 3: Thematic & Stylistic Analysis</h3>
+                         <p class="text-gray-600 mt-2 max-w-3xl mx-auto">This section explores the deeper philosophical underpinnings and literary style of the book. It examines the major recurring ideas and the author's unique method of argumentation that defines his work.</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">Major Themes & Concepts</h4>
+                        <div class="space-y-6">
+                            <div>
+                                <h5 class="font-semibold text-lg text-gray-700">Order vs. Chaos</h5>
+                                <p class="text-gray-600">This is the central dichotomy of the book. Order represents structure, predictability, and the known world (symbolized by masculinity), while Chaos represents potential, novelty, and the unknown (symbolized by femininity). Peterson argues that life is lived on the border between these two forces, and true meaning is found in voluntarily confronting chaos to create habitable order.</p>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold text-lg text-gray-700">Individual Responsibility</h5>
+                                <p class="text-gray-600">A core tenet is that individuals must stop blaming external forces for their problems and instead take radical responsibility for their own lives. This starts with "cleaning your room" – sorting out your own life before attempting to criticize or fix the world. This personal accountability is presented as the primary tool for improving one's own existence and, by extension, society.</p>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold text-lg text-gray-700">The Pursuit of Meaning, Not Happiness</h5>
+                                <p class="text-gray-600">Peterson posits that happiness is a fleeting and unreliable goal. Instead, he advocates for the pursuit of meaning, which is found in adopting responsibility and bearing the necessary suffering of life. This meaning acts as a bulwark against nihilism and despair, providing a profound reason to live even in the face of tragedy.</p>
+                            </div>
+                             <div>
+                                <h5 class="font-semibold text-lg text-gray-700">The Nature of Suffering (Being)</h5>
+                                <p class="text-gray-600">Peterson treats suffering not as a bug in the system, but as a fundamental, undeniable feature of existence ("Being"). The question is not how to avoid suffering—which is impossible—but how to confront it. He argues that voluntarily accepting and confronting necessary suffering (e.g., taking on responsibility, facing difficult truths) is what gives life meaning and what prevents one from becoming resentful and cruel in the face of life's inevitable tragedies.</p>
+                            </div>
+                             <div>
+                                <h5 class="font-semibold text-lg text-gray-700">The Importance of Truth</h5>
+                                <p class="text-gray-600">As detailed in Rule 8, truth is presented as a vital tool for navigating reality. Lies, even small "white" ones, are a falsification of one's personal reality and lead to weakness and corruption of the soul. Speaking truthfully allows an individual to articulate problems precisely, confront them head-on, and build a character strong enough to withstand life's crises. For Peterson, truthful speech is how we manifest habitable order out of chaotic potential.</p>
+                            </div>
+                             <div>
+                                <h5 class="font-semibold text-lg text-gray-700">Dominance Hierarchies</h5>
+                                <p class="text-gray-600">Drawing from biology and evolutionary psychology (famously using lobsters as an example), Peterson argues that hierarchies of competence are a natural and ancient feature of social life. Rather than seeing them as purely oppressive constructs, he views them as a mechanism for organizing society and allocating resources. The advice to "stand up straight" is, in part, an instruction to recognize this reality and to aim for a position of competence and authority within these hierarchies through virtuous, honest effort, which in turn builds self-respect and societal value.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <h4 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">Author's Writing Style</h4>
+                        <p class="text-gray-600 leading-relaxed">Peterson's style is a unique blend of dense academic prose, clinical psychology case studies, personal anecdotes, and extensive interpretations of mythology and religious texts (particularly the Bible). His tone is often paternal and authoritative, directly addressing the reader with commands and advice. He uses complex metaphors (e.g., the dominance hierarchy of lobsters) and allegorical storytelling to illustrate his philosophical points, making abstract concepts more concrete, though sometimes controversial.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="author" class="content-section fade-in">
+                <div class="bg-white p-6 md:p-8 rounded-lg shadow-md">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-800">About the Author</h3>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="md:col-span-2">
+                             <h4 class="text-xl font-bold mb-4 text-gray-800">Dr. Jordan B. Peterson</h4>
+                             <p class="text-gray-600 leading-relaxed mb-4">Jordan B. Peterson is a Canadian clinical psychologist, cultural critic, and professor emeritus of psychology at the University of Toronto. His academic work focuses on the psychology of belief, religion, and ideology. He rose to international prominence in the late 2010s for his lectures and writings, which blend psychology, mythology, philosophy, and personal narrative.</p>
+                             <p class="text-gray-600 leading-relaxed">Before "12 Rules for Life," he spent decades working as a clinical practitioner and a university professor at Harvard and later the University of Toronto. His public lectures, shared widely on YouTube, built a massive global audience, resonating with those seeking guidance on personal responsibility and navigating the complexities of modern life.</p>
+                        </div>
+                        <div>
+                             <h4 class="text-xl font-bold mb-4 text-gray-800">Other Major Works</h4>
+                             <ul class="space-y-3">
+                                <li class="p-3 bg-gray-50 rounded-md border border-gray-200">
+                                    <p class="font-semibold text-gray-700">Maps of Meaning (1999)</p>
+                                    <p class="text-sm text-gray-600">His first and most dense academic work, exploring the structure of belief systems and myths.</p>
+                                </li>
+                                <li class="p-3 bg-gray-50 rounded-md border border-gray-200">
+                                    <p class="font-semibold text-gray-700">Beyond Order (2021)</p>
+                                    <p class="text-sm text-gray-600">The sequel to "12 Rules," offering 12 more principles for navigating the balance between order and chaos.</p>
+                                </li>
+                             </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="context" class="content-section fade-in">
+                 <div class="bg-white p-6 md:p-8 rounded-lg shadow-md">
+                     <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-800">Context and Legacy</h3>
+                        <p class="text-gray-600 mt-2 max-w-3xl mx-auto">Understanding the book requires looking at the environment in which it was created and its subsequent impact. This section covers the author's background, the book's reception by critics and the public, and who might benefit most from reading it.</p>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="text-xl font-bold mb-4 text-gray-800">Historical & Authorial Context</h4>
+                            <p class="text-gray-600 leading-relaxed">"12 Rules for Life" was written at the height of Jordan Peterson's rise to internet fame. A clinical psychologist and professor at the University of Toronto, he gained international attention in 2016 for his public opposition to a Canadian bill concerning gender identity (Bill C-16). His YouTube lectures on psychology, mythology, and religion had already garnered a massive following, particularly among young men. The book can be seen as the culmination of these lectures, written to a pre-existing and highly engaged audience during a period of intense cultural and political debate about identity, free speech, and traditional values.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-bold mb-4 text-gray-800">Critical Reception & Legacy</h4>
+                            <p class="text-gray-600 leading-relaxed">The book was an immense commercial success, becoming a bestseller worldwide. However, its critical reception was sharply polarized. Supporters praised it as a profound and necessary guide for modern life, offering practical wisdom and a powerful antidote to victimhood culture and nihilism. Critics, on the other hand, described it as poorly argued, pseudo-scientific, and a defense of traditionalist social hierarchies. Its legacy is complex: it has undeniably helped millions of people find direction, yet it remains a controversial cultural touchstone, deeply entangled with the political "culture wars" of the late 2010s.</p>
+                        </div>
+                    </div>
+                     <div class="mt-8 border-t pt-6">
+                         <h4 class="text-xl font-bold mb-4 text-center text-gray-800">Recommended For...</h4>
+                         <p class="text-gray-600 leading-relaxed text-center">This book is recommended for readers interested in self-improvement through a philosophical and psychological lens, particularly those grappling with questions of responsibility, meaning, and purpose. It resonates strongly with individuals who feel disillusioned with modern ideologies and are seeking a framework for personal structure and discipline. However, readers should be prepared for a dense, challenging text that intertwines scientific concepts with religious and mythological interpretation.</p>
+                     </div>
+                </div>
+            </section>
+
+            <section id="engage" class="content-section fade-in">
+                <div class="bg-white p-6 md:p-8 rounded-lg shadow-md">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-800">Engaging with the Book</h3>
+                        <p class="text-gray-600 mt-2 max-w-3xl mx-auto">This final section offers direct ways to connect with the material through memorable quotes and thought-provoking questions, perfect for personal reflection or a book club discussion.</p>
+                    </div>
+
+                    <div>
+                        <h4 class="text-xl font-bold mb-4 text-gray-800">Most Memorable Quotes</h4>
+                        <div class="space-y-4">
+                            <blockquote class="quote-block p-4 italic text-gray-700">
+                                <p>"It is better to presume ignorance and invite learning than to assume sufficient knowledge and risk the consequent blindness."</p>
+                                <footer class="text-right not-italic text-gray-500 mt-2">— On the importance of listening and humility.</footer>
+                            </blockquote>
+                            <blockquote class="quote-block p-4 italic text-gray-700">
+                                <p>"To stand up straight with your shoulders back is to accept the terrible responsibility of life, with eyes wide open."</p>
+                                <footer class="text-right not-italic text-gray-500 mt-2">— On embracing existence despite its inherent suffering.</footer>
+                            </blockquote>
+                             <blockquote class="quote-block p-4 italic text-gray-700">
+                                <p>"Pursue what is meaningful, not what is expedient."</p>
+                                <footer class="text-right not-italic text-gray-500 mt-2">— A central thesis of the book, contrasting long-term purpose with short-term gratification.</footer>
+                            </blockquote>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <h4 class="text-xl font-bold mb-4 text-gray-800">Thought-Provoking Questions</h4>
+                        <ol class="list-decimal list-inside space-y-3 text-gray-700">
+                            <li>Peterson argues for pursuing what is meaningful over what is expedient (or happy). How do you define "meaning" in your own life, and has that definition ever conflicted with the pursuit of happiness?</li>
+                            <li>Rule 8 is "Tell the truth—or, at least, don't lie." Why does Peterson place such a high value on truth? What are the practical and psychological consequences of living deceitfully, according to the book?</li>
+                            <li>The idea of "sorting yourself out" before criticizing the world is a key theme. To what extent do you agree that personal responsibility must precede social activism or criticism? Are there situations where this advice might not apply?</li>
+                            <li>The book heavily uses religious and mythological stories to make its points. Did you find this approach effective and universal, or did it feel alienating or overly specific to a particular worldview?</li>
+                            <li>"12 Rules for Life" has been both praised as life-saving and condemned as reactionary. After exploring its ideas, why do you think it provokes such strong and polarized reactions?</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+          
+        </main>
+    </div>
+
+    <script>
+        const rulesData = [
+            { id: 1, title: 'Stand up straight with your shoulders back', content: 'This rule is both a physical instruction and a metaphor. Physically, adopting a confident posture can influence brain chemistry (e.g., serotonin levels), leading to increased feelings of confidence and reduced anxiety. Metaphorically, it means to voluntarily accept the burdens and responsibilities of life, to face suffering head-on, and to assert your rightful place in the world instead of shrinking from its challenges. It draws an analogy to dominance hierarchies in nature, like those of lobsters, suggesting that posture and perceived competence are deeply intertwined.' },
+            { id: 2, title: 'Treat yourself like someone you are responsible for helping', content: 'Peterson points out the paradox that people are often better at administering medication to their pets than to themselves. This rule encourages self-compassion and self-care not as indulgence, but as a duty. It means taking your own well-being seriously, making choices that are good for your long-term health (physical and mental), and respecting your own potential enough to nurture it responsibly, just as you would for a child or loved one in your care.' },
+            { id: 3, title: 'Make friends with people who want the best for you', content: 'This rule is a warning against associating with people who drag you down, either out of their own nihilism or a desire to see you fail. True friends are those who support your growth and celebrate your successes. You have a moral obligation to yourself to choose friends who challenge you to be better and will not tolerate your self-destructive tendencies. It is better to be alone than in bad company.' },
+            { id: 4, title: 'Compare yourself to who you were yesterday, not to who someone else is today', content: 'In an age of social media, the temptation to compare one\'s own life to the curated highlights of others is immense and destructive. This rule advises that the only valid and useful point of comparison is your past self. Focus on incremental improvement. By aiming to be slightly better today than you were yesterday, you can achieve remarkable progress over time without falling into the traps of envy and resentment.' },
+            { id: 5, title: 'Do not let your children do anything that makes you dislike them', content: 'This is a rule about parenting and socialization. Peterson argues that a parent\'s job is to shape their children into socially desirable and responsible adults. If even you, the parent, find your child\'s behavior unbearable, the rest of the world certainly will, leading to social rejection for the child. It advocates for clear rules, consistent discipline, and teaching children the boundaries of acceptable behavior, not as an act of tyranny, but of love and responsibility.' },
+            { id: 6, title: 'Set your house in perfect order before you criticize the world', content: 'This is the famous "clean your room" rule. It is an admonition against arrogant, resentful critique of societal structures without first taking full responsibility for one\'s own life. The rule argues that the impulse to blame the world for one\'s own failures is easy and destructive. The difficult, but virtuous, path is to first address your own flaws, bad habits, and unresolved issues. By taking control of what you can—your own domain—you gain the wisdom and humility to engage with larger problems more effectively.' },
+            { id: 7, title: 'Pursue what is meaningful (not what is expedient)', content: 'This rule contrasts two modes of being: expediency (doing what is easy, gratifying, or impulsive in the short term) and meaning (accepting responsibility and acting in alignment with your deepest values, even if it requires sacrifice). Expediency leads to a life of impulse and, ultimately, nihilism. Meaning is found in shouldering a noble burden, telling the truth, and orienting your life towards the highest good you can conceive. This pursuit provides the ultimate defense against the suffering inherent in life.' },
+            { id: 8, title: 'Tell the truth—or, at least, don’t lie', content: 'Peterson distinguishes between sins of commission (active lying) and omission. He argues that lying, even in small ways, corrupts your character and your perception of reality. Speaking your truth, articulating your being honestly, allows you to confront problems directly and navigate the world authentically. Lies build a weak and false reality that will eventually crumble. Truth, even when painful, is the tool with which we build a solid foundation for our lives and our societies.' },
+            { id: 9, title: 'Assume that the person you are listening to might know something you don’t', content: 'This rule champions intellectual humility and the value of genuine conversation. True listening involves setting aside your own ego and agenda to genuinely understand another person\'s perspective. Everyone you meet is an expert in something, even if it is just their own experience. By assuming they have something to teach you, you open yourself up to new knowledge and prevent yourself from becoming ideologically rigid and blind.' },
+            { id: 10, title: 'Be precise in your speech', content: 'Chaos emerges from the undefined and the unarticulated. When problems are vague and anxieties are unnamed, they become overwhelmingly terrifying. This rule urges you to use precise language to define your problems, articulate your goals, and communicate your needs clearly. When you precisely identify a problem, you specify what it is (and what it is not), turning an unmanageable dragon of chaos into a specific set of challenges that you can begin to address.' },
+            { id: 11, title: 'Do not bother children when they are skateboarding', content: 'This rule is a defense of risk-taking, competence, and the development of character, particularly in young men. Skateboarding is a metaphor for any activity where individuals push their limits and confront danger to become more competent and resilient. Peterson argues that an overprotective, "safety-first" culture that pathologizes masculinity and risk is harmful. It prevents people, especially the young, from developing the strength and courage needed to face the real dangers of the world.' },
+            { id: 12, title: 'Pet a cat when you encounter one on the street', content: 'This final rule is an acknowledgment of the harsh reality of suffering and limitation. Life is full of pain that is often beyond our control. The rule advises finding and appreciating the small, beautiful moments of grace that exist even amidst suffering. Acknowledging the tragic nature of Being while still being open to the pockets of goodness and beauty you encounter is a crucial strategy for staying resilient and avoiding bitterness and despair.' }
+        ];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+            const rulesGrid = document.getElementById('rules-grid');
+            const ruleDetailsContainer = document.getElementById('rule-details');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    const targetId = link.dataset.target;
+                    
+                    navLinks.forEach(nav => nav.classList.remove('active'));
+                    link.classList.add('active');
+
+                    contentSections.forEach(section => {
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                        } else {
+                            section.classList.remove('active');
+                        }
+                    });
+                });
+            });
+            
+            if (rulesGrid) {
+                rulesData.forEach(rule => {
+                    const card = document.createElement('div');
+                    card.className = 'rule-card bg-white p-4 rounded-lg cursor-pointer shadow-sm';
+                    card.dataset.ruleId = rule.id;
+                    card.innerHTML = `
+                        <p class="text-sm font-semibold text-gray-500">RULE ${rule.id}</p>
+                        <h4 class="text-lg font-bold text-gray-800">${rule.title}</h4>
+                    `;
+                    rulesGrid.appendChild(card);
+
+                    card.addEventListener('click', () => {
+                        const currentlyActive = document.querySelector('.rule-card.active');
+                        if (currentlyActive) {
+                            currentlyActive.classList.remove('active');
+                        }
+                        card.classList.add('active');
+
+                        ruleDetailsContainer.style.opacity = 0;
+                        setTimeout(() => {
+                            ruleDetailsContainer.innerHTML = `
+                                <h3 class="text-xl font-bold mb-2 text-gray-800">Rule ${rule.id}: ${rule.title}</h3>
+                                <p class="text-gray-700 leading-relaxed">${rule.content}</p>
+                            `;
+                            ruleDetailsContainer.style.opacity = 1;
+                        }, 150);
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+
