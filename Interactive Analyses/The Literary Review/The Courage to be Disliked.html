@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Courage to be Disliked - Interactive Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+  </script>
+    <!-- Chosen Palette: Warm Neutral Harmony -->
+    <!-- Application Structure Plan: The application is structured thematically rather than linearly to facilitate user-driven exploration of the book's core ideas. A sticky top navigation allows users to jump between fundamental concepts. The structure is designed to build from foundational ideas (The Core Shift) to detailed elaborations (Freedom from the Past, The Art of Separation, True Belonging) and then to practical application and summary (Dialogue Flow, Engage & Reflect). This creates a logical learning path. -->
+    <!-- Visualization & Content Choices: 
+        1. Report Info: Etiology vs. Teleology. Goal: Compare/Elaborate. Viz: Side-by-side text, bar chart, and a new detailed section with logic flow diagrams (HTML/CSS). Interaction: Toggles, navigation. Justification: Reinforces the core concept through repetition and deeper analysis.
+        2. Report Info: Separation of Tasks. Goal: Organize/Interact. Viz: An interactive 'Task Sorter' component. Interaction: Users click buttons to categorize aspects of a problem. Justification: Moves from passive reading to active engagement, improving comprehension of the most actionable concept.
+        3. Report Info: Community Feeling. Goal: Organize/Inform. Viz: A three-card layout explaining the components (Self-Acceptance, Confidence, Contribution). Justification: Breaks down a complex abstract idea into understandable parts.
+        4. Report Info: Dialogue, Quotes, Authors. Goal: Inform/Summarize. Viz: Stepper, accordions, cards. Justification: Standard, effective UI for summarizing content and providing references.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #383838;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #A0522D;
+            border-bottom-color: #A0522D;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border: 1px solid #EAEAEA;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.07);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        .stepper-item.active .stepper-circle {
+            background-color: #A0522D;
+            color: #FFFFFF;
+        }
+        .stepper-item.active .stepper-label {
+            color: #A0522D;
+            font-weight: 500;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .task-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .task-btn:hover {
+            transform: scale(1.05);
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */ 
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+} 
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+} 
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+} 
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+} 
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+} 
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+} 
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+} 
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3">
+            <div class="text-center">
+                <h1 class="text-3xl font-bold text-gray-800">The Courage to be Disliked</h1>
+                <p class="text-md text-gray-600 mt-1">An Interactive Exploration of Adlerian Psychology</p>
+            </div>
+            <nav class="mt-4">
+                <ul class="flex justify-center flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 text-xs sm:text-sm font-medium text-gray-500">
+                    <li><a href="#core-shift" class="nav-link active px-1 py-1">Core Shift</a></li>
+                    <li><a href="#freedom-from-past" class="nav-link px-1 py-1">Freedom From Past</a></li>
+                    <li><a href="#art-of-separation" class="nav-link px-1 py-1">The Art of Separation</a></li>
+                    <li><a href="#true-belonging" class="nav-link px-1 py-1">True Belonging</a></li>
+                    <li><a href="#dialogue" class="nav-link px-1 py-1">Dialogue Flow</a></li>
+                    <li><a href="#engage" class="nav-link px-1 py-1">Engage & Reflect</a></li>
+                    <li><a href="#authors" class="nav-link px-1 py-1">The Authors</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <section id="core-shift" class="content-section active">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-800">The Core Shift: From Past Causes to Present Goals</h2>
+                <p class="mt-2 max-w-3xl mx-auto text-gray-600">This section explores the fundamental difference between traditional Freudian etiology (study of causation) and Adlerian teleology (study of purpose). Understanding this shift is the first step toward personal freedom. Interact with the buttons below to see how each philosophy interprets the same issue.</p>
+            </div>
+
+            <div class="text-center mb-6">
+                <button id="etiology-btn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-l-lg transition-colors">Etiology (The Past)</button>
+                <button id="teleology-btn" class="bg-sienna-600 text-white font-semibold py-2 px-4 rounded-r-lg transition-colors" style="background-color: #A0522D;">Teleology (The Goal)</button>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8 items-start">
+                <div id="explanation-card" class="card p-6">
+                </div>
+                <div class="card p-6">
+                    <h3 class="text-lg font-semibold text-center mb-4">Focus of Analysis</h3>
+                    <div class="chart-container">
+                        <canvas id="philosophyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="freedom-from-past" class="content-section">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-800">Deep Dive: Freedom From the Past</h2>
+                <p class="mt-2 max-w-3xl mx-auto text-gray-600">Adler's most radical idea is that the past has no causal power. We are not pushed by our history; we are pulled by our goals. This section further breaks down the logic of etiology and teleology to show how you can reclaim power over your life story.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold text-center mb-4">Etiological Logic (The "Past" Trap)</h3>
+                    <div class="space-y-4">
+                        <div class="text-center p-3 bg-red-50 border border-red-200 rounded-lg">Event: Parents Divorced</div>
+                        <div class="text-center text-2xl font-bold text-red-400">↓</div>
+                        <div class="text-center p-3 bg-red-50 border border-red-200 rounded-lg">Result: I Have Trust Issues</div>
+                        <div class="text-center text-2xl font-bold text-red-400">↓</div>
+                        <div class="text-center p-3 bg-red-50 border border-red-200 rounded-lg">Conclusion: I Cannot Form a Healthy Relationship</div>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-6">In this view, the past is a fixed cause and the present is an unavoidable effect. It offers an explanation but no power to change. The person is a victim of their circumstances.</p>
+                </div>
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold text-center mb-4">Teleological Logic (The "Goal" Liberation)</h3>
+                     <div class="space-y-4">
+                        <div class="text-center p-3 bg-green-50 border border-green-200 rounded-lg">Goal: To Avoid Being Hurt in a Relationship</div>
+                        <div class="text-center text-2xl font-bold text-green-400">↓</div>
+                        <div class="text-center p-3 bg-green-50 border border-green-200 rounded-lg">Method: Use My Parents' Divorce as "Proof" That Relationships Fail</div>
+                        <div class="text-center text-2xl font-bold text-green-400">↓</div>
+                        <div class="text-center p-3 bg-green-50 border border-green-200 rounded-lg">Behavior: I Create "Trust Issues" to Keep People Away</div>
+                    </div>
+                     <p class="text-sm text-gray-600 mt-6">In this view, the person chooses a goal and uses past events to justify it. The power lies in the present: if you can choose your goal, you can choose a new one and change your life.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="art-of-separation" class="content-section">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-800">Deep Dive: The Art of Separation</h2>
+                <p class="mt-2 max-w-3xl mx-auto text-gray-600">The most practical tool for reducing daily stress is "The Separation of Tasks." The rule is simple: whose problem is this? You are responsible only for your choices. You are not responsible for how others feel or react to your choices. Try the interactive sorter below.</p>
+            </div>
+            <div class="card max-w-3xl mx-auto p-6">
+                <h3 class="text-xl font-semibold text-center mb-2">Interactive Task Sorter</h3>
+                <p class="text-center text-sm text-gray-600 mb-4">Scenario: You want to change careers, but your family disapproves, worrying it's too risky.</p>
+                <div id="task-buttons-container" class="flex flex-wrap justify-center gap-3 mb-6">
+                    <button class="task-btn bg-gray-200 text-gray-700 py-2 px-4 rounded-full" data-task="mine">Choosing your career path</button>
+                    <button class="task-btn bg-gray-200 text-gray-700 py-2 px-4 rounded-full" data-task="theirs">Your family's feeling of disappointment</button>
+                    <button class="task-btn bg-gray-200 text-gray-700 py-2 px-4 rounded-full" data-task="mine">Researching the new career</button>
+                    <button class="task-btn bg-gray-200 text-gray-700 py-2 px-4 rounded-full" data-task="theirs">Whether they approve of your choice</button>
+                    <button class="task-btn bg-gray-200 text-gray-700 py-2 px-4 rounded-full" data-task="mine">Communicating your decision respectfully</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-bold text-center text-blue-700 mb-2">My Tasks (My Control)</h4>
+                        <div id="my-tasks" class="bg-blue-50 border border-blue-200 rounded-lg p-4 min-h-[150px] space-y-2"></div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-center text-purple-700 mb-2">Their Tasks (Their Control)</h4>
+                        <div id="their-tasks" class="bg-purple-50 border border-purple-200 rounded-lg p-4 min-h-[150px] space-y-2"></div>
+                    </div>
+                </div>
+                <div id="reset-sorter" class="text-center mt-4 text-sm text-gray-500 underline cursor-pointer">Reset</div>
+            </div>
+        </section>
+
+        <section id="true-belonging" class="content-section">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-800">Deep Dive: True Belonging</h2>
+                 <p class="mt-2 max-w-3xl mx-auto text-gray-600">Adlerian psychology does not advocate for isolation. It aims for true social integration through "Community Feeling." This is the sense of having a place and being of value. It is built on the following three pillars and a shift from vertical to horizontal relationships.</p>
+            </div>
+             <div class="grid md:grid-cols-3 gap-6">
+                <div class="card p-6 text-center">
+                    <div class="text-4xl mb-4">🧘</div>
+                    <h3 class="text-xl font-semibold mb-2">1. Self-Acceptance</h3>
+                    <p class="text-gray-600">This is not about self-affirmation ("I am great!"). It is about calmly accepting your imperfect self as-is. If you score a 60 out of 100, you accept the 60 and focus on how to get to 61, rather than lamenting you are not at 100.</p>
+                </div>
+                <div class="card p-6 text-center">
+                    <div class="text-4xl mb-4">🤝</div>
+                    <h3 class="text-xl font-semibold mb-2">2. Confidence in Others</h3>
+                    <p class="text-gray-600">This means having unconditional trust in your fellow human beings. You see them as your comrades, not your enemies or rivals. This allows you to build horizontal relationships based on mutual respect, not competition.</p>
+                </div>
+                <div class="card p-6 text-center">
+                    <div class="text-4xl mb-4">🌱</div>
+                    <h3 class="text-xl font-semibold mb-2">3. Contribution to Others</h3>
+                    <p class="text-gray-600">True happiness is the feeling of contribution. This does not mean self-sacrifice. It means feeling "I am useful to someone," which gives you a profound sense of your own value and a place in the community.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="dialogue" class="content-section">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-800">The Dialogue Flow: Five Nights of Discovery</h2>
+                <p class="mt-2 max-w-3xl mx-auto text-gray-600">The book is structured as a dialogue between a Youth and a Philosopher over five nights. Each night builds upon the last, guiding the reader through the core tenets of Adlerian thought. Click on each night to explore the key idea discussed.</p>
+            </div>
+
+            <div class="w-full max-w-4xl mx-auto">
+                <div class="flex items-center justify-between">
+                    <div class="stepper-item cursor-pointer text-center active" data-content="dialogue-1">
+                        <div class="stepper-circle w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold mx-auto transition-colors">1</div>
+                        <p class="stepper-label text-sm mt-2 transition-colors">Deny Trauma</p>
+                    </div>
+                    <div class="flex-1 h-1 bg-gray-200 mx-2"></div>
+                    <div class="stepper-item cursor-pointer text-center" data-content="dialogue-2">
+                        <div class="stepper-circle w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold mx-auto transition-colors">2</div>
+                        <p class="stepper-label text-sm text-gray-500 mt-2 transition-colors">All Problems Are Interpersonal</p>
+                    </div>
+                     <div class="flex-1 h-1 bg-gray-200 mx-2"></div>
+                    <div class="stepper-item cursor-pointer text-center" data-content="dialogue-3">
+                        <div class="stepper-circle w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold mx-auto transition-colors">3</div>
+                        <p class="stepper-label text-sm text-gray-500 mt-2 transition-colors">Separation of Tasks</p>
+                    </div>
+                     <div class="flex-1 h-1 bg-gray-200 mx-2"></div>
+                    <div class="stepper-item cursor-pointer text-center" data-content="dialogue-4">
+                        <div class="stepper-circle w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold mx-auto transition-colors">4</div>
+                        <p class="stepper-label text-sm text-gray-500 mt-2 transition-colors">Center of the World</p>
+                    </div>
+                     <div class="flex-1 h-1 bg-gray-200 mx-2"></div>
+                    <div class="stepper-item cursor-pointer text-center" data-content="dialogue-5">
+                        <div class="stepper-circle w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold mx-auto transition-colors">5</div>
+                        <p class="stepper-label text-sm text-gray-500 mt-2 transition-colors">Live in the Here and Now</p>
+                    </div>
+                </div>
+                
+                <div id="dialogue-content" class="card mt-8 p-6">
+                </div>
+            </div>
+        </section>
+
+        <section id="engage" class="content-section">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-800">Engage & Reflect</h2>
+                <p class="mt-2 max-w-3xl mx-auto text-gray-600">The true value of philosophy lies in its application. Use these memorable quotes and thought-provoking questions to deepen your understanding and reflect on how these ideas apply to your own life.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Memorable Quotes</h3>
+                    <div id="quotes-container" class="space-y-4">
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Discussion Questions</h3>
+                    <div id="questions-container" class="space-y-4">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="authors" class="content-section">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-800">About the Authors</h2>
+                <p class="mt-2 max-w-3xl mx-auto text-gray-600">The book is a unique collaboration between a philosopher and a writer, blending deep psychological insight with an accessible, engaging narrative style.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="card p-6">
+                    <h3 class="text-2xl font-bold mb-2">Ichiro Kishimi</h3>
+                    <p class="text-gray-600 mb-4">Born in 1956, Kishimi is a philosopher, lecturer, and certified counselor of the Japanese Society of Adlerian Psychology. He has written numerous books on philosophy and Adlerian psychology, aiming to make its principles practical for a modern audience. He is considered one of Japan's foremost experts on the subject.</p>
+                    <h4 class="font-semibold text-gray-700 mb-2">Other Notable Works:</h4>
+                    <ul class="list-disc list-inside text-sm text-gray-600">
+                        <li>The Courage to be Happy (sequel)</li>
+                        <li>Adler's Psychology Lesson</li>
+                        <li>Don't Be Liked by Everyone</li>
+                    </ul>
+                </div>
+                <div class="card p-6">
+                    <h3 class="text-2xl font-bold mb-2">Fumitake Koga</h3>
+                    <p class="text-gray-600 mb-4">Born in 1973, Koga is an award-winning professional writer and author. He encountered Adlerian psychology in his late twenties and was deeply moved by its ideas. He sought out Ichiro Kishimi to transcribe his teachings into the dialogue format found in the book, playing the role of the "Youth" to make the concepts clear and relatable.</p>
+                     <h4 class="font-semibold text-gray-700 mb-2">Other Notable Works:</h4>
+                    <ul class="list-disc list-inside text-sm text-gray-600">
+                        <li>The Courage to be Happy (sequel)</li>
+                        <li>20-dai ni shite okitai 17 no koto</li>
+                        <li>Taking Notes: The Secret of an Intellectual Production</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+      
+    </main>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    const data = {
+        coreShift: {
+            etiology: {
+                title: "Etiology (The Past Causes the Present)",
+                description: "Freudian psychology suggests that our present unhappiness is a direct result of past trauma and experiences. We are seen as victims of our history, and healing requires digging into the past to find the root cause.",
+                example_title: "Example: Why do I have social anxiety?",
+                example_text: "'Because I was bullied in school, I am now afraid of people and cannot interact with them.' The past is the direct, unchangeable cause.",
+                chartData: [80, 20]
+            },
+            teleology: {
+                title: "Teleology (We Choose Our Goal)",
+                description: "Adlerian psychology argues that we are not defined by our past. Instead, we unconsciously create a 'goal' (e.g., to not get hurt in relationships) and then invent the feelings (like anxiety) needed to achieve that goal.",
+                example_title: "Example: Why do I have social anxiety?",
+                example_text: "'In order to achieve the goal of avoiding relationships where I might get hurt, I am creating the feeling of anxiety.' The power to change lies in choosing a new goal.",
+                chartData: [10, 90]
+            }
+        },
+        dialogue: {
+            "dialogue-1": { title: "The First Night: Deny Trauma", text: "The Philosopher introduces teleology, arguing that we are not defined by past experiences (etiology) but by the goals we set for ourselves. Unhappiness is a choice made in the present to achieve a certain goal, not a result of past events." },
+            "dialogue-2": { title: "The Second Night: All Problems Are Interpersonal", text: "This night explores the idea that all human worries stem from our relationships. Feelings of inferiority are subjective interpretations, not objective facts. The goal is to move from a debilitating 'inferiority complex' to a healthy 'feeling of inferiority' that spurs growth." },
+            "dialogue-3": { title: "The Third Night: The Separation of Tasks", text: "The book's most practical concept is introduced: to achieve freedom, one must distinguish between one's own tasks and the tasks of others. We should not seek recognition or worry about how others perceive us, as that is their task, not ours." },
+            "dialogue-4": { title: "The Fourth Night: Where the Center of the World Is", text: "The idea of 'community feeling' is discussed. True self-worth comes not from seeking praise (vertical relationships) but from contributing to the community as an equal (horizontal relationships). You are not the center of the world, but you are a valuable part of a larger community." },
+            "dialogue-5": { title: "The Fifth Night: To Live Earnestly in the Here and Now", text: "The final dialogue teaches that life is not a line toward a future destination, but a series of moments. By living and dancing earnestly in the present, your life is always complete. This mindset, combined with community feeling and separation of tasks, constitutes true happiness." }
+        },
+        quotes: [
+            { quote: "Your unhappiness cannot be blamed on your past or your environment... You just lack courage.", significance: "This captures the core idea that change is not a matter of circumstance, but of choice and courage." },
+            { quote: "Freedom is to be disliked by other people.", significance: "A provocative statement defining freedom as living by your own principles, independent of others' approval." },
+            { quote: "Life is not a line, but a series of dots. A series of moments.", significance: "This explains the concept of living fully in the present, where each moment is complete in itself." }
+        ],
+        questions: [
+            "The book argues trauma doesn't exist. How does this challenge conventional views of mental health?",
+            "Identify a problem in your life. Which aspects are your task, and which are someone else's?",
+            "What would it look like, practically, for you to have 'the courage to be disliked' this week?"
+        ]
+    };
+    
+    const navLinks = document.querySelectorAll('.nav-link');
+    const contentSections = document.querySelectorAll('.content-section');
+
+    function switchTab(targetId) {
+        navLinks.forEach(l => {
+            if (l.getAttribute('href') === `#${targetId}`) {
+                l.classList.add('active');
+            } else {
+                l.classList.remove('active');
+            }
+        });
+
+        contentSections.forEach(section => {
+            if (section.id === targetId) {
+                section.classList.add('active');
+            } else {
+                section.classList.remove('active');
+            }
+        });
+        window.scrollTo(0, 0);
+    }
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = link.getAttribute('href').substring(1);
+            switchTab(targetId);
+        });
+    });
+
+    const etiologyBtn = document.getElementById('etiology-btn');
+    const teleologyBtn = document.getElementById('teleology-btn');
+    const explanationCard = document.getElementById('explanation-card');
+    const chartCanvas = document.getElementById('philosophyChart').getContext('2d');
+    let philosophyChart;
+
+    function createOrUpdateChart(chartData) {
+        const dataConfig = {
+            labels: ['Focus on Past', 'Focus on Present/Goal'],
+            datasets: [{
+                label: 'Philosophical Focus',
+                data: chartData,
+                backgroundColor: ['#D1D5DB', '#A0522D'],
+                borderColor: ['#9CA3AF', '#8C462F'],
+                borderWidth: 1
+            }]
+        };
+
+        if (philosophyChart) {
+            philosophyChart.data.datasets[0].data = chartData;
+            philosophyChart.update();
+        } else {
+            philosophyChart = new Chart(chartCanvas, {
+                type: 'bar',
+                data: dataConfig,
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { beginAtZero: true, max: 100, ticks: { callback: value => value + '%' } }
+                    }
+                }
+            });
+        }
+    }
+
+    function updateCoreShiftContent(type) {
+        const content = data.coreShift[type];
+        explanationCard.innerHTML = `
+            <h3 class="text-xl font-bold mb-3">${content.title}</h3>
+            <p class="text-gray-600 mb-4">${content.description}</p>
+            <div class="border-t pt-4">
+                <h4 class="font-semibold text-gray-700">${content.example_title}</h4>
+                <p class="text-sm text-gray-500 italic mt-1">${content.example_text}</p>
+            </div>
+        `;
+        createOrUpdateChart(content.chartData);
+
+        if (type === 'etiology') {
+            etiologyBtn.style.backgroundColor = '#A0522D';
+            etiologyBtn.classList.add('text-white');
+            teleologyBtn.style.backgroundColor = '';
+            teleologyBtn.classList.remove('text-white');
+            teleologyBtn.classList.add('bg-gray-200', 'text-gray-700');
+        } else {
+            teleologyBtn.style.backgroundColor = '#A0522D';
+            teleologyBtn.classList.add('text-white');
+            etiologyBtn.style.backgroundColor = '';
+            etiologyBtn.classList.remove('text-white');
+            etiologyBtn.classList.add('bg-gray-200', 'text-gray-700');
+        }
+    }
+    
+    etiologyBtn.addEventListener('click', () => updateCoreShiftContent('etiology'));
+    teleologyBtn.addEventListener('click', () => updateCoreShiftContent('teleology'));
+    
+    updateCoreShiftContent('teleology');
+
+    const stepperItems = document.querySelectorAll('.stepper-item');
+    const dialogueContent = document.getElementById('dialogue-content');
+
+    function updateDialogueContent(contentKey) {
+        const content = data.dialogue[contentKey];
+        dialogueContent.innerHTML = `<h3 class="text-xl font-bold mb-2">${content.title}</h3><p class="text-gray-600">${content.text}</p>`;
+    }
+
+    stepperItems.forEach(item => {
+        item.addEventListener('click', () => {
+            stepperItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+            updateDialogueContent(item.getAttribute('data-content'));
+        });
+    });
+    
+    updateDialogueContent('dialogue-1');
+
+    const quotesContainer = document.getElementById('quotes-container');
+    data.quotes.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'card p-4';
+        div.innerHTML = `<p class="font-medium italic text-gray-700">"${item.quote}"</p><p class="text-sm text-gray-500 mt-2 text-right">- ${item.significance}</p>`;
+        quotesContainer.appendChild(div);
+    });
+
+    const questionsContainer = document.getElementById('questions-container');
+    data.questions.forEach(q => {
+        const div = document.createElement('div');
+        div.className = 'card p-4';
+        div.innerHTML = `<p class="font-medium text-gray-700">${q}</p>`;
+        questionsContainer.appendChild(div);
+    });
+
+    const taskButtonsContainer = document.getElementById('task-buttons-container');
+    const myTasksContainer = document.getElementById('my-tasks');
+    const theirTasksContainer = document.getElementById('their-tasks');
+    const resetSorterBtn = document.getElementById('reset-sorter');
+    
+    function setupTaskSorter() {
+        const taskButtons = taskButtonsContainer.querySelectorAll('.task-btn');
+        taskButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const taskType = button.getAttribute('data-task');
+                const taskText = button.textContent;
+                const taskElement = document.createElement('div');
+                taskElement.className = 'text-sm bg-white p-2 rounded-md shadow-sm';
+                taskElement.textContent = taskText;
+
+                if (taskType === 'mine') {
+                    myTasksContainer.appendChild(taskElement);
+                } else {
+                    theirTasksContainer.appendChild(taskElement);
+                }
+                button.style.display = 'none';
+            });
+        });
+    }
+
+    function resetTaskSorter() {
+        myTasksContainer.innerHTML = '';
+        theirTasksContainer.innerHTML = '';
+        taskButtonsContainer.querySelectorAll('.task-btn').forEach(button => {
+            button.style.display = 'inline-block';
+        });
+    }
+
+    resetSorterBtn.addEventListener('click', resetTaskSorter);
+    setupTaskSorter();
+
+    // Initialize first tab
+    switchTab('core-shift');
+
+});
+</script>
+</body>
+</html>
+
