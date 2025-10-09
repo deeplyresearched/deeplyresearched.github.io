@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Nissan Tekton Electric SUV: Range, Power, Tech</title>
+  <meta name="description" content="Experience the Nissan Tekton electric SUV: 410-mile range, blistering 2.9s 0-60 MPH, 7-seats, ProPILOT 3.0, & V2G tech. Drive the future today!">
+  <meta name="keywords" content="Electric SUV, Nissan EV, Nissan Tekton, Electric Vehicle, Long Range EV, Performance SUV, 7-seater EV, V2G technology, ProPILOT Assist, e-4ORCE AWD, Fast charging EV, Future SUV, Electric car, EV technology, Nissan electric SUV">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+  </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The SPA's narrative flow has been expanded for a more comprehensive customer journey. The structure is now: Hero > Overview > Exterior > Performance > Battery/Charging > Interior > Intelligent Driving > Safety > Trims. This top-down approach guides the user from the vehicle's external "wow" factor and performance specs to the practicalities of EV ownership (charging) and the internal user experience (cockpit), before covering advanced features and purchase details. This logical progression from outside-in enhances understanding and addresses key purchase considerations in a natural order. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Key vehicle metrics (range, power, etc.). Goal: Inform. Viz/Presentation: Large text with icons (HTML/Unicode). Interaction: None. Justification: Quick, scannable information. Method: HTML/Tailwind.
+        - Report Info: Exterior/Interior design features. Goal: Elaborate. Viz/Presentation: Two-column layouts with feature callouts and icons. Interaction: None. Justification: Cleanly separates imagery from detailed text points, improving readability. Method: HTML/Tailwind.
+        - Report Info: Performance data across trims. Goal: Compare. Viz/Presentation: Horizontal Bar Chart. Interaction: Buttons to switch displayed metric. Justification: Bar charts are ideal for direct comparison; interactivity allows multiple comparisons in one module. Library: Chart.js.
+        - Report Info: Charging times. Goal: Inform. Viz/Presentation: Styled horizontal bars (HTML/CSS). Interaction: None. Justification: A simple, effective visual for comparing time-based data without the overhead of a full chart library. Method: HTML/Tailwind.
+        - Report Info: Driver assist features. Goal: Organize. Viz/Presentation: Tabbed content cards. Interaction: Clicking a tab reveals its content. Justification: Prevents information overload by showing one feature at a time. Method: HTML/Tailwind/JS.
+        - Report Info: Safety scores. Goal: Inform/Compare. Viz/Presentation: Radar Chart. Interaction: Hover tooltips. Justification: A radar chart provides a great multi-axial view of safety performance. Library: Chart.js.
+        - Report Info: Pricing and features. Goal: Compare. Viz/Presentation: Comparison Table. Interaction: None. Justification: A table is the clearest way to present detailed feature comparisons. Method: HTML/Tailwind.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4;
+            color: #383838;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-bottom-color 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #D97706; 
+            border-bottom-color: #D97706;
+        }
+        .btn {
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .tech-tab.active {
+            background-color: #D97706;
+            color: #FFFFFF;
+        }
+        .tech-tab-content {
+            transition: opacity 0.5s ease-in-out, max-height 0.5s ease-in-out;
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */ 
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+} 
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+} 
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+} 
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+} 
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+} 
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+} 
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+} 
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-extrabold text-gray-800">
+                NISSAN <span class="text-amber-600">TEKTON</span>
+            </div>
+            <div class="hidden lg:flex space-x-6">
+                <a href="#overview" class="nav-link pb-1">Overview</a>
+                <a href="#exterior" class="nav-link pb-1">Exterior</a>
+                <a href="#performance" class="nav-link pb-1">Performance</a>
+                <a href="#charging" class="nav-link pb-1">Charging</a>
+                <a href="#interior" class="nav-link pb-1">Interior</a>
+                <a href="#driving" class="nav-link pb-1">Driving</a>
+                <a href="#safety" class="nav-link pb-1">Safety</a>
+                <a href="#trims" class="nav-link pb-1">Trims</a>
+            </div>
+            <button id="mobile-menu-button" class="lg:hidden p-2 rounded-md">
+                 <span class="text-3xl">☰</span>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden lg:hidden px-6 pt-2 pb-4 space-y-2">
+            <a href="#overview" class="block nav-link">Overview</a>
+            <a href="#exterior" class="block nav-link">Exterior</a>
+            <a href="#performance" class="block nav-link">Performance</a>
+            <a href="#charging" class="block nav-link">Charging</a>
+            <a href="#interior" class="block nav-link">Interior</a>
+            <a href="#driving" class="block nav-link">Intelligent Driving</a>
+            <a href="#safety" class="block nav-link">Safety</a>
+            <a href="#trims" class="block nav-link">Trims</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="relative min-h-[60vh] md:min-h-[80vh] flex items-center bg-gray-200">
+             <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://placehold.co/1600x900/e2e8f0/334155?text=Nissan+Tekton');"></div>
+             <div class="absolute inset-0 bg-black/50"></div>
+            <div class="relative container mx-auto px-6 text-center text-white">
+                <h1 class="text-4xl md:text-7xl font-extrabold tracking-tight mb-4">Nissan Tekton</h1>
+                <p class="text-lg md:text-2xl font-light max-w-3xl mx-auto">Engineered for tomorrow. Driven today. Experience the all-electric revolution.</p>
+                <a href="#overview" class="btn mt-8 inline-block bg-amber-600 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-amber-700">Explore Now</a>
+            </div>
+        </section>
+
+        <section id="overview" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-gray-800">At a Glance</h2>
+                    <p class="text-lg text-gray-600 mt-2">The Tekton sets a new benchmark for electric SUVs with its groundbreaking features.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <div class="bg-gray-50 p-8 rounded-lg shadow-sm">
+                        <div class="text-5xl font-extrabold text-amber-600">410</div>
+                        <div class="text-xl font-medium text-gray-700 mt-2">Mile Range</div>
+                        <p class="text-gray-500 mt-1">(Long Range Trim)</p>
+                    </div>
+                    <div class="bg-gray-50 p-8 rounded-lg shadow-sm">
+                        <div class="text-5xl font-extrabold text-amber-600">2.9s</div>
+                        <div class="text-xl font-medium text-gray-700 mt-2">0-60 MPH</div>
+                        <p class="text-gray-500 mt-1">(Performance Trim)</p>
+                    </div>
+                    <div class="bg-gray-50 p-8 rounded-lg shadow-sm">
+                        <div class="text-5xl font-extrabold text-amber-600">7</div>
+                        <div class="text-xl font-medium text-gray-700 mt-2">Passenger Seating</div>
+                        <p class="text-gray-500 mt-1">(Optional Third Row)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="exterior" class="py-20">
+            <div class="container mx-auto px-6">
+                 <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-gray-800">Sculpted by Air</h2>
+                    <p class="text-lg text-gray-600 mt-2">A design that merges form and function for striking aesthetics and remarkable efficiency.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <img src="https://placehold.co/600x400/334155/f8fafc?text=Aero+Design" alt="Aerodynamic design of Nissan Tekton" class="rounded-lg shadow-xl w-full">
+                    </div>
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-2xl font-bold">Digital Matrix Headlights</h3>
+                            <p class="text-gray-600 mt-1">Adaptive lighting that precisely illuminates the road ahead without dazzling other drivers, creating a signature look that's both smart and stylish.</p>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold">Active Aero Grille & Wheels</h3>
+                            <p class="text-gray-600 mt-1">The grille shutters and wheel inserts automatically adjust at speed to reduce drag, significantly improving range and stability.</p>
+                        </div>
+                         <div>
+                            <h3 class="text-2xl font-bold">Flush Door Handles</h3>
+                            <p class="text-gray-600 mt-1">Electronically retracting handles create a seamless body profile, contributing to a class-leading drag coefficient of 0.22.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="performance" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-gray-800">Unmatched Performance</h2>
+                    <p class="text-lg text-gray-600 mt-2">Select a metric to compare the Tekton trims. Each is engineered for a unique driving experience, from maximum efficiency to exhilarating acceleration.</p>
+                </div>
+                <div class="flex justify-center space-x-2 md:space-x-4 mb-8">
+                    <button data-metric="range" class="performance-btn btn bg-amber-600 text-white font-semibold py-2 px-6 rounded-full shadow">Range (mi)</button>
+                    <button data-metric="acceleration" class="performance-btn btn bg-white text-gray-700 font-semibold py-2 px-6 rounded-full shadow">0-60 MPH (s)</button>
+                    <button data-metric="power" class="performance-btn btn bg-white text-gray-700 font-semibold py-2 px-6 rounded-full shadow">Horsepower</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+        </section>
+        
+        <section id="charging" class="py-20">
+             <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-gray-800">Power Up Your Life</h2>
+                    <p class="text-lg text-gray-600 mt-2">With versatile charging options and a robust battery, the Tekton integrates seamlessly into your lifestyle, keeping you on the move.</p>
+                </div>
+                <div class="max-w-4xl mx-auto bg-gray-50 p-8 rounded-lg shadow-sm">
+                    <h3 class="text-2xl font-bold mb-6">Charging Speed (10-80%)</h3>
+                    <div class="space-y-5">
+                        <div class="charging-option">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-semibold text-gray-700">DC Fast Charging (350kW)</span>
+                                <span class="font-bold text-amber-600">18 minutes</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-4"><div class="bg-amber-600 h-4 rounded-full" style="width: 100%;"></div></div>
+                        </div>
+                         <div class="charging-option">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-semibold text-gray-700">Level 2 AC (240V / 11kW)</span>
+                                <span class="font-bold text-amber-600">~ 7.5 hours</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-4"><div class="bg-amber-500 h-4 rounded-full" style="width: 25%;"></div></div>
+                        </div>
+                         <div class="charging-option">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-semibold text-gray-700">Level 1 AC (120V)</span>
+                                <span class="font-bold text-amber-600">~ 65 hours</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-4"><div class="bg-amber-400 h-4 rounded-full" style="width: 5%;"></div></div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-6">Charging times are estimates and may vary based on temperature and battery condition.</p>
+                </div>
+            </div>
+        </section>
+
+         <section id="interior" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-gray-800">Your Personal Sanctuary</h2>
+                    <p class="text-lg text-gray-600 mt-2">A minimalist design philosophy creates a spacious, calming environment, crafted with sustainable materials and intelligent technology.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div class="space-y-6">
+                         <div>
+                            <h3 class="text-2xl font-bold">15" Panoramic Display</h3>
+                            <p class="text-gray-600 mt-1">The ultra-high-resolution centerpiece of your cockpit. The fully customizable interface controls navigation, media, and climate with intuitive ease.</p>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold">Sustainable Luxury</h3>
+                            <p class="text-gray-600 mt-1">Upholstery made from recycled vegan leather and interior accents of reclaimed wood offer premium comfort that's ethically conscious.</p>
+                        </div>
+                         <div>
+                            <h3 class="text-2xl font-bold">Expansive Cargo Space</h3>
+                            <p class="text-gray-600 mt-1">With a front trunk ("frunk") and a flat-folding rear seating area, the Tekton offers up to 72 cubic feet of versatile storage for all your adventures.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <img src="https://placehold.co/600x400/f8fafc/334155?text=Spacious+Interior" alt="Interior of Nissan Tekton" class="rounded-lg shadow-xl w-full">
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="driving" class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-gray-800">Intelligent Driving</h2>
+                    <p class="text-lg text-gray-600 mt-2">Discover the seamless integration of technology designed to enhance every journey. Click on a feature to learn more.</p>
+                </div>
+                <div class="flex flex-col md:flex-row gap-8">
+                    <div class="md:w-1/3">
+                        <ul>
+                            <li><button class="tech-tab w-full text-left p-4 rounded-lg text-lg font-semibold mb-2 active" data-tab="1">ProPILOT 3.0 Assist</button></li>
+                            <li><button class="tech-tab w-full text-left p-4 rounded-lg text-lg font-semibold mb-2" data-tab="2">e-4ORCE AWD</button></li>
+                            <li><button class="tech-tab w-full text-left p-4 rounded-lg text-lg font-semibold" data-tab="3">Intelligent Power Grid</button></li>
+                        </ul>
+                    </div>
+                    <div class="md:w-2/3">
+                        <div id="tab-1" class="tech-tab-content opacity-100 max-h-screen">
+                            <div class="bg-gray-50 p-8 rounded-lg">
+                                <h3 class="text-2xl font-bold mb-2">ProPILOT 3.0 Assist</h3>
+                                <p class="text-gray-600">The most advanced driver-assistance system from Nissan. ProPILOT 3.0 offers hands-off single-lane driving on designated highways, as well as lane change assistance and predictive front collision warning. It uses a suite of high-resolution cameras and radar to create a real-time map of your surroundings, ensuring a safer, less stressful drive.</p>
+                            </div>
+                        </div>
+                        <div id="tab-2" class="tech-tab-content opacity-0 max-h-0 overflow-hidden">
+                            <div class="bg-gray-50 p-8 rounded-lg">
+                                <h3 class="text-2xl font-bold mb-2">e-4ORCE All-Wheel Drive</h3>
+                                <p class="text-gray-600">Nissan's revolutionary dual-motor all-wheel-drive system. e-4ORCE delivers instant torque to all four wheels for unparalleled traction and control in all conditions. It independently manages power delivery and braking for each wheel, minimizing pitch and dive for a remarkably smooth and stable ride, whether you're accelerating, cornering, or braking.</p>
+                            </div>
+                        </div>
+                        <div id="tab-3" class="tech-tab-content opacity-0 max-h-0 overflow-hidden">
+                             <div class="bg-gray-50 p-8 rounded-lg">
+                                <h3 class="text-2xl font-bold mb-2">Intelligent Power Grid</h3>
+                                <p class="text-gray-600">The Tekton is more than a vehicle; it's a mobile power source. With Vehicle-to-Grid (V2G) technology, your SUV can power your home during an outage or even sell energy back to the grid during peak hours. This bi-directional charging capability redefines the role of your vehicle in your home's energy ecosystem.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="safety" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-gray-800">Engineered for Safety</h2>
+                    <p class="text-lg text-gray-600 mt-2">With a reinforced battery cage and Nissan Safety Shield® 360, the Tekton is built to protect. The chart below shows its projected safety ratings compared to the current industry average for luxury SUVs.</p>
+                </div>
+                <div class="chart-container h-96 md:h-[500px]">
+                    <canvas id="safetyChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="trims" class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-gray-800">Choose Your Tekton</h2>
+                     <p class="text-lg text-gray-600 mt-2">Three distinct trims, each designed to fit your lifestyle.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="border border-gray-200 bg-gray-50 rounded-lg p-6 flex flex-col">
+                        <h3 class="text-2xl font-bold text-center">Standard</h3>
+                        <div class="text-4xl font-extrabold text-center my-4">$48,500</div>
+                        <ul class="space-y-3 text-gray-600 flex-grow">
+                            <li>✓ 310 Mile Range (EPA est.)</li>
+                            <li>✓ RWD Single Motor</li>
+                            <li>✓ 12.3" Infotainment Display</li>
+                            <li>✓ ProPILOT Assist</li>
+                            <li>✓ Panoramic Glass Roof</li>
+                        </ul>
+                        <a href="https://www.nissanusa.com/vehicles/electric-cars.html" target="_blank" rel="noopener noreferrer" class="btn text-center mt-6 bg-gray-700 text-white w-full py-3 rounded-lg font-bold hover:bg-gray-800">Order Now</a>
+                    </div>
+                    <div class="border-2 border-amber-600 bg-white rounded-lg p-6 flex flex-col shadow-xl scale-105">
+                        <h3 class="text-2xl font-bold text-center">Long Range</h3>
+                        <div class="text-4xl font-extrabold text-center my-4">$56,500</div>
+                        <ul class="space-y-3 text-gray-600 flex-grow">
+                            <li>✓ 410 Mile Range (EPA est.)</li>
+                            <li>✓ e-4ORCE AWD Dual Motor</li>
+                            <li>✓ 15" Panoramic Display</li>
+                            <li>✓ ProPILOT 3.0 Assist</li>
+                            <li>✓ Bose® Premium Audio</li>
+                            <li>✓ Vehicle-to-Grid Capability</li>
+                        </ul>
+                        <a href="https://www.nissanusa.com/vehicles/electric-cars.html" target="_blank" rel="noopener noreferrer" class="btn text-center mt-6 bg-amber-600 text-white w-full py-3 rounded-lg font-bold hover:bg-amber-700">Order Now</a>
+                    </div>
+                    <div class="border border-gray-200 bg-gray-50 rounded-lg p-6 flex flex-col">
+                        <h3 class="text-2xl font-bold text-center">Performance</h3>
+                        <div class="text-4xl font-extrabold text-center my-4">$69,500</div>
+                        <ul class="space-y-3 text-gray-600 flex-grow">
+                            <li>✓ 380 Mile Range (EPA est.)</li>
+                            <li>✓ e-4ORCE AWD Performance</li>
+                            <li>✓ 22" Cyberion Wheels</li>
+                            <li>✓ Performance Brakes</li>
+                            <li>✓ Carbon Fiber Interior Trim</li>
+                            <li>✓ All Long Range features</li>
+                        </ul>
+                        <a href="https://www.nissanusa.com/vehicles/electric-cars.html" target="_blank" rel="noopener noreferrer" class="btn text-center mt-6 bg-gray-700 text-white w-full py-3 rounded-lg font-bold hover:bg-gray-800">Order Now</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+      <section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+      </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white">
+        <div class="container mx-auto px-6 py-12 text-center">
+            <p class="text-2xl font-bold mb-4">The Future is Calling.</p>
+            <p class="text-gray-400">The Nissan Tekton is a fictional concept vehicle created for demonstration purposes.</p>
+            <p class="text-gray-500 mt-8 text-sm">© 2025 Nissan Motor Co., Ltd. All rights reserved.</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const performanceData = {
+        labels: ['Standard', 'Long Range', 'Performance'],
+        range: {
+            data: [310, 410, 380],
+            label: 'Range (miles)',
+        },
+        acceleration: {
+            data: [5.8, 4.5, 2.9],
+            label: '0-60 MPH (seconds)',
+        },
+        power: {
+            data: [340, 480, 620],
+            label: 'Horsepower',
+        }
+    };
+
+    const safetyData = {
+        labels: ['Frontal Crash', 'Side Crash', 'Rollover', 'Driver Assist', 'Pedestrian Safety'],
+        datasets: [{
+            label: 'Nissan Tekton',
+            data: [5, 5, 4.8, 5, 4.9],
+            fill: true,
+            backgroundColor: 'rgba(217, 119, 6, 0.2)',
+            borderColor: 'rgb(217, 119, 6)',
+            pointBackgroundColor: 'rgb(217, 119, 6)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgb(217, 119, 6)'
+        }, {
+            label: 'Luxury SUV Average',
+            data: [4.5, 4.6, 4.2, 4.0, 4.1],
+            fill: true,
+            backgroundColor: 'rgba(107, 114, 128, 0.2)',
+            borderColor: 'rgb(107, 114, 128)',
+            pointBackgroundColor: 'rgb(107, 114, 128)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgb(107, 114, 128)'
+        }]
+    };
+
+    let performanceChart;
+    let safetyChart;
+
+    function createPerformanceChart(metric) {
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        if (performanceChart) {
+            performanceChart.destroy();
+        }
+        performanceChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: performanceData.labels,
+                datasets: [{
+                    label: performanceData[metric].label,
+                    data: performanceData[metric].data,
+                    backgroundColor: ['rgba(217, 119, 6, 0.7)', 'rgba(217, 119, 6, 0.8)', 'rgba(217, 119, 6, 0.9)'],
+                    borderColor: ['rgb(217, 119, 6)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.x !== null) {
+                                    label += context.parsed.x;
+                                    if(metric === 'acceleration') label += 's';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: performanceData[metric].label,
+                            font: { size: 14 }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function createSafetyChart() {
+        const ctx = document.getElementById('safetyChart').getContext('2d');
+        if (safetyChart) {
+            safetyChart.destroy();
+        }
+        safetyChart = new Chart(ctx, {
+            type: 'radar',
+            data: safetyData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                elements: {
+                    line: {
+                        borderWidth: 3
+                    }
+                },
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: false
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 5,
+                        pointLabels: {
+                            font: {
+                                size: 14
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                }
+            }
+        });
+    }
+
+    const performanceButtons = document.querySelectorAll('.performance-btn');
+    performanceButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            performanceButtons.forEach(btn => {
+                btn.classList.remove('bg-amber-600', 'text-white');
+                btn.classList.add('bg-white', 'text-gray-700');
+            });
+            button.classList.add('bg-amber-600', 'text-white');
+            button.classList.remove('bg-white', 'text-gray-700');
+            createPerformanceChart(button.dataset.metric);
+        });
+    });
+
+    const techTabs = document.querySelectorAll('.tech-tab');
+    const techTabContents = document.querySelectorAll('.tech-tab-content');
+    techTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            techTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            techTabContents.forEach(content => {
+                content.classList.add('opacity-0', 'max-h-0');
+                content.classList.remove('opacity-100', 'max-h-screen');
+            });
+
+            const activeContent = document.getElementById(`tab-${tab.dataset.tab}`);
+            activeContent.classList.remove('opacity-0', 'max-h-0');
+            activeContent.classList.add('opacity-100', 'max-h-screen');
+        });
+    });
+
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('section');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').substring(1) === entry.target.id) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+        });
+    }, { threshold: 0.5 });
+
+    sections.forEach(section => {
+        observer.observe(section);
+    });
+
+    createPerformanceChart('range');
+    createSafetyChart();
+});
+</script>
+</body>
+</html>
+
