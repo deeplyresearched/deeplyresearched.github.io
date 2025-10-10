@@ -1,0 +1,559 @@
+<!-- Chosen Palette: Serene Neutrals -->
+<!-- Application Structure Plan: A single-page dashboard structure was chosen for user-friendliness. It starts with a high-level overview and device selector, allowing users to immediately focus on a specific product. This is followed by direct comparison charts for quick data analysis. Deeper-dive sections on key features and strategic concepts are presented next, allowing users to explore areas of interest without a rigid, linear flow. This structure prioritizes user-driven exploration over a static report format, making complex information digestible and easy to navigate. -->
+<!-- Visualization & Content Choices: 
+- Device Specs (Overview): Goal: Inform. Method: Tabbed content cards. Interaction: Clicking tabs to switch device views. Justification: Organizes dense specs cleanly. Method: JS state management.
+- Feature Comparison (Compare): Goal: Compare. Method: Grouped Bar Chart (Chart.js). Interaction: Tooltips on hover. Justification: Provides immediate visual comparison of key quantitative data. Library: Chart.js.
+- Key Concepts/Features (Deeper Dives): Goal: Inform/Explain. Method: Thematic text sections with clear headings and icons. Interaction: N/A (scrolling). Justification: Breaks down qualitative insights and strategic decisions into scannable, themed blocks for better comprehension. Method: HTML/Tailwind.
+-->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samsung 2025 Foldables: Z Fold 7 & Z Flip 7 Series Guide</title>
+    <meta name="description" content="Explore Samsung's 2025 Galaxy Z Fold 7, Z Flip 7 & Z Flip 7 FE. Discover radical thinness, FlexWindow, 200MP camera, DeX, and the sub-$900 foldable price point in this in-depth guide.">
+    <meta name="keywords" content="Samsung Foldables 2025, Galaxy Z Fold 7, Galaxy Z Flip 7, Galaxy Z Flip 7 FE, Foldable Phones, Samsung Galaxy Z Series, FlexWindow, 200MP Camera Phone, Samsung DeX, Affordable Foldable, Foldable Phone Comparison, Next-Gen Foldables, Mobile Tech 2025, Galaxy AI, Exynos 2500">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 40vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+        
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <header class="bg-white shadow-sm sticky top-0 z-20">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl md:text-3xl font-bold text-slate-900">Galaxy Z Series 7</h1>
+            <nav class="hidden md:flex flex-wrap items-center justify-center space-x-3 text-base lg:space-x-4 lg:text-lg">
+                <a href="#overview" class="font-medium text-slate-600 hover:text-slate-900">Overview</a>
+                <a href="#compare" class="font-medium text-slate-600 hover:text-slate-900">Compare</a>
+                <a href="#concepts" class="font-medium text-slate-600 hover:text-slate-900">Concepts</a>
+                <a href="#camera" class="font-medium text-slate-600 hover:text-slate-900">Cameras</a>
+                <a href="#design" class="font-medium text-slate-600 hover:text-slate-900">Design</a>
+                <a href="#performance" class="font-medium text-slate-600 hover:text-slate-900">Performance</a>
+                <a href="#productivity" class="font-medium text-slate-600 hover:text-slate-900">Productivity</a>
+                <a href="#software" class="font-medium text-slate-600 hover:text-slate-900">Software</a>
+                <a href="#battery" class="font-medium text-slate-600 hover:text-slate-900">Battery</a>
+                <a href="#strategy" class="font-medium text-slate-600 hover:text-slate-900">Strategy</a>
+                <a href="#verdict" class="font-medium text-slate-600 hover:text-slate-900">Verdict</a>
+            </nav>
+            <span class="md:hidden text-slate-500">July 2025</span>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+        
+        <section id="hero" class="text-center my-8 md:my-16">
+            <h1 class="text-4xl md:text-6xl font-extrabold text-slate-900 mb-4">The Future is Threefold.</h1>
+            <p class="text-lg md:text-xl text-slate-600 max-w-4xl mx-auto">An in-depth look at Samsung's groundbreaking 2025 lineup: the ultra-slim Z Fold 7, the hyper-functional Z Flip 7, and the category-defining Z Flip 7 FE. This report analyzes the design, performance, and strategic positioning of each device.</p>
+        </section>
+
+        <section id="overview" class="mb-16">
+            <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                <div class="flex flex-col md:flex-row justify-center items-center gap-4 mb-8" id="device-selector">
+                    <button data-device="fold7" class="device-btn bg-sky-800 text-white px-6 py-3 rounded-full font-bold text-lg w-full md:w-auto">Galaxy Z Fold 7</button>
+                    <button data-device="flip7" class="device-btn bg-slate-200 text-slate-800 px-6 py-3 rounded-full font-bold text-lg w-full md:w-auto">Galaxy Z Flip 7</button>
+                    <button data-device="flip7fe" class="device-btn bg-slate-200 text-slate-800 px-6 py-3 rounded-full font-bold text-lg w-full md:w-auto">Galaxy Z Flip 7 FE</button>
+                </div>
+
+                <div id="device-details">
+                </div>
+            </div>
+        </section>
+
+        <section id="compare" class="mb-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold">Head-to-Head Comparison</h2>
+                <p class="text-slate-600 mt-2">See how the new foldables stack up on key specifications.</p>
+            </div>
+            <div class="bg-white rounded-2xl shadow-lg p-4 md:p-8">
+                <div class="chart-container">
+                    <canvas id="specChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="innovations" class="mb-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold">Core Innovations</h2>
+                <p class="text-slate-600 mt-2 max-w-3xl mx-auto">This year isn't just an upgrade; it's a redefinition of what foldables can be, focusing on extreme portability, enhanced usability, and unprecedented accessibility.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-2xl shadow-lg text-center">
+                    <div class="text-4xl mb-3">📏</div>
+                    <h3 class="text-xl font-bold mb-2">Radical Thinness</h3>
+                    <p class="text-slate-600">The Z Fold 7's 4.2mm unfolded profile makes it one of the thinnest smartphones ever made.</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-lg text-center">
+                    <div class="text-4xl mb-3">🖥️</div>
+                    <h3 class="text-xl font-bold mb-2">The FlexWindow</h3>
+                    <p class="text-slate-600">The Z Flip 7's 4.1" cover screen runs full apps, transforming front-of-phone functionality.</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-lg text-center">
+                    <div class="text-4xl mb-3">💰</div>
+                    <h3 class="text-xl font-bold mb-2">Sub-$900 Foldable</h3>
+                    <p class="text-slate-600">The Z Flip 7 FE breaks a critical price barrier, making foldables a mainstream option.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="concepts" class="mb-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold">Key Concepts Explained</h2>
+                <p class="text-slate-600 mt-2 max-w-3xl mx-auto">Understanding the technology and strategy behind the features. These concepts define the user experience and market positioning of the new lineup.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold mb-3 text-slate-900">The FlexWindow Philosophy</h3>
+                    <p class="text-slate-600">The Z Flip 7's 4.1-inch cover screen isn't just bigger; it's a paradigm shift. The goal is to minimize the need to unfold the device for everyday tasks. By running full apps and enabling interactive AI with Gemini Live, the FlexWindow turns the front of the phone into a primary, quick-access interface, preserving battery and enhancing convenience.</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold mb-3 text-slate-900">Why No S Pen on Fold 7?</h3>
+                    <p class="text-slate-600">The removal of the S Pen was a deliberate, difficult trade-off. To achieve the radical 4.2mm thinness and 215g weight, the internal digitizer layer required for stylus input had to be eliminated. Samsung prioritized a mainstream, pocketable design over the niche power-user feature, signaling a strategic pivot for the Fold series.</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold mb-3 text-slate-900">The Fan Edition (FE) Strategy</h3>
+                    <p class="text-slate-600">The Z Flip 7 FE represents Samsung's most aggressive move to democratize foldables. By reusing the proven chassis and camera of the Flip 6 but with a more modest processor, they drastically cut the entry price. This makes foldable technology a direct competitor to traditional flagship "slab" phones for the first time.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="camera" class="mb-16 bg-white p-6 rounded-2xl shadow-lg">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-4xl font-bold">Camera Deep Dive</h2>
+                <p class="text-slate-600 mt-2">From a 200MP powerhouse to flagship value, the camera strategies are distinct.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
+                <div class="lg:col-span-3">
+                    <h3 class="text-2xl font-bold text-sky-800 mb-3">Z Fold 7: The 200MP Mainstream Flagship</h3>
+                    <p class="text-slate-600">This is the single biggest upgrade. By integrating the S25 Ultra's 200MP sensor, the Fold 7 sheds its reputation for having a compromised camera. This sensor enables incredible detail, advanced pixel binning for low-light performance, and high-resolution digital zoom. Paired with the ProVisual Engine AI, it's designed to be a true creative tool, finally putting the Fold's camera on par with the best in the market.</p>
+                </div>
+                <div class="lg:col-span-2 space-y-6">
+                    <div>
+                        <h4 class="text-xl font-bold text-rose-800 mb-2">Z Flip 7: Smart & Capable</h4>
+                        <p class="text-slate-600">The 50MP main sensor is a reliable performer, enhanced by AI. Features like Photo Assist and Portrait Studio leverage the powerful Exynos 2500 chip to deliver software-driven improvements, focusing on usability and social media-ready shots.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-xl font-bold text-slate-800 mb-2">Z Flip 7 FE: Unbeatable Value</h4>
+                        <p class="text-slate-600">Inheriting the flagship-grade 50MP sensor from the Z Flip 6 is the FE's killer feature. It offers a premium photography experience at a mid-range price, making it one of the best camera systems available for under $900.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="design" class="mb-16">
+             <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold">Design & Ergonomics</h2>
+                <p class="text-slate-600 mt-2">Focusing on thinner, lighter, and more usable form factors.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center"><span class="text-3xl mr-3">📏</span> The Quest for Thinness</h3>
+                    <p class="text-slate-600">The Z Fold 7's 4.2mm unfolded profile is its defining characteristic. This isn't just about numbers; it fundamentally changes how the device feels. It's no longer a bulky tool but a slim, premium device that competes with traditional smartphones on feel. This was achieved through a new hinge design and the aforementioned removal of the S Pen digitizer.</p>
+                </div>
+                 <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center"><span class="text-3xl mr-3">📺</span> More Usable Cover Screens</h3>
+                    <p class="text-slate-600">Both the Fold 7 and Flip 7 feature significant cover screen improvements. The Fold 7's move to a standard 21:9 aspect ratio makes it a fully functional one-handed smartphone when closed. The Flip 7's 4.1-inch FlexWindow is a testament to making the clamshell form factor more practical for quick interactions.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="performance" class="mb-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold">Performance & Processor Strategy</h2>
+                <p class="text-slate-600 mt-2 max-w-3xl mx-auto">A clear three-tiered approach to processing power, aligning chipsets with each device's target audience and price point.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold text-sky-800 mb-3">Fold 7: Snapdragon 8 Elite</h3>
+                    <p class="text-slate-600">The top-of-the-line choice. This custom-tuned chip prioritizes raw power and AI performance, essential for handling the massive 8.0-inch display, DeX, and the demanding 200MP camera's processing needs. It is the peak performance offering for the user who wants zero compromises.</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold text-rose-800 mb-3">Flip 7: Exynos 2500</h3>
+                    <p class="text-slate-600">Samsung's flagship in-house chip. Built on a 3nm process, it focuses on efficiency to support the Flip 7's larger 4,300mAh battery. While not as powerful as the Snapdragon Elite, it's designed to provide an excellent, all-day experience for mainstream users and handle all of Galaxy AI's features competently.</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">Flip 7 FE: Exynos 2400</h3>
+                    <p class="text-slate-600">A smart compromise. Using last year's flagship Exynos chip provides more than enough power for everyday tasks and the Flip 6's camera system. This choice is key to hitting the sub-$900 price, offering a smooth experience without the cost of the latest silicon.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="productivity" class="mb-16 bg-white p-6 rounded-2xl shadow-lg">
+            <div class="text-center">
+                <h2 class="text-3xl md:text-4xl font-bold">Productivity Unleashed: DeX on the Flip</h2>
+                <p class="text-slate-600 mt-2 max-w-3xl mx-auto">The addition of Samsung DeX to the Z Flip 7 is a game-changer for the clamshell category. It's no longer just a stylish phone; it's a portable workstation. By connecting to an external monitor, keyboard, and mouse, DeX provides a full desktop computing environment, perfect for on-the-go professionals who value both style and substance.</p>
+            </div>
+        </section>
+
+        <section id="software" class="mb-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold">One UI 8: Intelligence in Every Fold</h2>
+                <p class="text-slate-600 mt-2 max-w-3xl mx-auto">The software experience is tailored to amplify the unique advantages of each form factor, with Galaxy AI deeply integrated throughout.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4 text-slate-900">Fold 7: The Multitasking Master</h3>
+                    <p class="text-slate-600 mb-4">The massive 8.0-inch inner screen runs an enhanced version of One UI designed for productivity. A persistent, PC-like taskbar allows for instant app switching, while improved split-screen and drag-and-drop capabilities make moving text and images between apps seamless. Galaxy AI can even summarize content from two apps running side-by-side, creating a truly next-level multitasking experience.</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4 text-slate-900">Flip 7: The FlexWindow Experience</h3>
+                    <p class="text-slate-600 mb-4">The 4.1-inch cover screen is a hub of activity. New widgets like the "Now Bar" and "Brief" provide glanceable info. Users can now access a full QWERTY keyboard for quick replies without opening the phone. Deeper integration with Gemini Live allows for visual search and AI assistance directly from the cover screen, making it smarter and more independent than ever.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="battery" class="mb-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold">Battery & Charging: The Endurance Equation</h2>
+                <p class="text-slate-600 mt-2 max-w-3xl mx-auto">Each device's battery and charging capabilities are carefully balanced against its design, performance, and target user.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold text-sky-800 mb-3">Fold 7: A Necessary Compromise</h3>
+                    <p class="text-slate-600">The 4,400mAh battery and 25W charging are functional, but they represent the primary trade-off for achieving the ultra-slim design. For power users driving the large screen and elite processor, external power sources will be a consideration. The focus here is on form over all-day endurance.</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold text-rose-800 mb-3">Flip 7: All-Day Power, Finally</h3>
+                    <p class="text-slate-600">The substantial 4,300mAh battery is a direct response to years of user feedback. Combined with the power-efficient Exynos 2500 chip, the Flip 7 is designed to confidently last a full day of typical use, eliminating the battery anxiety that plagued earlier models and making it a far more reliable daily driver.</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">Flip 7 FE: Reliable & Balanced</h3>
+                    <p class="text-slate-600">While its 4,000mAh battery is the smallest, the FE's less demanding Exynos 2400 processor and standard 60Hz cover screen ensure it sips power. This balanced approach provides a dependable, full-day experience for mainstream users, further strengthening its value proposition.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="strategy" class="mb-16 bg-white p-6 rounded-2xl shadow-lg">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-4xl font-bold">Market Strategy: A Three-Pronged Attack</h2>
+                <p class="text-slate-600 mt-2 max-w-3xl mx-auto">The 2025 lineup is Samsung's most calculated move yet to dominate the foldable market and challenge the traditional smartphone landscape.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                <div>
+                    <h3 class="font-bold text-xl text-slate-900 mb-2">Target the Top End</h3>
+                    <p class="text-slate-600">The Z Fold 7 is positioned as a luxury "halo" product. Its goal is to compete with the highest-end iPhones and Androids on design and camera prowess, proving that a foldable can be the ultimate flagship without compromise.</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-xl text-slate-900 mb-2">Solidify the Mainstream</h3>
+                    <p class="text-slate-600">The Z Flip 7 aims to be the "default" foldable choice for the style-conscious consumer. By fixing key pain points like battery life and cover screen usability, Samsung intends to make it a compelling alternative to the standard iPhone.</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-xl text-slate-900 mb-2">Convert the Masses</h3>
+                    <p class="text-slate-600">The Z Flip 7 FE is the Trojan horse. By breaking the sub-$900 barrier, its mission is to intercept customers who would typically buy a non-folding flagship, offering them a taste of the future at a competitive price.</p>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="verdict" class="text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-2">Which Foldable is for You?</h2>
+            <p class="text-slate-600 mb-8 max-w-2xl mx-auto">Your choice depends on your priorities. Do you value the biggest screen and best camera, a stylish and practical clamshell, or the most accessible entry into the world of foldables?</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-sky-50 border-2 border-sky-200 p-6 rounded-2xl">
+                    <h3 class="font-bold text-xl text-sky-800 mb-3">Choose the Z Fold 7 if...</h3>
+                    <p class="text-slate-600">...you are a power user who demands the best camera, the largest screen for multitasking, and a device that makes a statement with its impossibly thin design.</p>
+                </div>
+                <div class="bg-rose-50 border-2 border-rose-200 p-6 rounded-2xl">
+                    <h3 class="font-bold text-xl text-rose-800 mb-3">Choose the Z Flip 7 if...</h3>
+                    <p class="text-slate-600">...you prioritize style, portability, and convenience. You want a full-featured flagship that fits in any pocket and has a highly functional cover screen and all-day battery life.</p>
+                </div>
+                <div class="bg-slate-50 border-2 border-slate-200 p-6 rounded-2xl">
+                    <h3 class="font-bold text-xl text-slate-800 mb-3">Choose the Z Flip 7 FE if...</h3>
+                    <p class="text-slate-600">...you've been curious about foldables but were waiting for the right price. You want a modern, stylish phone with a great camera without paying a premium price.</p>
+                </div>
+            </div>
+        </section>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+
+        
+    </main>
+    
+    <footer class="text-center py-8 mt-12 border-t">
+        <p class="text-slate-500">Analysis of Samsung's 2025 Foldable Lineup | Data sourced from internal strategy report.</p>
+    </footer>
+
+    <script>
+        const deviceData = {
+            fold7: {
+                title: 'Galaxy Z Fold 7',
+                color: 'sky',
+                tagline: 'The Pinnacle of Portability & Power',
+                description: 'The Z Fold 7 redefines the large-screen foldable by achieving an unprecedented 4.2mm thickness when unfolded and a weight of just 215g. It boasts a massive 8.0" internal screen and a highly usable 6.5" cover screen. The marquee feature is the integration of the S25 Ultra\'s 200MP camera, finally elevating the Fold to a true photography flagship. However, this slimness comes at the cost of the S Pen, which has been removed.',
+                specs: [
+                    { label: 'Inner Display', value: '8.0" Dynamic AMOLED 3X' },
+                    { label: 'Cover Display', value: '6.5" Dynamic AMOLED 3X' },
+                    { label: 'Thickness (Unfolded)', value: '4.2 mm' },
+                    { label: 'Weight', value: '215 g' },
+                    { label: 'Processor', value: 'Snapdragon 8 Elite' },
+                    { label: 'Main Camera', value: '200 MP (S25 Ultra sensor)' },
+                    { label: 'S Pen Support', value: 'No' },
+                    { label: 'Price', value: '$2,099' },
+                ]
+            },
+            flip7: {
+                title: 'Galaxy Z Flip 7',
+                color: 'rose',
+                tagline: 'The Ultimate Symbiosis of Style & Function',
+                description: 'The Z Flip 7 perfects the clamshell form factor with major usability upgrades. The cover screen grows to a massive 4.1", capable of running full applications and supporting Gemini Live for interactive AI. The battery is significantly increased to 4,300mAh, addressing a major pain point of previous generations. For the first time, it also supports Samsung DeX, turning the stylish device into a portable productivity tool.',
+                specs: [
+                    { label: 'Inner Display', value: '6.7" Dynamic AMOLED 3X' },
+                    { label: 'Cover Display', value: '4.1" Super AMOLED' },
+                    { label: 'Battery', value: '4,300 mAh' },
+                    { label: 'Processor', value: 'Exynos 2500' },
+                    { label: 'Main Camera', value: '50 MP' },
+                    { label: 'DeX Support', value: 'Yes' },
+                    { label: 'Price', value: '$1,199' },
+                ]
+            },
+            flip7fe: {
+                title: 'Galaxy Z Flip 7 FE',
+                color: 'slate',
+                tagline: 'The Foldable for Everyone',
+                description: 'The Z Flip 7 Fan Edition is Samsung\'s strategic move to bring foldables to the masses. It reuses the chassis and flagship-grade 50MP camera from the Z Flip 6, but makes smart compromises with an Exynos 2400 processor and a standard 60Hz cover screen. These choices allow it to hit a groundbreaking sub-$900 price point, directly competing with traditional flagship phones.',
+                specs: [
+                    { label: 'Inner Display', value: '6.7" Dynamic AMOLED 3X' },
+                    { label: 'Cover Display', value: '3.4" Super AMOLED (60Hz)' },
+                    { label: 'Battery', value: '4,000 mAh' },
+                    { label: 'Processor', value: 'Exynos 2400' },
+                    { label: 'Main Camera', value: '50 MP (Z Flip 6 sensor)' },
+                    { label: 'Price', value: '$899' },
+                ]
+            }
+        };
+
+        const deviceDetailsContainer = document.getElementById('device-details');
+        const deviceSelector = document.getElementById('device-selector');
+
+        function updateDeviceDetails(deviceName) {
+            const data = deviceData[deviceName];
+            
+            const colorMap = {
+                sky: { text: 'text-sky-800', bg: 'bg-sky-50', ring: 'ring-sky-200' },
+                rose: { text: 'text-rose-800', bg: 'bg-rose-50', ring: 'ring-rose-200' },
+                slate: { text: 'text-slate-800', bg: 'bg-slate-50', ring: 'ring-slate-200' }
+            };
+            const colors = colorMap[data.color];
+
+            let specsHtml = '';
+            data.specs.forEach(spec => {
+                specsHtml += `
+                    <div class="flex justify-between py-2 border-b border-slate-200">
+                        <span class="font-medium text-slate-600">${spec.label}</span>
+                        <span class="font-bold text-slate-900">${spec.value}</span>
+                    </div>
+                `;
+            });
+            
+            deviceDetailsContainer.innerHTML = `
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="text-3xl md:text-4xl font-bold ${colors.text} mb-2">${data.title}</h3>
+                        <p class="text-lg font-medium text-slate-500 mb-4">${data.tagline}</p>
+                        <p class="text-slate-600 leading-relaxed">${data.description}</p>
+                    </div>
+                    <div class="${colors.bg} p-6 rounded-2xl ring-2 ${colors.ring}">
+                        <h4 class="text-2xl font-bold mb-4 ${colors.text}">Key Specifications</h4>
+                        <div class="space-y-2">${specsHtml}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        deviceSelector.addEventListener('click', (e) => {
+            if (e.target.classList.contains('device-btn')) {
+                const selectedDevice = e.target.dataset.device;
+                
+                document.querySelectorAll('.device-btn').forEach(btn => {
+                    const deviceName = btn.dataset.device;
+                    const color = deviceData[deviceName].color;
+                    
+                    if (deviceName === selectedDevice) {
+                         btn.classList.remove('bg-slate-200', 'text-slate-800');
+                         if(color === 'sky') btn.classList.add('bg-sky-800', 'text-white');
+                         if(color === 'rose') btn.classList.add('bg-rose-800', 'text-white');
+                         if(color === 'slate') btn.classList.add('bg-slate-800', 'text-white');
+                    } else {
+                        btn.classList.add('bg-slate-200', 'text-slate-800');
+                        btn.classList.remove('bg-sky-800', 'bg-rose-800', 'bg-slate-800', 'text-white');
+                    }
+                });
+                
+                updateDeviceDetails(selectedDevice);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDeviceDetails('fold7');
+
+            const ctx = document.getElementById('specChart').getContext('2d');
+            const specChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Inner Screen (in)', 'Cover Screen (in)', 'Battery (mAh)', 'Weight (g)'],
+                    datasets: [
+                        {
+                            label: 'Z Fold 7',
+                            data: [8.0, 6.5, 4400, 215],
+                            backgroundColor: 'rgba(14, 116, 144, 0.7)',
+                            borderColor: 'rgba(14, 116, 144, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Z Flip 7',
+                            data: [6.7, 4.1, 4300, 187],
+                            backgroundColor: 'rgba(159, 18, 57, 0.7)',
+                            borderColor: 'rgba(159, 18, 57, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Z Flip 7 FE',
+                            data: [6.7, 3.4, 4000, 187],
+                            backgroundColor: 'rgba(51, 65, 85, 0.7)',
+                            borderColor: 'rgba(51, 65, 85, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Core Specification Comparison',
+                            font: {
+                                size: 18
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        let unit = '';
+                                        if (context.label.includes('Screen')) unit = '"';
+                                        if (context.label.includes('Battery')) unit = ' mAh';
+                                        if (context.label.includes('Weight')) unit = 'g';
+                                        label += context.parsed.y + unit;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
