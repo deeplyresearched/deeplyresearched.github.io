@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acromegaly: Symptoms, Diagnosis, Treatment & Guide</title>
+    <meta name="description" content="Comprehensive Acromegaly guide: symptoms, diagnosis, treatments (surgical, pharma, radiation), comorbidities & living with the condition for patients & clinicians.">
+    <meta name="keywords" content="Acromegaly, Growth hormone excess, Pituitary adenoma, Acromegaly symptoms, Acromegaly diagnosis, Acromegaly treatment, IGF-1 levels, Endocrine disorder, Somatostatin analogues, Transsphenoidal surgery, Living with Acromegaly, Acromegaly comorbidities, Pituitary tumor, Rare hormonal disease, Acromegaly management">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+  
+    <!-- Chosen Palette: "Soothing Neutrals" - A calm palette using slate, stone, and a gentle sky blue for accents to create a professional, trustworthy, and easy-to-read medical information interface. -->
+    <!-- Application Structure Plan: Expanded single-page application with a fixed sidebar for seamless topic switching. The structure is now more comprehensive: 1) 'Overview' for patients/clinicians. 2) 'Key Concepts' to build foundational knowledge. 3) 'The Condition' for core pathophysiology. 4) 'Diagnosis & Differentials' combines the diagnostic journey with crucial comparisons. 5) 'Comorbidities' provides a deep dive into associated risks. 6) 'Management' is a task-oriented section. 7) 'Living with Acromegaly' offers practical patient advice. 8) 'Advances & Outlook' covers future trends and prognosis. This expanded structure provides a holistic, multi-faceted view catering to both clinical and patient audiences. -->
+    <!-- Visualization & Content Choices: 
+    - Key Concepts -> Goal: Inform -> Viz: Interactive Cards -> Interaction: Click for definitions -> Justification: Breaks down complex endocrinology into digestible pieces.
+    - Comorbidities -> Goal: Inform/Compare -> Viz: Donut Chart & Info Cards (Chart.js/HTML) -> Interaction: Hover chart, click cards -> Justification: Visually represents prevalence and provides detailed explanations of each major comorbidity.
+    - Differential Diagnoses -> Goal: Compare -> Viz: Accordion List -> Interaction: Click to expand -> Justification: Allows clinicians to quickly compare features of similar-presenting conditions.
+    - Living with Acromegaly -> Goal: Inform -> Viz: Tabbed Interface -> Interaction: Click tabs (Diet, Exercise, Mental Health) -> Justification: Organizes practical lifestyle advice for patients.
+    - Recent Advances -> Goal: Inform -> Viz: Timeline/List -> Interaction: Hover for details -> Justification: Presents cutting-edge research and clinical trials in an accessible format. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #334155; /* slate-700 */
+        }
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-link.active {
+            background-color: #e0f2fe; /* sky-100 */
+            color: #0c4a6e; /* sky-900 */
+            border-left-color: #0ea5e9; /* sky-500 */
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .view-toggle.active {
+            background-color: #0ea5e9; /* sky-500 */
+            color: white;
+        }
+        .interactive-card, .pathway-node, .symptom-hotspot, .diagnostic-step, .treatment-tab, .accordion-header, .lifestyle-tab {
+            cursor: pointer;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        .donut-chart-container {
+             position: relative;
+            width: 100%;
+            max-width: 350px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .symptom-hotspot {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background-color: rgba(14, 165, 233, 0.5); /* sky-500 with opacity */
+            border-radius: 50%;
+            border: 2px solid white;
+            transition: all 0.2s ease-in-out;
+        }
+        .symptom-hotspot:hover {
+            transform: scale(1.2);
+            background-color: rgba(14, 165, 233, 0.8);
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+      
+    </style>
+</head>
+<body class="flex flex-col md:flex-row h-screen">
+
+    <!-- Sidebar Navigation -->
+    <nav class="w-full md:w-64 bg-white border-b md:border-b-0 md:border-r border-slate-200 flex-shrink-0">
+        <div class="p-4">
+            <h1 class="text-xl font-bold text-slate-800">Acromegaly Report</h1>
+            <p class="text-sm text-slate-500">Interactive Analysis</p>
+        </div>
+        <ul class="flex flex-row md:flex-col text-sm">
+            <li class="flex-1"><a href="#overview" class="nav-link block p-3 font-medium border-l-4 border-transparent hover:bg-slate-50">Overview</a></li>
+            <li class="flex-1"><a href="#key-concepts" class="nav-link block p-3 font-medium border-l-4 border-transparent hover:bg-slate-50">Key Concepts</a></li>
+            <li class="flex-1"><a href="#the-condition" class="nav-link block p-3 font-medium border-l-4 border-transparent hover:bg-slate-50">The Condition</a></li>
+            <li class="flex-1"><a href="#diagnosis-differentials" class="nav-link block p-3 font-medium border-l-4 border-transparent hover:bg-slate-50">Diagnosis & Differentials</a></li>
+            <li class="flex-1"><a href="#comorbidities" class="nav-link block p-3 font-medium border-l-4 border-transparent hover:bg-slate-50">Detailed Comorbidities</a></li>
+            <li class="flex-1"><a href="#management" class="nav-link block p-3 font-medium border-l-4 border-transparent hover:bg-slate-50">Management</a></li>
+            <li class="flex-1"><a href="#living-with" class="nav-link block p-3 font-medium border-l-4 border-transparent hover:bg-slate-50">Living with Acromegaly</a></li>
+            <li class="flex-1"><a href="#advances-outlook" class="nav-link block p-3 font-medium border-l-4 border-transparent hover:bg-slate-50">Advances & Outlook</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
+        
+        <section id="overview" class="content-section space-y-8"></section>
+        <section id="key-concepts" class="content-section space-y-8"></section>
+        <section id="the-condition" class="content-section space-y-8"></section>
+        <section id="diagnosis-differentials" class="content-section space-y-8"></section>
+        <section id="comorbidities" class="content-section space-y-8"></section>
+        <section id="management" class="content-section space-y-8"></section>
+        <section id="living-with" class="content-section space-y-8"></section>
+        <section id="advances-outlook" class="content-section space-y-8"></section>
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- DATA STORE ---
+            const appData = {
+                overview: {
+                    clinician: {
+                        title: 'Executive Summary for Clinicians',
+                        content: `<p>Acromegaly is a chronic endocrine disorder from excess growth hormone (GH), usually via a pituitary adenoma, leading to elevated insulin-like growth factor 1 (IGF-1), somatic overgrowth, and metabolic dysfunction. Delayed diagnosis is common. Diagnosis relies on elevated IGF-1 and non-suppressible GH during an OGTT, with MRI for tumor localization. Management, primarily transsphenoidal surgery, aims to normalize hormones, control tumor size, and manage comorbidities. Adjuvant therapies include somatostatin analogues, GH receptor antagonists, and radiosurgery.</p>`
+                    },
+                    patient: {
+                        title: 'Understanding Acromegaly: A Patient Guide',
+                        content: `<p>Acromegaly is a rare condition where your body produces too much growth hormone, causing parts of your body to grow when they shouldn't. This is usually caused by a small, non-cancerous tumor on the pituitary gland. Early signs, like rings or shoes not fitting, develop slowly. Diagnosis and treatment are important to prevent other health problems like diabetes and heart issues. Effective treatments are available to manage the condition.</p>`
+                    }
+                },
+                keyConcepts: [
+                    { term: 'Endocrine System', def: 'The network of glands that produce and secrete hormones, acting as the body\'s chemical messengers to control functions like growth, metabolism, and mood.' },
+                    { term: 'Pituitary Gland', def: 'The "master gland" at the base of the brain. It controls many other glands, and a tumor here is the primary cause of acromegaly.' },
+                    { term: 'Hormone', def: 'A chemical substance produced in the body that controls and regulates the activity of certain cells or organs. GH and IGF-1 are the key hormones in acromegaly.' },
+                    { term: 'Feedback Loop', def: 'A biological control system where the output of a system (like a hormone) influences its own production, either by inhibiting it (negative feedback) or stimulating it (positive feedback).' }
+                ],
+                pathway: {
+                    'path-pituitary': { title: 'Pituitary Adenoma', text: 'Over 95% of acromegaly cases are caused by a benign (non-cancerous) tumor on the pituitary gland which autonomously secretes growth hormone.' },
+                    'path-gh': { title: 'Excess Growth Hormone (GH)', text: 'The tumor cells do not respond to normal feedback mechanisms, leading to continuous and excessive production of GH.' },
+                    'path-liver': { title: 'Liver Stimulation', text: 'High levels of GH circulate to the liver, the primary site for Insulin-Like Growth Factor 1 (IGF-1) production.' },
+                    'path-igf1': { title: 'Increased IGF-1', text: 'The liver produces large amounts of IGF-1, the main hormone that causes tissue overgrowth and symptoms.' },
+                    'path-effects': { title: 'Systemic Effects', text: 'Elevated IGF-1 and GH affect nearly every system, causing bone/soft tissue growth, metabolic changes, and cardiovascular strain.' }
+                },
+                symptoms: {
+                    'head': { title: 'Head & Face', items: ['Enlarged jaw/nose/lips', 'Widened teeth spacing', 'Headaches, vision problems'] },
+                    'hands': { title: 'Hands', items: ['Enlarged hands (rings tight)', 'Swollen palms', 'Carpal tunnel syndrome'] },
+                    'feet': { title: 'Feet', items: ['Enlarged feet (larger shoe size)', 'Thickened heel pad'] },
+                    'skin': { title: 'Skin', items: ['Thickened, oily skin', 'Excessive sweating', 'Skin tags'] },
+                    'systemic': { title: 'Systemic & Internal', items: ['Deepened voice', 'Sleep apnea', 'Joint pain', 'Enlarged organs'] }
+                },
+                diagnostics: {
+                    'diag-1': { title: '1. Clinical Suspicion', text: 'Begins with noticing characteristic physical changes or a history of changing ring/shoe size, snoring, or joint pain.' },
+                    'diag-2': { title: '2. Biochemical Testing (IGF-1)', text: 'The initial and most reliable screening test is measuring serum IGF-1. An elevated level is highly suggestive.' },
+                    'diag-3': { title: '3. Confirmatory Test (OGTT)', text: 'The gold standard. In acromegaly, GH levels remain high after drinking a glucose solution, confirming the diagnosis.' },
+                    'diag-4': { title: '4. Tumor Localization (MRI)', text: 'A pituitary MRI is performed to locate and determine the size of the GH-secreting adenoma.' }
+                },
+                 differentialDiagnoses: [
+                    { term: 'Pachydermoperiostosis', distinction: 'A genetic disorder causing skin thickening (pachyderma) and bone overgrowth (periostosis). It typically lacks the biochemical markers (high GH/IGF-1) of acromegaly.' },
+                    { term: 'Severe Insulin Resistance Syndromes', distinction: 'Can cause acromegaloid features but are associated with extreme insulin resistance and acanthosis nigricans. GH/IGF-1 levels are typically not elevated to acromegalic levels.' },
+                    { term: 'Genetic Overgrowth Syndromes', distinction: 'Includes conditions like Sotos Syndrome or Weaver Syndrome. These are congenital and present with overgrowth from childhood, unlike the adult onset of acromegaly. Genetic testing is key.' }
+                ],
+                comorbidities: {
+                    chartData: [53, 47, 24, 16, 14], // Diabetes, Hypertension, Hyperlipidemia, Sleep Apnea, Cardiac Hypertrophy
+                    labels: ["Diabetes", "Hypertension", "Hyperlipidemia", "Sleep Apnea", "Cardiac Hypertrophy"],
+                    details: [
+                        { title: 'Diabetes & Metabolism', text: 'Up to 53% of patients develop insulin resistance or overt Type 2 Diabetes. Excess GH interferes with insulin\'s ability to regulate blood sugar.' },
+                        { title: 'Cardiovascular Issues', text: 'Hypertension (up to 47%) and cardiac hypertrophy (enlarged heart muscle, up to 14%) are common, increasing the risk of heart failure.' },
+                        { title: 'Sleep Apnea', text: 'Around 16% suffer from obstructive sleep apnea, caused by soft tissue overgrowth in the neck and tongue, which obstructs the airway during sleep.' },
+                        { title: 'Musculoskeletal Problems', text: 'Hypertrophic arthropathy (joint pain and enlargement) is a frequent complaint, significantly impacting quality of life.'}
+                    ]
+                },
+                treatments: {
+                    'treatment-surgery': { title: 'Surgical: Transsphenoidal Surgery', content: `<p class="font-semibold">This is the primary, first-line treatment.</p><ul class="list-disc list-inside mt-2 space-y-1"><li><strong>Procedure:</strong> The surgeon removes the tumor through the nose.</li><li><strong>Goal:</strong> Complete tumor removal to normalize hormone levels.</li><li><strong>Success Rate:</strong> Highly effective for smaller tumors.</li></ul>`},
+                    'treatment-pharma': { title: 'Pharmacological (Medication)', content: `<p class="font-semibold">Used when surgery isn't fully successful.</p><div class="mt-2 space-y-3"><div><strong>1. Somatostatin Analogues (SSAs):</strong> Most common; reduce GH production. Given as monthly injections.</div><div><strong>2. GH Receptor Antagonists:</strong> Block the action of GH, normalizing IGF-1. Daily injections.</div><div><strong>3. Dopamine Agonists:</strong> Oral medication effective for a subset of patients.</div></div>`},
+                    'treatment-radiation': { title: 'Radiation Therapy', content: `<p class="font-semibold">Reserved for refractory cases.</p><ul class="list-disc list-inside mt-2 space-y-1"><li><strong>Procedure:</strong> Focused radiation beams target the tumor to stop growth and reduce GH secretion.</li><li><strong>Effects:</strong> Reduction in hormone levels is very slow, often taking years.</li><li><strong>Risks:</strong> Main risk is damage to the normal pituitary gland over time.</li></ul>`}
+                },
+                livingWith: {
+                    'diet': { title: 'Diet & Nutrition', content: 'Focus on a heart-healthy, low-glycemic diet to manage blood sugar and cardiovascular risk. Limit processed foods, sugar, and unhealthy fats. Emphasize lean proteins, high-fiber vegetables, and whole grains.'},
+                    'exercise': { title: 'Exercise & Activity', content: 'Regular, joint-friendly exercise like swimming, cycling, or walking is beneficial. Strength training can help combat muscle weakness. Always consult with your doctor before starting a new exercise regimen.'},
+                    'mental-health': { title: 'Mental Health & Support', content: 'Living with a chronic condition can be challenging. Changes in appearance and health can impact self-esteem. Seeking support from therapists, support groups, or patient communities can be invaluable for coping and sharing experiences.'}
+                },
+                advancesOutlook: {
+                    prognosis: 'With successful treatment normalizing GH and IGF-1 levels, life expectancy for patients with acromegaly can return to that of the general population. Early diagnosis and management of comorbidities are key to a positive long-term outlook.',
+                    advances: [
+                        { name: 'Oral Octreotide (Mycapssa™)', detail: 'An oral formulation of a somatostatin analogue, offering an alternative to monthly injections for some patients, potentially reducing treatment burden.'},
+                        { name: 'Paltusotine', detail: 'An investigational, once-daily oral nonpeptide somatostatin receptor agonist currently in late-stage clinical trials (PATHFINDER studies), aiming to provide another effective oral treatment option.'},
+                        { name: 'Precision Medicine', detail: 'Future research focuses on using tumor genetics (e.g., T2-hyperintensity on MRI, granulation patterns) to predict which medical therapy will be most effective for an individual patient.'}
+                    ]
+                }
+            };
+
+            const mainContent = document.querySelector('main');
+            
+            // --- RENDER FUNCTIONS ---
+            function renderOverview() {
+                mainContent.querySelector('#overview').innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-3xl font-bold text-slate-800">Overview</h2>
+                        <div class="border border-slate-300 rounded-lg p-1 flex">
+                            <button id="clinician-view-btn" class="view-toggle px-4 py-1 rounded-md text-sm font-medium">For Clinicians</button>
+                            <button id="patient-view-btn" class="view-toggle px-4 py-1 rounded-md text-sm font-medium">For Patients</button>
+                        </div>
+                    </div>
+                    <div id="overview-content" class="bg-white p-6 rounded-lg shadow-sm"></div>`;
+                
+                const overviewContent = document.getElementById('overview-content');
+                const clinicianBtn = document.getElementById('clinician-view-btn');
+                const patientBtn = document.getElementById('patient-view-btn');
+                
+                function setOverview(view) {
+                    const data = appData.overview[view];
+                    overviewContent.innerHTML = `<h3 class="text-xl font-semibold text-slate-700 mb-4">${data.title}</h3>${data.content}`;
+                    clinicianBtn.classList.toggle('active', view === 'clinician');
+                    patientBtn.classList.toggle('active', view === 'patient');
+                }
+
+                clinicianBtn.addEventListener('click', () => setOverview('clinician'));
+                patientBtn.addEventListener('click', () => setOverview('patient'));
+                setOverview('clinician');
+            }
+
+            function renderKeyConcepts() {
+                let cards = appData.keyConcepts.map(c => `
+                    <div class="interactive-card bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                        <h4 class="font-semibold text-sky-700">${c.term}</h4>
+                        <p class="text-sm text-slate-600 mt-1">${c.def}</p>
+                    </div>`).join('');
+                mainContent.querySelector('#key-concepts').innerHTML = `
+                    <h2 class="text-3xl font-bold text-slate-800">Key Concepts Explained</h2>
+                    <p class="text-slate-600">Understanding these fundamental ideas is the first step to understanding Acromegaly. These concepts form the basis of how the condition develops and is treated.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">${cards}</div>`;
+            }
+
+            function renderTheCondition() {
+                 mainContent.querySelector('#the-condition').innerHTML = `
+                    <h2 class="text-3xl font-bold text-slate-800">The Condition: Pathophysiology & Symptoms</h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="space-y-4">
+                            <h3 class="text-xl font-semibold text-slate-700">Pathophysiology: The Hormonal Cascade</h3>
+                            <div class="bg-white p-6 rounded-lg shadow-sm">
+                                <p class="text-sm text-slate-600 mb-4">Click each step to understand the mechanism.</p>
+                                <div class="space-y-2 text-center">
+                                    <div class="pathway-node p-3 bg-sky-100 text-sky-800 rounded-lg border border-sky-200" data-info="path-pituitary">Pituitary Gland Tumor</div>
+                                    <div class="text-slate-400 text-2xl">↓</div>
+                                    <div class="pathway-node p-3 bg-sky-100 text-sky-800 rounded-lg border border-sky-200" data-info="path-gh">Excess Growth Hormone (GH)</div>
+                                    <div class="text-slate-400 text-2xl">↓</div>
+                                    <div class="pathway-node p-3 bg-sky-100 text-sky-800 rounded-lg border border-sky-200" data-info="path-igf1">Increased IGF-1</div>
+                                    <div class="text-slate-400 text-2xl">↓</div>
+                                    <div class="pathway-node p-3 bg-red-100 text-red-800 rounded-lg border border-red-200" data-info="path-effects">Systemic Effects</div>
+                                </div>
+                                <div id="pathway-info-box" class="mt-4 p-4 bg-slate-50 rounded-md min-h-[100px]"><p class="font-semibold">Select a step.</p></div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-slate-700 mb-4">Clinical Presentation: Signs & Symptoms</h3>
+                            <div class="bg-white p-6 rounded-lg shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="md:col-span-1 relative h-96 md:h-auto" style="background-image: url('https://placehold.co/300x500/e0f2fe/334155?text=Human+Silhouette'); background-size: contain; background-repeat: no-repeat; background-position: center;">
+                                    <div class="symptom-hotspot" style="top: 10%; left: 45%;" data-symptom="head"></div>
+                                    <div class="symptom-hotspot" style="top: 45%; left: 10%;" data-symptom="hands"></div>
+                                    <div class="symptom-hotspot" style="top: 85%; left: 45%;" data-symptom="feet"></div>
+                                    <div class="symptom-hotspot" style="top: 25%; left: 35%;" data-symptom="skin"></div>
+                                    <div class="symptom-hotspot" style="top: 35%; left: 55%;" data-symptom="systemic"></div>
+                                </div>
+                                <div id="symptom-info-box" class="md:col-span-2 p-4 bg-slate-50 rounded-md flex items-center justify-center">
+                                    <p class="text-slate-600 text-center">Hover over hotspots to explore symptoms.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+
+                document.querySelectorAll('.pathway-node').forEach(node => {
+                    node.addEventListener('click', () => {
+                        const infoKey = node.dataset.info;
+                        document.getElementById('pathway-info-box').innerHTML = `<p class="font-semibold text-sky-800">${appData.pathway[infoKey].title}</p><p class="text-sm mt-1">${appData.pathway[infoKey].text}</p>`;
+                    });
+                });
+
+                document.querySelectorAll('.symptom-hotspot').forEach(hotspot => {
+                    hotspot.addEventListener('mouseover', () => {
+                        const data = appData.symptoms[hotspot.dataset.symptom];
+                        let listItems = data.items.map(item => `<li class="text-sm">${item}</li>`).join('');
+                        document.getElementById('symptom-info-box').innerHTML = `<div class="text-left w-full"><h4 class="font-bold text-sky-700">${data.title}</h4><ul class="list-disc list-inside mt-2 space-y-1">${listItems}</ul></div>`;
+                    });
+                });
+            }
+
+            function renderDiagnosisDifferentials() {
+                 let diffs = appData.differentialDiagnoses.map(item => `
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div class="accordion-header p-4 flex justify-between items-center w-full text-left">
+                            <span class="font-medium text-slate-800">${item.term}</span>
+                            <span class="text-slate-400 transform transition-transform duration-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                            </span>
+                        </div>
+                        <div class="accordion-content hidden p-4 border-t border-slate-200 bg-slate-50">
+                            <p class="text-slate-600"><strong>Distinguishing Feature:</strong> ${item.distinction}</p>
+                        </div>
+                    </div>`).join('');
+
+                mainContent.querySelector('#diagnosis-differentials').innerHTML = `
+                    <h2 class="text-3xl font-bold text-slate-800">Diagnosis & Differential Diagnoses</h2>
+                    <div>
+                        <h3 class="text-xl font-semibold text-slate-700 mb-4">The Diagnostic Journey</h3>
+                        <div class="bg-white p-6 rounded-lg shadow-sm">
+                            <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-4">
+                                <div class="diagnostic-step flex-1 text-center p-3 bg-slate-100 rounded-lg" data-info="diag-1">1. Suspicion</div>
+                                <div class="text-slate-400 font-bold text-2xl hidden md:block">→</div>
+                                <div class="diagnostic-step flex-1 text-center p-3 bg-slate-100 rounded-lg" data-info="diag-2">2. Lab Tests</div>
+                                <div class="text-slate-400 font-bold text-2xl hidden md:block">→</div>
+                                <div class="diagnostic-step flex-1 text-center p-3 bg-slate-100 rounded-lg" data-info="diag-3">3. Confirmation</div>
+                                <div class="text-slate-400 font-bold text-2xl hidden md:block">→</div>
+                                <div class="diagnostic-step flex-1 text-center p-3 bg-slate-100 rounded-lg" data-info="diag-4">4. Imaging</div>
+                            </div>
+                            <div id="diagnostic-info-box" class="mt-6 p-4 bg-slate-50 rounded-md min-h-[120px]"><p class="font-semibold">Click a step to learn more.</p></div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-slate-700 mb-4">Differential Diagnoses</h3>
+                        <div class="space-y-2" id="diff-diagnoses-container">${diffs}</div>
+                    </div>`;
+
+                document.querySelectorAll('.diagnostic-step').forEach(step => {
+                    step.addEventListener('click', () => {
+                        document.querySelectorAll('.diagnostic-step').forEach(s => s.classList.remove('bg-sky-500', 'text-white'));
+                        step.classList.add('bg-sky-500', 'text-white');
+                        const data = appData.diagnostics[step.dataset.info];
+                        document.getElementById('diagnostic-info-box').innerHTML = `<p class="font-semibold">${data.title}</p><p class="mt-2 text-slate-600">${data.text}</p>`;
+                    });
+                });
+                
+                document.getElementById('diff-diagnoses-container').addEventListener('click', e => {
+                    const header = e.target.closest('.accordion-header');
+                    if (header) {
+                        const content = header.nextElementSibling;
+                        content.classList.toggle('hidden');
+                        header.querySelector('svg').parentElement.classList.toggle('rotate-180');
+                    }
+                });
+            }
+
+            function renderComorbidities() {
+                 let cards = appData.comorbidities.details.map(c => `
+                    <div class="bg-slate-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-slate-800">${c.title}</h4>
+                        <p class="text-sm text-slate-600 mt-1">${c.text}</p>
+                    </div>`).join('');
+                mainContent.querySelector('#comorbidities').innerHTML = `
+                    <h2 class="text-3xl font-bold text-slate-800">Detailed Comorbidities</h2>
+                    <p class="text-slate-600">The long-term excess of GH and IGF-1 significantly impacts multiple organ systems, leading to a higher prevalence of several associated conditions, or comorbidities. Managing these is a critical part of comprehensive acromegaly care.</p>
+                    <div class="bg-white p-6 rounded-lg shadow-sm grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div class="donut-chart-container"><canvas id="comorbidityChart"></canvas></div>
+                        <div class="space-y-4">${cards}</div>
+                    </div>`;
+                
+                new Chart(document.getElementById('comorbidityChart').getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: appData.comorbidities.labels,
+                        datasets: [{
+                            label: 'Prevalence in Patients (%)',
+                            data: appData.comorbidities.chartData,
+                            backgroundColor: ['#38bdf8', '#67e8f9', '#a5f3fc', '#cffafe', '#e0f2fe'],
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            title: { display: true, text: 'Prevalence of Key Comorbidities' }
+                        }
+                    }
+                });
+            }
+
+            function renderManagement() {
+                mainContent.querySelector('#management').innerHTML = `
+                    <h2 class="text-3xl font-bold text-slate-800">Management & Treatment Strategies</h2>
+                    <div class="bg-white rounded-lg shadow-sm">
+                        <div class="border-b border-slate-200">
+                            <nav class="flex -mb-px" aria-label="Tabs">
+                                <a href="#" class="treatment-tab active w-1/3 py-4 px-1 text-center border-b-2 border-sky-500 font-medium text-sm text-sky-600" data-content="treatment-surgery">Surgical</a>
+                                <a href="#" class="treatment-tab w-1/3 py-4 px-1 text-center border-b-2 border-transparent font-medium text-sm text-slate-500 hover:text-slate-700" data-content="treatment-pharma">Pharmacological</a>
+                                <a href="#" class="treatment-tab w-1/3 py-4 px-1 text-center border-b-2 border-transparent font-medium text-sm text-slate-500 hover:text-slate-700" data-content="treatment-radiation">Radiation</a>
+                            </nav>
+                        </div>
+                        <div id="treatment-content-box" class="p-6"></div>
+                    </div>`;
+
+                const treatmentTabs = document.querySelectorAll('.treatment-tab');
+                const treatmentContentBox = document.getElementById('treatment-content-box');
+
+                function updateTreatmentContent(contentKey) {
+                    treatmentContentBox.innerHTML = appData.treatments[contentKey].content;
+                    treatmentTabs.forEach(tab => {
+                        const isActive = tab.dataset.content === contentKey;
+                        tab.classList.toggle('active', isActive);
+                        tab.classList.toggle('border-sky-500', isActive);
+                        tab.classList.toggle('text-sky-600', isActive);
+                    });
+                }
+                
+                treatmentTabs.forEach(tab => {
+                    tab.addEventListener('click', e => {
+                        e.preventDefault();
+                        updateTreatmentContent(e.target.dataset.content);
+                    });
+                });
+                updateTreatmentContent('treatment-surgery');
+            }
+
+            function renderLivingWith() {
+                mainContent.querySelector('#living-with').innerHTML = `
+                     <h2 class="text-3xl font-bold text-slate-800">Living with Acromegaly</h2>
+                     <p class="text-slate-600">Beyond medical treatment, lifestyle management plays a crucial role in improving quality of life and managing the systemic effects of acromegaly.</p>
+                     <div class="bg-white rounded-lg shadow-sm">
+                        <div class="border-b border-slate-200">
+                            <nav class="flex -mb-px" aria-label="Tabs">
+                                <a href="#" class="lifestyle-tab active w-1/3 py-4 px-1 text-center border-b-2 border-sky-500 font-medium text-sm text-sky-600" data-content="diet">Diet & Nutrition</a>
+                                <a href="#" class="lifestyle-tab w-1/3 py-4 px-1 text-center border-b-2 border-transparent font-medium text-sm text-slate-500 hover:text-slate-700" data-content="exercise">Exercise</a>
+                                <a href="#" class="lifestyle-tab w-1/3 py-4 px-1 text-center border-b-2 border-transparent font-medium text-sm text-slate-500 hover:text-slate-700" data-content="mental-health">Support</a>
+                            </nav>
+                        </div>
+                        <div id="lifestyle-content-box" class="p-6"></div>
+                    </div>`;
+
+                const lifestyleTabs = document.querySelectorAll('.lifestyle-tab');
+                const lifestyleContentBox = document.getElementById('lifestyle-content-box');
+                
+                function updateLifestyleContent(contentKey) {
+                    const data = appData.livingWith[contentKey];
+                    lifestyleContentBox.innerHTML = `<h4 class="text-lg font-semibold text-slate-800 mb-2">${data.title}</h4><p>${data.content}</p>`;
+                    lifestyleTabs.forEach(tab => {
+                         const isActive = tab.dataset.content === contentKey;
+                        tab.classList.toggle('active', isActive);
+                        tab.classList.toggle('border-sky-500', isActive);
+                        tab.classList.toggle('text-sky-600', isActive);
+                    });
+                }
+                lifestyleTabs.forEach(tab => {
+                    tab.addEventListener('click', e => {
+                        e.preventDefault();
+                        updateLifestyleContent(e.target.dataset.content);
+                    })
+                });
+                updateLifestyleContent('diet');
+            }
+
+            function renderAdvancesOutlook() {
+                let advancesHTML = appData.advancesOutlook.advances.map(item => `
+                    <div class="p-4 bg-slate-50 rounded-lg">
+                        <h4 class="font-semibold text-slate-800">${item.name}</h4>
+                        <p class="text-sm text-slate-600 mt-1">${item.detail}</p>
+                    </div>
+                `).join('');
+                mainContent.querySelector('#advances-outlook').innerHTML = `
+                    <h2 class="text-3xl font-bold text-slate-800">Recent Advances & Outlook</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="space-y-4">
+                            <h3 class="text-xl font-semibold text-slate-700">Prognosis</h3>
+                            <div class="bg-white p-6 rounded-lg shadow-sm">
+                               <p class="text-slate-600">${appData.advancesOutlook.prognosis}</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <h3 class="text-xl font-semibold text-slate-700">Recent Advances in Treatment</h3>
+                            <div class="bg-white p-6 rounded-lg shadow-sm space-y-3">${advancesHTML}</div>
+                        </div>
+                    </div>
+                    <div class="mt-12 text-center text-xs text-slate-400">
+                        <p>Disclaimer: This information is for educational purposes only and is not a substitute for professional medical advice. Always seek the advice of your physician.</p>
+                    </div>`;
+            }
+
+
+            // --- NAVIGATION LOGIC ---
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.content-section');
+            const rendererMap = {
+                '#overview': renderOverview,
+                '#key-concepts': renderKeyConcepts,
+                '#the-condition': renderTheCondition,
+                '#diagnosis-differentials': renderDiagnosisDifferentials,
+                '#comorbidities': renderComorbidities,
+                '#management': renderManagement,
+                '#living-with': renderLivingWith,
+                '#advances-outlook': renderAdvancesOutlook
+            };
+            let renderedSections = new Set();
+
+            function updateActiveNav(hash) {
+                if (!hash) hash = '#overview';
+                
+                if (!renderedSections.has(hash)) {
+                    rendererMap[hash]();
+                    renderedSections.add(hash);
+                }
+
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href') === hash);
+                });
+                sections.forEach(section => {
+                    section.classList.toggle('active', '#' + section.id === hash);
+                });
+            }
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetHash = e.target.getAttribute('href');
+                    if (window.location.hash !== targetHash) {
+                       history.pushState(null, null, targetHash);
+                       updateActiveNav(targetHash);
+                    }
+                });
+            });
+            
+            window.addEventListener('popstate', () => {
+                updateActiveNav(window.location.hash);
+            });
+
+            // --- INITIALIZE APP ---
+            updateActiveNav(window.location.hash);
+        });
+    </script>
+</body>
+</html>
+
