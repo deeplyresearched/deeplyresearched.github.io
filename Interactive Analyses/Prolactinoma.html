@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prolactinoma: Symptoms, Diagnosis & Treatment Guide</title>
+    <meta name="description" content="Explore our comprehensive, interactive guide on Prolactinoma. Understand symptoms, diagnosis, and advanced treatment options for clinicians & patients.">
+    <meta name="keywords" content="Prolactinoma, Pituitary tumor, Hyperprolactinemia, Prolactinoma symptoms, Prolactinoma treatment, Dopamine agonists, Cabergoline, Bromocriptine, Pituitary MRI, Endocrine disorder, Prolactinoma diagnosis, Pituitary gland, Hormone disorder, Infertility, Galactorrhea">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+  
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The application is structured around two primary user journeys: "Clinician View" and "Patient View," accessible via a main tabbed navigation. This segmentation allows each audience to access tailored information without being overwhelmed by irrelevant content. An "Overview" tab serves as a universal entry point. This structure was chosen over a linear report format to enhance usability and facilitate non-linear exploration of a complex medical topic. Key interactions include tabbed navigation, accordions for dense information, and dynamic charts to visualize data, making the content more digestible and engaging. -->
+    <!-- Visualization & Content Choices: 
+        - Epidemiology: Report data on prevalence is presented as a Bar Chart (Chart.js) to visually compare demographics (Goal: Compare). Interaction: Tooltips on hover. Justification: More intuitive than a table for grasping relative prevalence.
+        - Pathophysiology: A complex biological process is broken down into a simplified visual diagram using HTML/CSS (Goal: Organize). Interaction: Accordion panels reveal detailed text. Justification: Avoids a "wall of text" and simplifies a difficult concept.
+        - Clinical Presentation: Symptoms are organized into columns by gender with icons (Goal: Compare). Interaction: Buttons to filter by type. Justification: Allows for quick comparison and filtering based on clinical query.
+        - Diagnostic Workup: Presented as a clickable flowchart using HTML/CSS (Goal: Organize). Interaction: Clicking a step highlights it and shows details. Justification: Mirrors the clinical decision-making process.
+        - Management: Organized into tabs (Pharmacological, Surgical, etc.) (Goal: Organize). Interaction: Tab clicks switch content. Justification: Cleanly separates distinct treatment modalities.
+        - FAQs: An accordion is used for the FAQ section (Goal: Inform). Interaction: Clicking questions reveals answers. Justification: Standard, user-friendly pattern for Q&A content.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            background-color: #F8F7F4; /* Warm neutral background */
+            color: #4A4A4A;
+            font-family: 'Inter', sans-serif;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        .tab.active {
+            border-color: #3B82F6;
+            color: #3B82F6;
+            font-weight: 600;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+        .accordion-content.open {
+            max-height: 1000px; /* Arbitrary large value */
+        }
+        .flowchart-step {
+            transition: all 0.2s ease-in-out;
+        }
+        .flowchart-step.active {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+            border-color: #3B82F6;
+        }
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800">Comprehensive Report on Prolactinoma</h1>
+            <p class="mt-2 text-lg text-gray-600">An interactive resource for clinicians and patients.</p>
+        </header>
+
+        <nav class="flex justify-center border-b border-gray-200 mb-8 space-x-4 sm:space-x-8">
+            <button data-tab="overview" class="tab active text-sm sm:text-base py-4 px-2 sm:px-4 border-b-2 border-transparent hover:border-blue-500 hover:text-blue-500 transition-colors">Overview</button>
+            <button data-tab="clinician" class="tab text-sm sm:text-base py-4 px-2 sm:px-4 border-b-2 border-transparent hover:border-blue-500 hover:text-blue-500 transition-colors">For Clinicians</button>
+            <button data-tab="patient" class="tab text-sm sm:text-base py-4 px-2 sm:px-4 border-b-2 border-transparent hover:border-blue-500 hover:text-blue-500 transition-colors">For Patients</button>
+        </nav>
+
+        <main id="content-container">
+            
+            <section id="overview" class="content-section space-y-8">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Executive Summary</h2>
+                    <p class="text-gray-700 leading-relaxed">A prolactinoma is the most common type of hormone-producing tumor of the pituitary gland. These tumors are benign adenomas, meaning they are not cancerous. Their clinical significance arises from their potential to secrete excess prolactin and, in the case of larger tumors (macroadenomas), to exert mass effects on surrounding structures like the optic chiasm.</p>
+                    <p class="text-gray-700 leading-relaxed mt-4">The clinical presentation is diverse, largely dependent on patient sex and tumor size. Women frequently present with galactorrhea, amenorrhea, and infertility, while men often present later with symptoms of hypogonadism, erectile dysfunction, or mass effects such as headaches and visual disturbances. Diagnosis is established through measurement of serum prolactin levels and confirmed with magnetic resonance imaging (MRI) of the pituitary. The cornerstone of management is medical therapy with dopamine agonists, which are highly effective in normalizing prolactin levels and reducing tumor size. Surgical intervention is reserved for cases of medication intolerance, resistance, or acute neurological compromise.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Introduction for the General Public</h2>
+                    <p class="text-gray-700 leading-relaxed">Imagine your body's hormone control center is like an orchestra conductor—this is the pituitary gland. A prolactinoma is like one musician in the orchestra (a group of cells) deciding to play its instrument (produce the hormone prolactin) too loudly and out of turn. Prolactin is a hormone normally responsible for milk production after childbirth. When there's too much of it, it can disrupt the body's normal hormonal rhythms.</p>
+                    <p class="text-gray-700 leading-relaxed mt-4">This is important because these hormonal disruptions can cause noticeable and concerning symptoms. For women, this might include unexpected breast milk production, irregular or absent periods, and difficulty getting pregnant. For men, it might lead to a reduced sex drive or erectile dysfunction. If the group of cells grows large, it can press on nearby structures in the brain, causing headaches or vision problems. The good news is that prolactinomas are not cancer and are highly treatable, usually with medication.</p>
+                </div>
+            </section>
+
+            <section id="clinician" class="content-section hidden space-y-8">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Epidemiology</h2>
+                    <p class="mb-4 text-gray-700">Prolactinomas are the most prevalent hormone-secreting pituitary tumors, accounting for approximately 40% of all cases. The overall prevalence is estimated to be around 10-50 per 100,000 people. There is a notable sex difference, with a higher incidence in women, particularly between the ages of 20 and 50. Macroadenomas ($ \ge 10 $ mm) are more commonly diagnosed in men.</p>
+                    <div class="chart-container">
+                        <canvas id="epidemiologyChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                     <h2 class="text-2xl font-bold text-gray-800 mb-4">Pathophysiology</h2>
+                     <p class="mb-4 text-gray-700">The primary mechanism is the autonomous overproduction of prolactin by lactotroph cells in a benign monoclonal adenoma. Normally, prolactin secretion is under tonic inhibitory control by dopamine released from the hypothalamus. In prolactinomas, this regulation is disrupted. Genetic factors, such as mutations in the MEN1 gene, are implicated in a small subset of familial cases.</p>
+                    <div class="border border-gray-200 rounded-lg p-4 mt-4">
+                        <div class="accordion-header flex justify-between items-center cursor-pointer">
+                            <h3 class="font-semibold text-lg text-blue-600">Cellular Mechanism Details</h3>
+                            <span class="text-blue-600 text-2xl transform transition-transform duration-300">&darr;</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p class="text-gray-700 mt-2">At the cellular level, lactotroph adenoma cells exhibit a decreased sensitivity to the inhibitory effects of dopamine, potentially due to reduced dopamine D2 receptor (D2R) density or downstream signaling defects. This leads to unchecked cell proliferation and hormone synthesis. Estrogen can promote lactotroph hyperplasia, which may explain the higher prevalence of microadenomas in premenopausal women. Somatic mutations, though rare, can also contribute to tumorigenesis.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Clinical Presentation & Symptoms</h2>
+                     <p class="mb-4 text-gray-700">Presentation varies significantly based on sex, menopausal status, and tumor size. The primary effects are due to hyperprolactinemia-induced hypogonadism and, for macroadenomas, mass effect.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h3 class="font-bold text-xl mb-3 text-center">In Women</h3>
+                            <ul class="space-y-2 text-gray-700">
+                                <li class="flex items-center"><span class="mr-2">🚺</span>Amenorrhea or Oligomenorrhea</li>
+                                <li class="flex items-center"><span class="mr-2">💧</span>Galactorrhea (spontaneous or expressed)</li>
+                                <li class="flex items-center"><span class="mr-2">💔</span>Infertility</li>
+                                <li class="flex items-center"><span class="mr-2">📉</span>Decreased libido</li>
+                                <li class="flex items-center"><span class="mr-2">💀</span>Long-term: Decreased bone mineral density</li>
+                            </ul>
+                        </div>
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h3 class="font-bold text-xl mb-3 text-center">In Men</h3>
+                            <ul class="space-y-2 text-gray-700">
+                                <li class="flex items-center"><span class="mr-2">🚹</span>Decreased libido</li>
+                                <li class="flex items-center"><span class="mr-2">🚫</span>Erectile dysfunction</li>
+                                <li class="flex items-center"><span class="mr-2">💔</span>Infertility (less common)</li>
+                                <li class="flex items-center"><span class="mr-2">🧔</span>Reduced muscle mass and body hair</li>
+                                <li class="flex items-center"><span class="mr-2">🍈</span>Gynecomastia (uncommon)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="p-4 mt-4 border border-red-200 bg-red-50 rounded-lg">
+                        <h3 class="font-bold text-xl mb-3 text-center text-red-800">Mass Effect Symptoms (Either Sex)</h3>
+                        <ul class="space-y-2 text-gray-700 text-center">
+                            <li class="flex items-center justify-center"><span class="mr-2">🤕</span>Headaches</li>
+                            <li class="flex items-center justify-center"><span class="mr-2">👁️</span>Visual field defects (classically bitemporal hemianopsia)</li>
+                            <li class="flex items-center justify-center"><span class="mr-2">🧠</span>Cranial nerve palsies</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Diagnostic Workup</h2>
+                    <p class="mb-4 text-gray-700">The diagnostic process is systematic, starting with suspicion based on clinical signs, proceeding to biochemical confirmation, and concluding with anatomical localization via imaging. Click on a step to see details.</p>
+                    <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4 my-6 diagnostic-flowchart">
+                        <div data-step="1" class="flowchart-step w-full md:w-1/4 p-4 border-2 border-gray-300 rounded-lg text-center cursor-pointer bg-gray-50">
+                            <h4 class="font-semibold">Step 1: Clinical Suspicion & History</h4>
+                        </div>
+                        <div class="text-2xl text-gray-400">&rarr;</div>
+                        <div data-step="2" class="flowchart-step w-full md:w-1/4 p-4 border-2 border-gray-300 rounded-lg text-center cursor-pointer bg-gray-50">
+                            <h4 class="font-semibold">Step 2: Serum Prolactin Test</h4>
+                        </div>
+                        <div class="text-2xl text-gray-400">&rarr;</div>
+                         <div data-step="3" class="flowchart-step w-full md:w-1/4 p-4 border-2 border-gray-300 rounded-lg text-center cursor-pointer bg-gray-50">
+                            <h4 class="font-semibold">Step 3: Pituitary MRI</h4>
+                        </div>
+                    </div>
+                    <div id="diagnostic-details" class="mt-4 p-4 border-t-2 border-blue-500 bg-blue-50 rounded-lg min-h-[100px]">
+                        <p class="text-gray-600 text-center">Select a step above for details.</p>
+                    </div>
+                </div>
+
+                 <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Differential Diagnoses</h2>
+                    <p class="mb-4 text-gray-700">It is crucial to differentiate a true prolactinoma from other causes of hyperprolactinemia, as management differs significantly. PRL levels > 250 ng/mL strongly suggest a prolactinoma.</p>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Condition</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Typical PRL Level (ng/mL)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Key Differentiating Features</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Physiological Causes</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">< 40</td>
+                                    <td class="px-6 py-4 text-gray-700">Pregnancy, lactation, stress, chest wall stimulation. History is key.</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Pharmacological</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">25 - 150</td>
+                                    <td class="px-6 py-4 text-gray-700">Dopamine antagonists (antipsychotics, antiemetics), antidepressants. Review medication list.</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Primary Hypothyroidism</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">25 - 100</td>
+                                    <td class="px-6 py-4 text-gray-700">Elevated TSH, low free T4. Hyperprolactinemia resolves with thyroid hormone replacement.</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Pituitary Stalk Effect</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">25 - 150</td>
+                                    <td class="px-6 py-4 text-gray-700">Non-secreting adenoma or other sellar mass compresses the pituitary stalk, reducing dopamine's inhibitory effect. MRI reveals the underlying mass.</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Chronic Renal Failure</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">25 - 100</td>
+                                    <td class="px-6 py-4 text-gray-700">Due to decreased prolactin clearance. Check renal function (creatinine, eGFR).</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                 
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Management and Treatment</h2>
+                    <div class="border-b border-gray-200">
+                        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                            <button class="management-tab active text-blue-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-blue-600" data-content="pharm">Pharmacological Therapy</button>
+                            <button class="management-tab text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent" data-content="surgical">Surgical Interventions</button>
+                             <button class="management-tab text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent" data-content="special">Special Populations</button>
+                            <button class="management-tab text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent" data-content="monitoring">Monitoring</button>
+                        </nav>
+                    </div>
+                    <div class="mt-6">
+                        <div id="pharm" class="management-content space-y-4">
+                            <h3 class="text-xl font-semibold">First-Line: Dopamine Agonists</h3>
+                            <p>These drugs mimic the action of dopamine, restoring the natural inhibition of prolactin secretion. They are effective in >90% of cases for normalizing PRL and in >80% for significant tumor shrinkage.</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="p-4 rounded-lg border">
+                                    <h4 class="font-bold">Cabergoline</h4>
+                                    <p class="text-sm"><strong>MOA:</strong> Long-acting D2 receptor agonist. Higher affinity and specificity.</p>
+                                    <p class="text-sm mt-1"><strong>Dosing:</strong> Start 0.25-0.5 mg once or twice weekly. Titrate based on PRL levels.</p>
+                                    <p class="text-sm mt-1"><strong>Side Effects:</strong> Nausea, dizziness, postural hypotension. Better tolerated than bromocriptine. Valvular heart disease is a rare concern at high doses.</p>
+                                </div>
+                                <div class="p-4 rounded-lg border">
+                                    <h4 class="font-bold">Bromocriptine</h4>
+                                    <p class="text-sm"><strong>MOA:</strong> D2 receptor agonist.</p>
+                                    <p class="text-sm mt-1"><strong>Dosing:</strong> Start 1.25 mg daily at bedtime. Titrate up to 2.5-15 mg/day in divided doses.</p>
+                                    <p class="text-sm mt-1"><strong>Side Effects:</strong> More frequent nausea and orthostatic hypotension. Considered safer in pregnancy.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="surgical" class="management-content hidden">
+                            <h3 class="text-xl font-semibold">Transsphenoidal Surgery</h3>
+                            <p>Surgery is a second-line option. The primary indications include:</p>
+                            <ul class="list-disc list-inside space-y-1 mt-2">
+                                <li>Intolerance or resistance to high-dose dopamine agonists.</li>
+                                <li>Pituitary apoplexy (sudden hemorrhage into the tumor).</li>
+                                <li>Macroadenoma with severe, progressive visual field compromise despite medical therapy.</li>
+                                <li>Patient preference after informed discussion.</li>
+                            </ul>
+                             <p class="mt-2">Success rates are highest for microadenomas (~80-90% remission), but lower for macroadenomas (~40-60%), with a notable risk of recurrence.</p>
+                        </div>
+                        <div id="special" class="management-content hidden space-y-4">
+                            <h3 class="text-xl font-semibold">Management in Special Populations</h3>
+                            <div>
+                                <h4 class="font-semibold text-lg">Pregnancy</h4>
+                                <p>Women wishing to conceive should be managed carefully. Bromocriptine is often preferred due to more extensive safety data, though cabergoline is also considered safe. Medication is typically stopped upon confirmation of pregnancy unless there is a large macroadenoma with risk to vision, in which case therapy may be continued. Visual field testing should be performed each trimester for macroadenomas.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg">Dopamine Agonist Resistance</h4>
+                                <p>Resistance occurs in ~10% of patients. Management options include maximizing cabergoline dose (up to 3.5 mg/week or more), switching agents, or considering surgery. In rare, aggressive cases, radiation therapy or chemotherapy (e.g., temozolomide) may be required.</p>
+                            </div>
+                        </div>
+                        <div id="monitoring" class="management-content hidden">
+                           <h3 class="text-xl font-semibold">Long-Term Monitoring</h3>
+                           <ul class="list-disc list-inside space-y-2 mt-2">
+                                <li><strong>Prolactin Levels:</strong> Monthly after initiating/adjusting therapy, then every 6-12 months once stable.</li>
+                                <li><strong>MRI:</strong> 3-12 months after starting therapy to assess tumor shrinkage, then less frequently if stable. For macroadenomas, annual MRI may be needed initially.</li>
+                                <li><strong>Visual Fields:</strong> Baseline and follow-up for any patient with a macroadenoma abutting the optic chiasm.</li>
+                                <li><strong>Medication Tapering:</strong> Can be considered in patients after $\ge 2$ years of therapy with normal prolactin levels and significant tumor reduction.</li>
+                           </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Prognosis and Complications</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="font-semibold text-xl mb-2">Prognosis</h3>
+                            <p class="text-gray-700">The overall prognosis for patients with prolactinoma is excellent. Medical therapy is highly effective and allows most patients to lead normal lives. For microadenomas, long-term remission after medication withdrawal is possible in a subset of patients. Macroadenomas often require lifelong therapy, but tumor control and symptom management are typically successful.</p>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-xl mb-2">Complications</h3>
+                            <ul class="space-y-2 list-disc list-inside text-gray-700">
+                                <li><strong>Osteoporosis:</strong> Long-term hypogonadism from untreated hyperprolactinemia increases the risk of reduced bone density.</li>
+                                <li><strong>Vision Loss:</strong> A major risk with large macroadenomas compressing the optic chiasm. Can be permanent if not addressed promptly.</li>
+                                <li><strong>Pituitary Apoplexy:</strong> A rare but serious complication involving sudden hemorrhage into the tumor, causing severe headache, visual changes, and potential hormonal collapse. This is a medical emergency.</li>
+                                <li><strong>Hypopituitarism:</strong> Large tumors can compress and damage the normal pituitary gland, leading to deficiencies in other pituitary hormones (e.g., thyroid, adrenal, growth hormone).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Recent Advances & Future Directions</h2>
+                    <p class="mb-4 text-gray-700">Research continues to refine treatment, particularly for aggressive or resistant tumors. Key areas of investigation include:</p>
+                    <ul class="space-y-2 list-disc list-inside text-gray-700">
+                        <li><strong>Novel Medical Therapies:</strong> For dopamine agonist-resistant tumors, studies are exploring the efficacy of other drug classes, including somatostatin analogs (pasireotide), mTOR inhibitors, and EGFR antagonists. Temozolomide remains the standard chemotherapy for rare malignant prolactinomas.</li>
+                        <li><strong>Genetic and Molecular Markers:</strong> Research aims to identify molecular markers that can predict tumor behavior, aggressiveness, and response to therapy, allowing for more personalized treatment strategies.</li>
+                        <li><strong>Optimizing DA Withdrawal:</strong> Ongoing studies are trying to better define which patients are ideal candidates for discontinuing dopamine agonist therapy and the safest protocols for tapering.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Key Concepts & Glossary</h2>
+                     <p class="mb-4 text-gray-700">Understanding these terms is fundamental to the diagnosis and management of prolactinoma.</p>
+                    <div class="space-y-2">
+                        <div class="border border-gray-200 rounded-lg">
+                            <div class="accordion-header flex justify-between items-center cursor-pointer p-4">
+                                <h3 class="font-semibold text-lg">Hyperprolactinemia</h3><span class="text-xl transform transition-transform duration-300">&darr;</span>
+                            </div>
+                            <div class="accordion-content"><p class="text-gray-700 p-4 pt-0">A condition characterized by a higher-than-normal level of the hormone prolactin in the blood. While a prolactinoma is a common cause, it can also be due to medications, other medical conditions, or physiological states.</p></div>
+                        </div>
+                        <div class="border border-gray-200 rounded-lg">
+                            <div class="accordion-header flex justify-between items-center cursor-pointer p-4">
+                                <h3 class="font-semibold text-lg">Dopamine Agonist</h3><span class="text-xl transform transition-transform duration-300">&darr;</span>
+                            </div>
+                            <div class="accordion-content"><p class="text-gray-700 p-4 pt-0">A class of drugs that activate dopamine receptors in the brain. In the context of prolactinoma, they mimic the natural inhibitory effect of dopamine on prolactin secretion from the pituitary gland, forming the cornerstone of medical therapy.</p></div>
+                        </div>
+                        <div class="border border-gray-200 rounded-lg">
+                            <div class="accordion-header flex justify-between items-center cursor-pointer p-4">
+                                <h3 class="font-semibold text-lg">Microadenoma vs. Macroadenoma</h3><span class="text-xl transform transition-transform duration-300">&darr;</span>
+                            </div>
+                            <div class="accordion-content"><p class="text-gray-700 p-4 pt-0">This classification is based on tumor size. A microadenoma is a pituitary tumor less than 10 mm in diameter. A macroadenoma is 10 mm or larger. This distinction is critical as macroadenomas are more likely to cause mass effect symptoms like vision changes.</p></div>
+                        </div>
+                        <div class="border border-gray-200 rounded-lg">
+                            <div class="accordion-header flex justify-between items-center cursor-pointer p-4">
+                                <h3 class="font-semibold text-lg">Optic Chiasm</h3><span class="text-xl transform transition-transform duration-300">&darr;</span>
+                            </div>
+                            <div class="accordion-content"><p class="text-gray-700 p-4 pt-0">An X-shaped structure in the brain where the optic nerves from the right and left eyes cross over. It is located directly above the pituitary gland, making it vulnerable to compression by a macroadenoma, which classically leads to bitemporal hemianopsia (loss of peripheral vision).</p></div>
+                        </div>
+                        <div class="border border-gray-200 rounded-lg">
+                            <div class="accordion-header flex justify-between items-center cursor-pointer p-4">
+                                <h3 class="font-semibold text-lg">Hypogonadism</h3><span class="text-xl transform transition-transform duration-300">&darr;</span>
+                            </div>
+                            <div class="accordion-content"><p class="text-gray-700 p-4 pt-0">A condition in which the gonads (testes in men, ovaries in women) produce little or no sex hormones. In hyperprolactinemia, excess prolactin suppresses the hypothalamic-pituitary-gonadal axis, leading to reduced estrogen and testosterone levels and causing symptoms like amenorrhea and erectile dysfunction.</p></div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <section id="patient" class="content-section hidden space-y-8">
+                 <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">What to Expect: A Patient's Guide</h2>
+                    <p class="text-gray-700 leading-relaxed">Being diagnosed with a prolactinoma can be confusing, but it's a very manageable condition. The goal of treatment is to bring your prolactin hormone levels back to normal, shrink the tumor if it's large, and restore normal body functions like periods or sexual function. For most people, this is achieved with a simple pill taken once or twice a week.</p>
+                    <p class="text-gray-700 leading-relaxed mt-4">You will work closely with an endocrinologist (a hormone specialist). Your journey will likely involve regular blood tests to check your hormone levels and occasional MRI scans to monitor the tumor size. It's important to take your medication as prescribed and to communicate any side effects to your doctor, as doses can often be adjusted to minimize them.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Frequently Asked Questions (FAQs)</h2>
+                    <div class="space-y-4">
+                        <div class="border border-gray-200 rounded-lg">
+                            <div class="accordion-header flex justify-between items-center cursor-pointer p-4">
+                                <h3 class="font-semibold text-lg">Is a prolactinoma brain cancer?</h3>
+                                <span class="text-xl transform transition-transform duration-300">&darr;</span>
+                            </div>
+                            <div class="accordion-content">
+                                <p class="text-gray-700 p-4 pt-0">No. Prolactinomas are benign, which means they are not cancerous. They do not spread to other parts of the body. They cause problems due to the excess hormones they produce or by pressing on nearby brain structures.</p>
+                            </div>
+                        </div>
+                        <div class="border border-gray-200 rounded-lg">
+                            <div class="accordion-header flex justify-between items-center cursor-pointer p-4">
+                                <h3 class="font-semibold text-lg">Will I need surgery?</h3>
+                                <span class="text-xl transform transition-transform duration-300">&darr;</span>
+                            </div>
+                            <div class="accordion-content">
+                                <p class="text-gray-700 p-4 pt-0">Most likely not. Over 90% of patients are successfully treated with medication alone. Surgery is typically only needed if the medication doesn't work, causes unbearable side effects, or if your vision is being severely affected by a large tumor.</p>
+                            </div>
+                        </div>
+                        <div class="border border-gray-200 rounded-lg">
+                            <div class="accordion-header flex justify-between items-center cursor-pointer p-4">
+                                <h3 class="font-semibold text-lg">Can I have children if I have a prolactinoma?</h3>
+                                <span class="text-xl transform transition-transform duration-300">&darr;</span>
+                            </div>
+                            <div class="accordion-content">
+                                <p class="text-gray-700 p-4 pt-0">Yes. Infertility is a common symptom, but it's usually reversible with treatment. Once your prolactin levels are normalized with medication, normal menstrual cycles and fertility often return. It's important to discuss pregnancy plans with your doctor, as medication may need to be adjusted.</p>
+                            </div>
+                        </div>
+                        <div class="border border-gray-200 rounded-lg">
+                            <div class="accordion-header flex justify-between items-center cursor-pointer p-4">
+                                <h3 class="font-semibold text-lg">When should I call my doctor?</h3>
+                                <span class="text-xl transform transition-transform duration-300">&darr;</span>
+                            </div>
+                            <div class="accordion-content">
+                                <p class="text-gray-700 p-4 pt-0">You should contact your doctor if you experience any new or worsening symptoms. Call immediately if you have a sudden, severe headache or any sudden changes in your vision, as this could be a sign of a rare complication.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-800 p-4 rounded-md shadow-sm">
+                    <h3 class="font-bold">Disclaimer</h3>
+                    <p class="mt-1">This information is for educational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.</p>
+                </div>
+            </section>
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const tabs = document.querySelectorAll('.tab');
+    const contentSections = document.querySelectorAll('.content-section');
+    const managementTabs = document.querySelectorAll('.management-tab');
+    const managementContents = document.querySelectorAll('.management-content');
+    const accordions = document.querySelectorAll('.accordion-header');
+    const flowchartSteps = document.querySelectorAll('.flowchart-step');
+    const diagnosticDetailsContainer = document.getElementById('diagnostic-details');
+    
+    const diagnosticDetails = {
+        1: {
+            title: "Step 1: Clinical Suspicion & History",
+            text: "This involves a thorough patient history focusing on symptoms of hypogonadism (amenorrhea, decreased libido), galactorrhea, and mass effects (headaches, visual changes). A review of medications is crucial, as many drugs (e.g., antipsychotics, antidepressants, antiemetics) can cause hyperprolactinemia."
+        },
+        2: {
+            title: "Step 2: Serum Prolactin (PRL) Measurement",
+            text: "The gold standard for biochemical diagnosis. A level >250 ng/mL is virtually diagnostic of a prolactinoma. Levels between 25-150 ng/mL can be caused by microadenomas or other factors (the 'stalk effect', medications, hypothyroidism). The hook effect should be considered with very large tumors and paradoxically normal PRL; dilution of the sample will reveal the true, much higher level."
+        },
+        3: {
+            title: "Step 3: Pituitary MRI",
+            text: "A contrast-enhanced MRI of the sella turcica is the imaging modality of choice to confirm the presence, size (micro- vs. macroadenoma), and anatomical relationships of the tumor, especially its proximity to the optic chiasm and cavernous sinuses. This is the definitive step to visualize the adenoma."
+        }
+    };
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetTab = tab.dataset.tab;
+
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            contentSections.forEach(section => {
+                if (section.id === targetTab) {
+                    section.classList.remove('hidden');
+                } else {
+                    section.classList.add('hidden');
+                }
+            });
+        });
+    });
+
+    managementTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetContent = tab.dataset.content;
+            
+            managementTabs.forEach(t => {
+                t.classList.remove('active', 'text-blue-600', 'border-blue-600');
+                t.classList.add('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300', 'border-transparent');
+            });
+            tab.classList.add('active', 'text-blue-600', 'border-blue-600');
+            tab.classList.remove('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300', 'border-transparent');
+
+            managementContents.forEach(content => {
+                if (content.id === targetContent) {
+                    content.classList.remove('hidden');
+                } else {
+                    content.classList.add('hidden');
+                }
+            });
+        });
+    });
+
+    accordions.forEach(accordion => {
+        accordion.addEventListener('click', () => {
+            const content = accordion.nextElementSibling;
+            const arrow = accordion.querySelector('span');
+            content.classList.toggle('open');
+            arrow.classList.toggle('rotate-180');
+        });
+    });
+
+    flowchartSteps.forEach(step => {
+        step.addEventListener('click', () => {
+            const stepNumber = step.dataset.step;
+            const details = diagnosticDetails[stepNumber];
+
+            flowchartSteps.forEach(s => s.classList.remove('active'));
+            step.classList.add('active');
+
+            diagnosticDetailsContainer.innerHTML = `
+                <h3 class="font-bold text-lg text-blue-800 mb-2">${details.title}</h3>
+                <p class="text-blue-900">${details.text}</p>
+            `;
+        });
+    });
+
+    const ctx = document.getElementById('epidemiologyChart').getContext('2d');
+    const epidemiologyChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['20-30', '31-40', '41-50', '51-60', '60+'],
+            datasets: [{
+                label: 'Prevalence in Women (per 100k)',
+                data: [60, 90, 75, 40, 20],
+                backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                borderColor: 'rgba(59, 130, 246, 1)',
+                borderWidth: 1
+            }, {
+                label: 'Prevalence in Men (per 100k)',
+                data: [10, 15, 25, 30, 25],
+                backgroundColor: 'rgba(239, 68, 68, 0.5)',
+                borderColor: 'rgba(239, 68, 68, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Estimated Prevalence by Age and Sex'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += context.parsed.y + ' per 100,000';
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Cases per 100,000 People'
+                    }
+                },
+                x: {
+                   title: {
+                        display: true,
+                        text: 'Age Group'
+                    }
+                }
+            }
+        }
+    });
+
+});
+</script>
+</body>
+</html>
+
