@@ -12,16 +12,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
-     crossorigin="anonymous">
-  </script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+    
     <!-- Chosen Palette: Warm Neutral Harmony -->
-    <!-- Application Structure Plan: The application is structured thematically rather than linearly to facilitate user-driven exploration of the book's core ideas. A sticky top navigation allows users to jump between fundamental concepts. The structure is designed to build from foundational ideas (The Core Shift) to detailed elaborations (Freedom from the Past, The Art of Separation, True Belonging) and then to practical application and summary (Dialogue Flow, Engage & Reflect). This creates a logical learning path. -->
+    <!-- Application Structure Plan: The application is structured thematically for user-driven exploration. The navigation facilitates a logical flow from foundational ideas (Core Shift), to deep dives on key pillars (Freedom From Past, Art of Separation, True Belonging), to a new comprehensive summary (Key Takeaways by Night). This allows users to either get a quick overview or explore specific concepts in depth before moving to practical application sections. -->
     <!-- Visualization & Content Choices: 
-        1. Report Info: Etiology vs. Teleology. Goal: Compare/Elaborate. Viz: Side-by-side text, bar chart, and a new detailed section with logic flow diagrams (HTML/CSS). Interaction: Toggles, navigation. Justification: Reinforces the core concept through repetition and deeper analysis.
-        2. Report Info: Separation of Tasks. Goal: Organize/Interact. Viz: An interactive 'Task Sorter' component. Interaction: Users click buttons to categorize aspects of a problem. Justification: Moves from passive reading to active engagement, improving comprehension of the most actionable concept.
-        3. Report Info: Community Feeling. Goal: Organize/Inform. Viz: A three-card layout explaining the components (Self-Acceptance, Confidence, Contribution). Justification: Breaks down a complex abstract idea into understandable parts.
-        4. Report Info: Dialogue, Quotes, Authors. Goal: Inform/Summarize. Viz: Stepper, accordions, cards. Justification: Standard, effective UI for summarizing content and providing references.
+        1. Report Info: Chapter-by-chapter key points. Goal: Inform/Summarize. Viz: A new, dedicated accordion section. Interaction: Users click a 'Night' to expand and see its key terms and definitions. Justification: The accordion is the most effective UI for presenting a large amount of structured, hierarchical information without overwhelming the user, making a dense summary easily digestible.
+        2. Report Info: Etiology vs. Teleology. Goal: Compare/Elaborate. Viz: Side-by-side text, bar chart, and logic flow diagrams. Interaction: Toggles, navigation. Justification: Reinforces the core concept through multiple visual and textual formats.
+        3. Report Info: Separation of Tasks. Goal: Organize/Interact. Viz: An interactive 'Task Sorter'. Interaction: Users actively categorize scenario components. Justification: Promotes learning through active participation rather than passive reading.
     -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
@@ -83,70 +83,71 @@
         .task-btn:hover {
             transform: scale(1.05);
         }
-
-/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */ 
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
 
 .explore-more-section {
-    padding: 3rem 1.5rem;
-    margin-top: 3rem; /* Adds space above the section */
-    background-color: #f8f7f4; /* A light, neutral background */
-    text-align: center;
-    border-top: 1px solid #e0e0e0;
-    border-bottom: 1px solid #e0e0e0;
-} 
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
 
 .explore-more-section h3 {
-    font-family: 'Oswald', sans-serif;
-    font-size: 2.2rem;
-    color: #2c3e50;
-    margin-bottom: 0.75rem;
-} 
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
 
 .explore-more-section p {
-    max-width: 650px;
-    margin: 0 auto 1.75rem auto;
-    font-size: 1.1em;
-    color: #555;
-    line-height: 1.6;
-} 
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
 
 .explore-more-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    flex-wrap: wrap; /* Allows buttons to stack on small screens */
-} 
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
 
 .explore-more-buttons a {
-    display: inline-block;
-    background-color: #34495e;
-    color: white;
-    padding: 0.8rem 2rem;
-    border-radius: 30px;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 1em;
-    transition: transform 0.3s ease, background-color 0.3s ease;
-    border: 2px solid transparent;
-} 
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
 
 .explore-more-buttons a:hover {
-    transform: translateY(-3px);
-    background-color: #2c3e50;
-} 
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
 
 /* Secondary button style */
 .explore-more-buttons a.secondary {
-    background-color: transparent;
-    color: #34495e;
-    border-color: #34495e;
-} 
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
 
 .explore-more-buttons a.secondary:hover {
-    background-color: #34495e;
-    color: white;
+    background-color: #34495e;
+    color: white;
 }
-      
+
+
+        
     </style>
 </head>
 <body class="antialiased">
@@ -158,11 +159,12 @@
                 <p class="text-md text-gray-600 mt-1">An Interactive Exploration of Adlerian Psychology</p>
             </div>
             <nav class="mt-4">
-                <ul class="flex justify-center flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 text-xs sm:text-sm font-medium text-gray-500">
+                <ul class="flex justify-center flex-wrap gap-x-3 sm:gap-x-4 gap-y-2 text-xs sm:text-sm font-medium text-gray-500">
                     <li><a href="#core-shift" class="nav-link active px-1 py-1">Core Shift</a></li>
                     <li><a href="#freedom-from-past" class="nav-link px-1 py-1">Freedom From Past</a></li>
-                    <li><a href="#art-of-separation" class="nav-link px-1 py-1">The Art of Separation</a></li>
+                    <li><a href="#art-of-separation" class="nav-link px-1 py-1">Art of Separation</a></li>
                     <li><a href="#true-belonging" class="nav-link px-1 py-1">True Belonging</a></li>
+                    <li><a href="#key-takeaways" class="nav-link px-1 py-1">Key Takeaways</a></li>
                     <li><a href="#dialogue" class="nav-link px-1 py-1">Dialogue Flow</a></li>
                     <li><a href="#engage" class="nav-link px-1 py-1">Engage & Reflect</a></li>
                     <li><a href="#authors" class="nav-link px-1 py-1">The Authors</a></li>
@@ -280,6 +282,16 @@
             </div>
         </section>
 
+        <section id="key-takeaways" class="content-section">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-800">Key Takeaways by Night</h2>
+                <p class="mt-2 max-w-3xl mx-auto text-gray-600">A chapter-by-chapter breakdown of the book's most important concepts and their definitions, preserving the core of the Philosopher's arguments. Click each 'Night' to expand its key points.</p>
+            </div>
+            <div id="takeaways-container" class="max-w-3xl mx-auto space-y-3">
+                 <!-- Accordion items will be injected here by JS -->
+            </div>
+        </section>
+
         <section id="dialogue" class="content-section">
             <div class="text-center mb-8">
                 <h2 class="text-2xl font-bold text-gray-800">The Dialogue Flow: Five Nights of Discovery</h2>
@@ -366,17 +378,16 @@
                 </div>
             </div>
         </section>
-
-
 <section class="explore-more-section">
-    <h3>Enjoyed This Analysis?</h3>
-    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
-    <div class="explore-more-buttons">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
 <a href="../../index.html">Explore More Analyses</a> 
 <a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
-  </div>
+  </div>
 </section>
-      
+
+        
     </main>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -405,6 +416,48 @@ document.addEventListener('DOMContentLoaded', function() {
             "dialogue-4": { title: "The Fourth Night: Where the Center of the World Is", text: "The idea of 'community feeling' is discussed. True self-worth comes not from seeking praise (vertical relationships) but from contributing to the community as an equal (horizontal relationships). You are not the center of the world, but you are a valuable part of a larger community." },
             "dialogue-5": { title: "The Fifth Night: To Live Earnestly in the Here and Now", text: "The final dialogue teaches that life is not a line toward a future destination, but a series of moments. By living and dancing earnestly in the present, your life is always complete. This mindset, combined with community feeling and separation of tasks, constitutes true happiness." }
         },
+        takeaways: [
+            {
+                title: "The First Night: Deny Trauma",
+                points: [
+                    { term: "Etiology vs. Teleology", def: "We are not defined by past causes (etiology), but by our present goals (teleology). We choose our 'lifestyle' to fulfill a purpose, not as a reaction to the past." },
+                    { term: "Anger is a Tool", def: "A manufactured emotion used to achieve a goal, like asserting control or making someone submit. It can be taken out and put away at will, not an uncontrollable outburst." },
+                    { term: "People Invent Unhappiness", def: "We choose to be unhappy because the state of being 'unhappy' provides some benefit, such as gaining attention or avoiding a difficult task." }
+                ]
+            },
+            {
+                title: "The Second Night: All Problems Are Interpersonal",
+                points: [
+                    { term: "Subjective Inferiority", def: "Feelings of being 'less than' are not objective facts but personal interpretations. The value you assign to things like height or education is entirely subjective." },
+                    { term: "Inferiority Complex", def: "Using a feeling of inferiority as an excuse to avoid a life task. For example, 'I can't succeed because I'm not educated enough.'" },
+                    { term: "Power Struggle", def: "When someone tries to 'win' an argument or conflict, they have entered a power struggle. The only way to escape is to refuse to play the game and exit the field." }
+                ]
+            },
+            {
+                title: "The Third Night: The Separation of Tasks",
+                points: [
+                    { term: "Whose Task Is It?", def: "The way to distinguish tasks is to ask, 'Who ultimately is going to receive the result brought about by the choice that is made?'" },
+                    { term: "Freedom from Recognition", def: "Living to please others and seeking their approval is a slave's mentality. True freedom is living by your own principles, even if others dislike you for it." },
+                    { term: "The Cost of Freedom", def: "The price of interpersonal freedom is that you will be disliked by some people. It is impossible to be liked by everyone while remaining true to yourself." }
+                ]
+            },
+            {
+                title: "The Fourth Night: Where the Center of the World Is",
+                points: [
+                    { term: "You Are Not the Center of the World", def: "To be socially integrated, one must see oneself as a part of a larger community, not as its protagonist." },
+                    { term: "Community Feeling", def: "A sense of belonging, of having a place, and of being of value to others. This is the ultimate goal of interpersonal relationships and the key to happiness." },
+                    { term: "Horizontal vs. Vertical Relationships", def: "Treating others as equals (horizontal) rather than as superiors or inferiors (vertical). This means offering encouragement, not praise or rebuke." }
+                ]
+            },
+            {
+                title: "The Fifth Night: To Live an Earnest Life in the Here and Now",
+                points: [
+                    { term: "Life is Not a Line", def: "Life is not a journey to a destination; it is a series of moments, or 'dots.' Your life is complete in each moment you live earnestly." },
+                    { term: "The Dance Metaphor", def: "The purpose of a dance is the dancing itself, not arriving somewhere. Similarly, life's value is in the living of each moment, not in achieving a future goal." },
+                    { term: "The Meaning of Life", def: "The meaning of life is not something given to you; it is something you give to yourself by choosing to contribute to your community." }
+                ]
+            }
+        ],
         quotes: [
             { quote: "Your unhappiness cannot be blamed on your past or your environment... You just lack courage.", significance: "This captures the core idea that change is not a matter of circumstance, but of choice and courage." },
             { quote: "Freedom is to be disliked by other people.", significance: "A provocative statement defining freedom as living by your own principles, independent of others' approval." },
@@ -421,143 +474,74 @@ document.addEventListener('DOMContentLoaded', function() {
     const contentSections = document.querySelectorAll('.content-section');
 
     function switchTab(targetId) {
-        navLinks.forEach(l => {
-            if (l.getAttribute('href') === `#${targetId}`) {
-                l.classList.add('active');
-            } else {
-                l.classList.remove('active');
-            }
-        });
-
-        contentSections.forEach(section => {
-            if (section.id === targetId) {
-                section.classList.add('active');
-            } else {
-                section.classList.remove('active');
-            }
-        });
+        navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === `#${targetId}`));
+        contentSections.forEach(s => s.classList.toggle('active', s.id === targetId));
         window.scrollTo(0, 0);
     }
 
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
-            const targetId = link.getAttribute('href').substring(1);
-            switchTab(targetId);
+            switchTab(link.getAttribute('href').substring(1));
         });
     });
-
+    
     const etiologyBtn = document.getElementById('etiology-btn');
     const teleologyBtn = document.getElementById('teleology-btn');
     const explanationCard = document.getElementById('explanation-card');
-    const chartCanvas = document.getElementById('philosophyChart').getContext('2d');
+    const chartCanvas = document.getElementById('philosophyChart')?.getContext('2d');
     let philosophyChart;
 
-    function createOrUpdateChart(chartData) {
-        const dataConfig = {
-            labels: ['Focus on Past', 'Focus on Present/Goal'],
-            datasets: [{
-                label: 'Philosophical Focus',
-                data: chartData,
-                backgroundColor: ['#D1D5DB', '#A0522D'],
-                borderColor: ['#9CA3AF', '#8C462F'],
-                borderWidth: 1
-            }]
-        };
-
-        if (philosophyChart) {
-            philosophyChart.data.datasets[0].data = chartData;
-            philosophyChart.update();
-        } else {
-            philosophyChart = new Chart(chartCanvas, {
-                type: 'bar',
-                data: dataConfig,
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return `${context.label}: ${context.raw}%`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: { beginAtZero: true, max: 100, ticks: { callback: value => value + '%' } }
-                    }
-                }
-            });
+    if (chartCanvas) {
+        function createOrUpdateChart(chartData) {
+            const dataConfig = { labels: ['Focus on Past', 'Focus on Present/Goal'], datasets: [{ label: 'Philosophical Focus', data: chartData, backgroundColor: ['#D1D5DB', '#A0522D'], borderColor: ['#9CA3AF', '#8C462F'], borderWidth: 1 }] };
+            if (philosophyChart) {
+                philosophyChart.data.datasets[0].data = chartData;
+                philosophyChart.update();
+            } else {
+                philosophyChart = new Chart(chartCanvas, { type: 'bar', data: dataConfig, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.raw}%` } } }, scales: { x: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } } } } });
+            }
         }
-    }
 
-    function updateCoreShiftContent(type) {
-        const content = data.coreShift[type];
-        explanationCard.innerHTML = `
-            <h3 class="text-xl font-bold mb-3">${content.title}</h3>
-            <p class="text-gray-600 mb-4">${content.description}</p>
-            <div class="border-t pt-4">
-                <h4 class="font-semibold text-gray-700">${content.example_title}</h4>
-                <p class="text-sm text-gray-500 italic mt-1">${content.example_text}</p>
-            </div>
-        `;
-        createOrUpdateChart(content.chartData);
-
-        if (type === 'etiology') {
-            etiologyBtn.style.backgroundColor = '#A0522D';
-            etiologyBtn.classList.add('text-white');
-            teleologyBtn.style.backgroundColor = '';
-            teleologyBtn.classList.remove('text-white');
-            teleologyBtn.classList.add('bg-gray-200', 'text-gray-700');
-        } else {
-            teleologyBtn.style.backgroundColor = '#A0522D';
-            teleologyBtn.classList.add('text-white');
-            etiologyBtn.style.backgroundColor = '';
-            etiologyBtn.classList.remove('text-white');
-            etiologyBtn.classList.add('bg-gray-200', 'text-gray-700');
+        function updateCoreShiftContent(type) {
+            const content = data.coreShift[type];
+            explanationCard.innerHTML = `<h3 class="text-xl font-bold mb-3">${content.title}</h3><p class="text-gray-600 mb-4">${content.description}</p><div class="border-t pt-4"><h4 class="font-semibold text-gray-700">${content.example_title}</h4><p class="text-sm text-gray-500 italic mt-1">${content.example_text}</p></div>`;
+            createOrUpdateChart(content.chartData);
+            etiologyBtn.classList.toggle('text-white', type === 'etiology');
+            etiologyBtn.style.backgroundColor = type === 'etiology' ? '#A0522D' : '';
+            teleologyBtn.classList.toggle('text-white', type === 'teleology');
+            teleologyBtn.style.backgroundColor = type === 'teleology' ? '#A0522D' : '';
         }
+
+        etiologyBtn.addEventListener('click', () => updateCoreShiftContent('etiology'));
+        teleologyBtn.addEventListener('click', () => updateCoreShiftContent('teleology'));
+        updateCoreShiftContent('teleology');
     }
-    
-    etiologyBtn.addEventListener('click', () => updateCoreShiftContent('etiology'));
-    teleologyBtn.addEventListener('click', () => updateCoreShiftContent('teleology'));
-    
-    updateCoreShiftContent('teleology');
 
     const stepperItems = document.querySelectorAll('.stepper-item');
     const dialogueContent = document.getElementById('dialogue-content');
-
-    function updateDialogueContent(contentKey) {
-        const content = data.dialogue[contentKey];
-        dialogueContent.innerHTML = `<h3 class="text-xl font-bold mb-2">${content.title}</h3><p class="text-gray-600">${content.text}</p>`;
-    }
 
     stepperItems.forEach(item => {
         item.addEventListener('click', () => {
             stepperItems.forEach(i => i.classList.remove('active'));
             item.classList.add('active');
-            updateDialogueContent(item.getAttribute('data-content'));
+            const contentKey = item.getAttribute('data-content');
+            const content = data.dialogue[contentKey];
+            dialogueContent.innerHTML = `<h3 class="text-xl font-bold mb-2">${content.title}</h3><p class="text-gray-600">${content.text}</p>`;
         });
     });
-    
-    updateDialogueContent('dialogue-1');
+    if (stepperItems.length > 0) {
+        stepperItems[0].click();
+    }
 
     const quotesContainer = document.getElementById('quotes-container');
     data.quotes.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'card p-4';
-        div.innerHTML = `<p class="font-medium italic text-gray-700">"${item.quote}"</p><p class="text-sm text-gray-500 mt-2 text-right">- ${item.significance}</p>`;
-        quotesContainer.appendChild(div);
+        quotesContainer.innerHTML += `<div class="card p-4"><p class="font-medium italic text-gray-700">"${item.quote}"</p><p class="text-sm text-gray-500 mt-2 text-right">- ${item.significance}</p></div>`;
     });
 
     const questionsContainer = document.getElementById('questions-container');
     data.questions.forEach(q => {
-        const div = document.createElement('div');
-        div.className = 'card p-4';
-        div.innerHTML = `<p class="font-medium text-gray-700">${q}</p>`;
-        questionsContainer.appendChild(div);
+        questionsContainer.innerHTML += `<div class="card p-4"><p class="font-medium text-gray-700">${q}</p></div>`;
     });
 
     const taskButtonsContainer = document.getElementById('task-buttons-container');
@@ -566,37 +550,66 @@ document.addEventListener('DOMContentLoaded', function() {
     const resetSorterBtn = document.getElementById('reset-sorter');
     
     function setupTaskSorter() {
-        const taskButtons = taskButtonsContainer.querySelectorAll('.task-btn');
-        taskButtons.forEach(button => {
+        taskButtonsContainer.querySelectorAll('.task-btn').forEach(button => {
             button.addEventListener('click', () => {
-                const taskType = button.getAttribute('data-task');
-                const taskText = button.textContent;
-                const taskElement = document.createElement('div');
-                taskElement.className = 'text-sm bg-white p-2 rounded-md shadow-sm';
-                taskElement.textContent = taskText;
-
-                if (taskType === 'mine') {
-                    myTasksContainer.appendChild(taskElement);
-                } else {
-                    theirTasksContainer.appendChild(taskElement);
-                }
+                const container = button.dataset.task === 'mine' ? myTasksContainer : theirTasksContainer;
+                container.innerHTML += `<div class="text-sm bg-white p-2 rounded-md shadow-sm">${button.textContent}</div>`;
                 button.style.display = 'none';
             });
         });
     }
 
-    function resetTaskSorter() {
+    resetSorterBtn?.addEventListener('click', () => {
         myTasksContainer.innerHTML = '';
         theirTasksContainer.innerHTML = '';
-        taskButtonsContainer.querySelectorAll('.task-btn').forEach(button => {
-            button.style.display = 'inline-block';
+        taskButtonsContainer.querySelectorAll('.task-btn').forEach(button => button.style.display = 'inline-block');
+    });
+
+    if(taskButtonsContainer) setupTaskSorter();
+    
+    const takeawaysContainer = document.getElementById('takeaways-container');
+    data.takeaways.forEach(night => {
+        let pointsHtml = '<ul class="space-y-3 list-disc list-inside">';
+        night.points.forEach(point => {
+            pointsHtml += `<li><strong>${point.term}:</strong> ${point.def}</li>`;
+        });
+        pointsHtml += '</ul>';
+
+        takeawaysContainer.innerHTML += `
+            <div class="card">
+                <div class="accordion-header flex justify-between items-center p-4 cursor-pointer">
+                    <h4 class="font-semibold text-lg">${night.title}</h4>
+                    <span class="transform transition-transform duration-300">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="px-4 pb-4 text-gray-600">${pointsHtml}</div>
+                </div>
+            </div>`;
+    });
+
+    function handleAccordion(containerId) {
+        const container = document.getElementById(containerId);
+        if(!container) return;
+        container.addEventListener('click', e => {
+            const header = e.target.closest('.accordion-header');
+            if(header) {
+                const content = header.nextElementSibling;
+                const icon = header.querySelector('span');
+                const isOpening = !content.style.maxHeight;
+
+                container.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = null);
+                container.querySelectorAll('.accordion-header span').forEach(i => i.style.transform = 'rotate(0deg)');
+                
+                if(isOpening) {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    icon.style.transform = 'rotate(180deg)';
+                }
+            }
         });
     }
+    
+    handleAccordion('takeaways-container');
 
-    resetSorterBtn.addEventListener('click', resetTaskSorter);
-    setupTaskSorter();
-
-    // Initialize first tab
     switchTab('core-shift');
 
 });
