@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VW Group Strategic Dashboard: EV Future & Innovation</title>
+    <meta name="description" content="Explore Volkswagen Group's interactive dashboard. Dive into EV strategy, software, brands, financials, and global market insights for future mobility.">
+    <meta name="keywords" content="Volkswagen Group strategy, VW Group financials, Electric vehicle strategy, Automotive industry trends, Future mobility, VW electrification, CARIAD software, PowerCo batteries, VW brands, Sustainable automotive, Global auto market, VW Group report, EV market share, Automotive innovation, ESG automotive">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+  
+    <!-- Chosen Palette: Corporate Serenity -->
+    <!-- Application Structure Plan: The application is structured as a thematic, single-page dashboard rather than mirroring the source report's Q&A format. This architecture enhances usability by allowing users to explore information non-linearly. The structure consists of a fixed top navigation bar for quick access to key themes: Overview, Strategy & Technology, Brands & Markets, Financials & ESG, and a Regional Focus on India. This task-oriented design allows a user to get a high-level summary from the 'Overview' dashboard, or dive deep into a specific area like 'Brands & Markets' to interactively compare brand performance. This is superior to a linear document as it supports both quick scanning and in-depth analysis, catering to different user needs and making the dense information more digestible and engaging. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Group's key performance metrics. Goal: Inform at a glance. Viz: Stat cards (HTML/CSS) and a Donut Chart (Chart.js) for EV/ICE sales mix. Interaction: Hover effects on cards. Justification: Provides an immediate, high-impact summary on the landing view.
+        - Report Info: Strategic priorities like Electrification, Software, and Sustainability. Goal: Explain complex strategy. Viz: A tabbed interface with interactive timelines (HTML/CSS/JS) and bar charts (Chart.js). Interaction: Clicking tabs reveals detailed content and visualizations. Justification: Breaks down dense topics into manageable chunks, preventing information overload.
+        - Report Info: Multi-brand strategy and market shares. Goal: Compare and analyze brand portfolio. Viz: A dropdown selector that dynamically updates bar charts (Chart.js) and textual descriptions. Interaction: User selection of a brand triggers a full update of the section's content. Justification: Creates a powerful interactive tool for exploring the complex brand structure, which is a core theme of the report.
+        - Report Info: Financial performance and ESG targets. Goal: Show performance and commitments. Viz: A multi-axis line chart for financials and progress bars (HTML/CSS) for ESG goals. Interaction: Toggling datasets on the chart. Justification: Uses the best visualization for each data type—time-series for financials and progress indicators for goals.
+        - Report Info: India market strategy. Goal: Provide regional context. Viz: A combination of styled text blocks and key stat cards. Interaction: Simple, clear information presentation. Justification: Focuses on delivering specific regional insights clearly and concisely.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #1a202c;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #004d8c;
+            border-bottom-color: #004d8c;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .tab-btn {
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            background-color: #004d8c;
+            color: #ffffff;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 40vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .progress-bar-bg {
+            background-color: #e2e8f0;
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            background-color: #004d8c;
+            transition: width 1s ease-in-out;
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 font-bold text-xl text-gray-800">
+                        VW Group
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link active px-3 py-2 text-sm font-medium text-gray-700">Overview</a>
+                        <a href="#group-structure" class="nav-link px-3 py-2 text-sm font-medium text-gray-700">Group Structure</a>
+                        <a href="#strategy-platforms" class="nav-link px-3 py-2 text-sm font-medium text-gray-700">Strategy & Platforms</a>
+                        <a href="#brands-competition" class="nav-link px-3 py-2 text-sm font-medium text-gray-700">Brands & Competition</a>
+                        <a href="#financials-swot" class="nav-link px-3 py-2 text-sm font-medium text-gray-700">Financials & SWOT</a>
+                        <a href="#global-markets" class="nav-link px-3 py-2 text-sm font-medium text-gray-700">Global Markets</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <select id="mobile-nav" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                        <option value="#overview">Overview</option>
+                        <option value="#group-structure">Group Structure</option>
+                        <option value="#strategy-platforms">Strategy & Platforms</option>
+                        <option value="#brands-competition">Brands & Competition</option>
+                        <option value="#financials-swot">Financials & SWOT</option>
+                        <option value="#global-markets">Global Markets</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        
+        <section id="overview" class="scroll-mt-20">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Volkswagen Group: Strategic Dashboard</h1>
+            <p class="text-lg text-gray-600 mb-8">An interactive overview of the automotive giant's current performance and future direction. This section provides a high-level summary of key metrics to quickly orient you to the Group's scale and strategic priorities.</p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="card p-6">
+                    <h3 class="text-gray-500 font-semibold">Group Revenue (FY2024)</h3>
+                    <p class="text-3xl font-bold text-gray-900 mt-2">€301.5B</p>
+                    <p class="text-sm text-green-600 mt-1">+5.2% vs FY2023</p>
+                </div>
+                <div class="card p-6">
+                    <h3 class="text-gray-500 font-semibold">Vehicle Sales (2024)</h3>
+                    <p class="text-3xl font-bold text-gray-900 mt-2">9.24M</p>
+                    <p class="text-sm text-green-600 mt-1">+11.8% vs 2023</p>
+                </div>
+                <div class="card p-6">
+                    <h3 class="text-gray-500 font-semibold">BEV Deliveries (2024)</h3>
+                    <p class="text-3xl font-bold text-gray-900 mt-2">770K</p>
+                    <p class="text-sm text-green-600 mt-1">+35% vs 2023</p>
+                </div>
+                <div class="card p-6">
+                    <h3 class="text-gray-500 font-semibold">R&D Investment</h3>
+                    <p class="text-3xl font-bold text-gray-900 mt-2">€15.8B</p>
+                    <p class="text-sm text-gray-500 mt-1">Focus on software & EV</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+                <div class="card lg:col-span-1 p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">2024 Sales Mix</h2>
+                    <p class="text-sm text-gray-600 mb-4">The group's transition to electric mobility is accelerating, with Battery Electric Vehicles (BEVs) now constituting a significant and growing portion of total sales.</p>
+                    <div class="chart-container h-64 md:h-auto">
+                        <canvas id="salesMixChart"></canvas>
+                    </div>
+                </div>
+                <div class="card lg:col-span-2 p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">Core Strategic Vision</h2>
+                    <p class="text-gray-700">The Volkswagen Group's "NEW AUTO" strategy aims to transform the company from a traditional vehicle manufacturer into a leading, software-driven mobility provider. This vision is built upon a foundation of strong brands, global scale, and cutting-edge technology platforms.</p>
+                    <p class="text-gray-700 mt-4">Key pillars include a unified technology platform for electric vehicles (SSP), in-house battery production via PowerCo, and an integrated mobility services ecosystem. The goal is to create a seamless, sustainable, and safe mobility experience for customers, generating new revenue pools and ensuring long-term competitiveness in a rapidly evolving industry.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="group-structure" class="scroll-mt-20 mt-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Volkswagen Group Brand Structure</h2>
+            <p class="text-lg text-gray-600 mb-12">The Group comprises ten core brands from five European countries, structured into Brand Groups: Volume, Premium, and Sport & Luxury. This flowchart illustrates the brand portfolio and their integration timeline.</p>
+            <div class="relative wrap overflow-hidden p-10 h-full">
+                <div class="border-2-2 absolute border-opacity-20 border-gray-700 h-full border" style="left: 50%"></div>
+                
+                <div class="mb-8 flex justify-between items-center w-full right-timeline">
+                    <div class="order-1 w-5/12"></div>
+                    <div class="z-20 flex items-center order-1 bg-gray-800 shadow-xl w-8 h-8 rounded-full">
+                        <h1 class="mx-auto font-semibold text-sm text-white">1965</h1>
+                    </div>
+                    <div class="order-1 bg-white rounded-lg shadow-xl w-5/12 px-6 py-4 card">
+                        <h3 class="font-bold text-gray-800 text-xl">Audi Acquired</h3>
+                        <p class="text-sm leading-snug tracking-wide text-gray-600">Acquired from Daimler-Benz, forming the basis of the Group's premium segment.</p>
+                    </div>
+                </div>
+
+                <div class="mb-8 flex justify-between flex-row-reverse items-center w-full left-timeline">
+                    <div class="order-1 w-5/12"></div>
+                    <div class="z-20 flex items-center order-1 bg-gray-800 shadow-xl w-8 h-8 rounded-full">
+                        <h1 class="mx-auto text-white font-semibold text-sm">1986</h1>
+                    </div>
+                    <div class="order-1 bg-white rounded-lg shadow-xl w-5/12 px-6 py-4 card">
+                        <h3 class="font-bold text-gray-800 text-xl">SEAT Joined</h3>
+                        <p class="text-sm leading-snug tracking-wide text-gray-600">The Spanish manufacturer became the third brand, expanding the Group's presence in Southern Europe.</p>
+                    </div>
+                </div>
+                
+                <div class="mb-8 flex justify-between items-center w-full right-timeline">
+                    <div class="order-1 w-5/12"></div>
+                    <div class="z-20 flex items-center order-1 bg-gray-800 shadow-xl w-8 h-8 rounded-full">
+                        <h1 class="mx-auto font-semibold text-sm text-white">1991</h1>
+                    </div>
+                    <div class="order-1 bg-white rounded-lg shadow-xl w-5/12 px-6 py-4 card">
+                        <h3 class="font-bold text-gray-800 text-xl">Škoda Acquired</h3>
+                        <p class="text-sm leading-snug tracking-wide text-gray-600">The Czech brand was added to the Volume group, known for its "Simply Clever" value proposition.</p>
+                    </div>
+                </div>
+
+                 <div class="mb-8 flex justify-between flex-row-reverse items-center w-full left-timeline">
+                    <div class="order-1 w-5/12"></div>
+                    <div class="z-20 flex items-center order-1 bg-gray-800 shadow-xl w-8 h-8 rounded-full">
+                        <h1 class="mx-auto text-white font-semibold text-sm">1998</h1>
+                    </div>
+                    <div class="order-1 bg-white rounded-lg shadow-xl w-5/12 px-6 py-4 card">
+                        <h3 class="font-bold text-gray-800 text-xl">Luxury Expansion</h3>
+                        <p class="text-sm leading-snug tracking-wide text-gray-600">A landmark year with the acquisition of Bentley, Lamborghini, and Bugatti, establishing the Sport & Luxury brand group.</p>
+                    </div>
+                </div>
+                
+                <div class="mb-8 flex justify-between items-center w-full right-timeline">
+                    <div class="order-1 w-5/12"></div>
+                    <div class="z-20 flex items-center order-1 bg-gray-800 shadow-xl w-8 h-8 rounded-full">
+                        <h1 class="mx-auto font-semibold text-sm text-white">2012</h1>
+                    </div>
+                    <div class="order-1 bg-white rounded-lg shadow-xl w-5/12 px-6 py-4 card">
+                        <h3 class="font-bold text-gray-800 text-xl">Porsche Integrated</h3>
+                        <p class="text-sm leading-snug tracking-wide text-gray-600">After a complex history, Porsche AG was fully integrated, strengthening the top end of the portfolio.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="strategy-platforms" class="scroll-mt-20 mt-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Strategy & Technology Pillars</h2>
+            <p class="text-lg text-gray-600 mb-8">Explore the core components of Volkswagen's future strategy. This section details the Group's approach to the key transformations shaping the automotive industry: electrification, software development, and sustainable operations.</p>
+            <div class="bg-white rounded-lg shadow p-2 mb-8 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                <button class="tab-btn flex-1 py-2 px-4 rounded-md text-sm font-semibold active" data-tab="electrification">⚡️ Electrification</button>
+                <button class="tab-btn flex-1 py-2 px-4 rounded-md text-sm font-semibold" data-tab="software">💻 Autonomous & Software</button>
+                <button class="tab-btn flex-1 py-2 px-4 rounded-md text-sm font-semibold" data-tab="sustainability">🌍 Sustainability & Circularity</button>
+            </div>
+            
+            <div id="tab-content">
+            </div>
+            
+            <div class="mt-12">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Core Technology Platforms</h3>
+                <p class="text-lg text-gray-600 mb-8">A key element of VW's strategy is the use of scalable, shared platforms across its brands. This approach reduces complexity, lowers costs, and accelerates development, allowing for tailored vehicles on a common technological foundation.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="card p-6">
+                        <h4 class="font-bold text-xl text-gray-800">MEB</h4>
+                        <p class="font-semibold text-blue-600">Modular Electric Drive Matrix</p>
+                        <p class="text-sm text-gray-600 mt-2">The foundational platform for the Group's volume electric models. It's highly flexible, supporting various body styles from compact cars to vans.</p>
+                        <p class="text-sm text-gray-800 font-semibold mt-4">Used by: VW ID. Series, Audi Q4 e-tron, Škoda Enyaq, Cupra Born.</p>
+                    </div>
+                    <div class="card p-6">
+                        <h4 class="font-bold text-xl text-gray-800">PPE</h4>
+                        <p class="font-semibold text-blue-600">Premium Platform Electric</p>
+                        <p class="text-sm text-gray-600 mt-2">Co-developed by Audi and Porsche, this 800-volt architecture is designed for premium and luxury electric vehicles, enabling high performance and fast charging.</p>
+                        <p class="text-sm text-gray-800 font-semibold mt-4">Used by: Porsche Macan EV, Audi A6 e-tron.</p>
+                    </div>
+                    <div class="card p-6">
+                        <h4 class="font-bold text-xl text-gray-800">SSP</h4>
+                        <p class="font-semibold text-blue-600">Scalable Systems Platform</p>
+                        <p class="text-sm text-gray-600 mt-2">The future unified platform. SSP will eventually replace all others, designed to be all-electric, fully digital, and highly scalable for all models from all brands.</p>
+                        <p class="text-sm text-gray-800 font-semibold mt-4">Future platform for all Group brands post-2026.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="brands-competition" class="scroll-mt-20 mt-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Brands & Market Dynamics</h2>
+            <p class="text-lg text-gray-600 mb-8">Volkswagen's multi-brand portfolio is its greatest strength. Select a brand to explore its unique identity, target market, and performance in key global regions. This demonstrates how the group manages its brands to maximize market coverage while minimizing internal cannibalization.</p>
+
+            <div class="flex items-center mb-8 bg-white p-4 rounded-lg shadow">
+                <label for="brand-selector" class="mr-4 font-semibold text-gray-700">Explore a Brand:</label>
+                <select id="brand-selector" class="block w-full max-w-xs pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                    <option value="vw">Volkswagen</option>
+                    <option value="audi">Audi</option>
+                    <option value="porsche">Porsche</option>
+                    <option value="skoda">Škoda</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="card p-6">
+                    <h3 id="brand-name" class="text-2xl font-bold text-gray-900 mb-4"></h3>
+                    <p id="brand-description" class="text-gray-700 mb-4"></p>
+                    <div class="border-t border-gray-200 pt-4">
+                        <h4 class="font-semibold text-gray-800">Key Focus & Demographics</h4>
+                        <p id="brand-demographics" class="text-sm text-gray-600 mt-2"></p>
+                    </div>
+                </div>
+                <div class="card p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Regional Market Share (2024 Est.)</h3>
+                    <div class="chart-container h-80">
+                         <canvas id="brandMarketShareChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Competitive Landscape</h3>
+                <p class="text-lg text-gray-600 mb-8">The automotive market is fiercely competitive, with challenges from legacy automakers and new, EV-focused players. VW Group's scale is a major advantage, but agility is key to competing with rivals like Tesla and BYD.</p>
+                <div class="card p-6">
+                    <h4 class="text-xl font-bold text-gray-900 mb-4">Global BEV Sales 2024 (YTD Estimates)</h4>
+                    <div class="chart-container h-80">
+                         <canvas id="bevCompetitionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="financials-swot" class="scroll-mt-20 mt-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Financials & ESG Performance</h2>
+            <p class="text-lg text-gray-600 mb-8">Analyze the Group's financial health and its commitment to Environmental, Social, and Governance (ESG) targets. This section highlights how VW is funding its ambitious transformation and tracking its progress towards becoming a more sustainable enterprise.</p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="card p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Financial Performance (2021-2025E)</h3>
+                     <div class="chart-container h-80">
+                         <canvas id="financialsChart"></canvas>
+                    </div>
+                </div>
+                <div class="card p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Key ESG Targets (Progress to 2030)</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-base font-medium text-gray-700">CO₂ Reduction (Production)</span>
+                                <span class="text-sm font-medium text-gray-700">60%</span>
+                            </div>
+                            <div class="progress-bar-bg w-full">
+                                <div id="esg-progress-1" class="progress-bar h-2.5" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-base font-medium text-gray-700">BEV Share of Sales</span>
+                                <span class="text-sm font-medium text-gray-700">50%</span>
+                            </div>
+                            <div class="progress-bar-bg w-full">
+                                <div id="esg-progress-2" class="progress-bar h-2.5" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-base font-medium text-gray-700">Female Leadership Share</span>
+                                <span class="text-sm font-medium text-gray-700">25%</span>
+                            </div>
+                            <div class="progress-bar-bg w-full">
+                                <div id="esg-progress-3" class="progress-bar h-2.5" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">SWOT Analysis</h3>
+                <p class="text-lg text-gray-600 mb-8">A summary of the Volkswagen Group's internal strengths and weaknesses, alongside external opportunities and threats in the current market.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="card p-6 border-l-4 border-green-500">
+                        <h4 class="font-bold text-xl text-green-700">Strengths</h4>
+                        <ul class="list-disc list-inside mt-2 space-y-1 text-gray-700">
+                            <li>Diverse and strong brand portfolio covering all segments.</li>
+                            <li>Massive global manufacturing footprint and scale.</li>
+                            <li>Significant investment capacity for R&D and electrification.</li>
+                            <li>Strong market position in Europe and China.</li>
+                        </ul>
+                    </div>
+                    <div class="card p-6 border-l-4 border-red-500">
+                        <h4 class="font-bold text-xl text-red-700">Weaknesses</h4>
+                        <ul class="list-disc list-inside mt-2 space-y-1 text-gray-700">
+                            <li>Complexity in managing numerous brands and platforms.</li>
+                            <li>Software development (via CARIAD) has faced delays and challenges.</li>
+                            <li>High cost structure compared to newer EV-only competitors.</li>
+                            <li>Lower market penetration in North America.</li>
+                        </ul>
+                    </div>
+                    <div class="card p-6 border-l-4 border-blue-500">
+                        <h4 class="font-bold text-xl text-blue-700">Opportunities</h4>
+                        <ul class="list-disc list-inside mt-2 space-y-1 text-gray-700">
+                            <li>Growth in the global EV market.</li>
+                            <li>New revenue streams from software, mobility services, and autonomous driving.</li>
+                            <li>Leveraging PowerCo for battery production and supply chain control.</li>
+                            <li>Growth potential in emerging markets with tailored products.</li>
+                        </ul>
+                    </div>
+                    <div class="card p-6 border-l-4 border-yellow-500">
+                        <h4 class="font-bold text-xl text-yellow-700">Threats</h4>
+                        <ul class="list-disc list-inside mt-2 space-y-1 text-gray-700">
+                            <li>Intense competition from Tesla, BYD, and other Chinese EV makers.</li>
+                            <li>Geopolitical tensions affecting supply chains and market access.</li>
+                            <li>Potential for slower-than-expected EV adoption in some regions.</li>
+                            <li>Regulatory changes regarding emissions and trade policies.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="global-markets" class="scroll-mt-20 mt-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Global Markets: Strategy & Outlook</h2>
+            <p class="text-lg text-gray-600 mb-8">Volkswagen Group's success is built on its global presence. Explore the tailored strategies for key regions, addressing unique consumer preferences, competitive dynamics, and regulatory environments.</p>
+            <div class="bg-white rounded-lg shadow p-2 mb-8 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                <button class="global-tab-btn flex-1 py-2 px-4 rounded-md text-sm font-semibold active" data-tab="china">🇨🇳 China</button>
+                <button class="global-tab-btn flex-1 py-2 px-4 rounded-md text-sm font-semibold" data-tab="north_america">🇺🇸 North America</button>
+                <button class="global-tab-btn flex-1 py-2 px-4 rounded-md text-sm font-semibold" data-tab="india">🇮🇳 India</button>
+            </div>
+            
+            <div id="global-tab-content">
+            </div>
+        </section>
+
+      <section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+
+    </main>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('section');
+    const mobileNav = document.getElementById('mobile-nav');
+
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.5
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').substring(1) === entry.target.id) {
+                        link.classList.add('active');
+                    }
+                });
+                mobileNav.value = `#${entry.target.id}`;
+            }
+        });
+    }, observerOptions);
+
+    sections.forEach(section => {
+        observer.observe(section);
+    });
+    
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            // A small hack to deal with the re-named sections without changing all IDs
+            const selector = targetId.replace('-platforms', '').replace('-competition', '').replace('-swot', '');
+            document.querySelector(selector).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+
+    mobileNav.addEventListener('change', (e) => {
+        const targetId = e.target.value;
+        const selector = targetId.replace('-platforms', '').replace('-competition', '').replace('-swot', '');
+        document.querySelector(selector).scrollIntoView({ behavior: 'smooth' });
+    });
+    
+    function formatTick(value) {
+        if (value.length > 16) {
+            return value.substring(0, 16) + '...';
+        }
+        return value;
+    }
+
+    const salesMixData = {
+        labels: ['BEV (Battery Electric)', 'PHEV (Plug-in Hybrid)', 'ICE (Internal Combustion)'],
+        datasets: [{
+            label: 'Sales Mix',
+            data: [8.3, 5.1, 86.6],
+            backgroundColor: [
+                '#004d8c', 
+                '#0077c8', 
+                '#d1e0ec'  
+            ],
+            borderColor: '#ffffff',
+            borderWidth: 2,
+            hoverOffset: 4
+        }]
+    };
+
+    const salesMixCtx = document.getElementById('salesMixChart').getContext('2d');
+    new Chart(salesMixCtx, {
+        type: 'doughnut',
+        data: salesMixData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            return `${context.label}: ${context.raw}%`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    const strategyTabs = {
+        electrification: `
+            <div class="card p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Roadmap to an All-Electric Future</h3>
+                    <p class="text-gray-700 mb-4">VW Group is committed to leading the electric transition. The strategy involves massive investment in battery technology through its subsidiary PowerCo, which will manage the Group's global battery business. The goal is to establish six gigafactories in Europe by 2030.</p>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li><strong>2025:</strong> 20% of all sales to be all-electric.</li>
+                        <li><strong>2030:</strong> At least 50% of global sales to be all-electric. In Europe, this figure is ~70%.</li>
+                        <li><strong>2040:</strong> Nearly 100% of new vehicles in major markets to be zero-emission.</li>
+                        <li><strong>2050:</strong> Entire company to be net carbon-neutral.</li>
+                    </ul>
+                </div>
+                <div class="chart-container">
+                     <canvas id="electrificationChart"></canvas>
+                </div>
+            </div>`,
+        software: `
+            <div class="card p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-4">The Software-Defined Vehicle</h3>
+                <p class="text-gray-700 mb-4">CARIAD, the Group's software company, is central to developing a unified software stack (VW.OS) for all Group brands. This enables over-the-air updates, new digital services, and advanced autonomous driving functions. The strategy is a hybrid approach, combining in-house development for core systems with strategic partnerships for specific technologies and applications.</p>
+                <div class="mt-6">
+                    <h4 class="font-semibold text-gray-800">Key Initiatives:</h4>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700 mt-2">
+                        <li><strong>Level 2/2+ ADAS:</strong> Widespread deployment across volume brands.</li>
+                        <li><strong>Level 3 System:</strong> Partnership with Bosch for development and deployment in premium brands.</li>
+                        <li><strong>Level 4 (Autonomous Driving):</strong> Focus on commercial vehicles (ID. Buzz AD) through partnership with Mobileye.</li>
+                    </ul>
+                </div>
+            </div>`,
+        sustainability: `
+            <div class="card p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Sustainable Manufacturing & Circular Economy</h3>
+                <p class="text-gray-700 mb-4">The 'goTOzero' mission guides the Group's environmental strategy. The focus is on decarbonizing the entire lifecycle of a vehicle, from supply chain and production to use and end-of-life recycling. Key activities include transitioning manufacturing plants to renewable energy, increasing the use of recycled materials, and establishing closed-loop battery recycling processes.</p>
+                <div class="mt-6">
+                    <h4 class="font-semibold text-gray-800">Circular Economy Highlights:</h4>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700 mt-2">
+                        <li><strong>Battery Recycling:</strong> PowerCo is developing processes to recover over 90% of raw materials from used batteries.</li>
+                        <li><strong>Green Steel:</strong> Partnerships with suppliers like Salzgitter AG for low-CO₂ steel.</li>
+                        <li><strong>Recycled Materials:</strong> Increased use of "Recyclates" in new models, such as the ID. Buzz.</li>
+                    </ul>
+                </div>
+            </div>`
+    };
+    
+    const tabContainer = document.getElementById('tab-content');
+    const tabButtons = document.querySelectorAll('.tab-btn');
+
+    function renderTabContent(tabId) {
+        tabContainer.innerHTML = strategyTabs[tabId];
+        if (tabId === 'electrification') {
+            const evCtx = document.getElementById('electrificationChart').getContext('2d');
+            new Chart(evCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['2025 Target', '2030 Target (Global)', '2030 Target (Europe)'],
+                    datasets: [{
+                        label: '% BEV Share of Sales',
+                        data: [20, 50, 70],
+                        backgroundColor: '#004d8c',
+                        borderColor: '#003b6f',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { beginAtZero: true, max: 100, grid: { display: false } },
+                        y: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+    }
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            renderTabContent(button.dataset.tab);
+        });
+    });
+
+    renderTabContent('electrification');
+
+    const brandData = {
+        vw: {
+            name: "Volkswagen",
+            description: "The core brand of the Group, Volkswagen delivers quality and innovation to the mass market. Its strategy focuses on democratizing electric mobility with the ID. family of vehicles.",
+            demographics: "Broad appeal, targeting families, commuters, and first-time EV buyers with a focus on reliability, safety, and practicality.",
+            marketShare: [10.5, 4.8, 7.2]
+        },
+        audi: {
+            name: "Audi",
+            description: "'Vorsprung durch Technik' (Progress through Technology). Audi is the Group's premium technology leader, focusing on cutting-edge design, digitalization, and performance in the luxury segment.",
+            demographics: "Affluent professionals and technology enthusiasts who value sophisticated design, advanced features, and a premium driving experience.",
+            marketShare: [5.1, 2.1, 4.5]
+        },
+        porsche: {
+            name: "Porsche",
+            description: "A legendary sports car manufacturer, Porsche combines high performance with everyday usability. The brand is successfully electrifying its lineup, starting with the Taycan, without compromising its sporting heritage.",
+            demographics: "High-net-worth individuals and performance driving enthusiasts seeking exclusivity, iconic design, and a thrilling driving experience.",
+            marketShare: [1.8, 0.9, 1.5]
+        },
+        skoda: {
+            name: "Škoda",
+            description: "Škoda offers exceptional value for money with 'Simply Clever' solutions, spacious interiors, and reliable engineering. It's a key volume brand, particularly strong in Europe and emerging markets like India.",
+            demographics: "Practical, value-conscious buyers and families looking for spacious, reliable, and feature-rich vehicles at a competitive price point.",
+            marketShare: [7.3, 0.5, 2.1]
+        }
+    };
+
+    const brandSelector = document.getElementById('brand-selector');
+    const brandName = document.getElementById('brand-name');
+    const brandDescription = document.getElementById('brand-description');
+    const brandDemographics = document.getElementById('brand-demographics');
+    const brandMarketShareCtx = document.getElementById('brandMarketShareChart').getContext('2d');
+    let brandChart;
+    
+    function updateBrandInfo(brandKey) {
+        const data = brandData[brandKey];
+        brandName.textContent = data.name;
+        brandDescription.textContent = data.description;
+        brandDemographics.textContent = data.demographics;
+
+        if (brandChart) {
+            brandChart.destroy();
+        }
+
+        brandChart = new Chart(brandMarketShareCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Europe', 'North America', 'Asia-Pacific'],
+                datasets: [{
+                    label: 'Market Share (%)',
+                    data: data.marketShare,
+                    backgroundColor: ['#004d8c', '#0077c8', '#5da9e9'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Market Share (%)'
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    brandSelector.addEventListener('change', (e) => updateBrandInfo(e.target.value));
+    updateBrandInfo('vw');
+
+    const bevCompCtx = document.getElementById('bevCompetitionChart').getContext('2d');
+    new Chart(bevCompCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Tesla', 'BYD', 'VW Group', 'Stellantis', 'Hyundai/Kia'],
+            datasets: [{
+                label: 'BEV Units (Millions)',
+                data: [1.81, 1.57, 0.77, 0.55, 0.51],
+                backgroundColor: [
+                    '#cc0000',
+                    '#00a651',
+                    '#004d8c',
+                    '#1d2c54',
+                    '#e4002b'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Units (Millions)'
+                    }
+                }
+            }
+        }
+    });
+
+    const financialsCtx = document.getElementById('financialsChart').getContext('2d');
+    new Chart(financialsCtx, {
+        type: 'line',
+        data: {
+            labels: ['2021', '2022', '2023', '2024', '2025E'],
+            datasets: [
+                {
+                    label: 'Revenue (€B)',
+                    data: [250.2, 279.2, 286.1, 301.5, 315.0],
+                    borderColor: '#004d8c',
+                    backgroundColor: 'rgba(0, 77, 140, 0.1)',
+                    yAxisID: 'y',
+                    fill: true,
+                    tension: 0.3
+                },
+                {
+                    label: 'Operating Margin (%)',
+                    data: [7.7, 7.9, 7.0, 7.3, 7.5],
+                    borderColor: '#5da9e9',
+                    backgroundColor: 'transparent',
+                    yAxisID: 'y1',
+                    tension: 0.3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: { display: true, text: 'Revenue (€ Billion)' }
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: { display: true, text: 'Operating Margin (%)' },
+                    grid: { drawOnChartArea: false }
+                }
+            },
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+
+    setTimeout(() => {
+        document.getElementById('esg-progress-1').style.width = '60%';
+        document.getElementById('esg-progress-2').style.width = '50%';
+        document.getElementById('esg-progress-3').style.width = '25%';
+    }, 500);
+
+    const globalTabs = {
+        china: `
+            <div class="card p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-4">'In China, for China' Strategy</h3>
+                <p class="text-gray-700">China is the Group's most important single market. The strategy focuses on deep localization to compete with domestic players. This includes local R&D for software and autonomous driving, partnerships with Chinese tech companies (e.g., Horizon Robotics, XPENG), and developing models specifically for Chinese consumer tastes.</p>
+                <ul class="list-disc list-inside space-y-2 text-gray-700 mt-4">
+                    <li><strong>Key Goal:</strong> Remain the #1 international OEM and a top 3 player in a rapidly transforming market.</li>
+                    <li><strong>EV Focus:</strong> Accelerate the rollout of the ID. family and develop new, China-specific EV platforms.</li>
+                    <li><strong>Partnerships:</strong> Leveraging local expertise to accelerate development of connectivity and ADAS features that meet local expectations.</li>
+                </ul>
+            </div>`,
+        north_america: `
+            <div class="card p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Regaining Market Share & Electrification</h3>
+                <p class="text-gray-700">The North American strategy aims to increase market share to 10% by 2030. Key pillars include major investments in local EV production (Chattanooga plant), battery cell manufacturing in Canada (PowerCo), and reviving the Scout brand as a rugged, all-electric OEM. The focus is on SUVs and trucks, which dominate the market.</p>
+                 <ul class="list-disc list-inside space-y-2 text-gray-700 mt-4">
+                    <li><strong>Investment:</strong> Over $7 billion committed to the region for EV and battery production.</li>
+                    <li><strong>Product Offensive:</strong> Launch of ID. Buzz, ID.7, and future electric SUVs. The Scout brand will introduce an electric SUV and pickup.</li>
+                    <li><strong>IRA Compliance:</strong> Localizing battery and vehicle production to leverage US federal tax credits.</li>
+                </ul>
+            </div>`,
+        india: `
+             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="card p-6 md:col-span-2">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">INDIA 2.0 Strategy</h3>
+                    <p class="text-gray-700">Led by Škoda Auto, the INDIA 2.0 project aims to capture 5% market share by 2025. The strategy rests on developing vehicles on the localized MQB-A0-IN platform, achieving high levels of local content (up to 95%) to manage costs effectively. This allows the group to offer products like the Škoda Kushaq and Volkswagen Taigun, which are specifically designed for Indian consumer preferences, focusing on safety, robust engineering, and features.</p>
+                    <p class="text-gray-700 mt-4">The key challenge remains intense competition from established players in the budget segment. However, the opportunity lies in the growing demand for premium, safe, and feature-rich vehicles. Future plans involve expanding the model portfolio, including exploring EV options, and strengthening the dealer and service network across the country.</p>
+                </div>
+                <div class="card p-6 flex flex-col justify-between">
+                     <div>
+                        <h3 class="text-lg font-semibold text-gray-800">Market Presence</h3>
+                        <p class="text-sm text-gray-600">Prioritized Brands: Škoda, Volkswagen, Audi.</p>
+                     </div>
+                     <div class="mt-4">
+                        <h3 class="text-lg font-semibold text-gray-800">Current Market Share</h3>
+                        <p class="text-3xl font-bold text-gray-900">~2.5%</p>
+                        <p class="text-sm text-gray-500">Target: 5% by 2025</p>
+                     </div>
+                      <div class="mt-4">
+                        <h3 class="text-lg font-semibold text-gray-800">Key Investment</h3>
+                        <p class="text-3xl font-bold text-gray-900">€1 Billion</p>
+                        <p class="text-sm text-gray-500">For INDIA 2.0 project</p>
+                     </div>
+                </div>
+            </div>`
+    };
+
+    const globalTabContainer = document.getElementById('global-tab-content');
+    const globalTabButtons = document.querySelectorAll('.global-tab-btn');
+
+    function renderGlobalTabContent(tabId) {
+        globalTabContainer.innerHTML = globalTabs[tabId];
+    }
+
+    globalTabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            globalTabButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            renderGlobalTabContent(button.dataset.tab);
+        });
+    });
+
+    renderGlobalTabContent('china');
+
+});
+</script>
+</body>
+</html>
+
