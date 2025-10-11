@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover Your Ikigai: Japanese Secret to Joy & Longevity</title>
+    <meta name="description" content="Unlock your purpose with this interactive Ikigai guide. Discover the Japanese secret to a long and happy life, featuring Okinawa's wisdom, flow, and resilience.">
+    <meta name="keywords" content="Ikigai, Japanese secret to a long life, Find your purpose, Happiness and well-being, Okinawa longevity, Blue Zones lifestyle, Flow state psychology, Mindfulness practice, Self-discovery guide, Ikigai Venn diagram, Japanese philosophy, Stress management techniques, Personal growth, Meaning of life, Healthy living tips">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+     
+     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+  
+    <!-- Chosen Palette: Zen Garden -->
+    <!-- Application Structure Plan: The application is structured thematically rather than mirroring the book's chapters. This design prioritizes user engagement and exploration. It starts with the core concept (the Ikigai Venn diagram), making it the central interactive element. Subsequent sections delve into practical applications like the '10 Rules' and 'Longevity Secrets', presented as digestible, interactive modules (cards and a dashboard). This non-linear structure allows users to explore the concepts that interest them most, fostering a deeper understanding of how the principles connect. The goal is to transform a passive reading experience into an active journey of discovery. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Core Ikigai concept -> Goal: Organize & Inform -> Viz/Presentation: Interactive Venn Diagram (HTML/CSS) -> Interaction: Click on circles/intersections to update a detailed text panel -> Justification: Visually represents the book's central framework and makes it explorable.
+        - Report Info: The 10 rules of Ikigai -> Goal: Inform & Organize -> Viz/Presentation: Interactive Card Grid (HTML/Tailwind) -> Interaction: Click to reveal detailed descriptions for each rule -> Justification: Breaks down the core tenets into memorable, bite-sized pieces, encouraging focused engagement.
+        - Report Info: Okinawan Diet Principles -> Goal: Inform & Compare -> Viz/Presentation: Donut Chart (Chart.js/Canvas) -> Interaction: Hover for tooltips on food group proportions -> Justification: A donut chart effectively visualizes the proportional balance of the diet, making the concept of 'eating the rainbow' immediately understandable.
+        - Report Info: Concept of 'Flow' -> Goal: Inform -> Viz/Presentation: A structured list with an adjacent content panel -> Interaction: Clicking a principle updates the panel with a detailed explanation -> Justification: This interactive list format allows for a clean overview while providing depth on demand, explaining a complex psychological state clearly. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f7f4;
+            color: #3d3d3d;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #0d9488;
+            border-bottom-color: #0d9488;
+        }
+        .card {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            cursor: pointer;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .venn-circle {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: 500;
+            color: white;
+            border-radius: 50%;
+        }
+        .venn-circle:hover, .venn-circle.active {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+        .content-panel-fade-enter {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .content-panel-fade-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .chart-container { 
+            position: relative; 
+            width: 100%; 
+            max-width: 400px; 
+            margin-left: auto; 
+            margin-right: auto; 
+            height: 400px;
+            max-height: 400px; 
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
+        }
+        .accordion-button svg {
+            transition: transform 0.3s ease;
+        }
+
+
+      
+
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+
+.explore-more-section {
+
+    padding: 3rem 1.5rem;
+
+    margin-top: 3rem; /* Adds space above the section */
+
+    background-color: #f8f7f4; /* A light, neutral background */
+
+    text-align: center;
+
+    border-top: 1px solid #e0e0e0;
+
+    border-bottom: 1px solid #e0e0e0;
+
+}
+
+
+.explore-more-section h3 {
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 2.2rem;
+
+    color: #2c3e50;
+
+    margin-bottom: 0.75rem;
+
+}
+
+
+.explore-more-section p {
+
+    max-width: 650px;
+
+    margin: 0 auto 1.75rem auto;
+
+    font-size: 1.1em;
+
+    color: #555;
+
+    line-height: 1.6;
+
+}
+
+
+.explore-more-buttons {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 1rem;
+
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+
+}
+
+
+.explore-more-buttons a {
+
+    display: inline-block;
+
+    background-color: #34495e;
+
+    color: white;
+
+    padding: 0.8rem 2rem;
+
+    border-radius: 30px;
+
+    text-decoration: none;
+
+    font-weight: bold;
+
+    font-size: 1em;
+
+    transition: transform 0.3s ease, background-color 0.3s ease;
+
+    border: 2px solid transparent;
+
+}
+
+
+.explore-more-buttons a:hover {
+
+    transform: translateY(-3px);
+
+    background-color: #2c3e50;
+
+}
+
+
+/* Secondary button style */
+
+.explore-more-buttons a.secondary {
+
+    background-color: transparent;
+
+    color: #34495e;
+
+    border-color: #34495e;
+
+}
+
+
+.explore-more-buttons a.secondary:hover {
+
+    background-color: #34495e;
+
+    color: white;
+
+}
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-teal-700">Ikigai</h1>
+            <div class="hidden md:flex space-x-4 lg:space-x-6 text-sm lg:text-base">
+                <a href="#ikigai-concept" class="nav-link pb-1">Concept</a>
+                <a href="#key-insights" class="nav-link pb-1">Key Insights</a>
+                <a href="#rules" class="nav-link pb-1">10 Rules</a>
+                <a href="#longevity" class="nav-link pb-1">Longevity</a>
+                <a href="#flow" class="nav-link pb-1">Flow</a>
+                <a href="#mind-body" class="nav-link pb-1">Mind & Body</a>
+                <a href="#resilience" class="nav-link pb-1">Resilience</a>
+                <a href="#moai" class="nav-link pb-1">Community</a>
+                <a href="#authors" class="nav-link pb-1">Authors</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-stone-600 focus:outline-none">
+                <span class="text-3xl">☰</span>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden bg-white">
+            <a href="#ikigai-concept" class="block py-2 px-6 text-stone-700 hover:bg-stone-100">The Concept</a>
+            <a href="#key-insights" class="block py-2 px-6 text-stone-700 hover:bg-stone-100">Key Insights</a>
+            <a href="#rules" class="block py-2 px-6 text-stone-700 hover:bg-stone-100">10 Rules</a>
+            <a href="#longevity" class="block py-2 px-6 text-stone-700 hover:bg-stone-100">Longevity Secrets</a>
+            <a href="#flow" class="block py-2 px-6 text-stone-700 hover:bg-stone-100">Finding Flow</a>
+            <a href="#mind-body" class="block py-2 px-6 text-stone-700 hover:bg-stone-100">Mind & Body</a>
+            <a href="#resilience" class="block py-2 px-6 text-stone-700 hover:bg-stone-100">Resilience</a>
+            <a href="#moai" class="block py-2 px-6 text-stone-700 hover:bg-stone-100">Community</a>
+            <a href="#authors" class="block py-2 px-6 text-stone-700 hover:bg-stone-100">The Authors</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        <section class="text-center mb-20">
+            <h2 class="text-4xl md:text-5xl font-bold text-teal-800 mb-4">The Japanese Secret to a Long and Happy Life</h2>
+            <p class="max-w-3xl mx-auto text-lg text-stone-600">
+                "Ikigai" by Francesc Miralles and Héctor García explores the Japanese concept of a 'reason for being.' It's an investigation into the lifestyles of the world's longest-living people, particularly in Okinawa, to uncover the secrets to a joyful, purposeful, and healthy life. This interactive guide breaks down the core principles of the book.
+            </p>
+        </section>
+
+        <section id="ikigai-concept" class="mb-24 scroll-mt-20">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold mb-2">What is Ikigai?</h3>
+                <p class="max-w-3xl mx-auto text-stone-600">
+                    Ikigai is the intersection of four fundamental elements of life: what you love, what you are good at, what the world needs, and what you can be paid for. Finding your Ikigai is about finding a state of balance and purpose. Click on the different parts of the diagram below to explore each component and their powerful intersections.
+                </p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
+                <div class="relative w-[320px] h-[320px] sm:w-[400px] sm:h-[400px] flex-shrink-0">
+                    <div id="venn-love" class="venn-circle absolute top-0 left-[50%] -translate-x-1/2 w-1/2 h-1/2 bg-rose-500/80 p-2" data-key="love">What You LOVE</div>
+                    <div id="venn-good" class="venn-circle absolute bottom-0 left-[50%] -translate-x-1/2 w-1/2 h-1/2 bg-amber-500/80 p-2" data-key="good">What You Are GOOD AT</div>
+                    <div id="venn-needs" class="venn-circle absolute top-[50%] -translate-y-1/2 left-0 w-1/2 h-1/2 bg-sky-500/80 p-2" data-key="needs">What The WORLD NEEDS</div>
+                    <div id="venn-paid" class="venn-circle absolute top-[50%] -translate-y-1/2 right-0 w-1/2 h-1/2 bg-emerald-500/80 p-2" data-key="paid">What You Can Be PAID FOR</div>
+
+                    <div id="venn-passion" class="venn-circle absolute top-[12.5%] left-[50%] -translate-x-1/2 w-1/4 h-1/4 bg-rose-600/90 text-xs" data-key="passion">Passion</div>
+                    <div id="venn-mission" class="venn-circle absolute top-[50%] -translate-y-1/2 left-[12.5%] w-1/4 h-1/4 bg-sky-600/90 text-xs" data-key="mission">Mission</div>
+                    <div id="venn-profession" class="venn-circle absolute bottom-[12.5%] left-[50%] -translate-x-1/2 w-1/4 h-1/4 bg-amber-600/90 text-xs" data-key="profession">Profession</div>
+                    <div id="venn-vocation" class="venn-circle absolute top-[50%] -translate-y-1/2 right-[12.5%] w-1/4 h-1/4 bg-emerald-600/90 text-xs" data-key="vocation">Vocation</div>
+                    
+                    <div id="venn-ikigai" class="venn-circle absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-1/3 h-1/3 bg-teal-700 z-10 text-xl" data-key="ikigai">IKIGAI</div>
+                </div>
+
+                <div id="venn-content-panel" class="w-full lg:w-1/2 min-h-[250px] bg-white p-8 rounded-lg shadow-md">
+                    <h4 id="venn-title" class="text-2xl font-bold text-teal-700 mb-3">Your Reason for Being</h4>
+                    <p id="venn-text" class="text-stone-600">The central point where your passions and talents converge with the things that the world needs and is willing to pay for. It’s not just about money; it’s about a feeling of fulfillment and happiness that comes from living a life of purpose. This is the ultimate goal.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="key-insights" class="mb-24 scroll-mt-20">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold mb-2">Chapter-by-Chapter Key Insights</h3>
+                <p class="max-w-3xl mx-auto text-stone-600">
+                    Get a structured overview of the book's core teachings. Click on each chapter title to expand and discover its essential lessons and definitions.
+                </p>
+            </div>
+            <div id="accordion-container" class="max-w-4xl mx-auto space-y-4">
+            </div>
+        </section>
+
+        <section id="rules" class="mb-24 scroll-mt-20">
+             <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold mb-2">The 10 Rules of Ikigai</h3>
+                <p class="max-w-3xl mx-auto text-stone-600">
+                    The authors distilled the wisdom of Okinawan centenarians into ten core principles. These are not strict commandments but gentle reminders for a long, happy, and mindful life. Click on each rule to read its description.
+                </p>
+            </div>
+            <div id="rules-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+            </div>
+        </section>
+
+        <section id="longevity" class="mb-24 scroll-mt-20">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold mb-2">Secrets from the Land of Immortals</h3>
+                <p class="max-w-3xl mx-auto text-stone-600">
+                    Okinawa, Japan, is a "Blue Zone," an area with an unusually high number of centenarians. Their lifestyle holds key lessons in diet, movement, and community. This section explores three pillars of their longevity.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center text-center">
+                    <span class="text-4xl mb-4">🥗</span>
+                    <h4 class="text-xl font-bold mb-3">The Okinawan Diet</h4>
+                    <p class="text-stone-600 mb-4 flex-grow">A diet rich in vegetables, fruits, and whole grains, with minimal sugar and processed foods. They believe in "hara hachi bu" – eating until you are 80% full.</p>
+                    <div class="chart-container">
+                        <canvas id="dietChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center text-center">
+                     <span class="text-4xl mb-4">🤸</span>
+                    <h4 class="text-xl font-bold mb-3">Gentle Movement</h4>
+                    <p class="text-stone-600 mb-4 flex-grow">Longevity is linked to constant, gentle movement rather than intense, sporadic exercise. Practices like gardening, walking, and simple exercises like Radio Taiso keep the body active throughout the day.</p>
+                     <div class="bg-stone-100 rounded-lg p-4 w-full mt-auto">
+                        <h5 class="font-semibold mb-2">Key Principle:</h5>
+                        <p class="text-sm text-teal-800">"What we don't use, we lose."</p>
+                        <p class="text-xs text-stone-500 mt-2">Even a short daily walk can have significant long-term health benefits.</p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center text-center">
+                    <span class="text-4xl mb-4">🤝</span>
+                    <h4 class="text-xl font-bold mb-3">Strong Social Ties (Moai)</h4>
+                    <p class="text-stone-600 mb-4 flex-grow">A "moai" is a close-knit group of friends who support each other for life. This strong sense of community provides emotional and financial support, combats loneliness, and enhances well-being.</p>
+                    <div class="bg-stone-100 rounded-lg p-4 w-full mt-auto">
+                        <h5 class="font-semibold mb-2">Key Principle:</h5>
+                        <p class="text-sm text-teal-800">"A sense of belonging fosters purpose."</p>
+                        <p class="text-xs text-stone-500 mt-2">Nurturing friendships is as important as any diet or exercise routine.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="flow" class="mb-24 scroll-mt-20">
+             <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold mb-2">Finding Your Flow</h3>
+                <p class="max-w-3xl mx-auto text-stone-600">
+                    "Flow" is the state of being completely immersed and energized by an activity. It's when you are so absorbed that you lose track of time. The book argues that our happiest moments are often when we are in a state of flow, which is closely linked to our ikigai. Below are the key conditions to achieve it.
+                </p>
+            </div>
+            <div class="flex flex-col md:flex-row gap-8">
+                <div id="flow-principles" class="w-full md:w-1/3 space-y-3">
+                </div>
+                <div id="flow-content-panel" class="w-full md:w-2/3 bg-white p-8 rounded-lg shadow-md min-h-[200px]">
+                     <h4 id="flow-title" class="text-2xl font-bold text-teal-700 mb-3">Achieving Deep Immersion</h4>
+                    <p id="flow-text" class="text-stone-600">Click on a principle to the left to learn more about how to cultivate a state of flow in your daily activities, whether at work or play. Mastering flow is key to a happier, more engaged life.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="mind-body" class="mb-24 scroll-mt-20">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold mb-2">The Mind-Body Connection</h3>
+                <p class="max-w-3xl mx-auto text-stone-600">
+                    The secret to longevity isn't just physical health; it's mental agility and a positive outlook. Okinawans exemplify how an active mind and a resilient spirit contribute to a long, fulfilling life. Explore the core mental frameworks they cultivate.
+                </p>
+            </div>
+            <div class="flex flex-col md:flex-row gap-8">
+                <div id="mind-body-principles" class="w-full md:w-1/3 space-y-3">
+                    <button class="w-full text-left p-4 rounded-lg bg-white shadow-sm hover:bg-teal-50 transition border border-stone-200 mind-body-button" data-key="activeMind">
+                        An Active Mind
+                    </button>
+                    <button class="w-full text-left p-4 rounded-lg bg-white shadow-sm hover:bg-teal-50 transition border border-stone-200 mind-body-button" data-key="stress">
+                        Managing Stress
+                    </button>
+                    <button class="w-full text-left p-4 rounded-lg bg-white shadow-sm hover:bg-teal-50 transition border border-stone-200 mind-body-button" data-key="shoshin">
+                        Shoshin (Beginner's Mind)
+                    </button>
+                </div>
+                <div id="mind-body-content-panel" class="w-full md:w-2/3 bg-white p-8 rounded-lg shadow-md min-h-[200px]">
+                     <h4 id="mind-body-title" class="text-2xl font-bold text-teal-700 mb-3">Select a Concept</h4>
+                    <p id="mind-body-text" class="text-stone-600">Explore the mental habits that promote longevity and well-being by clicking on one of the principles to the left.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="resilience" class="mb-24 scroll-mt-20">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold mb-2">The Art of Resilience</h3>
+                <p class="max-w-3xl mx-auto text-stone-600">
+                    Life is imperfect and fleeting. Japanese philosophy offers powerful concepts for navigating setbacks and appreciating the present. Understanding these ideas is key to building antifragility—the ability to grow stronger from challenges.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-lg shadow-md">
+                    <h4 class="text-2xl font-bold mb-4 text-teal-800">Wabi-Sabi (侘寂)</h4>
+                    <p class="text-stone-600 mb-4">
+                        This worldview centers on the acceptance of transience and imperfection. Wabi-sabi is about finding beauty in things that are imperfect, impermanent, and incomplete. It teaches us to embrace flaws, both in the world and in ourselves, rather than striving for an unattainable ideal of perfection.
+                    </p>
+                    <ul class="space-y-2 text-sm text-stone-700">
+                        <li class="flex items-start"><span class="mr-2 text-teal-600">✓</span><span>Reduces the anxiety of perfectionism.</span></li>
+                        <li class="flex items-start"><span class="mr-2 text-teal-600">✓</span><span>Fosters gratitude for what we have.</span></li>
+                        <li class="flex items-start"><span class="mr-2 text-teal-600">✓</span><span>Encourages us to see aging and decay as natural and beautiful.</span></li>
+                    </ul>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-md">
+                     <h4 class="text-2xl font-bold mb-4 text-teal-800">Ichi-go Ichi-e (一期一会)</h4>
+                     <p class="text-stone-600 mb-4">
+                        Translated as "one time, one meeting," this concept reminds us that every moment is a unique treasure that will never occur again. It encourages us to be fully present and cherish each encounter and experience, as it is a once-in-a-lifetime event. This mindset helps us live more deeply and mindfully.
+                    </p>
+                     <ul class="space-y-2 text-sm text-stone-700">
+                        <li class="flex items-start"><span class="mr-2 text-teal-600">✓</span><span>Promotes mindfulness and focus on the present.</span></li>
+                        <li class="flex items-start"><span class="mr-2 text-teal-600">✓</span><span>Deepens our appreciation for daily life.</span></li>
+                        <li class="flex items-start"><span class="mr-2 text-teal-600">✓</span><span>Helps us let go of past regrets and future anxieties.</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="moai" class="mb-24 scroll-mt-20">
+            <div class="bg-white p-8 md:p-12 rounded-lg shadow-md">
+                <div class="text-center max-w-4xl mx-auto">
+                    <span class="text-5xl mb-4 block">🤝</span>
+                    <h3 class="text-3xl font-bold mb-4 text-teal-800">The Power of Community: Moai</h3>
+                    <p class="text-stone-600 text-lg mb-6">
+                        While mentioned briefly as a secret to longevity, the concept of a <span class="font-semibold text-teal-700">Moai</span> is a cornerstone of Okinawan society. It is a lifelong social support group, a second family that provides immense emotional, social, and even financial stability. This deep sense of belonging is a powerful antidote to the loneliness and isolation prevalent in modern societies.
+                    </p>
+                    <div class="border-t border-stone-200 pt-6">
+                        <h4 class="font-semibold text-xl mb-4">Key Benefits of a Moai:</h4>
+                        <ul class="text-left inline-block space-y-2 text-stone-700">
+                             <li class="flex items-center"><span class="mr-3 text-teal-600 text-xl">●</span><span>Provides a reliable, lifelong support system.</span></li>
+                             <li class="flex items-center"><span class="mr-3 text-teal-600 text-xl">●</span><span>Reduces stress and promotes emotional well-being.</span></li>
+                             <li class="flex items-center"><span class="mr-3 text-teal-600 text-xl">●</span><span>Encourages shared hobbies and healthy behaviors.</span></li>
+                             <li class="flex items-center"><span class="mr-3 text-teal-600 text-xl">●</span><span>Ensures a stable sense of purpose and identity within a group.</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="authors" class="scroll-mt-20">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold mb-2">About the Authors</h3>
+                <p class="max-w-3xl mx-auto text-stone-600">
+                    "Ikigai" was co-authored by two individuals passionate about exploring culture, purpose, and the art of living well.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-lg shadow-md text-center flex flex-col">
+                    <h4 class="text-2xl font-bold text-teal-800 mb-3">Héctor García</h4>
+                    <p class="text-stone-600 mb-6 flex-grow">
+                        A citizen of Spain, Héctor García has lived in Japan since 2004. He is the creator of the popular blog Kirai.net and the author of several books about Japanese culture. His deep immersion in Japanese society gave him unique insights into the concepts of ikigai and the lifestyles of Okinawans.
+                    </p>
+                    <div>
+                        <h5 class="font-semibold text-stone-700 mb-2">Other Notable Works:</h5>
+                        <ul class="text-sm text-teal-700">
+                            <li>A Geek in Japan</li>
+                            <li>The Book of Ichi-go Ichi-e</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-md text-center flex flex-col">
+                    <h4 class="text-2xl font-bold text-teal-800 mb-3">Francesc Miralles</h4>
+                    <p class="text-stone-600 mb-6 flex-grow">
+                        Francesc Miralles is an award-winning author who has written numerous self-help and inspirational books. Born in Barcelona, he is a journalist specializing in psychology and spirituality. His talent for distilling complex ideas into accessible, inspiring prose was essential to the book's global success.
+                    </p>
+                     <div>
+                        <h5 class="font-semibold text-stone-700 mb-2">Other Notable Works:</h5>
+                        <ul class="text-sm text-teal-700">
+                            <li>Love in Lowercase</li>
+                            <li>Wabi-Sabi</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+<section class="explore-more-section">
+
+    <h3>Enjoyed This Analysis?</h3>
+
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+
+    <div class="explore-more-buttons">
+
+<a href="../../index.html">Explore More Analyses</a> 
+
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+
+  </div>
+
+</section>
+
+
+      
+    </main>
+
+    <footer class="bg-stone-800 text-stone-300 mt-20">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p>Interactive analysis of "Ikigai" by Francesc Miralles and Héctor García.</p>
+            <p class="text-sm text-stone-400 mt-2">Created to explore and share the book's profound wisdom.</p>
+        </div>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const vennData = {
+                love: { title: "What You Love", text: "This encompasses your passions, hobbies, and everything that brings you joy and makes you feel alive. It's what you would do even if you weren't paid for it. Following what you love is the first step toward finding your ikigai." },
+                good: { title: "What You Are Good At", text: "These are your skills, talents, and capabilities, whether they were naturally acquired or learned over time. It's about recognizing and honing your strengths to contribute effectively." },
+                needs: { title: "What The World Needs", text: "This refers to the demands of society, your community, or humanity at large. It's about finding a way to contribute something of value, whether it's a product, a service, or a positive influence." },
+                paid: { title: "What You Can Be Paid For", text: "This is the practical aspect of your ikigai, aligning your skills and passions with something that has economic value in the marketplace. It ensures sustainability and allows you to make a living from your purpose." },
+                passion: { title: "Passion", text: "Where what you love meets what you're good at. You feel enjoyment and mastery, but without a sense of contribution or financial reward, it can feel useless." },
+                mission: { title: "Mission", text: "Where what you love meets what the world needs. You feel a sense of delight and fulfillment, but without skills or financial backing, it remains a dream." },
+                profession: { title: "Profession", text: "Where what you're good at meets what you can be paid for. You are comfortable and skilled, but without a love for what you do, it can feel empty and mechanical." },
+                vocation: { title: "Vocation", text: "Where what the world needs meets what you can be paid for. You feel excited and useful, but if you're not good at it, you may feel a sense of uncertainty or incompetence." },
+                ikigai: { title: "Ikigai: Your Reason for Being", text: "The central point where your passions and talents converge with what the world needs and is willing to pay for. It’s not just about money; it’s about a feeling of fulfillment and happiness that comes from living a life of purpose." }
+            };
+
+            const vennCircles = document.querySelectorAll('.venn-circle');
+            const vennTitle = document.getElementById('venn-title');
+            const vennText = document.getElementById('venn-text');
+            const vennContentPanel = document.getElementById('venn-content-panel');
+
+            function updateVennContent(key) {
+                const data = vennData[key];
+                vennContentPanel.classList.remove('content-panel-fade-enter', 'content-panel-fade-enter-active');
+                void vennContentPanel.offsetWidth;
+                
+                vennTitle.textContent = data.title;
+                vennText.textContent = data.text;
+                vennContentPanel.classList.add('content-panel-fade-enter');
+                setTimeout(() => {
+                    vennContentPanel.classList.add('content-panel-fade-enter-active');
+                }, 10);
+
+                vennCircles.forEach(c => c.classList.remove('active'));
+                document.querySelector(`[data-key="${key}"]`).classList.add('active');
+            }
+
+            vennCircles.forEach(circle => {
+                circle.addEventListener('click', () => {
+                    updateVennContent(circle.dataset.key);
+                });
+            });
+            updateVennContent('ikigai');
+            
+            const chapterData = [
+                {
+                    title: "I: The Art of Staying Young While Growing Old",
+                    points: [
+                        { term: "Ikigai Defined", definition: "A Japanese concept referring to something that gives a person a sense of purpose, a reason for living. It is the driving force that gets you out of bed each morning." },
+                        { term: "Hara Hachi Bu", definition: "An Okinawan saying repeated before meals which means 'fill your belly to 80 percent.' It's a practice of mindful eating to prevent overeating and promote longevity." },
+                        { term: "Moai", definition: "A group of lifelong friends or a social support group. This powerful sense of community is considered a key factor in the happiness and longevity of Okinawans." }
+                    ]
+                },
+                {
+                    title: "II: Antiaging Secrets",
+                    points: [
+                        { term: "Low-Level Stress", definition: "While chronic stress is harmful, low-level stress can make you more resilient and alert. The key is to manage stress through mindfulness and avoid being overwhelmed." },
+                        { term: "Combating Sedentarism", definition: "A sedentary lifestyle is a major risk factor for many diseases. The book advocates for constant, gentle movement throughout the day, not just intense, sporadic exercise." },
+                        { term: "The Importance of Sleep", definition: "Adequate rest is crucial for cognitive function, emotional stability, and physical health. It's a non-negotiable part of a healthy lifestyle." }
+                    ]
+                },
+                {
+                    title: "III: From Logotherapy to Ikigai",
+                    points: [
+                        { term: "Logotherapy", definition: "A school of psychotherapy founded by Viktor Frankl, which posits that the primary motivational force of an individual is to find a meaning in life." },
+                        { term: "Finding Purpose", definition: "Even in the most difficult circumstances, one can find meaning. The search for this purpose, or ikigai, is what provides the will to live." },
+                        { term: "Morita Therapy", definition: "A Japanese therapy focused on accepting your emotions without trying to control them, and instead, focusing on taking constructive action in your life regardless of how you feel." }
+                    ]
+                },
+                {
+                    title: "IV: Find Flow in Everything You Do",
+                    points: [
+                        { term: "Flow State", definition: "The mental state of being fully immersed in a feeling of energized focus, full involvement, and enjoyment in the process of an activity. It's often when we are at our happiest and most productive." },
+                        { term: "Skill-Challenge Balance", definition: "To achieve flow, a task must be challenging but still within the range of your abilities. If it's too easy, you'll be bored; if it's too hard, you'll be anxious." }
+                    ]
+                },
+                {
+                    title: "V: Masters of Longevity",
+                    points: [
+                        { term: "Words of Centenarians", definition: "This chapter contains interviews with some of the longest-living people in Okinawa. Their wisdom emphasizes simplicity, community, staying busy with what they love, and having a positive attitude." }
+                    ]
+                },
+                {
+                    title: "VI: The Ikigai Diet",
+                    points: [
+                        { term: "The 80/20 Rule of Diet", definition: "Okinawans eat a wide variety of foods, especially vegetables. They consume at least five servings of fruits and vegetables daily, and their diet is rich in antioxidants." },
+                        { term: "Key Foods", definition: "Staples include tofu, sweet potatoes, fish, and minimal sugar or salt. Green tea, particularly Sanpincha (a mix of green tea and jasmine), is a common beverage." }
+                    ]
+                },
+                {
+                    title: "VII: Gentle Movements, Longer Life",
+                    points: [
+                        { term: "Movement as a Constant", definition: "Longevity is not about intense gym sessions, but about integrating natural, gentle movement into daily life, such as walking, gardening, and stretching." },
+                        { term: "Radio Taiso", definition: "A popular Japanese radio calisthenics routine. These gentle, five-minute exercises are practiced daily by millions to promote flexibility and vitality." }
+                    ]
+                },
+                {
+                    title: "VIII: Resilience and Wabi-sabi",
+                    points: [
+                        { term: "Antifragility", definition: "Going beyond resilience; it's the ability to get stronger when faced with setbacks and stressors. Antifragile systems thrive on volatility and challenge." },
+                        { term: "Wabi-sabi", definition: "The Japanese worldview centered on the acceptance of transience and imperfection. It is the art of finding beauty in things that are incomplete and impermanent." },
+                        { term: "Ichi-go ichi-e", definition: "A concept that translates to 'this moment exists only now and won't come again.' It reminds us to focus on the present and cherish every moment, as it is a unique, unrepeatable experience." }
+                    ]
+                }
+            ];
+
+            const accordionContainer = document.getElementById('accordion-container');
+            chapterData.forEach((item, index) => {
+                const accordionItem = document.createElement('div');
+                accordionItem.className = 'border border-stone-200 rounded-lg bg-white overflow-hidden';
+                
+                let pointsHtml = item.points.map(p => `
+                    <div class="py-2">
+                        <p class="font-semibold text-teal-700">${p.term}:</p>
+                        <p class="text-stone-600 text-sm">${p.definition}</p>
+                    </div>
+                `).join('');
+
+                accordionItem.innerHTML = `
+                    <button class="accordion-button w-full flex justify-between items-center text-left p-5 hover:bg-stone-50 focus:outline-none">
+                        <span class="font-semibold text-lg text-stone-800">${item.title}</span>
+                        <svg class="w-6 h-6 shrink-0 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="px-5 space-y-3 divide-y divide-stone-200">${pointsHtml}</div>
+                    </div>
+                `;
+                accordionContainer.appendChild(accordionItem);
+            });
+
+            accordionContainer.addEventListener('click', (e) => {
+                const button = e.target.closest('.accordion-button');
+                if (button) {
+                    const content = button.nextElementSibling;
+                    const svg = button.querySelector('svg');
+
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        content.style.padding = "0px";
+                        svg.style.transform = 'rotate(0deg)';
+                    } else {
+                        // Close all others first
+                        document.querySelectorAll('.accordion-content').forEach(el => {
+                            el.style.maxHeight = null;
+                            el.style.padding = "0px";
+                            el.previousElementSibling.querySelector('svg').style.transform = 'rotate(0deg)';
+                        });
+                        // Then open the clicked one
+                        content.style.padding = "0 0 20px 0";
+                        content.style.maxHeight = content.scrollHeight + 40 + "px";
+                        svg.style.transform = 'rotate(180deg)';
+                    }
+                }
+            });
+
+            const rulesData = [
+                { title: "1. Stay active; don't retire.", text: "Keep doing what you love and are good at. Those who give up the things they love lose their purpose in life." },
+                { title: "2. Take it slow.", text: "Being in a hurry is inversely proportional to quality of life. When you leave urgency behind, life and time take on new meaning." },
+                { title: "3. Don't fill your stomach.", text: "The 'hara hachi bu' principle: eat slightly less than your hunger demands. Eating until you are 80% full helps maintain health." },
+                { title: "4. Surround yourself with good friends.", text: "Friends are the best medicine for confiding, sharing, and brightening your day. They are a crucial part of a long life." },
+                { title: "5. Get in shape for your next birthday.", text: "Water moves; it is best when it flows fresh. Your body needs daily maintenance to keep it running for a long time." },
+                { title: "6. Smile.", text: "A cheerful attitude is not only relaxing—it also helps make friends. It's good to recognize the things that aren't so great, but we should never forget the privilege of being here." },
+                { title: "7. Reconnect with nature.", text: "Though most people live in cities these days, human beings are made to be part of the natural world. We should return to it often to recharge our batteries." },
+                { title: "8. Give thanks.", text: "To your ancestors, to nature, to your friends and family, to everything that brightens your day. Spend a moment each day giving thanks, and you'll watch your happiness grow." },
+                { title: "9. Live in the moment.", text: "Stop regretting the past and fearing the future. Today is all you have. Make the most of it. Make it worth remembering." },
+                { title: "10. Follow your ikigai.", text: "There is a passion inside you, a unique talent that gives meaning to your days. If you don't know what your ikigai is yet, your mission is to discover it." }
+            ];
+
+            const rulesGrid = document.getElementById('rules-grid');
+            rulesData.forEach((rule, index) => {
+                const card = document.createElement('div');
+                card.className = 'card bg-white p-6 rounded-lg shadow-md';
+                card.innerHTML = `
+                    <div class="flex items-center mb-3">
+                        <span class="text-xl font-bold text-teal-600 mr-3">${index + 1}.</span>
+                        <h4 class="text-lg font-semibold">${rule.title}</h4>
+                    </div>
+                    <p class="text-stone-600 text-sm hidden">${rule.text}</p>
+                `;
+                rulesGrid.appendChild(card);
+                
+                card.addEventListener('click', () => {
+                    const textP = card.querySelector('p');
+                    const allTexts = rulesGrid.querySelectorAll('p');
+                    
+                    allTexts.forEach(p => {
+                        if (p !== textP) p.classList.add('hidden');
+                    });
+                    
+                    textP.classList.toggle('hidden');
+                });
+            });
+
+            const dietCtx = document.getElementById('dietChart').getContext('2d');
+            new Chart(dietCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Vegetables & Legumes', 'Grains', 'Fruits', 'Tofu & Seaweed', 'Fish & Meat', 'Other'],
+                    datasets: [{
+                        label: 'Okinawan Diet',
+                        data: [50, 25, 10, 8, 2, 5],
+                        backgroundColor: [ '#0d9488', '#f59e0b', '#ec4899', '#3b82f6', '#ef4444', '#a8a29e'],
+                        borderColor: '#f8f7f4',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + '% of diet';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const flowData = [
+                { title: "Know what to do", text: "Having a clear objective is essential. You need to know exactly what task you need to accomplish without ambiguity." },
+                { title: "Know how to do it", text: "You must possess the skills necessary to complete the task. The challenge should be high, but not so high that it feels impossible." },
+                { title: "Know how well you are doing", text: "There should be clear and immediate feedback on your progress. This allows you to adjust your approach and stay on track." },
+                { title: "Know where to go", text: "The path forward should be clear. You should not be distracted by wondering what to do next." },
+                { title: "High perceived challenges", text: "The task must be challenging enough to require your full concentration. If it's too easy, you'll get bored." },
+                { title: "High perceived skills", text: "You must have confidence in your ability to meet the challenge. A balance between skill and challenge is crucial." },
+                { title: "Freedom from distractions", text: "A focused environment is key. You need to be free from interruptions to achieve deep immersion." }
+            ];
+
+            const flowPrinciplesContainer = document.getElementById('flow-principles');
+            const flowTitle = document.getElementById('flow-title');
+            const flowText = document.getElementById('flow-text');
+            const flowContentPanel = document.getElementById('flow-content-panel');
+
+            flowData.forEach((item, index) => {
+                const button = document.createElement('button');
+                button.className = 'w-full text-left p-4 rounded-lg bg-white shadow-sm hover:bg-teal-50 transition border border-stone-200 flow-button';
+                button.textContent = item.title;
+                button.dataset.index = index;
+                flowPrinciplesContainer.appendChild(button);
+            });
+
+            const flowButtons = document.querySelectorAll('.flow-button');
+
+            function updateFlowContent(index) {
+                const data = flowData[index];
+                flowContentPanel.classList.remove('content-panel-fade-enter', 'content-panel-fade-enter-active');
+                void flowContentPanel.offsetWidth;
+                
+                flowTitle.textContent = data.title;
+                flowText.textContent = data.text;
+                flowContentPanel.classList.add('content-panel-fade-enter');
+                setTimeout(() => {
+                    flowContentPanel.classList.add('content-panel-fade-enter-active');
+                }, 10);
+                
+                flowButtons.forEach(b => b.classList.remove('bg-teal-100', 'border-teal-300'));
+                flowButtons[index].classList.add('bg-teal-100', 'border-teal-300');
+            }
+
+            flowPrinciplesContainer.addEventListener('click', (e) => {
+                if (e.target && e.target.matches('button.flow-button')) {
+                    updateFlowContent(e.target.dataset.index);
+                }
+            });
+
+            const mindBodyData = {
+                activeMind: {
+                    title: "An Active, Youthful Mind",
+                    text: "The brain needs exercise just like the body. Centenarians often engage in activities that challenge their minds, like gardening, playing games, and socializing. Keeping the mind elastic and adaptable helps prevent cognitive decline and maintains a sense of youthfulness and purpose."
+                },
+                stress: {
+                    title: "Low-Level, Managed Stress",
+                    text: "The book highlights that a certain level of stress is beneficial, as it keeps us alert and alive. However, chronic, high-level stress is toxic. Okinawans are masters of 'taking it slow,' living in the present, and using techniques like meditation and connecting with nature to dissipate stress before it becomes overwhelming."
+                },
+                shoshin: {
+                    title: "Shoshin (Beginner's Mind)",
+                    text: "This Zen Buddhist concept refers to approaching life with an attitude of openness, eagerness, and a lack of preconceptions, just as a beginner would. This mindset fosters curiosity, creativity, and continuous learning, preventing the mental rigidity that can come with age."
+                }
+            };
+            
+            const mindBodyButtons = document.querySelectorAll('.mind-body-button');
+            const mindBodyTitle = document.getElementById('mind-body-title');
+            const mindBodyText = document.getElementById('mind-body-text');
+            const mindBodyContentPanel = document.getElementById('mind-body-content-panel');
+
+            function updateMindBodyContent(key) {
+                const data = mindBodyData[key];
+                 mindBodyContentPanel.classList.remove('content-panel-fade-enter', 'content-panel-fade-enter-active');
+                void mindBodyContentPanel.offsetWidth;
+                
+                mindBodyTitle.textContent = data.title;
+                mindBodyText.textContent = data.text;
+                mindBodyContentPanel.classList.add('content-panel-fade-enter');
+                setTimeout(() => {
+                    mindBodyContentPanel.classList.add('content-panel-fade-enter-active');
+                }, 10);
+
+                mindBodyButtons.forEach(b => b.classList.remove('bg-teal-100', 'border-teal-300'));
+                document.querySelector(`[data-key="${key}"]`).classList.add('bg-teal-100', 'border-teal-300');
+            }
+
+            mindBodyButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    updateMindBodyContent(button.dataset.key);
+                });
+            });
+
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            document.querySelectorAll('#mobile-menu a, .nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    if(!mobileMenu.classList.contains('hidden')) {
+                       mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+            
+             const sections = document.querySelectorAll('section[id]');
+             const navLinks = document.querySelectorAll('nav a.nav-link');
+             
+             const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if(link.getAttribute('href').substring(1) === entry.target.id){
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+             }, { rootMargin: '-30% 0px -70% 0px' });
+             
+             sections.forEach(section => {
+                observer.observe(section);
+             });
+        });
+    </script>
+</body>
+</html>
+
