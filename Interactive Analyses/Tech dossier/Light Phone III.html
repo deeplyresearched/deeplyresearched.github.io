@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Light Phone III: Go Light. Distraction-Free Minimalist Phone.</title>
+    <meta name="description" content="Experience the Light Phone III: a premium, distraction-free minimalist phone designed for intentional living. Reconnect with life with LightOS, a new camera, NFC, 5G & privacy by design. Pre-order now!">
+    <meta name="keywords" content="Light Phone III, minimalist phone, distraction-free phone, digital detox, privacy phone, simple phone, LightOS, smartphone alternative, intentional living, OLED phone, 5G phone, phone addiction, sustainable phone, Light Phone pre-order, dumb phone">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+  
+    <!-- Chosen Palette: Calm Neutrals -->
+    <!-- Application Structure Plan: A thematic, expanded single-page scrolling narrative was chosen to guide the user logically through the product's story. It starts with the core philosophy (the 'why'), dives deeper into the key concepts that define the phone, details the physical design, then moves to hardware and the software OS (the 'what' and 'how'). It then explores the unique photography approach, offers a direct comparison for context, defines the target audience, and highlights sustainability. It concludes with detailed specs and a clear call to action. This more detailed linear flow builds a stronger, more convincing narrative by adding layers of understanding before the final purchase decision. -->
+    <!-- Visualization & Content Choices: 
+        1. Report Info: Core principles of the Light Phone. Goal: Elaborate & Inform. Viz/Method: A new "Key Concepts" section with distinct content blocks for Intentionality, Privacy, and Longevity. Interaction: None, focus on clear, readable text. Justification: This directly addresses the user request and provides foundational context that enhances the value of all other sections. Method: HTML/Tailwind CSS.
+        2. Report Info: Key hardware features (OLED screen, camera, wheel, etc.). Goal: Organize & Inform. Viz/Method: Interactive two-column layout with a feature list and a dynamic description panel. Interaction: Clicking a feature name updates the description panel. Justification: This is more engaging than a static bullet list. Method: Vanilla JS DOM manipulation.
+        3. Report Info: LightOS tools (Calendar, Notes, etc.). Goal: Organize & Explain. Viz/Method: An expanded "LightOS In-Depth" section with the existing tool grid and new explanatory text. Interaction: Hover effects on tool cards. Justification: Provides a deeper look into the software experience, which is a core part of the product's value. Method: HTML/Tailwind CSS.
+        4. Report Info: Comparison between Light Phone II and III. Goal: Compare. Viz/Method: A horizontal bar chart. Interaction: Static chart with clear labels for direct comparison. Justification: A chart provides an immediate, easily digestible visual summary of the key upgrades. Library: Chart.js, rendered on a Canvas element.
+        5. Report Info: Sustainability and repairability aspects. Goal: Inform & Persuade. Viz/Method: A new "Sustainability & Repairability" section. Interaction: None. Justification: Highlights a key value proposition for a growing segment of conscious consumers, adding another reason to believe in the product. Method: HTML/Tailwind CSS.
+        6. Report Info: Technical specifications. Goal: Inform. Viz/Method: A clean, well-structured HTML table. Interaction: None. Justification: A table is the clearest way to present dense technical data. Method: HTML/Tailwind CSS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4;
+            color: #1a1a1a;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 500px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #D97706; /* Amber-600 */
+        }
+        .feature-item {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .feature-item.selected {
+            background-color: #FEF3C7; /* Amber-100 */
+            color: #92400E; /* Amber-800 */
+            transform: translateX(4px);
+        }
+        .tool-card {
+            transition: all 0.2s ease-in-out;
+        }
+        .tool-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">Light Phone III</h1>
+            <div class="hidden md:flex space-x-8">
+                <a class="nav-link" data-target="philosophy">Philosophy</a>
+                <a class="nav-link" data-target="concepts">Key Concepts</a>
+                <a class="nav-link" data-target="features">Features</a>
+                <a class="nav-link" data-target="lightos">LightOS</a>
+                <a class="nav-link" data-target="comparison">Comparison</a>
+                <a class="nav-link" data-target="specs">Specs</a>
+            </div>
+            <a href="#preorder" class="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition">Pre-Order</a>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12 md:py-20">
+
+        <section id="hero" class="text-center">
+            <h2 class="text-4xl md:text-6xl font-bold tracking-tight">Go Light.</h2>
+            <p class="mt-4 text-lg md:text-xl max-w-3xl mx-auto text-gray-600">The Light Phone III is a premium, minimal phone designed to be used as little as possible. It's about reconnecting with yourself and the world around you, without the endless distractions of a modern smartphone.</p>
+            <div class="mt-8 w-full max-w-4xl mx-auto bg-gray-200 h-64 md:h-96 rounded-xl flex items-center justify-center">
+                <span class="text-gray-500"></span>
+            </div>
+        </section>
+
+        <section id="philosophy" class="pt-24 md:pt-32">
+            <div class="text-center max-w-3xl mx-auto">
+                <h3 class="text-3xl md:text-4xl font-bold">More Intentional, Not Less Capable.</h3>
+                <p class="mt-4 text-lg text-gray-600">The goal isn't to create a "dumbphone." It's to provide high-quality, essential tools in a calm, distraction-free operating system. You choose the tools you need, and leave behind the algorithms, feeds, and notifications that vie for your attention. It's your technology, on your terms.</p>
+            </div>
+        </section>
+
+        <section id="concepts" class="pt-24 md:pt-32">
+            <div class="text-center">
+                <h3 class="text-3xl md:text-4xl font-bold">The Core Concepts</h3>
+                <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">The Light Phone III is built on a foundation of principles designed to foster a healthier relationship with technology. This section explains the key ideas that shape every aspect of the phone's design and function.</p>
+            </div>
+            <div class="mt-12 grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h4 class="font-bold text-xl mb-2">Intentionality Over Impulse</h4>
+                    <p class="text-gray-600">Unlike smartphones that are designed to maximize your screen time, the Light Phone III is designed for deliberate use. By removing infinite feeds, ads, and distracting notifications, it encourages you to pick up your phone for a specific task and then put it away, returning your time and attention to the world around you.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h4 class="font-bold text-xl mb-2">Privacy as a Default</h4>
+                    <p class="text-gray-600">LightOS is a proprietary operating system built from the ground up without the tracking and data-mining infrastructure of Android or iOS. There is no app store, no social media, and no access for third-party companies to harvest your personal data. Your information remains yours, period.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h4 class="font-bold text-xl mb-2">Technology for Longevity</h4>
+                    <p class="text-gray-600">The phone is a tool, and a good tool should last. The Light Phone III is built with premium, durable materials and designed for repairability. By focusing on essential functions that don't become obsolete overnight, we aim to break the cycle of constant, wasteful upgrades.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="design" class="pt-24 md:pt-32">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="w-full max-w-md mx-auto bg-gray-200 h-80 rounded-xl flex items-center justify-center">
+                    <span class="text-gray-500"></span>
+                </div>
+                <div>
+                    <h3 class="text-3xl font-bold">Designed for Humans.</h3>
+                    <p class="mt-4 text-lg text-gray-600">Every component is carefully chosen to create a more tactile and intentional experience. The aluminum frame provides a solid, comfortable feel. Its compact size is optimized for one-handed use, and the placement of the clickable wheel and dedicated shutter button feels natural and intuitive.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="pt-24 md:pt-32">
+            <div class="text-center">
+                <h3 class="text-3xl md:text-4xl font-bold">Hardware Highlights.</h3>
+                <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">From the new click wheel to the beautiful matte display, the Light Phone III is built to last and a pleasure to use. Explore some of the key hardware features that make this phone unique.</p>
+            </div>
+            <div class="mt-12 md:grid md:grid-cols-2 lg:grid-cols-5 gap-12 items-start">
+                <div class="lg:col-span-2 mb-8 md:mb-0">
+                    <h4 class="font-bold text-xl mb-4">Key Hardware Features</h4>
+                    <ul id="feature-list" class="space-y-2 text-lg">
+                        <li data-feature="screen" class="feature-item p-3 rounded-md selected">Matte OLED Screen</li>
+                        <li data-feature="camera" class="feature-item p-3 rounded-md">New Camera System</li>
+                        <li data-feature="wheel" class="feature-item p-3 rounded-md">Clickable Wheel</li>
+                        <li data-feature="nfc" class="feature-item p-3 rounded-md">NFC Payments</li>
+                        <li data-feature="buttons" class="feature-item p-3 rounded-md">Dedicated Buttons</li>
+                        <li data-feature="build" class="feature-item p-3 rounded-md">Premium Build</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm lg:col-span-3 min-h-[250px] flex flex-col justify-center">
+                    <h5 id="feature-title" class="font-bold text-2xl mb-2">Matte OLED Screen</h5>
+                    <p id="feature-description" class="text-gray-700 text-lg">A beautiful, large black-and-white display that's easy on the eyes. The matte texture reduces glare, making it perfectly legible in direct sunlight and comfortable to read on for extended periods.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="lightos" class="pt-24 md:pt-32">
+            <div class="text-center">
+                <h3 class="text-3xl md:text-4xl font-bold">LightOS: Your Curated Toolbox.</h3>
+                <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">LightOS is our custom, minimalist operating system. The black-and-white interface is calming, and the typography-focused design is beautiful and legible. You decide which tools to add to your phone from the Light Dashboard. No ads, no tracking, no distractions.</p>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 mt-12">
+                 <div class="tool-card bg-white p-4 rounded-xl text-center shadow-sm"><span class="text-4xl">📞</span><p class="mt-2 font-semibold">Phone</p></div>
+                 <div class="tool-card bg-white p-4 rounded-xl text-center shadow-sm"><span class="text-4xl">🗓️</span><p class="mt-2 font-semibold">Calendar</p></div>
+                 <div class="tool-card bg-white p-4 rounded-xl text-center shadow-sm"><span class="text-4xl">🎵</span><p class="mt-2 font-semibold">Music</p></div>
+                 <div class="tool-card bg-white p-4 rounded-xl text-center shadow-sm"><span class="text-4xl">🗺️</span><p class="mt-2 font-semibold">Directions</p></div>
+                 <div class="tool-card bg-white p-4 rounded-xl text-center shadow-sm"><span class="text-4xl">📝</span><p class="mt-2 font-semibold">Notes</p></div>
+                 <div class="tool-card bg-white p-4 rounded-xl text-center shadow-sm"><span class="text-4xl">🎙️</span><p class="mt-2 font-semibold">Podcasts</p></div>
+                 <div class="tool-card bg-white p-4 rounded-xl text-center shadow-sm"><span class="text-4xl">⏰</span><p class="mt-2 font-semibold">Alarm</p></div>
+                 <div class="tool-card bg-white p-4 rounded-xl text-center shadow-sm"><span class="text-4xl">🧮</span><p class="mt-2 font-semibold">Calculator</p></div>
+            </div>
+             <p class="text-center mt-6 text-gray-500">...and more tools are always in development.</p>
+        </section>
+
+        <section id="photography" class="pt-24 md:pt-32">
+            <div class="text-center max-w-3xl mx-auto">
+                <h3 class="text-3xl md:text-4xl font-bold">Photography, Reimagined.</h3>
+                <p class="mt-4 text-lg text-gray-600">The camera on the Light Phone III is not about creating flawless social media content. It's about capturing moments. Inspired by the golden age of film photography, its black-and-white images have depth and character. The two-stage shutter button gives you physical control over focus and capture, making the act of taking a photo more present and intentional.</p>
+            </div>
+        </section>
+        
+        <section id="comparison" class="pt-24 md:pt-32">
+            <div class="text-center">
+                <h3 class="text-3xl md:text-4xl font-bold">A Big Leap Forward.</h3>
+                <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">The Light Phone III builds on the foundation of its predecessor with significant upgrades across the board, from a modern chipset and 5G connectivity to a fully-featured camera and NFC.</p>
+            </div>
+            <div class="mt-12">
+                <div class="chart-container">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="for-whom" class="pt-24 md:pt-32">
+             <div class="text-center max-w-3xl mx-auto">
+                <h3 class="text-3xl md:text-4xl font-bold">Who is the Light Phone for?</h3>
+                <p class="mt-4 text-lg text-gray-600">It's for anyone who feels their smartphone has crossed a line, becoming a source of anxiety rather than a useful tool. It's for digital minimalists, people recovering from screen addiction, parents seeking a safe first phone for their kids, or anyone who simply wants to be more present in their daily life.</p>
+            </div>
+        </section>
+        
+        <section id="sustainability" class="pt-24 md:pt-32">
+            <div class="text-center max-w-3xl mx-auto">
+                <h3 class="text-3xl md:text-4xl font-bold">Sustainability & Repairability</h3>
+                <p class="mt-4 text-lg text-gray-600">We believe a phone should be a long-term tool, not a disposable gadget. The Light Phone III features a user-accessible battery and a visible screw construction, empowering users to perform basic repairs. By building a device that lasts, we aim to reduce e-waste and promote a more sustainable relationship with technology.</p>
+            </div>
+        </section>
+
+        <section id="specs" class="pt-24 md:pt-32">
+            <div class="text-center">
+                <h3 class="text-3xl md:text-4xl font-bold">Technical Specifications</h3>
+            </div>
+            <div class="mt-12 max-w-4xl mx-auto bg-white rounded-xl shadow-sm overflow-hidden">
+                <table class="w-full text-left">
+                    <tbody class="divide-y divide-gray-200">
+                        <tr class="divide-x divide-gray-200"><td class="font-medium p-4 w-1/3">Display</td><td class="p-4 text-gray-700">3.92" FHD+ (1080x1240) Black & White Matte OLED</td></tr>
+                        <tr class="divide-x divide-gray-200"><td class="font-medium p-4 w-1/3">Dimensions</td><td class="p-4 text-gray-700">106mm x 56mm x 12mm</td></tr>
+                        <tr class="divide-x divide-gray-200"><td class="font-medium p-4 w-1/3">Processor</td><td class="p-4 text-gray-700">Qualcomm SM 4450</td></tr>
+                        <tr class="divide-x divide-gray-200"><td class="font-medium p-4 w-1/3">Memory</td><td class="p-4 text-gray-700">6GB RAM / 128GB Storage</td></tr>
+                        <tr class="divide-x divide-gray-200"><td class="font-medium p-4 w-1/3">Cameras</td><td class="p-4 text-gray-700">Rear: 50MP | Front: 8MP</td></tr>
+                        <tr class="divide-x divide-gray-200"><td class="font-medium p-4 w-1/3">Connectivity</td><td class="p-4 text-gray-700">5G, Wi-Fi, Bluetooth 5.0, NFC, GPS</td></tr>
+                        <tr class="divide-x divide-gray-200"><td class="font-medium p-4 w-1/3">Sensors</td><td class="p-4 text-gray-700">Fingerprint Sensor (in power button)</td></tr>
+                        <tr class="divide-x divide-gray-200"><td class="font-medium p-4 w-1/3">Battery</td><td class="p-4 text-gray-700">1800 mAh (User-replaceable)</td></tr>
+                        <tr class="divide-x divide-gray-200"><td class="font-medium p-4 w-1/3">Other</td><td class="p-4 text-gray-700">USB-C, Dual SIM (nanoSIM & eSIM), Flashlight</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="preorder" class="pt-24 md:pt-32 text-center bg-gray-100 -mx-6 px-6 py-20 mt-20 rounded-t-xl">
+             <div class="max-w-3xl mx-auto">
+                <h3 class="text-3xl md:text-4xl font-bold">Reserve Yours Today.</h3>
+                <p class="mt-4 text-lg text-gray-600">The Light Phone III is available for pre-order now at a special introductory price. Be one of the first to experience a more intentional relationship with your technology.</p>
+                <div class="mt-8 flex flex-col md:flex-row justify-center items-center gap-6">
+                    <div><p class="text-4xl font-bold">$399</p><p class="text-gray-500">Special Pre-Order Price</p></div>
+                    <div class="text-gray-400 text-xl hidden md:block">|</div>
+                    <div><p class="text-2xl font-bold text-gray-500 line-through">$799</p><p class="text-gray-500">Full Retail Price</p></div>
+                </div>
+                <p class="mt-4 text-sm text-gray-500">Shipping begins January 2025.</p>
+                <a href="#" class="mt-8 inline-block bg-amber-500 text-white font-bold px-10 py-4 rounded-lg hover:bg-amber-600 transition text-lg">Pre-Order Now</a>
+            </div>
+        </section>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+      
+    </main>
+
+    <footer class="bg-black text-white">
+        <div class="container mx-auto px-6 py-8 text-center text-gray-400">
+            <p>&copy; 2025 The Light Phone Inc. Designed to be used as little as possible.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const featureData = {
+                screen: {
+                    title: 'Matte OLED Screen',
+                    description: "A beautiful, large black-and-white display that's easy on the eyes. The matte texture reduces glare, making it perfectly legible in direct sunlight and comfortable to read on for extended periods."
+                },
+                camera: {
+                    title: 'New Camera System',
+                    description: 'Features a high-quality 50MP rear and 8MP front camera. Inspired by classic film photography, it has a dedicated shutter button and focuses on capturing life, not creating "content."'
+                },
+                wheel: {
+                    title: 'Clickable Wheel',
+                    description: 'A precise, tactile wheel for scrolling through your tools and adjusting screen brightness. It provides satisfying feedback and fine-tuned control over the interface.'
+                },
+                nfc: {
+                    title: 'NFC Payments',
+                    description: 'For the first time, Light Phone supports tap-to-pay functionality, adding a layer of modern convenience for those essential moments without compromising its core philosophy.'
+                },
+                buttons: {
+                    title: 'Dedicated Buttons',
+                    description: 'Includes a two-stage camera shutter button and a dedicated flashlight button. These physical controls make essential tools immediately accessible without needing to unlock the phone.'
+                },
+                build: {
+                    title: 'Premium Build',
+                    description: 'Constructed with a metal frame, a solid feel, and user-replaceable components like the battery and USB-C port, the Light Phone III is designed for longevity.'
+                }
+            };
+            
+            const featureList = document.getElementById('feature-list');
+            const featureTitle = document.getElementById('feature-title');
+            const featureDescription = document.getElementById('feature-description');
+
+            featureList.addEventListener('click', function(e) {
+                if (e.target && e.target.nodeName === 'LI') {
+                    const featureKey = e.target.dataset.feature;
+                    if (featureData[featureKey]) {
+                        featureTitle.textContent = featureData[featureKey].title;
+                        featureDescription.textContent = featureData[featureKey].description;
+                        
+                        featureList.querySelectorAll('li').forEach(li => li.classList.remove('selected'));
+                        e.target.classList.add('selected');
+                    }
+                }
+            });
+
+            const comparisonCtx = document.getElementById('comparisonChart').getContext('2d');
+            const comparisonChart = new Chart(comparisonCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Screen Size', 'Rear Camera (MP)', 'NFC', 'Storage (GB)', 'Retail Price ($)'],
+                    datasets: [{
+                        label: 'Light Phone II',
+                        data: [2.84, 0, 0, 8, 299],
+                        backgroundColor: 'rgba(156, 163, 175, 0.7)',
+                        borderColor: 'rgba(156, 163, 175, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Light Phone III',
+                        data: [3.92, 50, 1, 128, 799],
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Light Phone II vs. Light Phone III',
+                            font: { size: 18 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.x !== null) {
+                                        const labelName = context.label;
+                                        if (labelName.includes('($)')) {
+                                             label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(context.parsed.x);
+                                        } else if (labelName.includes('(MP)')) {
+                                            label += context.parsed.x + ' MP';
+                                        } else if (labelName.includes('(GB)')) {
+                                            label += context.parsed.x + ' GB';
+                                        } else if (labelName.includes('Size')) {
+                                            label += context.parsed.x + '"';
+                                        }
+                                        else {
+                                            label += context.parsed.x === 1 ? 'Yes' : 'No';
+                                        }
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    if (value >= 1000) { return '$' + value / 1000 + 'k'; }
+                                    return value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+
+            function changeActiveLink() {
+                let index = sections.length;
+                while(--index && window.scrollY + 100 < sections[index].offsetTop) {}
+                
+                navLinks.forEach((link) => link.classList.remove('active'));
+                const targetId = sections[index]?.id;
+                if (targetId) {
+                    const activeLink = document.querySelector(`.nav-link[data-target="${targetId}"]`);
+                    if(activeLink) {
+                        activeLink.classList.add('active');
+                    }
+                }
+            }
+
+            changeActiveLink();
+            window.addEventListener('scroll', changeActiveLink);
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = e.target.getAttribute('data-target');
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        window.scrollTo({
+                            top: targetSection.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
