@@ -299,104 +299,7 @@
                                     <h4 class="font-bold text-lg">Current State</h4>
                                     <p class="text-gray-600">Vibrations significantly reduced to a "character trait" rather than a flaw.</p>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="technology" class="py-16 sm:py-24 bg-gray-50">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h2 class="section-title">A Technological Tour de Force</h2>
-                <p class="section-subtitle">The RTR 310's biggest differentiator is its electronics suite. It's not just best-in-class; it introduces features unheard of in this segment, establishing it as the undisputed tech-forward choice.</p>
-
-                <div class="mt-12 bg-white p-8 rounded-xl shadow-lg border">
-                    <h3 class="text-2xl font-bold text-gray-800">Build Your "Freestyler"</h3>
-                    <p class="mt-2 text-gray-600 max-w-3xl mx-auto">The bike's price and features change dramatically with the optional BTO kits. Use the toggles below to see how adding each kit transforms the machine and its price.</p>
-                    
-                    <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-                        <div class="lg:col-span-1 flex flex-col gap-4">
-                            <div class="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
-                                <label for="dynamicKitToggle" class="font-semibold text-gray-700">Dynamic Kit</label>
-                                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                                    <input type="checkbox" name="btoKit" id="dynamicKitToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
-                                    <label for="dynamicKitToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
-                                </div>
-                            </div>
-                            <div class="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
-                                <label for="dynamicProKitToggle" class="font-semibold text-gray-700">Dynamic Pro Kit</label>
-                                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                                    <input type="checkbox" name="btoKit" id="dynamicProKitToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
-                                    <label for="dynamicProKitToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="lg:col-span-2 text-left bg-gray-50 p-6 rounded-lg">
-                            <h4 class="font-bold text-lg">Selected Features:</h4>
-                            <ul id="btoFeatureList" class="mt-4 space-y-2 text-gray-700 list-disc list-inside">
-                                <li>5 Riding Modes, Cruise Control, DTC, ABS</li>
-                                <li>Bi-Directional Quickshifter</li>
-                            </ul>
-                        </div>
-                    </div>
-                     <div class="mt-8 bg-blue-900 text-white p-6 rounded-xl flex flex-col md:flex-row justify-between items-center">
-                        <span class="font-bold text-xl">Approx. Ex-Showroom Price:</span>
-                        <span id="btoPrice" class="font-extrabold text-3xl md:text-4xl text-amber-400">₹2,57,000</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-        
-        <section id="ride-planner" class="py-16 sm:py-24 bg-white">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h2 class="section-title">✨ AI Ride Planner</h2>
-                <p class="section-subtitle">Let Gemini plan the perfect ride for your Apache RTR 310. Enter your start and end points, choose your preferred ride style, and get a custom route with interesting stops.</p>
-                <div class="mt-12 max-w-4xl mx-auto bg-gray-50 p-8 rounded-xl shadow-lg border">
-                    <form id="ride-planner-form" class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
-                        <div>
-                            <label for="start-location" class="block text-sm font-medium text-gray-700 text-left">Start Location</label>
-                            <input type="text" id="start-location" class="mt-1 block w-full p-2 border-gray-300 rounded-md shadow-sm" placeholder="e.g., Mumbai" required>
-                        </div>
-                        <div>
-                            <label for="end-location" class="block text-sm font-medium text-gray-700 text-left">End Location</label>
-                            <input type="text" id="end-location" class="mt-1 block w-full p-2 border-gray-300 rounded-md shadow-sm" placeholder="e.g., Goa" required>
-                        </div>
-                        <div>
-                            <label for="ride-style" class="block text-sm font-medium text-gray-700 text-left">Ride Style</label>
-                            <select id="ride-style" class="mt-1 block w-full p-2 border-gray-300 rounded-md shadow-sm">
-                                <option>Scenic & Relaxed</option>
-                                <option>Spirited & Twisty</option>
-                                <option>Direct & Efficient</option>
-                                <option>Cultural & Historic</option>
-                            </select>
-                        </div>
-                        <div class="md:col-span-3">
-                            <button type="submit" class="w-full btn-primary px-8 py-3 rounded-md text-base font-semibold shadow-lg">Generate Route</button>
-                        </div>
-                    </form>
-                    <div id="ride-planner-result" class="mt-8 text-left">
-                        <!-- AI generated route will appear here -->
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="ownership" class="py-16 sm:py-24 bg-gray-50">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h2 class="section-title">The Ownership Reality</h2>
-                <p class="section-subtitle">Owning the RTR 310 involves understanding its real-world running costs and navigating the service experience. Have a question? Our AI expert can help.</p>
-                <div class="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                    <div>
-                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Real-World Fuel Efficiency</h3>
-                        <div class="chart-container h-64 md:h-80">
-                            <canvas id="mileageChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="text-left space-y-6">
-                        <div>
-                            <h3 class="text-2xl font-bold text-gray-800">Maintenance & Service</h3>
+                            </div>gray-800">Maintenance & Service</h3>
                              <p class="mt-2 text-gray-600">A standard paid service costs around <span class="font-semibold">₹3,500</span>. While spare parts can be pricier than Japanese rivals, the biggest variable is the service quality itself.</p>
                         </div>
                         <div class="bg-white p-6 rounded-lg border">
@@ -856,6 +759,7 @@
     </script>
 </body>
 </html>
+
 
 
 
