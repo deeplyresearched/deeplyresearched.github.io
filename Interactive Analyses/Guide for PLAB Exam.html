@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLAB Exam UK Guide: Journey, Costs & Doctor Life</title>
+  <meta name="description" content="Your complete guide to the PLAB exam, UK doctor life, costs, and NHS salaries. Navigate your path to GMC registration with detailed steps, infographics & official links.">
+  <meta name="keywords" content="PLAB exam, PLAB UK, UK doctor guide, IMG UK, NHS doctor salary, GMC registration, PLAB 1, PLAB 2, International Medical Graduates UK, Doctor life in UK, UK medical career, Medical licensing UK, PLAB costs, NHS career progression, PLAB preparation">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+    <!-- Chosen Palette: Calm Harmony (Warm Neutrals) & Brilliant Blues (for Infographic) -->
+    <!-- Application Structure Plan: The existing thematic dashboard is enhanced with two major additions. First, the "PLAB Exam Infographic" is integrated as a full-fledged visual summary section. Second, a new detailed section, "Doctor's Life in the UK," has been added to provide crucial lifestyle and financial context, complete with links to official sources. Navigation is updated to include these new sections. -->
+    <!-- Visualization & Content Choices: 
+        - New Section: Doctor's Life in the UK -> Goal: Inform/Contextualize -> Viz: Structured text cards, data tables -> Interaction: Hyperlinks to official NHS sites -> Justification: Provides critical, non-exam information on pay, work-life balance, and living conditions, which is essential for user decision-making. Official links add credibility.
+        - New Section: Infographic Summary -> Goal: Summarize/Inform -> Viz: A collection of charts (Donut, Bar) and stat blocks from the infographic artifact -> Interaction: None (it's a visual summary) -> Justification: Offers a quick, graphical overview of the entire PLAB process, appealing to users who prefer visual data consumption.
+        - Existing elements remain as previously justified.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #FDFBF8; color: #4B4B4B; }
+        .nav-link { transition: color 0.3s, border-bottom-color 0.3s; border-bottom: 2px solid transparent; }
+        .nav-link:hover, .nav-link.active { color: #D35400; border-bottom-color: #D35400; }
+        .section-card { background-color: #FFFFFF; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05); border: 1px solid #F0EAE4; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 320px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 400px; } }
+        .tab-button { transition: all 0.3s; }
+        .tab-button.active { background-color: #D35400; color: #FFFFFF; }
+        .pathway-node { border: 1px solid #F0EAE4; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); transition: transform 0.2s, box-shadow 0.2s; }
+        .pathway-node:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07); }
+        .pathway-connector { position: relative; }
+        .pathway-connector::after { content: '▼'; font-size: 1.5rem; color: #D35400; position: absolute; bottom: -2rem; left: 50%; transform: translateX(-50%); }
+        
+        /* Infographic Styles */
+        .infographic-section { background-color: #0B132B; color: #E0E0E0; }
+        .infographic-card { background-color: #1C2541; border: 1px solid #3A506B; }
+        .infographic-h2 { color: #6FFFE9; }
+        .infographic-h3 { color: #FFFFFF; }
+        .stat-value { color: #6FFFE9; font-weight: 700; }
+        .timeline-item::before { content: ''; position: absolute; left: 1rem; top: 0; bottom: 0; width: 2px; background-color: #3A506B; }
+        .timeline-dot { position: absolute; left: 1rem; top: 0.25rem; transform: translateX(-50%); width: 1rem; height: 1rem; background-color: #6FFFE9; border-radius: 9999px; }
+   
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */ 
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+} 
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+} 
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+} 
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+} 
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+} 
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+} 
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+} 
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="font-bold text-xl text-gray-800">PLAB UK Guide</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#journey" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">The Journey</a>
+                        <a href="#infographic" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Infographic</a>
+                        <a href="#deep-dive" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Exam Deep Dive</a>
+                        <a href="#costs" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Costs & Earnings</a>
+                        <a href="#life-uk" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Life in the UK</a>
+                        <a href="#career" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">UK Career</a>
+                        <a href="#comparison" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Comparison</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        
+        <section id="overview" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Your Complete Guide to the PLAB Exam & Life in the UK</h1>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600">
+                This page breaks down the entire PLAB journey. Explore interactive sections, view the infographic summary, and understand life as a doctor in the UK.
+            </p>
+        </section>
+
+        <section id="journey" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <h2 class="text-3xl font-bold text-gray-800 text-center mb-2">The Application Pathway for IMGs</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-3xl mx-auto">This is your roadmap to practicing medicine in the UK. Follow this web of interconnected steps, complete with official links, to navigate the process from initial checks to full GMC registration.</p>
+            <div class="flex flex-col items-center space-y-8">
+                 <div class="w-full max-w-lg pathway-node bg-white rounded-lg p-6 text-center">
+                    <span class="text-2xl font-bold text-orange-600 block mb-2">Step 1</span><h3 class="text-xl font-semibold text-gray-800">Check Your Primary Medical Qualification (PMQ)</h3><p class="text-gray-600 mt-2">Ensure your medical degree is accepted by the GMC using their official online tool.</p><a href="https://www.gmc-uk.org/registration-and-licensing/join-the-register/before-you-apply/check-your-primary-medical-qualification" target="_blank" class="inline-block mt-3 text-orange-600 font-semibold hover:underline">Check PMQ Eligibility →</a>
+                </div><div class="pathway-connector"></div><div class="w-full max-w-lg pathway-node bg-white rounded-lg p-6 text-center">
+                    <span class="text-2xl font-bold text-orange-600 block mb-2">Step 2</span><h3 class="text-xl font-semibold text-gray-800">Prove Your English Language Knowledge</h3><p class="text-gray-600 mt-2">Achieve the required score in either the IELTS or OET exam.</p><a href="https://www.gmc-uk.org/registration-and-licensing/join-the-register/before-you-apply/evidence-of-your-knowledge-of-english" target="_blank" class="inline-block mt-3 text-orange-600 font-semibold hover:underline">View English Requirements →</a>
+                </div><div class="pathway-connector"></div><div class="w-full max-w-lg pathway-node bg-white rounded-lg p-6 text-center">
+                    <span class="text-2xl font-bold text-orange-600 block mb-2">Step 3</span><h3 class="text-xl font-semibold text-gray-800">Create a GMC Online Account & Verify Documents</h3><p class="text-gray-600 mt-2">Set up your account and submit your PMQ and English language evidence for verification.</p><a href="https://www.gmc-uk.org/registration-and-licensing/join-the-register/gmc-online" target="_blank" class="inline-block mt-3 text-orange-600 font-semibold hover:underline">Create GMC Account →</a>
+                </div><div class="pathway-connector"></div><div class="grid md:grid-cols-2 gap-8 w-full max-w-4xl relative">
+                     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-4xl font-bold text-gray-300 z-0">+</div>
+                    <div class="pathway-node bg-white rounded-lg p-6 text-center z-10">
+                        <h3 class="text-xl font-semibold text-gray-800">Pass PLAB 1</h3><p class="text-gray-600 mt-2">Book and pass the written knowledge exam.</p><a href="https://www.gmc-uk.org/registration-and-licensing/join-the-register/plab/plab-1-guide" target="_blank" class="inline-block mt-3 text-orange-600 font-semibold hover:underline">PLAB 1 Guide →</a>
+                    </div><div class="pathway-node bg-white rounded-lg p-6 text-center z-10">
+                        <h3 class="text-xl font-semibold text-gray-800">Pass PLAB 2</h3><p class="text-gray-600 mt-2">Book and pass the practical OSCE exam in the UK.</p><a href="https://www.gmc-uk.org/registration-and-licensing/join-the-register/plab/plab-2-guide" target="_blank" class="inline-block mt-3 text-orange-600 font-semibold hover:underline">PLAB 2 Guide →</a>
+                    </div>
+                </div><div class="pathway-connector"></div><div class="w-full max-w-lg pathway-node bg-green-50 border-green-200 rounded-lg p-6 text-center">
+                    <span class="text-2xl font-bold text-green-600 block mb-2">Final Goal</span><h3 class="text-xl font-semibold text-gray-800">Apply for Full GMC Registration</h3><p class="text-gray-600 mt-2">After passing both parts, you can apply for full registration with a licence to practise.</p><a href="https://www.gmc-uk.org/registration-and-licensing/join-the-register" target="_blank" class="inline-block mt-3 text-green-600 font-semibold hover:underline">Start Your Application →</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="infographic" class="py-16 infographic-section">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12"><h2 class="text-3xl font-bold infographic-h2">PLAB Journey: At a Glance</h2><p class="max-w-2xl mx-auto mt-4 text-lg">A visual summary of the key data, timelines, and comparisons for your path to the UK.</p></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="infographic-card rounded-lg p-6 text-center"><h3 class="text-xl font-semibold infographic-h3">PLAB 1 Fee (2025)</h3><p class="text-4xl mt-2 stat-value">£273</p></div>
+                    <div class="infographic-card rounded-lg p-6 text-center"><h3 class="text-xl font-semibold infographic-h3">PLAB 2 Fee (2025)</h3><p class="text-4xl mt-2 stat-value">£998</p></div>
+                    <div class="infographic-card rounded-lg p-6 text-center"><h3 class="text-xl font-semibold infographic-h3">Avg. PLAB 1 Pass Rate</h3><p class="text-4xl mt-2 stat-value">~68%</p></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+                    <div class="infographic-card rounded-lg p-6"><h3 class="text-xl font-semibold infographic-h3 mb-4 text-center">PLAB 1 Subject Weightage</h3><div class="chart-container h-64 md:h-80"><canvas id="infographicPlab1Chart"></canvas></div></div>
+                    <div class="infographic-card rounded-lg p-6"><h3 class="text-xl font-semibold infographic-h3 mb-4 text-center">NHS Starting Salaries (Annual)</h3><div class="chart-container h-64 md:h-80"><canvas id="infographicSalaryChart"></canvas></div></div>
+                </div>
+            </div>
+        </section>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
+            <section id="deep-dive">
+                <h2 class="text-3xl font-bold text-gray-800 text-center mb-2">Exam Deep Dive</h2>
+                <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Get a breakdown of both PLAB parts. Use the tabs and our sample study plan to prepare effectively.</p>
+                <div class="section-card p-6 md:p-8">
+                    <div class="flex justify-center mb-6"><div class="bg-gray-100 p-1 rounded-lg flex space-x-1"><button id="tab-plab1" class="tab-button px-4 py-2 text-sm font-medium rounded-md w-24 active">PLAB 1</button><button id="tab-plab2" class="tab-button px-4 py-2 text-sm font-medium rounded-md w-24">PLAB 2</button></div></div>
+                    <div id="content-plab1">
+                        <div class="grid md:grid-cols-2 gap-8 items-center">
+                            <div>
+                                <h3 class="text-2xl font-semibold text-gray-800 mb-4">PLAB 1: Applied Knowledge Test</h3>
+                                <ul class="space-y-3"><li class="flex items-start"><span class="text-orange-500 mr-2 mt-1">●</span><span><strong>Format:</strong> 180 single-best-answer MCQs.</span></li><li class="flex items-start"><span class="text-orange-500 mr-2 mt-1">●</span><span><strong>Duration:</strong> 3 hours.</span></li><li class="flex items-start"><span class="text-orange-500 mr-2 mt-1">●</span><span><strong>Content:</strong> Focuses on common, important, and acute conditions.</span></li></ul>
+                            </div>
+                            <div class="chart-container"><canvas id="plab1SubjectsChart"></canvas></div>
+                        </div>
+                        <div class="mt-8 pt-8 border-t border-gray-200">
+                            <h3 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Sample 12-Week Study Plan for PLAB 1</h3>
+                            <div class="grid md:grid-cols-3 gap-6 text-sm">
+                                <div class="bg-gray-50 p-4 rounded-lg"><h4 class="font-bold text-gray-800 mb-2">Weeks 1-4: Core Foundations</h4><ul class="list-disc list-inside space-y-1 text-gray-600"><li><strong>Focus:</strong> Medicine (Cardio, Resp, Neuro)</li><li>Combine with basic Surgery topics</li><li>Practice 50-100 questions daily</li></ul></div>
+                                <div class="bg-gray-50 p-4 rounded-lg"><h4 class="font-bold text-gray-800 mb-2">Weeks 5-8: Specialties</h4><ul class="list-disc list-inside space-y-1 text-gray-600"><li><strong>Focus:</strong> Pediatrics, Obs & Gyn, Psychiatry</li><li>Continue with Surgery specialties</li><li>Start timed mock tests (half-length)</li></ul></div>
+                                <div class="bg-gray-50 p-4 rounded-lg"><h4 class="font-bold text-gray-800 mb-2">Weeks 9-12: Integration & Review</h4><ul class="list-disc list-inside space-y-1 text-gray-600"><li><strong>Focus:</strong> Ethics, Other minor topics</li><li>Revise all subjects, focus on weak areas</li><li>Complete full-length mock exams weekly</li></ul></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="content-plab2" class="hidden">
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4 text-center">PLAB 2: Clinical Skills Assessment</h3>
+                        <div class="grid md:grid-cols-3 gap-6 text-center">
+                            <div class="bg-gray-50 p-4 rounded-lg"><h4 class="font-semibold text-gray-800">Data Gathering</h4><p class="text-sm text-gray-600">History, exams, results.</p></div><div class="bg-gray-50 p-4 rounded-lg"><h4 class="font-semibold text-gray-800">Clinical Management</h4><p class="text-sm text-gray-600">Diagnosis, treatment plans.</p></div><div class="bg-gray-50 p-4 rounded-lg"><h4 class="font-semibold text-gray-800">Interpersonal Skills</h4><p class="text-sm text-gray-600">Communication, empathy.</p></div>
+                        </div>
+                        <div class="mt-6"><ul class="space-y-3 max-w-xl mx-auto"><li class="flex items-start"><span class="text-orange-500 mr-2 mt-1">●</span><span><strong>Format:</strong> 16 OSCE stations.</span></li><li class="flex items-start"><span class="text-orange-500 mr-2 mt-1">●</span><span><strong>Duration:</strong> 8 minutes per station.</span></li></ul></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="costs">
+                <h2 class="text-3xl font-bold text-gray-800 text-center mb-2">Costs & Earnings</h2>
+                <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Understand the financial landscape. Use the toggle to view costs in your local currency.</p>
+                <div class="section-card p-6 md:p-8">
+                    <div class="flex justify-center items-center mb-6"><span class="mr-3 font-medium text-gray-700">Currency:</span><div class="bg-gray-100 p-1 rounded-lg flex space-x-1"><button id="currency-gbp" class="tab-button px-4 py-1 text-sm font-medium rounded-md w-20 active">GBP (£)</button><button id="currency-inr" class="tab-button px-4 py-1 text-sm font-medium rounded-md w-20">INR (₹)</button></div></div>
+                    <div class="grid md:grid-cols-3 gap-6 mb-8 text-center">
+                        <div class="bg-orange-50 p-4 rounded-lg"><h4 class="text-lg font-medium text-gray-700">PLAB 1 Fee</h4><p id="plab1-fee" class="text-2xl font-bold text-orange-600"></p></div><div class="bg-orange-50 p-4 rounded-lg"><h4 class="text-lg font-medium text-gray-700">PLAB 2 Fee</h4><p id="plab2-fee" class="text-2xl font-bold text-orange-600"></p></div><div class="bg-orange-50 p-4 rounded-lg"><h4 class="text-lg font-medium text-gray-700">GMC Registration</h4><p id="gmc-fee" class="text-2xl font-bold text-orange-600"></p></div>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4 text-center">NHS Doctor Salary Ranges (Annual Basic)</h3>
+                    <div class="chart-container"><canvas id="salaryChart"></canvas></div>
+                </div>
+            </section>
+
+            <section id="life-uk">
+                <h2 class="text-3xl font-bold text-gray-800 text-center mb-2">Doctor's Life in the UK</h2>
+                <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">An overview of pay, working conditions, and work-life balance for doctors in the NHS.</p>
+                <div class="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="section-card p-6 lg:col-span-2">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Understanding Your Pay (Payscale)</h3>
+                        <p class="text-gray-600 mb-4">Your total salary is more than just a basic figure. It's composed of several elements:</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-start"><span class="text-green-500 mr-3 mt-1">●</span><div><strong class="text-gray-700">Basic Pay:</strong> Determined by your training stage (e.g., FY1, ST3). This increases annually.</div></li>
+                            <li class="flex items-start"><span class="text-green-500 mr-3 mt-1">●</span><div><strong class="text-gray-700">Banding / Pay Enhancement:</strong> A significant supplement (often 30-50% of basic pay) for working hours outside of 9am-5pm Monday-Friday. This includes nights and weekends.</div></li>
+                            <li class="flex items-start"><span class="text-green-500 mr-3 mt-1">●</span><div><strong class="text-gray-700">On-Call Allowance:</strong> An additional payment for being available to work, even if not called in.</div>
+                        </ul>
+                        <p class="text-gray-600 mt-4 text-sm">For the most accurate and detailed pay scales, refer to the official <a href="https://www.nhsemployers.org/pay-pensions-and-reward/medical-staff/doctors-and-dentists-in-training" target="_blank" class="text-orange-600 font-semibold hover:underline">NHS Employers</a> website.</p>
+                    </div>
+                    <div class="section-card p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Living Conditions</h3>
+                        <p class="text-gray-600">Costs vary significantly by location. Major cities like London are expensive, while cities in the North of England (e.g., Manchester, Leeds) offer a lower cost of living. Many junior doctors share flats or houses to manage costs. Hospital accommodation may be available but is often limited.</p>
+                    </div>
+                    <div class="section-card p-6 lg:col-span-3">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Work-Life Balance & Working Hours</h3>
+                        <p class="text-gray-600 mb-4">The NHS is a demanding environment, but protections are in place. The <strong class="text-gray-700">European Working Time Directive (EWTD)</strong>, which the UK still largely adheres to, limits the working week to an average of 48 hours. However, this is an average, and some weeks will be more intense than others.</p>
+                        <ul class="space-y-2 text-gray-600">
+                            <li>Rotas are typically planned months in advance, allowing you to plan your personal life.</li>
+                            <li>You are entitled to annual leave, study leave for professional development, and sick pay.</li>
+                            <li>The balance can be challenging, especially during busy rotations in specialties like A&E or acute medicine, but it is a key focus for the GMC and NHS Trusts.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="career">
+                 <h2 class="text-3xl font-bold text-gray-800 text-center mb-2">UK Career Progression</h2>
+                <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Passing PLAB is the start of your NHS career. Understand the typical progression path from junior doctor to a senior role.</p>
+                <div class="space-y-6">
+                    <div class="section-card p-6"><h3 class="text-xl font-semibold text-gray-800 mb-2">Stage 1: Foundation Programme (FY1 & FY2)</h3><p class="text-gray-600">A two-year programme with rotations through various specialties to build a broad base of experience. Full GMC registration is granted after successfully completing FY1.</p></div>
+                    <div class="section-card p-6"><h3 class="text-xl font-semibold text-gray-800 mb-2">Stage 2: Core / Specialty Training (CT/ST)</h3><p class="text-gray-600">After the Foundation Programme, you apply for training in a specific area (e.g., Medicine, Surgery, GP). This lasts 3-8 years depending on the specialty.</p></div>
+                    <div class="section-card p-6"><h3 class="text-xl font-semibold text-gray-800 mb-2">Stage 3: CCT & Senior Roles</h3><p class="text-gray-600">Upon completion of training, you receive your CCT, allowing you to apply for senior posts as a Consultant or a General Practitioner.</p></div>
+                </div>
+            </section>
+
+            <section id="comparison">
+                <h2 class="text-3xl font-bold text-gray-800 text-center mb-2">Exam Comparison</h2>
+                <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">How does PLAB stack up against other international medical licensing exams?</p>
+                <div class="section-card p-6 md:p-8">
+                    <div class="overflow-x-auto mb-8">
+                        <table class="w-full text-left border-collapse">
+                            <thead><tr><th class="py-2 px-4 bg-gray-50 font-semibold text-sm text-gray-600 border-b">Feature</th><th class="py-2 px-4 bg-gray-50 font-semibold text-sm text-gray-600 border-b">PLAB (UK)</th><th class="py-2 px-4 bg-gray-50 font-semibold text-sm text-gray-600 border-b">AMC (Australia)</th><th class="py-2 px-4 bg-gray-50 font-semibold text-sm text-gray-600 border-b">USMLE (USA)</th></tr></thead>
+                            <tbody class="text-sm text-gray-700">
+                                <tr><td class="py-2 px-4 border-b font-medium">Parts</td><td class="py-2 px-4 border-b">2 (Written + OSCE)</td><td class="py-2 px-4 border-b">2 (MCQ + OSCE)</td><td class="py-2 px-4 border-b">3 Steps (MCQs + Case Sims)</td></tr>
+                                <tr><td class="py-2 px-4 border-b font-medium">Focus</td><td class="py-2 px-4 border-b">Applied clinical knowledge</td><td class="py-2 px-4 border-b">Clinical competence</td><td class="py-2 px-4 border-b">Basic sciences & clinical knowledge</td></tr>
+                                <tr><td class="py-2 px-4 border-b font-medium">Difficulty</td><td class="py-2 px-4 border-b">Moderate</td><td class="py-2 px-4 border-b">Moderate-High</td><td class="py-2 px-4 border-b">High</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Approximate Pass Rate Comparison</h3>
+                    <div class="chart-container"><canvas id="passRateChart"></canvas></div>
+                </div>
+            </section>
+        </div>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+      
+    </main>
+
+    <footer class="bg-gray-800"><div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center text-gray-400 text-sm"><p>This page is an interactive summary. Data is representative for 2025.</p><p class="mt-1">Always refer to the official General Medical Council (GMC) and NHS Employers websites for the most current information.</p></div></footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const data = {
+                fees: { gbp: { plab1: 273, plab2: 998, gmc: 463 }, inr: { plab1: 30303, plab2: 110898, gmc: 51593 } },
+                salaries: { gbp: { labels: ['FY1', 'FY2', 'ST1-2', 'Consultant (Start)'], values: [32398, 37303, 43923, 105504] }, inr: { labels: ['FY1', 'FY2', 'ST1-2', 'Consultant (Start)'], values: [3596178, 4140633, 4875453, 11700944] } },
+                plab1Subjects: { labels: ['Medicine', 'Surgery', 'Pediatrics', 'Obs & Gyn', 'Psychiatry', 'Ethics', 'Other'], values: [30, 20, 15, 15, 10, 5, 5] },
+                passRates: { labels: ['PLAB', 'AMC', 'USMLE'], part1: [68, 55, 94], part2: [65, 40, 96] }
+            };
+
+            let currentCurrency = 'gbp';
+            let salaryChart, plab1SubjectsChart, passRateChart, infographicPlab1Chart, infographicSalaryChart;
+            const currencySymbols = { gbp: '£', inr: '₹' };
+
+            const formatCurrency = (value) => `${currencySymbols[currentCurrency]}${value.toLocaleString('en-IN')}`;
+            
+            const updateFees = () => {
+                document.getElementById('plab1-fee').textContent = formatCurrency(data.fees[currentCurrency].plab1);
+                document.getElementById('plab2-fee').textContent = formatCurrency(data.fees[currentCurrency].plab2);
+                document.getElementById('gmc-fee').textContent = formatCurrency(data.fees[currentCurrency].gmc);
+            };
+
+            const createSalaryChart = () => {
+                const ctx = document.getElementById('salaryChart').getContext('2d');
+                if (salaryChart) salaryChart.destroy();
+                salaryChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: { labels: data.salaries[currentCurrency].labels, datasets: [{ label: `Annual Basic Salary (${currencySymbols[currentCurrency]})`, data: data.salaries[currentCurrency].values, backgroundColor: 'rgba(211, 84, 0, 0.6)', borderColor: 'rgba(211, 84, 0, 1)', borderWidth: 1 }] },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { callback: (v) => `${currencySymbols[currentCurrency]}${(v/1000)}k` } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => ` ${formatCurrency(c.raw)}` } } } }
+                });
+            };
+            
+            const createInfographicSalaryChart = () => {
+                const ctx = document.getElementById('infographicSalaryChart').getContext('2d');
+                if (infographicSalaryChart) infographicSalaryChart.destroy();
+                infographicSalaryChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: { labels: data.salaries.gbp.labels, datasets: [{ label: 'Annual Basic Salary (£)', data: data.salaries.gbp.values, backgroundColor: '#5893D4' }] },
+                    options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', scales: { x: { ticks: { color: '#E0E0E0', callback: (v) => `£${(v/1000)}k` }, grid: { color: '#3A506B' } }, y: { ticks: { color: '#E0E0E0' } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => ` £${c.raw.toLocaleString()}` } } } }
+                });
+            };
+
+            const createPlab1SubjectsChart = (canvasId, legendColor) => {
+                const ctx = document.getElementById(canvasId).getContext('2d');
+                return new Chart(ctx, {
+                    type: 'doughnut',
+                    data: { labels: data.plab1Subjects.labels, datasets: [{ label: 'Approx. Weightage', data: data.plab1Subjects.values, backgroundColor: ['#E67E22', '#F39C12', '#F1C40F', '#16A085', '#1ABC9C', '#2ECC71', '#BDC3C7'], hoverOffset: 4 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 12, color: legendColor || '#4B4B4B' } }, title: { display: true, text: 'PLAB 1 Subject Weightage (%)', color: legendColor || '#4B4B4B' } } }
+                });
+            };
+
+            const createPassRateChart = () => {
+                const ctx = document.getElementById('passRateChart').getContext('2d');
+                passRateChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: { labels: data.passRates.labels, datasets: [{ label: 'Part/Step 1 Pass Rate (%)', data: data.passRates.part1, backgroundColor: 'rgba(22, 160, 133, 0.6)'}, { label: 'Part/Step 2 Pass Rate (%)', data: data.passRates.part2, backgroundColor: 'rgba(243, 156, 18, 0.6)' }] },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100, ticks: { callback: (v) => v + '%' } } }, plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: (c) => ` ${c.dataset.label}: ${c.raw}%` } } } }
+                });
+            };
+
+            const tabBtnPlab1 = document.getElementById('tab-plab1'), tabBtnPlab2 = document.getElementById('tab-plab2'), contentPlab1 = document.getElementById('content-plab1'), contentPlab2 = document.getElementById('content-plab2');
+            tabBtnPlab1.addEventListener('click', () => { tabBtnPlab1.classList.add('active'); tabBtnPlab2.classList.remove('active'); contentPlab1.classList.remove('hidden'); contentPlab2.classList.add('hidden'); });
+            tabBtnPlab2.addEventListener('click', () => { tabBtnPlab2.classList.add('active'); tabBtnPlab1.classList.remove('active'); contentPlab2.classList.remove('hidden'); contentPlab1.classList.add('hidden'); });
+            
+            const currencyBtnGbp = document.getElementById('currency-gbp'), currencyBtnInr = document.getElementById('currency-inr');
+            currencyBtnGbp.addEventListener('click', () => { currentCurrency = 'gbp'; currencyBtnGbp.classList.add('active'); currencyBtnInr.classList.remove('active'); updateFees(); createSalaryChart(); });
+            currencyBtnInr.addEventListener('click', () => { currentCurrency = 'inr'; currencyBtnInr.classList.add('active'); currencyBtnGbp.classList.remove('active'); updateFees(); createSalaryChart(); });
+
+            const navLinks = document.querySelectorAll('.nav-link'), sections = document.querySelectorAll('main section');
+            const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { navLinks.forEach(link => { link.classList.remove('active'); if (link.getAttribute('href').substring(1) === entry.target.id) link.classList.add('active'); }); } }); }, { root: null, rootMargin: '0px', threshold: 0.4 });
+            sections.forEach(section => observer.observe(section));
+
+            updateFees(); 
+            createSalaryChart(); 
+            plab1SubjectsChart = createPlab1SubjectsChart('plab1SubjectsChart');
+            infographicPlab1Chart = createPlab1SubjectsChart('infographicPlab1Chart', '#E0E0E0');
+            createPassRateChart();
+            createInfographicSalaryChart();
+        });
+    </script>
+</body>
+</html>
