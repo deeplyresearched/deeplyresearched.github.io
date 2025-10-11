@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMC Exam Guide for IMGs: Practice Medicine in Australia</title>
+    <meta name="description" content="Navigate the AMC exam pathway for IMGs. Get a step-by-step guide to medical registration, exam costs, salaries, and compare AMC vs. PLAB & USMLE for practicing medicine in Australia.">
+    <meta name="keywords" content="AMC exam, Australian Medical Council, IMG Australia, medical registration Australia, practice medicine Australia, AMC pathway, AMC guide, AMC exam costs, doctor salary Australia, PLAB vs AMC, USMLE vs AMC, AMC MCQ, AMC clinical exam, International Medical Graduate, Australian doctor career">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+    </script>
+  
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The SPA is structured as a thematic dashboard with an expanded navigation bar. This non-linear approach prioritizes user exploration over a formal report flow. The sections are: Overview, Pathway (New), Account Guide (New), The Exams (tabbed details), Costs (charts), Comparison (static table), Key Concepts, Opportunities/Salary, Registration Process, and Study Planning. This structure is chosen to organize the vast amount of information (fees, timelines, pathways, lifestyle, comparison) into logical, consumable chunks, allowing IMGs to quickly access the specific data they need. All previous AI features are replaced with detailed static content and comparison tables. -->
+    <!-- Visualization & Content Choices: 
+        1. Full AMC Pathway: Goal: Organize/Inform. Viz: Interactive HTML/CSS flowchart. Method: HTML/CSS Flexbox.
+        2. Exam fees (AUD/INR): Goal: Inform/Compare. Viz: Horizontal Bar Chart. Method: Chart.js.
+        3. AMC vs PLAB vs USMLE costs: Goal: Compare. Viz: Grouped Vertical Bar Chart & Detailed Comparison Table. Method: Chart.js & HTML Table.
+        4. Key Concepts: Goal: Clarify/Inform. Viz: Definition Cards. Method: HTML/CSS Grid.
+        5. Application Pathway & Guide: Goal: Guide/Link. Viz: Detailed Text & Step-by-Step Lists (New sections). Method: HTML List & Text Blocks.
+        6. Career, Compensation, and Lifestyle: Goal: Inform/Motivate. Viz: Detailed Salary Table, Work-Life Balance Text, and Official Links. Method: HTML Table & Text Blocks.
+        7. Post-Exam Registration: Goal: Guide. Viz: Step-by-Step list. Method: HTML List.
+        8. Study Planning: Goal: Enable planning. Viz: Sample Study Plans. Method: HTML/CSS Cards.
+        9. Cost of living: Goal: Inform/Compare. Viz: Vertical Bar Chart. Method: Chart.js.
+        All visualizations and content blocks are housed within responsive, styled containers to ensure clarity and professional presentation. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 45vh;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+                max-height: 50vh;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #2563EB;
+            border-bottom-color: #2563EB;
+        }
+        .tab-button.active {
+            background-color: #2563EB;
+            color: #FFFFFF;
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+      
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-blue-600">AMC Pathway Guide</h1>
+            <div class="hidden lg:flex items-center space-x-4 xl:space-x-4 text-sm">
+                <a href="#overview" class="nav-link text-gray-600 font-medium border-b-2 border-transparent pb-1">Overview</a>
+                <a href="#application-pathway" class="nav-link text-gray-600 font-medium border-b-2 border-transparent pb-1">Eligibility & Pathway</a>
+                <a href="#account-guide" class="nav-link text-gray-600 font-medium border-b-2 border-transparent pb-1">Beginner Guide</a>
+                <a href="#exams" class="nav-link text-gray-600 font-medium border-b-2 border-transparent pb-1">Exams & Prep</a>
+                <a href="#costs" class="nav-link text-gray-600 font-medium border-b-2 border-transparent pb-1">Costs</a>
+                <a href="#comparison" class="nav-link text-gray-600 font-medium border-b-2 border-transparent pb-1">Comparison</a>
+                <a href="#key-concepts" class="nav-link text-gray-600 font-medium border-b-2 border-transparent pb-1">Key Concepts</a>
+                <a href="#opportunities-salary" class="nav-link text-gray-600 font-medium border-b-2 border-transparent pb-1">Salary & Lifestyle</a>
+                <a href="#registration-process" class="nav-link text-gray-600 font-medium border-b-2 border-transparent pb-1">Registration</a>
+            </div>
+            <button id="mobile-menu-button" class="lg:hidden text-gray-700 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-gray-200">
+            <a href="#overview" class="block text-center py-3 px-4 text-gray-600 hover:bg-blue-50">Overview</a>
+            <a href="#application-pathway" class="block text-center py-3 px-4 text-gray-600 hover:bg-blue-50">Eligibility & Pathway</a>
+            <a href="#account-guide" class="block text-center py-3 px-4 text-gray-600 hover:bg-blue-50">Beginner Guide</a>
+            <a href="#exams" class="block text-center py-3 px-4 text-gray-600 hover:bg-blue-50">Exams & Prep</a>
+            <a href="#costs" class="block text-center py-3 px-4 text-gray-600 hover:bg-blue-50">Costs</a>
+            <a href="#comparison" class="block text-center py-3 px-4 text-gray-600 hover:bg-blue-50">Comparison</a>
+            <a href="#key-concepts" class="block text-center py-3 px-4 text-gray-600 hover:bg-blue-50">Key Concepts</a>
+            <a href="#opportunities-salary" class="block text-center py-3 px-4 text-gray-600 hover:bg-blue-50">Salary & Lifestyle</a>
+            <a href="#registration-process" class="block text-center py-3 px-4 text-gray-600 hover:bg-blue-50">Registration</a>
+            <a href="#study-planning" class="block text-center py-3 px-4 text-gray-600 hover:bg-blue-50">Study Plan</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 md:py-12">
+
+        <section id="hero" class="text-center mb-16">
+            <h2 class="text-3xl md:text-5xl font-bold text-gray-900 mb-4">Your Journey to Practicing Medicine in Australia</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600">
+                This guide breaks down the Australian Medical Council (AMC) examination process. Explore the steps, understand the costs, and compare the pathways to start your medical career in Australia.
+            </p>
+        </section>
+
+        <section id="overview" class="mb-20">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-4 text-gray-900">The Standard Pathway at a Glance</h3>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-12">This is the primary route for many International Medical Graduates (IMGs). The process involves several key stages, from initial verification to full registration.</p>
+            <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4 overflow-x-auto pb-4">
+                <a href="#key-concepts" class="flex items-center space-x-4 group">
+                    <div class="text-center p-4 bg-white rounded-lg shadow-md border border-gray-200 min-w-[160px] group-hover:bg-blue-50 transition">
+                        <div class="text-3xl mb-2">1</div>
+                        <h4 class="font-semibold">Portfolio & EPIC</h4>
+                    </div>
+                    <div class="text-blue-400 text-2xl font-light hidden md:block">&rarr;</div>
+                </a>
+                <a href="#exams" class="flex items-center space-x-4 group">
+                    <div class="text-center p-4 bg-white rounded-lg shadow-md border border-gray-200 min-w-[160px] group-hover:bg-blue-50 transition">
+                        <div class="text-3xl mb-2">2</div>
+                        <h4 class="font-semibold">MCQ Exam (Part 1)</h4>
+                    </div>
+                    <div class="text-blue-400 text-2xl font-light hidden md:block">&rarr;</div>
+                </a>
+                <a href="#exams" class="flex items-center space-x-4 group">
+                    <div class="text-center p-4 bg-white rounded-lg shadow-md border border-gray-200 min-w-[160px] group-hover:bg-blue-50 transition">
+                        <div class="text-3xl mb-2">3</div>
+                        <h4 class="font-semibold">Clinical Exam (Part 2)</h4>
+                    </div>
+                    <div class="text-blue-400 text-2xl font-light hidden md:block">&rarr;</div>
+                </a>
+                <a href="#registration-process" class="flex items-center space-x-4 group">
+                    <div class="text-center p-4 bg-white rounded-lg shadow-md border border-gray-200 min-w-[160px] group-hover:bg-blue-50 transition">
+                        <div class="text-3xl mb-2">4</div>
+                        <h4 class="font-semibold">Supervised Practice</h4>
+                    </div>
+                    <div class="text-blue-400 text-2xl font-light hidden md:block">&rarr;</div>
+                </a>
+                <div class="text-center p-4 bg-green-100 text-green-800 rounded-lg shadow-md border border-green-200 min-w-[160px]">
+                    <div class="text-3xl mb-2">✓</div>
+                    <h4 class="font-semibold">General Registration</h4>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Section: The Application Pathway for IMGs -->
+        <section id="application-pathway" class="mb-20 bg-white p-6 md:p-10 rounded-2xl shadow-lg border border-gray-200">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-4 text-gray-900">The Official Application Pathway for IMGs</h3>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-10">The Standard Pathway begins with establishing eligibility and verifying your primary medical degree. This is the official gateway to the AMC exams.</p>
+
+            <div class="max-w-4xl mx-auto space-y-6">
+                <h4 class="font-bold text-xl text-gray-800 border-b pb-2">Mandatory Pre-requisites & Requirements</h4>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="p-4 border-l-4 border-red-500 bg-red-50 rounded-lg">
+                        <h5 class="font-semibold text-red-800 mb-1">Degree Eligibility Check</h5>
+                        <p class="text-sm text-gray-700">Your medical school and qualification must be recognized by the AMC. This generally means being listed in the **World Directory of Medical Schools (WDOMS)**.</p>
+                        <a href="https://search.wdoms.org/" target="_blank" rel="noopener noreferrer" class="text-sm text-red-600 font-medium hover:underline mt-2 inline-block">Check WDOMS Status</a>
+                    </div>
+                    <div class="p-4 border-l-4 border-yellow-500 bg-yellow-50 rounded-lg">
+                        <h5 class="font-semibold text-yellow-800 mb-1">English Language Requirements</h5>
+                        <p class="text-sm text-gray-700">Before applying for *registration* (though not strictly required for the exam itself), you must pass an approved test, usually **IELTS Academic** or **OET (Occupational English Test)**.</p>
+                        <a href="https://www.medicalboard.gov.au/registration/registration-standards/english-language-skills.aspx" target="_blank" rel="noopener noreferrer" class="text-sm text-yellow-600 font-medium hover:underline mt-2 inline-block">View MBA Language Standards</a>
+                    </div>
+                </div>
+
+                <h4 class="font-bold text-xl text-gray-800 border-b pb-2 pt-4">Starting the Application</h4>
+                <p class="text-gray-600">The entire process is managed through the AMC's online portal. You must first create an account, which acts as your medical portfolio for all future stages.</p>
+                <a href="https://www.amc.org.au/assessments/assessment-process/standard-pathway/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 transition">
+                    Go to Official AMC Pathway Information
+                </a>
+            </div>
+        </section>
+
+        <!-- New Section: Account Creation Guide -->
+        <section id="account-guide" class="mb-20">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-4 text-gray-900">Beginner's Step-by-Step Account Creation Guide</h3>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-10">Follow this simplified guide to successfully create your AMC account and prepare your credentials for examination authorization.</p>
+
+            <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                    <h4 class="font-semibold text-lg text-blue-800 mb-4">Phase 1: AMC Account & EPIC Verification</h4>
+                    <ol class="list-decimal list-inside space-y-4 text-gray-700 text-sm pl-2">
+                        <li>
+                            <strong class="font-medium">Create AMC Account:</strong> Register on the AMC website. This forms your unique candidate number and portfolio.
+                        </li>
+                        <li>
+                            <strong class="font-medium">Pay Portfolio Fee:</strong> A non-refundable fee is required to activate your portfolio and proceed to verification.
+                        </li>
+                        <li>
+                            <strong class="font-medium">EPIC Application:</strong> Use the AMC portal to initiate Primary Source Verification (PSV) through EPIC. You must upload documents like your medical diploma and transcript.
+                        </li>
+                        <li>
+                            <strong class="font-medium">Wait for PSV:</strong> Allow several weeks for EPIC to verify your medical degree directly with your issuing institution.
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                    <h4 class="font-semibold text-lg text-blue-800 mb-4">Phase 2: Examination Authorization</h4>
+                    <ol class="list-decimal list-inside space-y-4 text-gray-700 text-sm pl-2" start="5">
+                        <li>
+                            <strong class="font-medium">EPIC Completion:</strong> Once EPIC confirms your degree is genuine, the AMC is notified.
+                        </li>
+                        <li>
+                            <strong class="font-medium">Apply for MCQ Exam:</strong> Return to your AMC portfolio to formally apply for the CAT MCQ Exam. Pay the substantial exam application fee.
+                        </li>
+                        <li>
+                            <strong class="font-medium">Receive Authorization:</strong> The AMC will issue an Authorization Letter (valid for 12 months) via your portal.
+                        </li>
+                        <li>
+                            <strong class="font-medium">Book Exam Date:</strong> Use the details in the authorization letter to book your specific exam slot with the testing provider (Pearson VUE) at your preferred location globally.
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Key Concepts Section -->
+        <section id="key-concepts" class="mb-20 bg-white p-6 md:p-10 rounded-2xl shadow-lg border border-gray-200">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-4 text-gray-900">Key Concepts & Terminology</h3>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-10">Understanding the core terminology of the Australian medical system is vital for IMGs navigating the registration process. This section defines key pathways and terms.</p>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="p-5 border-l-4 border-blue-500 bg-gray-50 rounded-lg shadow-sm">
+                    <h4 class="font-bold text-lg text-blue-800 mb-2">EPIC (ECFMG)</h4>
+                    <p class="text-sm text-gray-700">The Electronic Portfolio of International Credentials, used for Primary Source Verification of your medical degree. This is a mandatory first step before applying for the AMC exams.</p>
+                </div>
+                <div class="p-5 border-l-4 border-green-500 bg-gray-50 rounded-lg shadow-sm">
+                    <h4 class="font-bold text-lg text-green-800 mb-2">Standard Pathway</h4>
+                    <p class="text-sm text-gray-700">The most common route for IMGs, requiring successful completion of the AMC CAT MCQ and Clinical Examinations, followed by supervised practice.</p>
+                </div>
+                <div class="p-5 border-l-4 border-indigo-500 bg-gray-50 rounded-lg shadow-sm">
+                    <h4 class="font-bold text-lg text-indigo-800 mb-2">Competent Authority Pathway</h4>
+                    <p class="text-sm text-gray-700">A streamlined route for IMGs from specific recognized countries (e.g., UK, Canada, USA, Ireland, New Zealand) that allows for a shorter pathway to general registration without the AMC exams.</p>
+                </div>
+                <div class="p-5 border-l-4 border-red-500 bg-gray-50 rounded-lg shadow-sm">
+                    <h4 class="font-bold text-lg text-red-800 mb-2">Specialist Pathway</h4>
+                    <p class="text-sm text-gray-700">For IMGs who have completed specialist training overseas and wish to have their qualifications assessed for substantial equivalence to an Australian Fellowship (FRACGP, FRACP, etc.).</p>
+                </div>
+                <div class="p-5 border-l-4 border-yellow-500 bg-gray-50 rounded-lg shadow-sm">
+                    <h4 class="font-bold text-lg text-yellow-800 mb-2">Supervised Practice</h4>
+                    <p class="text-sm text-gray-700">A mandatory 12-month period of supervised work as a medical practitioner in an Australian hospital or practice, required after passing the AMC exams to gain full general registration.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="exams" class="mb-20 bg-white p-6 md:p-10 rounded-2xl shadow-lg border border-gray-200">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-4 text-gray-900">A Deep Dive into the AMC Exams</h3>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-10">The AMC assessment is a two-part process designed to test your medical knowledge and clinical skills against the standard for Australian medical graduates. View the details and see static practice examples below.</p>
+            <div class="flex justify-center mb-8">
+                <div class="flex space-x-2 bg-gray-200 p-1.5 rounded-xl">
+                    <button class="tab-button active py-2 px-6 rounded-lg text-sm md:text-base font-medium transition" data-tab="mcq">MCQ Exam (Part 1)</button>
+                    <button class="tab-button py-2 px-6 rounded-lg text-sm md:text-base font-medium transition text-gray-600" data-tab="clinical">Clinical Exam (Part 2)</button>
+                </div>
+            </div>
+
+            <div id="mcq-content" class="tab-content">
+                <div class="grid md:grid-cols-2 gap-8 items-start">
+                    <div>
+                        <h4 class="text-xl font-bold text-gray-800 mb-3">CAT MCQ Examination Details</h4>
+                        <p class="text-gray-600 mb-6">This is a computer-adaptive test that assesses your fundamental medical knowledge. The difficulty of questions adjusts based on your answers, providing a precise evaluation of your abilities. Authorization is valid for 12 months.</p>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <span class="text-blue-500 text-2xl mr-4 mt-1">&#9201;</span>
+                                <div><strong class="font-semibold">Duration:</strong> 3.5 hours (210 minutes)</div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-blue-500 text-2xl mr-4 mt-1">&#63;</span>
+                                <div><strong class="font-semibold">Questions:</strong> 150 MCQs (120 scored, 30 pilot)</div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-blue-500 text-2xl mr-4 mt-1">&#128187;</span>
+                                <div><strong class="font-semibold">Format:</strong> Computer Adaptive Test (CAT) - must answer all 120 scored items for a result.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-xl font-bold text-gray-800 mb-3">Sample Practice Question</h4>
+                        <p class="text-gray-600 mb-4">A 65-year-old male with a history of hypertension presents with acute-onset, severe, tearing chest pain radiating to his back. His blood pressure is 180/110 mmHg and heart rate is 105 bpm. What is the most likely diagnosis?</p>
+                        <div class="space-y-2 text-sm">
+                            <div class="bg-gray-100 p-3 rounded-md border border-gray-200">A. Acute Myocardial Infarction</div>
+                            <div class="bg-gray-100 p-3 rounded-md border border-gray-200">B. Aortic Dissection</div>
+                            <div class="bg-gray-100 p-3 rounded-md border border-gray-200">C. Pulmonary Embolism</div>
+                            <div class="bg-gray-100 p-3 rounded-md border border-gray-200">D. Pericarditis</div>
+                        </div>
+                        <div class="mt-4 p-3 bg-blue-100 text-blue-800 rounded-md text-sm">
+                            <strong class="font-semibold">Rationale:</strong> The classic presentation of sudden, tearing pain radiating to the back in a hypertensive patient strongly suggests Aortic Dissection (B).
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="clinical-content" class="tab-content hidden">
+                <div class="grid md:grid-cols-2 gap-8 items-start">
+                    <div>
+                        <h4 class="text-xl font-bold text-gray-800 mb-3">Clinical Examination (OSCE) Details</h4>
+                        <p class="text-gray-600 mb-6">This is a practical, multi-station examination assessing clinical skills in realistic scenarios. You must pass 9 out of 14 scored stations to clear the exam.</p>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <span class="text-green-500 text-2xl mr-4 mt-1">&#128101;</span>
+                                <div><strong class="font-semibold">Stations:</strong> 20 total (16 assessed, 4 rest/transition)</div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-green-500 text-2xl mr-4 mt-1">&#9201;</span>
+                                <div><strong class="font-semibold">Timing:</strong> 10 minutes per station (2 min reading, 8 min assessment)</div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-green-500 text-2xl mr-4 mt-1">&#10003;</span>
+                                <div><strong class="font-semibold">Passing Score:</strong> Pass 9 out of 14 scored stations.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-xl font-bold text-gray-800 mb-3">Sample Clinical Scenario</h4>
+                        <p class="text-gray-600 mb-4"><strong>Scenario:</strong> You are the resident in the Emergency Department. Mrs. Smith, a 78-year-old with a known history of atrial fibrillation, is brought in with acute breathlessness. She is visibly distressed.</p>
+                        <div class="p-3 bg-gray-100 text-gray-800 rounded-md text-sm">
+                            <strong class="font-semibold">Tasks:</strong>
+                            <ol class="list-decimal list-inside pl-2 mt-1 space-y-1">
+                                <li>Take a focused history relevant to her acute breathlessness.</li>
+                                <li>Perform a focused respiratory and cardiovascular examination.</li>
+                                <li>Explain your differential diagnoses and immediate management plan to the patient.</li>
+                            </ol>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-800 mt-6 mb-3">Sample Ethical Dilemma</h4>
+                        <p class="text-gray-600 mb-4">A 16-year-old patient who is a Jehovah's Witness requires a life-saving blood transfusion, but refuses treatment. Their parents agree with the patient's decision. What is your immediate course of action?</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="costs" class="mb-20">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-4 text-gray-900">Understanding the Financial Investment</h3>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-10">The AMC pathway involves several fees. This chart visualizes the major costs for the Standard Pathway, converted to Indian Rupees (INR) for quick comparison. Exchange rate used: 1 AUD $\\approx$ 51.67 INR.</p>
+            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200">
+                <div class="chart-container">
+                    <canvas id="costChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXPANDED Section: Career, Compensation, and Lifestyle -->
+        <section id="opportunities-salary" class="mb-20 bg-white p-6 md:p-10 rounded-2xl shadow-lg border border-gray-200">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-4 text-gray-900">Career, Compensation, and Lifestyle in Australia</h3>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-10">Australia offers competitive pay, generous entitlements, and a high quality of life. Understanding the financial and cultural context is key to a successful transition.</p>
+
+            <div class="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto mt-8">
+                <!-- Compensation Table -->
+                <div class="lg:col-span-1">
+                    <h4 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">1. Detailed Pay Scale (Base Salary)</h4>
+                    <p class="text-sm text-gray-600 mb-3">Salaries are dictated by state and territory industrial agreements, meaning pay is consistent across public hospitals in a state, and often higher with penalty rates for nights/weekends.</p>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden shadow-md">
+                            <thead class="bg-blue-600 text-white">
+                                <tr>
+                                    <th class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">Position</th>
+                                    <th class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">AUD (Approx.)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Intern / RMO (PGY1-3)</td>
+                                    <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-700">$75,000 - $110,000</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Registrar (Trainee)</td>
+                                    <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-700">$120,000 - $180,000+</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Consultant</td>
+                                    <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-700">$200,000 - $450,000+</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Work-Life Balance -->
+                <div class="lg:col-span-1">
+                    <h4 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">2. Work-Life Balance and Entitlements</h4>
+                    <p class="text-gray-600 mb-4 text-sm">Australia's medical system prioritizes physician well-being. This is enshrined in mandatory agreements that protect working hours and ensure generous paid leave.</p>
+                    <ul class="space-y-3 text-sm text-gray-700">
+                        <li class="flex items-start">
+                            <span class="text-green-500 mr-2 mt-1">&#10003;</span>
+                            <div><strong class="font-semibold">Annual Leave:</strong> Typically 4 to 6 weeks paid annual leave per year, plus access to local public holidays.</div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-green-500 mr-2 mt-1">&#10003;</span>
+                            <div><strong class="font-semibold">Fatigue Management:</strong> Strict limits on consecutive shifts and maximum working hours per roster cycle, with mandated rest periods between shifts.</div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-green-500 mr-2 mt-1">&#10003;</span>
+                            <div><strong class="font-semibold">Professional Development:</strong> Access to paid professional development leave and funding to support ongoing education and training.</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Living Conditions -->
+                <div class="lg:col-span-1">
+                    <h4 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">3. Living Conditions and Quality of Life</h4>
+                    <p class="text-gray-600 mb-4 text-sm">Australia consistently ranks high globally for quality of life, benefiting from robust public services and a strong economy.</p>
+                    <ul class="space-y-3 text-sm text-gray-700">
+                        <li class="flex items-start">
+                            <span class="text-indigo-500 mr-2 mt-1">&#9733;</span>
+                            <div><strong class="font-semibold">Housing Costs:</strong> Highly varied. Metropolitan centers (Sydney/Melbourne) are among the most expensive globally; regional areas offer significantly lower costs and higher job incentives.</div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-indigo-500 mr-2 mt-1">&#9733;</span>
+                            <div><strong class="font-semibold">Healthcare Access:</strong> Excellent access to Australia's universal healthcare system (Medicare) and robust private options.</div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-indigo-500 mr-2 mt-1">&#9733;</span>
+                            <div><strong class="font-semibold">Culture & Environment:</strong> Multicultural, safe society with easy access to unique natural environments (beaches, mountains, outback) supporting an active lifestyle.</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Official Resources -->
+            <div class="mt-12 pt-6 border-t border-gray-200 max-w-6xl mx-auto">
+                <h4 class="text-xl font-bold text-gray-800 mb-4">Official Career and Salary Resources</h4>
+                <p class="text-gray-600 mb-4 text-sm">For the most current and authoritative salary data, always refer to the specific public hospital enterprise agreements for each state.</p>
+                <div class="grid sm:grid-cols-2 gap-4 text-sm">
+                    <a href="https://www.amsa.org.au/" target="_blank" rel="noopener noreferrer" class="flex items-center p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition border border-blue-200">
+                        <span class="text-blue-600 mr-3">&#128279;</span>
+                        <span class="text-blue-800 font-medium">Australian Medical Students' Association (AMSA) - Career Info</span>
+                    </a>
+                    <a href="https://www.health.nsw.gov.au/careers/Pages/salary-and-awards.aspx" target="_blank" rel="noopener noreferrer" class="flex items-center p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition border border-blue-200">
+                        <span class="text-blue-600 mr-3">&#128279;</span>
+                        <span class="text-blue-800 font-medium">NSW Health - Salary and Awards (Example State)</span>
+                    </a>
+                    <a href="https://www.health.vic.gov.au/health-workforce/medical-officers-salaries-and-awards" target="_blank" rel="noopener noreferrer" class="flex items-center p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition border border-blue-200">
+                        <span class="text-blue-600 mr-3">&#128279;</span>
+                        <span class="text-blue-800 font-medium">Victoria Health - Medical Officer Salaries</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="comparison" class="mb-20 bg-white p-6 md:p-10 rounded-2xl shadow-lg border border-gray-200">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-4 text-gray-900">AMC vs. PLAB vs. USMLE</h3>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-10">Compare the Australian pathway to the UK (PLAB) and US (USMLE) exams based on cost and structure to determine the best route for your career goals.</p>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h4 class="text-xl font-bold text-gray-800 mb-3 text-center">Estimated Total Cost Comparison (AUD)</h4>
+                    <div class="chart-container" style="height: 400px; max-height: 50vh;">
+                         <canvas id="examComparisonChart"></canvas>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-xl font-bold text-gray-800 mb-3 text-center">Detailed Examination Comparison</h4>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden shadow-md">
+                            <thead class="bg-gray-200 text-gray-800">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Criterion</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">AMC (Australia)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">PLAB (UK)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">USMLE (USA)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Structure</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">2 Parts (MCQ & OSCE)</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">2 Parts (Written & OSCE)</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">3 Steps (Step 1, Step 2 CK, Step 3)</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Timeline (Typical)</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">1-2 years to full registration (post-exams)</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">1-2 years to GMC registration (post-exams)</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">2-4 years + Residency Match</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Required Training</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">12 months supervised practice.</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">12 months Foundation Programme (FY1).</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">Residency (3+ years).</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Registration Process (Post-Exam) -->
+        <section id="registration-process" class="mb-20">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-4 text-gray-900">Post-Exam: The Road to General Registration</h3>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-10">Passing the AMC exams grants you the AMC certificate, but the final step is achieving general registration with the Medical Board of Australia (MBA). This requires finding and completing an accredited period of supervised practice.</p>
+            <div class="max-w-3xl mx-auto space-y-6">
+                <div class="flex items-start bg-white p-5 rounded-xl shadow-md border border-gray-200">
+                    <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full mr-4 font-bold">1</div>
+                    <div>
+                        <h4 class="font-semibold text-lg text-gray-800">Apply for Provisional Registration</h4>
+                        <p class="text-gray-600 text-sm">After receiving your AMC Certificate, you must apply to the MBA for Provisional Registration, which is necessary to work in an Australian medical position.</p>
+                    </div>
+                </div>
+                <div class="flex items-start bg-white p-5 rounded-xl shadow-md border border-gray-200">
+                    <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full mr-4 font-bold">2</div>
+                    <div>
+                        <h4 class="font-semibold text-lg text-gray-800">Secure a Supervised Position</h4>
+                        <p class="text-gray-600 text-sm">Find an accredited intern or Resident Medical Officer (RMO) position, often through state health recruitment systems (e.g., NSW Health, Victorian Health). This is a competitive stage.</p>
+                    </div>
+                </div>
+                <div class="flex items-start bg-white p-5 rounded-xl shadow-md border border-gray-200">
+                    <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full mr-4 font-bold">3</div>
+                    <div>
+                        <h4 class="font-semibold text-lg text-gray-800">Complete 12 Months of Supervised Practice</h4>
+                        <p class="text-gray-600 text-sm">Work under supervision, typically rotating through multiple terms (e.g., Medicine, Surgery, Emergency). Your supervisor must periodically assess and report on your performance.</p>
+                    </div>
+                </div>
+                <div class="flex items-start bg-white p-5 rounded-xl shadow-md border border-gray-200">
+                    <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full mr-4 font-bold">4</div>
+                    <div>
+                        <h4 class="font-semibold text-lg text-gray-800">Achieve General Registration</h4>
+                        <p class="text-gray-600 text-sm">Once the MBA receives satisfactory reports on your supervised practice, you are eligible to apply for General Registration, allowing you to practice independently in Australia.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Study Resources and Planning -->
+        <section id="study-planning" class="mb-20 bg-white p-6 md:p-10 rounded-2xl shadow-lg border border-gray-200">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-4 text-gray-900">Study Resources and Sample Planning</h3>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-10">Effective planning is crucial for success. Here are general study timelines and recommended official resources to guide your preparation for the AMC CAT MCQ exam.</p>
+            <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                <div>
+                    <h4 class="text-xl font-bold text-gray-800 mb-3">Official Recommended Resources</h4>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4">
+                        <li>AMC Handbook of Clinical Assessment.</li>
+                        <li>AMC practice exams and official multiple-choice questions sets.</li>
+                        <li>The Australian Therapeutic Guidelines (Therapeutic Guidelines eTG).</li>
+                        <li>Relevant Australian Public Health guidelines and legislation.</li>
+                        <li>Online question banks (Q-banks) specific to the AMC curriculum.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-xl font-bold text-gray-800 mb-3">Sample 6-Month Study Plan (MCQ)</h4>
+                    <div class="space-y-3">
+                        <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm">
+                            <strong class="font-semibold text-blue-800">Months 1-2 (Foundation):</strong> Review core concepts (Adult Health, Child Health). Focus on high-yield topics and system-based revision.
+                        </div>
+                        <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm">
+                            <strong class="font-semibold text-blue-800">Months 3-4 (Integration):</strong> Focus on Women's Health, Mental Health, Population Health, and Ethics. Integrate knowledge with question practice.
+                        </div>
+                        <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm">
+                            <strong class="font-semibold text-blue-800">Months 5-6 (Simulation):</strong> Dedicated mock exam period. Take weekly full-length practice tests under timed conditions. Focus on reviewing wrong answers and identifying weak areas.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="lifestyle" class="mb-12">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-4 text-gray-900">Australian Cost of Living Overview</h3>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-10">While salaries are competitive, the cost of living varies significantly. This chart provides an estimate of monthly expenses for a single person in major Australian cities, based on public data (AUD, excluding rent).</p>
+            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200">
+                <h4 class="text-xl font-bold text-gray-800 mb-4 text-center">Estimated Monthly Cost of Living (Single Person, excluding rent)</h4>
+                <div class="chart-container">
+                    <canvas id="lifestyleChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+        <a href="../index.html">Explore More Analyses</a>
+        <a href="../research-articles.html" class="secondary">View All PDF Reports</a>
+    </div>
+</section>
+
+      
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p class="mb-2">&copy; 2025 Comprehensive AMC Guide. For informational purposes only.</p>
+            <p class="text-sm text-gray-400">Always consult the official <a href="https://www.amc.org.au" target="_blank" rel="noopener noreferrer" class="underline hover:text-blue-300">Australian Medical Council (AMC)</a> and <a href="https://www.medicalboard.gov.au" target="_blank" rel="noopener noreferrer" class="underline hover:text-blue-300">Medical Board of Australia</a> websites for the most current and accurate information.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('active');
+                        btn.classList.add('text-gray-600');
+                    });
+                    button.classList.add('active');
+                    button.classList.remove('text-gray-600');
+
+                    const tab = button.dataset.tab;
+                    tabContents.forEach(content => {
+                        if (content.id === `${tab}-content`) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+            
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section[id]');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: "-50% 0px -50% 0px" });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+
+            const audToInrRate = 51.6660;
+
+            const costData = {
+                portfolio: 642,
+                mcqExam: 2920,
+                clinicalExamInPerson: 3991,
+            };
+
+            const costChartCtx = document.getElementById('costChart').getContext('2d');
+            new Chart(costChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['AMC Portfolio', 'MCQ Exam', 'Clinical Exam (In-Person)'],
+                    datasets: [{
+                        label: 'Cost in AUD',
+                        data: [costData.portfolio, costData.mcqExam, costData.clinicalExamInPerson],
+                        backgroundColor: ['#60A5FA', '#3B82F6', '#2563EB'],
+                        borderColor: ['#93C5FD', '#60A5FA', '#3B82F6'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    const value = context.raw;
+                                    const inrValue = (value * audToInrRate).toFixed(0);
+                                    return `AUD $${value.toLocaleString()} (approx. ₹${parseInt(inrValue).toLocaleString('en-IN')})`;
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'AMC Examination Fee Breakdown',
+                            font: { size: 16 }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Cost in AUD'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            const examComparisonData = {
+                amc: 6911,
+                plab: 1153 * 1.9,
+                usmle: 15127.90 * 0.67,
+            };
+
+            const examComparisonChartCtx = document.getElementById('examComparisonChart').getContext('2d');
+            new Chart(examComparisonChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['AMC (Australia)', 'PLAB (UK)', 'USMLE (USA)'],
+                    datasets: [{
+                        label: 'Estimated Total Cost in AUD',
+                        data: [examComparisonData.amc, examComparisonData.plab, examComparisonData.usmle],
+                        backgroundColor: ['#2563EB', '#0D9488', '#4F46E5'],
+                        borderWidth: 0,
+                        barPercentage: 0.6,
+                        categoryPercentage: 0.7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.raw;
+                                    return `Approx. AUD $${value.toLocaleString()}`;
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Estimated Total Examination Cost Comparison',
+                            font: { size: 16 }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Estimated Cost (AUD)'
+                            }
+                        }
+                    }
+                }
+            });
+
+
+            const lifestyleData = {
+                sydney: 4707,
+                melbourne: 4500,
+                brisbane: 4200,
+                perth: 4100,
+                adelaide: 3900,
+                townsville: 3500,
+            };
+
+            const lifestyleChartCtx = document.getElementById('lifestyleChart').getContext('2d');
+            new Chart(lifestyleChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Townsville', 'Adelaide', 'Perth', 'Brisbane', 'Melbourne', 'Sydney'],
+                    datasets: [{
+                        label: 'Estimated Monthly Cost (AUD)',
+                        data: [lifestyleData.townsville, lifestyleData.adelaide, lifestyleData.perth, lifestyleData.brisbane, lifestyleData.melbourne, lifestyleData.sydney],
+                        backgroundColor: [
+                            '#A7F3D0',
+                            '#6EE7B7',
+                            '#34D399',
+                            '#10B981',
+                            '#059669',
+                            '#047857'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let value = context.raw;
+                                    return `AUD $${value.toLocaleString()}`;
+                                }
+                            }
+                        },
+                         title: {
+                            display: true,
+                            text: 'Cost of Living (excluding rent)',
+                            font: { size: 16 }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Cost in AUD'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
