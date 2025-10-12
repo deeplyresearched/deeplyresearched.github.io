@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subtle Art of Not Giving a F*ck: Interactive Guide</title>
+    <meta name="description" content="Explore Mark Manson's 'Subtle Art of Not Giving a F*ck' interactively. Master choosing values, overcoming anxiety, and finding meaning in life's struggles. Dive in!">
+    <meta name="keywords" content="The Subtle Art of Not Giving a F*ck, Mark Manson, Self-help, Personal development, Mindset shift, Overcoming anxiety, Life values, Radical responsibility, Happiness philosophy, Interactive guide, Meaningful living, Self-awareness, Mental resilience, Practical philosophy, Toxic positivity antidote">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+   
+    <!-- Chosen Palette: Warm Neutrals with a Bold Accent -->
+    <!-- Application Structure Plan: The application is structured thematically rather than sequentially to create a more logical and engaging user journey. It starts with 'The Problem' (the "why" behind the book's philosophy), moves to 'The Mindset Shift' and a new 'Key Concepts' deep dive, then into 'The Toolkit' and several new exploratory sections on core principles and case studies. It concludes with 'The Big Picture', 'Context', and an 'About the Author' section. This expanded flow guides the user from understanding the issue to adopting the solution, exploring its nuances through examples, and finally understanding its creator and cultural impact. Navigation is handled by a scrollable top bar, allowing users to jump between these core thematic pillars easily. -->
+    <!-- Visualization & Content Choices: 
+        - 'Key Concepts': Report Info -> Core philosophical tenets of the book. Goal -> Provide detailed explanations in an organized way. Viz/Presentation -> Interactive accordion. Interaction -> Clicking a concept title expands to reveal a detailed explanation. Justification -> An accordion is a clean, user-friendly way to present dense information without cluttering the page. Method -> Vanilla JS and CSS.
+        - 'Case Studies': Report Info -> Stories of Bukowski, Dave Mustaine, etc. Goal -> Illustrate principles with real-world examples. Viz/Presentation -> Tabbed content viewer. Interaction -> Clicking a name switches the displayed content to that person's story and the related lesson. Justification -> Tabs are an intuitive UI pattern for comparing and contrasting different but related pieces of content. Method -> Vanilla JS.
+        - 'The "You Are Not Special" Principle': Report Info -> Manson's critique of entitlement culture. Goal -> Make the user reflect on this challenging idea. Viz/Presentation -> A set of reflective question cards. Interaction -> Hovering on cards provides a subtle zoom effect, prompting introspection. Justification -> Encourages personal engagement with a core, provocative theme. Method -> HTML/CSS.
+        - 'About the Author': Report Info -> Bio of Mark Manson and his other works. Goal -> Provide context and further reading. Viz/Presentation -> A two-column layout with a bio on one side and interactive cards for other books on the other. Interaction -> Book cards have a hover effect. Justification -> A clean, standard layout for author information. Method -> HTML/CSS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F5F5F4; /* stone-100 */
+            color: #292524; /* stone-800 */
+        }
+        .nav-link {
+            transition: color 0.2s;
+            white-space: nowrap;
+        }
+        .nav-link.active {
+            color: #F97316; /* orange-500 */
+        }
+        .card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .feedback-loop-item {
+            transition: all 0.5s ease-in-out;
+            opacity: 0.5;
+        }
+        .feedback-loop-item.active {
+            transform: scale(1.05);
+            opacity: 1;
+            background-color: #F97316 !important;
+            color: white !important;
+        }
+        .feedback-arrow {
+            opacity: 0.5;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .feedback-arrow.active {
+            opacity: 1;
+        }
+        .onion-layer {
+            border: 2px solid #A8A29E; /* stone-400 */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .onion-layer:hover {
+            background-color: #FDBA74; /* orange-300 */
+            border-color: #F97316; /* orange-500 */
+        }
+        .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .onion-layer:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 350px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+        }
+        .value-card.selected {
+            border-color: #F97316;
+            box-shadow: 0 0 0 2px #F97316;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .tab.active {
+            border-color: #F97316;
+            color: #F97316;
+            background-color: #FFF7ED;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+    /* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+      
+    </style>
+</head>
+<body>
+
+    <header class="bg-stone-100/80 backdrop-blur-md sticky top-0 z-50 border-b border-stone-200">
+        <nav class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center h-16">
+                <h1 class="text-xl font-bold text-stone-800 mr-8">The Subtle Art</h1>
+                <div class="flex space-x-6 overflow-x-auto pb-2">
+                    <a href="#problem" class="nav-link text-stone-600 hover:text-orange-500 font-semibold">The Problem</a>
+                    <a href="#shift" class="nav-link text-stone-600 hover:text-orange-500 font-semibold">The Shift</a>
+                    <a href="#concepts" class="nav-link text-stone-600 hover:text-orange-500 font-semibold">Key Concepts</a>
+                    <a href="#toolkit" class="nav-link text-stone-600 hover:text-orange-500 font-semibold">Toolkit</a>
+                    <a href="#case-studies" class="nav-link text-stone-600 hover:text-orange-500 font-semibold">Case Studies</a>
+                    <a href="#not-special" class="nav-link text-stone-600 hover:text-orange-500 font-semibold">You're Not Special</a>
+                    <a href="#commitment" class="nav-link text-stone-600 hover:text-orange-500 font-semibold">Commitment</a>
+                    <a href="#context" class="nav-link text-stone-600 hover:text-orange-500 font-semibold">Context</a>
+                    <a href="#big-picture" class="nav-link text-stone-600 hover:text-orange-500 font-semibold">Big Picture</a>
+                    <a href="#author" class="nav-link text-stone-600 hover:text-orange-500 font-semibold">Author</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-6xl mx-auto p-4 md:p-8">
+
+        <section id="intro" class="text-center py-16">
+            <h2 class="text-4xl md:text-5xl font-bold text-stone-900 mb-4">A Counterintuitive Guide to Living a Good Life</h2>
+            <p class="text-lg md:text-xl text-stone-600 max-w-3xl mx-auto">This is an interactive exploration of Mark Manson's core ideas. Forget toxic positivity. It's time to choose what's truly important by learning what not to give a fuck about.</p>
+        </section>
+
+        <!-- Section 1: The Problem -->
+        <section id="problem" class="py-16 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h3 class="text-sm font-bold uppercase text-orange-500 tracking-wider">Part 1: The Problem</h3>
+                <h2 class="text-3xl font-bold text-stone-900 mt-2">Why Trying to Be Happy Makes Us Miserable</h2>
+                <p class="mt-4 text-stone-600 max-w-2xl mx-auto">The book argues that our culture's obsession with being happy is the source of our anxiety. By constantly chasing positive experiences, we inadvertently create a cycle of stress and self-judgment.</p>
+            </div>
+            
+            <div class="card bg-white p-8 rounded-xl shadow-md">
+                <h4 class="font-bold text-xl text-center mb-6">The Feedback Loop From Hell</h4>
+                <div class="flex flex-col items-center">
+                    <div class="w-full max-w-md space-y-2 mb-6">
+                        <div id="loop-1" class="feedback-loop-item p-3 text-center bg-stone-200 text-stone-700 rounded-lg">1. You get anxious about something.</div>
+                        <div class="flex justify-center text-3xl text-stone-400 feedback-arrow">↓</div>
+                        <div id="loop-2" class="feedback-loop-item p-3 text-center bg-stone-200 text-stone-700 rounded-lg">2. You start getting anxious about being anxious.</div>
+                        <div class="flex justify-center text-3xl text-stone-400 feedback-arrow">↓</div>
+                        <div id="loop-3" class="feedback-loop-item p-3 text-center bg-stone-200 text-stone-700 rounded-lg">3. Now you're doubly anxious.</div>
+                         <div class="flex justify-center text-3xl text-stone-400 feedback-arrow">↓</div>
+                        <div id="loop-4" class="feedback-loop-item p-3 text-center bg-stone-200 text-stone-700 rounded-lg">4. You feel bad about feeling bad, guilty for feeling guilty...</div>
+                    </div>
+                    <button id="start-loop-btn" class="bg-orange-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-orange-600 transition">Start the Loop</button>
+                    <p class="mt-4 text-sm text-stone-500 text-center">Accepting negative feelings is the first step to breaking the cycle.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: The Mindset Shift -->
+        <section id="shift" class="py-16 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h3 class="text-sm font-bold uppercase text-orange-500 tracking-wider">Part 2: The Mindset Shift</h3>
+                <h2 class="text-3xl font-bold text-stone-900 mt-2">Choose Your Struggles & Take Responsibility</h2>
+                 <p class="mt-4 text-stone-600 max-w-2xl mx-auto">The solution isn't to eliminate problems, but to find better problems. This requires taking radical responsibility for your life and choosing values that serve you.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card bg-white p-8 rounded-xl shadow-md">
+                    <h4 class="font-bold text-xl mb-4">What's Your "Fuck" Budget?</h4>
+                    <p class="text-stone-600 mb-6">You have a limited number of "fucks" to give. Every time you care about something, you spend one. Spend them wisely.</p>
+                    <div class="chart-container">
+                        <canvas id="fuckBudgetChart"></canvas>
+                    </div>
+                     <p id="budgetMessage" class="text-center font-semibold text-orange-500 mt-4 h-6"></p>
+                    <div class="grid grid-cols-2 gap-3 mt-4">
+                        <button class="budget-btn p-2 bg-stone-200 text-stone-700 rounded-lg text-sm hover:bg-stone-300" data-cost="20">What strangers think</button>
+                        <button class="budget-btn p-2 bg-stone-200 text-stone-700 rounded-lg text-sm hover:bg-stone-300" data-cost="15">A minor inconvenience</button>
+                        <button class="budget-btn p-2 bg-stone-200 text-stone-700 rounded-lg text-sm hover:bg-stone-300" data-cost="25">An argument on social media</button>
+                        <button class="budget-btn p-2 bg-stone-200 text-stone-700 rounded-lg text-sm hover:bg-stone-300" data-cost="10">Being right about something trivial</button>
+                        <button class="budget-btn p-2 bg-orange-500 text-white rounded-lg text-sm hover:bg-orange-600" id="resetBudget">Reset</button>
+                    </div>
+                </div>
+                
+                <div class="card bg-white p-8 rounded-xl shadow-md">
+                    <h4 class="font-bold text-xl mb-4">The Onion of Self-Awareness</h4>
+                    <p class="text-stone-600 mb-6">Understanding yourself involves peeling back layers. Hover over the onion to explore.</p>
+                    <div class="flex justify-center items-center h-80">
+                        <div class="onion-layer w-80 h-80">
+                            <span class="font-semibold">3. Personal Values</span>
+                            <div class="tooltip absolute bottom-full mb-2 w-48 bg-stone-800 text-white text-xs text-center rounded-lg p-2">Why are your emotions and actions important/unimportant to you?</div>
+                            <div class="onion-layer w-56 h-56">
+                                <span class="font-semibold">2. Our Questions</span>
+                                <div class="tooltip absolute bottom-full mb-2 w-48 bg-stone-800 text-white text-xs text-center rounded-lg p-2">Why do we feel certain emotions?</div>
+                                <div class="onion-layer w-32 h-32">
+                                    <span class="font-semibold">1. Emotions</span>
+                                    <div class="tooltip absolute bottom-full mb-2 w-48 bg-stone-800 text-white text-xs text-center rounded-lg p-2">"This is how I feel."</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Key Concepts Deep Dive -->
+        <section id="concepts" class="py-16 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h3 class="text-sm font-bold uppercase text-orange-500 tracking-wider">Part 3: Key Concepts Explained</h3>
+                <h2 class="text-3xl font-bold text-stone-900 mt-2">A Deeper Look at the Core Ideas</h2>
+                <p class="mt-4 text-stone-600 max-w-2xl mx-auto">These are the foundational pillars of Manson's philosophy. Click each concept to expand and learn more about how to apply it.</p>
+            </div>
+            <div class="space-y-4 max-w-3xl mx-auto">
+                <div class="accordion-item bg-white rounded-lg shadow-md">
+                    <button class="accordion-header w-full text-left p-6 flex justify-between items-center">
+                        <span class="font-bold text-lg">Problems Are Unavoidable</span>
+                        <span class="text-2xl font-light">+</span>
+                    </button>
+                    <div class="accordion-content px-6">
+                        <p class="pb-6 text-stone-600">Life is a series of problems. The secret is not to wish for a life without problems, but to wish for a life full of good problems. Happiness is found in the struggle and the act of solving these problems, which inevitably leads to new, better problems.</p>
+                    </div>
+                </div>
+                <div class="accordion-item bg-white rounded-lg shadow-md">
+                    <button class="accordion-header w-full text-left p-6 flex justify-between items-center">
+                        <span class="font-bold text-lg">Radical Responsibility</span>
+                        <span class="text-2xl font-light">+</span>
+                    </button>
+                    <div class="accordion-content px-6">
+                        <p class="pb-6 text-stone-600">You are not always at fault for what happens to you, but you are always responsible for how you respond. Blame is pointless. The moment you take responsibility for your own feelings and reactions, you gain the power to change your life.</p>
+                    </div>
+                </div>
+                <div class="accordion-item bg-white rounded-lg shadow-md">
+                    <button class="accordion-header w-full text-left p-6 flex justify-between items-center">
+                        <span class="font-bold text-lg">"Good" vs. "Shitty" Values</span>
+                        <span class="text-2xl font-light">+</span>
+                    </button>
+                    <div class="accordion-content px-6">
+                        <p class="pb-6 text-stone-600">Your values determine your problems and the quality of your life. <br><b>Shitty values</b> (e.g., pleasure, being right, material success) are external and out of your control. <br><b>Good values</b> (e.g., honesty, creativity, vulnerability) are internal, process-oriented, and entirely within your control.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: The Toolkit -->
+        <section id="toolkit" class="py-16 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h3 class="text-sm font-bold uppercase text-orange-500 tracking-wider">Part 4: The Toolkit</h3>
+                <h2 class="text-3xl font-bold text-stone-900 mt-2">Practical Principles for a Better Life</h2>
+                <p class="mt-4 text-stone-600 max-w-2xl mx-auto">This isn't just philosophy. Manson provides actionable advice for applying these ideas to your everyday life. Click a card to explore the value.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div class="value-card card bg-white p-6 rounded-xl shadow-md cursor-pointer" data-value="responsibility">
+                    <h4 class="font-bold text-lg">Radical Responsibility</h4>
+                </div>
+                <div class="value-card card bg-white p-6 rounded-xl shadow-md cursor-pointer" data-value="failure">
+                    <h4 class="font-bold text-lg">Failure is the Way Forward</h4>
+                </div>
+                <div class="value-card card bg-white p-6 rounded-xl shadow-md cursor-pointer" data-value="rejection">
+                    <h4 class="font-bold text-lg">The Importance of "No"</h4>
+                </div>
+                <div class="value-card card bg-white p-6 rounded-xl shadow-md cursor-pointer" data-value="pleasure">
+                    <h4 class="font-bold text-lg text-red-500">"Shitty Value": Pleasure</h4>
+                </div>
+                <div class="value-card card bg-white p-6 rounded-xl shadow-md cursor-pointer" data-value="success">
+                    <h4 class="font-bold text-lg text-red-500">"Shitty Value": Material Success</h4>
+                </div>
+                <div class="value-card card bg-white p-6 rounded-xl shadow-md cursor-pointer" data-value="honesty">
+                    <h4 class="font-bold text-lg text-green-600">"Good Value": Honesty</h4>
+                </div>
+            </div>
+            <div id="value-explanation" class="bg-white p-8 rounded-xl shadow-md min-h-[150px] flex items-center justify-center">
+                <p class="text-stone-500 text-center">Click on a value card above to see its explanation.</p>
+            </div>
+        </section>
+
+        <!-- Section 5: Case Studies -->
+        <section id="case-studies" class="py-16 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h3 class="text-sm font-bold uppercase text-orange-500 tracking-wider">Part 5: Case Studies in Contrast</h3>
+                <h2 class="text-3xl font-bold text-stone-900 mt-2">Lessons from Real Lives</h2>
+                <p class="mt-4 text-stone-600 max-w-2xl mx-auto">Manson uses stories to illustrate his points. Some characters chose poor values, while others embodied his philosophy. Select a name to learn their story.</p>
+            </div>
+            <div class="card bg-white p-8 rounded-xl shadow-md">
+                <div class="flex border-b border-stone-200 mb-6">
+                    <button class="tab active flex-1 p-4 font-semibold border-b-2" data-tab="bukowski">Charles Bukowski</button>
+                    <button class="tab flex-1 p-4 font-semibold border-b-2 border-transparent" data-tab="mustaine">Dave Mustaine</button>
+                    <button class="tab flex-1 p-4 font-semibold border-b-2 border-transparent" data-tab="onoda">Hiroo Onoda</button>
+                </div>
+                <div id="bukowski" class="tab-content active">
+                    <h4 class="font-bold text-xl mb-2">The Anti-Hero</h4>
+                    <p class="text-stone-600">A novelist who was a self-proclaimed degenerate, Bukowski found success by embracing his failures and not giving a fuck about conventional success. His value was raw, honest expression, not fame or awards. He succeeded because he accepted himself fully, warts and all.</p>
+                </div>
+                 <div id="mustaine" class="tab-content">
+                    <h4 class="font-bold text-xl mb-2">The Victim of a Bad Metric</h4>
+                    <p class="text-stone-600">Kicked out of Metallica, Dave Mustaine founded the massively successful band Megadeth. Yet, he remained miserable for decades. Why? His metric for success was "be more successful than Metallica." This external, uncontrollable value guaranteed his unhappiness, despite his achievements.</p>
+                </div>
+                 <div id="onoda" class="tab-content">
+                    <h4 class="font-bold text-xl mb-2">The Power of Commitment</h4>
+                    <p class="text-stone-600">A Japanese soldier who fought WWII in the jungle for thirty years after it ended. While his cause was based on false information, his story is an extreme example of how deeply our chosen values (in his case, loyalty to the Emperor) dictate our struggles and give our lives meaning, for better or worse.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: You are not Special -->
+        <section id="not-special" class="py-16 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h3 class="text-sm font-bold uppercase text-orange-500 tracking-wider">Part 6: A Hard Truth</h3>
+                <h2 class="text-3xl font-bold text-stone-900 mt-2">The Liberating Power of Not Being Special</h2>
+                <p class="mt-4 text-stone-600 max-w-2xl mx-auto">Our culture tells us we're all destined for greatness. Manson argues this entitlement is a trap. True freedom comes from accepting your ordinariness.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card bg-white p-8 rounded-xl shadow-md">
+                    <h4 class="font-bold text-xl mb-4">The Entitlement Trap</h4>
+                    <p class="text-stone-600">Believing you are special leads to constant pressure and disappointment. You either feel you're amazing and everyone else should recognize it, or you feel you're a failure for not living up to your "potential." Both are dead ends.</p>
+                </div>
+                <div class="card bg-white p-8 rounded-xl shadow-md">
+                    <h4 class="font-bold text-xl mb-4">The Freedom of "Enough"</h4>
+                    <p class="text-stone-600">When you accept that you're not special, you are free to appreciate the simple things in life. You can enjoy the process of improvement without the burden of greatness. You can connect with others on a genuine level, free from the need to prove yourself.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 7: Commitment -->
+        <section id="commitment" class="py-16 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h3 class="text-sm font-bold uppercase text-orange-500 tracking-wider">Part 7: The Paradox of Choice</h3>
+                <h2 class="text-3xl font-bold text-stone-900 mt-2">Commitment is Freedom</h2>
+                <p class="mt-4 text-stone-600 max-w-2xl mx-auto">We are told to keep our options open, but Manson argues that true freedom comes from depth, not breadth. This is achieved by committing to something and rejecting the alternatives.</p>
+            </div>
+            <div class="card bg-white p-8 rounded-xl shadow-md">
+                 <div class="flex flex-col md:flex-row items-center justify-around text-center">
+                    <div class="p-4">
+                        <h4 class="font-bold text-lg mb-2">Breadth of Experience</h4>
+                        <p class="text-stone-500">Chasing endless possibilities, fearing you'll miss out.</p>
+                        <p class="text-3xl my-4 text-orange-500">😵</p>
+                        <p class="font-semibold text-red-500">Leads to anxiety and shallowness.</p>
+                    </div>
+                    <div class="text-4xl text-stone-300 my-4 md:my-0">→</div>
+                    <div class="p-4 bg-orange-50 rounded-lg">
+                        <h4 class="font-bold text-lg mb-2">Depth of Experience</h4>
+                        <p class="text-stone-500">Committing to one place, person, or craft.</p>
+                        <p class="text-3xl my-4 text-orange-500">❤️</p>
+                        <p class="font-semibold text-green-600">Leads to profound meaning and true freedom.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 8: Context & Legacy -->
+        <section id="context" class="py-16 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h3 class="text-sm font-bold uppercase text-orange-500 tracking-wider">Part 8: Cultural Impact</h3>
+                <h2 class="text-3xl font-bold text-stone-900 mt-2">Why This Book Resonated</h2>
+                <p class="mt-4 text-stone-600 max-w-2xl mx-auto">Published in 2016, the book landed at a perfect time to challenge the prevailing culture of toxic positivity and social media perfectionism.</p>
+            </div>
+            <div class="card bg-white p-8 rounded-xl shadow-md text-center">
+                <h4 class="font-bold text-xl mb-4">An Antidote to "Hustle Culture"</h4>
+                <p class="text-stone-600 max-w-2xl mx-auto">It served as a backlash against the idea that we should always be optimizing, always be happy, and always be striving for more. It gave a generation permission to be imperfect, to feel bad sometimes, and to focus on what genuinely matters to them, not what looks good on Instagram.</p>
+                <div class="mt-6 text-2xl">🗣️</div>
+                <p class="mt-2 text-stone-500 font-semibold">It mainstreamed a "no-BS" style of self-help.</p>
+            </div>
+        </section>
+
+        <!-- Section 9: The Big Picture -->
+        <section id="big-picture" class="py-16 scroll-mt-16">
+             <div class="text-center mb-12">
+                <h3 class="text-sm font-bold uppercase text-orange-500 tracking-wider">Part 9: The Big Picture</h3>
+                <h2 class="text-3xl font-bold text-stone-900 mt-2">...And Then You Die</h2>
+                 <p class="mt-4 text-stone-600 max-w-2xl mx-auto">The final, and perhaps most important, piece of the puzzle is confronting our own mortality. It's the ultimate tool for perspective.</p>
+            </div>
+            
+            <div class="card bg-gradient-to-br from-stone-800 to-stone-900 text-white p-8 rounded-xl shadow-lg">
+                 <blockquote class="text-center">
+                    <p class="text-2xl italic mb-6">"The acceptance of our own death is the only thing that can help us keep our values in perspective and live authentically."</p>
+                    <cite class="not-italic font-semibold">— Mark Manson</cite>
+                </blockquote>
+                <div class="mt-8 text-stone-300 text-center">
+                    <p>Confronting mortality clarifies what's truly "fuckworthy." It filters out the trivial anxieties, the meaningless goals, and the superficial values. What remains is what will form your legacy.</p>
+                    <p class="mt-4 font-semibold text-lg text-orange-400">What will you choose to care about?</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 10: Author -->
+        <section id="author" class="py-16 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h3 class="text-sm font-bold uppercase text-orange-500 tracking-wider">Part 10: About the Author</h3>
+                <h2 class="text-3xl font-bold text-stone-900 mt-2">Mark Manson</h2>
+            </div>
+            <div class="card bg-white p-8 rounded-xl shadow-md">
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="md:col-span-1">
+                        <img src="https://placehold.co/400x400/F97316/FFFFFF?text=MM" alt="Mark Manson placeholder" class="rounded-lg w-full h-auto">
+                    </div>
+                    <div class="md:col-span-2">
+                        <p class="text-stone-600 mb-6">Mark Manson is a best-selling author and blogger who writes about personal development from a no-nonsense, reality-based perspective. He started his blog in 2009, building a massive audience of millions of monthly readers before publishing his breakout hit, *The Subtle Art of Not Giving a Fuck*. His writing style combines academic research with crass humor and personal anecdotes to make complex topics in psychology and philosophy accessible and engaging.</p>
+                        <h4 class="font-bold text-xl mt-8 mb-4">Other Notable Works:</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="card border border-stone-200 p-4 rounded-lg">
+                                <h5 class="font-bold">Everything Is F*cked: A Book About Hope</h5>
+                                <p class="text-sm text-stone-500">Explores the paradox that while we live in the safest, most prosperous time in history, we feel hopelessly anxious.</p>
+                            </div>
+                            <div class="card border border-stone-200 p-4 rounded-lg">
+                                <h5 class="font-bold">Models: Attract Women Through Honesty</h5>
+                                <p class="text-sm text-stone-500">His first book, which details a framework for dating based on vulnerability and honest communication rather than tricks.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+      
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Nav link highlighting on scroll
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.4
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${id}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+             // Smooth scrolling for nav links
+            navLinks.forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Feedback Loop Animation
+            const startLoopBtn = document.getElementById('start-loop-btn');
+            const loopItems = document.querySelectorAll('.feedback-loop-item');
+            const loopArrows = document.querySelectorAll('.feedback-arrow');
+            let loopRunning = false;
+            startLoopBtn.addEventListener('click', () => {
+                if (loopRunning) return;
+                loopRunning = true;
+                startLoopBtn.disabled = true;
+
+                let i = 0;
+                loopItems.forEach(item => item.classList.remove('active'));
+                loopArrows.forEach(arrow => arrow.classList.remove('active'));
+
+                const interval = setInterval(() => {
+                    if (i < loopItems.length) loopItems[i].classList.add('active');
+                    if (i > 0 && i <= loopArrows.length) loopArrows[i - 1].classList.add('active');
+                    i++;
+                    if (i > loopItems.length) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                             loopItems.forEach(item => item.classList.remove('active'));
+                             loopArrows.forEach(arrow => arrow.classList.remove('active'));
+                             loopRunning = false;
+                             startLoopBtn.disabled = false;
+                        }, 2000);
+                    }
+                }, 1000);
+            });
+
+            // "Fuck" Budget Chart
+            const ctx = document.getElementById('fuckBudgetChart').getContext('2d');
+            let fuckBudgetChart;
+            let totalSpent = 0;
+            const budgetMessage = document.getElementById('budgetMessage');
+
+            function createChart() {
+                if(fuckBudgetChart) fuckBudgetChart.destroy();
+                fuckBudgetChart = new Chart(ctx, {
+                    type: 'doughnut', data: { labels: ['Spent', 'Remaining'], datasets: [{ data: [totalSpent, 100 - totalSpent], backgroundColor: ['#F97316', '#E7E5E4'], borderColor: '#F5F5F4', borderWidth: 4, }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+                });
+            }
+            createChart();
+
+            document.querySelectorAll('.budget-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    if (totalSpent >= 100) { budgetMessage.textContent = 'Budget exhausted!'; return; }
+                    const cost = parseInt(button.dataset.cost);
+                    totalSpent = Math.min(100, totalSpent + cost);
+                    createChart();
+                     if (totalSpent >= 100) budgetMessage.textContent = 'Budget exhausted!';
+                });
+            });
+            document.getElementById('resetBudget').addEventListener('click', () => { totalSpent = 0; createChart(); budgetMessage.textContent = ''; });
+
+            // Value Sorter
+            const valueCards = document.querySelectorAll('.value-card');
+            const explanationBox = document.getElementById('value-explanation');
+            const explanations = {
+                responsibility: { title: 'Radical Responsibility', text: 'You are always responsible for your experience, even if you are not at fault. You choose how you interpret and respond to events. This is the source of true power.' },
+                failure: { title: 'Failure is the Way Forward', text: 'Pain and failure are not bugs, but features of life. They are data points for growth. The "Do Something" principle states that action leads to motivation, not the other way around.' },
+                rejection: { title: 'The Importance of "No"', text: 'To value something, you must reject what it is not. Saying "no" to distractions, trivialities, and poor relationships gives meaning and focus to your "yes."' },
+                pleasure: { title: '"Shitty Value": Pleasure', text: 'Pleasure is a temporary effect, not a good life goal. Chasing pleasure often leads to addiction, anxiety, and emptiness because it is not a sustainable source of happiness.' },
+                success: { title: '"Shitty Value": Material Success', text: 'Measuring your life by what you own is a poor metric. There will always be someone with more, and research shows it doesn\'t correlate with long-term happiness past a basic level of comfort.' },
+                honesty: { title: '"Good Value": Honesty', text: 'Good values are process-oriented and within your control. Honesty is a good value because you can always choose to be honest, regardless of the outcome. It builds trust and self-respect.' }
+            };
+            valueCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const valueKey = card.dataset.value;
+                    const content = explanations[valueKey];
+                    valueCards.forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    explanationBox.innerHTML = `<div class="text-center"><h5 class="font-bold text-xl mb-2">${content.title}</h5><p class="text-stone-600">${content.text}</p></div>`;
+                });
+            });
+
+            // Accordion for Key Concepts
+            document.querySelectorAll('.accordion-header').forEach(button => {
+                button.addEventListener('click', () => {
+                    const content = button.nextElementSibling;
+                    const isOpen = content.style.maxHeight;
+                    // Close all others
+                    document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = null);
+                    document.querySelectorAll('.accordion-header').forEach(b => b.querySelector('span:last-child').textContent = '+');
+                    // Open the clicked one
+                    if (!isOpen) {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        button.querySelector('span:last-child').textContent = '-';
+                    }
+                });
+            });
+
+            // Tabs for Case Studies
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetId = tab.dataset.tab;
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if(content.id === targetId) {
+                            content.classList.add('active');
+                        }
+                    });
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>
+
