@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Everything Is F*cked: Mark Manson's Guide to Hope & Meaning</title>
+    <meta name="description" content="Unpack Mark Manson's 'Everything Is F*cked'. Explore core arguments, embrace pain for meaning, and find resilient hope in this interactive guide.">
+    <meta name="keywords" content="Mark Manson, Everything Is F*cked, book summary, self-help book, personal development, meaning of life, hope philosophy, anti-fragility, modern anxiety, emotional intelligence, Subtle Art of Not Giving a F*ck, psychology, self-improvement, resilience, paradox of progress">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+  
+    <!-- Chosen Palette: Warm Sandstone -->
+    <!-- Application Structure Plan: The application has been expanded into a more comprehensive thematic exploration. The sticky navigation now includes links to new key areas like a 'Deep Dive' on concepts, 'Context', and the 'Author'. The user flow remains non-linear but is now richer: it starts with an overview, moves to interactive arguments, then offers a detailed deep dive into the book's core philosophical concepts. Following this are three new sections providing crucial context (The Paradox of Progress, The Setting, Critical Reception). An author bio is included, and the experience concludes with an expanded 'Engage' section that helps users determine if the book is right for them. This structure enhances usability by layering information, allowing users to go from broad understanding to deep, contextual analysis at their own pace. -->
+    <!-- Visualization & Content Choices: 
+- Book Vitals -> Goal: Inform -> HTML Table -> Static -> Quick overview.
+- Core Arguments -> Goal: Organize/Inform -> Interactive Accordion (HTML/JS) -> Breaks down dense text into manageable chunks for better UX.
+- Paradox of Progress Diagram -> Goal: Compare/Inform -> HTML/Tailwind Diagram -> Static -> Visually contrasts historical vs. modern problems to clarify a core theme without using images.
+- Key Concepts Layout -> Goal: Inform/Organize -> Styled Cards (HTML/Tailwind) -> Static -> Presents foundational ideas in a structured, easily digestible format.
+- Author's Other Works -> Goal: Inform -> Card List (HTML/Tailwind) -> Static -> Provides additional context about the author's body of work.
+- "Is This Book For You?" Checklist -> Goal: Engage -> Styled List with Icons (HTML) -> Static -> An interactive-feeling checklist that helps users self-qualify their interest in the book.
+-->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDF6E3; /* Warm Sandstone background */
+            color: #58452D; /* Dark Brown text */
+        }
+        .bg-primary { background-color: #FDF6E3; }
+        .bg-secondary { background-color: #F3EADF; }
+        .text-title { color: #8A6543; }
+        .text-body { color: #58452D; }
+        .accent-color { color: #E5874A; }
+        .border-accent { border-color: #D1C7B8; }
+        .nav-link.active {
+            color: #E5874A;
+            border-bottom-color: #E5874A;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        .accordion-button.open .accordion-arrow {
+            transform: rotate(180deg);
+        }
+        .accordion-arrow {
+            transition: transform 0.3s ease-in-out;
+        }
+        .checklist-item::before {
+            content: '✓';
+            color: #E5874A;
+            margin-right: 0.75rem;
+            font-weight: bold;
+        }
+
+/* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+
+      
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-primary text-body">
+
+    <header class="sticky top-0 z-50 bg-primary/80 backdrop-blur-lg shadow-sm">
+        <nav class="container mx-auto px-6 py-3">
+            <ul class="flex justify-center flex-wrap space-x-4 sm:space-x-8 text-sm sm:text-base">
+                <li><a href="#overview" class="nav-link font-medium hover:text-orange-600 transition-colors pb-1 border-b-2 border-transparent">Overview</a></li>
+                <li><a href="#arguments" class="nav-link font-medium hover:text-orange-600 transition-colors pb-1 border-b-2 border-transparent">Arguments</a></li>
+                <li><a href="#deep-dive" class="nav-link font-medium hover:text-orange-600 transition-colors pb-1 border-b-2 border-transparent">Deep Dive</a></li>
+                <li><a href="#context" class="nav-link font-medium hover:text-orange-600 transition-colors pb-1 border-b-2 border-transparent">Context</a></li>
+                <li><a href="#author" class="nav-link font-medium hover:text-orange-600 transition-colors pb-1 border-b-2 border-transparent">Author</a></li>
+                <li><a href="#engage" class="nav-link font-medium hover:text-orange-600 transition-colors pb-1 border-b-2 border-transparent">Engage</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 sm:py-12">
+
+        <section id="intro" class="text-center mb-16">
+            <h1 class="text-4xl sm:text-5xl font-bold text-title mb-2">Everything Is F*cked</h1>
+            <h2 class="text-xl sm:text-2xl text-body mb-4">An Interactive Guide to the Book by Mark Manson</h2>
+            <div class="max-w-3xl mx-auto bg-secondary p-6 rounded-lg shadow-md">
+                 <p class="text-lg leading-relaxed">
+                    In a world that is wealthier and safer than ever, why do we feel so hopeless? This guide explores Mark Manson's argument that our relentless pursuit of happiness is the very source of our anxiety. Discover how embracing pain and choosing virtue can lead to a more mature, resilient form of hope.
+                </p>
+            </div>
+        </section>
+
+        <section id="overview" class="mb-16 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-title text-center mb-8">The 30,000-Foot View</h3>
+            <div class="max-w-4xl mx-auto overflow-x-auto">
+                <div class="bg-secondary rounded-lg shadow-lg p-4">
+                    <table class="w-full text-left border-collapse">
+                        <tbody>
+                            <tr class="border-b border-accent"><td class="py-3 px-4 font-bold">Book Title & Author</td><td class="py-3 px-4"><em>Everything Is Fucked: A Book About Hope</em> by Mark Manson</td></tr>
+                            <tr class="border-b border-accent"><td class="py-3 px-4 font-bold">Genre</td><td class="py-3 px-4">Self-Help, Philosophy, Psychology</td></tr>
+                            <tr class="border-b border-accent"><td class="py-3 px-4 font-bold">Publication Date</td><td class="py-3 px-4">May 14, 2019</td></tr>
+                            <tr class="border-b border-accent"><td class="py-3 px-4 font-bold">Core Theme</td><td class="py-3 px-4">Mature hope is not the belief that things will get better, but the acceptance of life's inherent pain and the choice to act with virtue regardless of the outcome.</td></tr>
+                            <tr><td class="py-3 px-4 font-bold">Tone</td><td class="py-3 px-4">Blunt, profane, humorous, philosophical, and ultimately constructive.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="arguments" class="mb-16 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-title text-center mb-8">Core Arguments: An Interactive Breakdown</h3>
+             <div class="max-w-3xl mx-auto text-center mb-8">
+                <p class="text-lg">Manson's book diagnoses the modern crisis of hope and then prescribes a solution. Click on each key argument below to explore the main ideas presented in the book and understand his reasoning.</p>
+            </div>
+            <div class="max-w-3xl mx-auto space-y-4">
+                <div class="accordion-item bg-secondary rounded-lg shadow-md">
+                    <button class="accordion-button w-full flex justify-between items-center text-left p-5 font-semibold text-title hover:bg-opacity-80 transition">
+                        <span>1. Pain is Necessary for a Meaningful Life</span>
+                        <span class="accordion-arrow text-2xl transform transition-transform duration-300">&darr;</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="p-5 pt-0 text-body">Manson argues that pain and negative emotions aren't bugs to be fixed; they're essential features of being human. Our struggles and what we're willing to suffer for are what ultimately give our lives meaning and help us define our values. A life without any problems would be an empty one.</div>
+                    </div>
+                </div>
+                 <div class="accordion-item bg-secondary rounded-lg shadow-md">
+                    <button class="accordion-button w-full flex justify-between items-center text-left p-5 font-semibold text-title hover:bg-opacity-80 transition">
+                        <span>2. Your "Feeling Brain" Runs the Show</span>
+                        <span class="accordion-arrow text-2xl transform transition-transform duration-300">&darr;</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="p-5 pt-0 text-body">Our actions are primarily driven by our impulsive, emotional "Feeling Brain," not our logical "Thinking Brain." Real self-improvement comes from training our emotions through action and habit, rather than trying to reason our way to better behavior. The Thinking Brain is just the passenger trying to make sense of the ride.</div>
+                    </div>
+                </div>
+                 <div class="accordion-item bg-secondary rounded-lg shadow-md">
+                    <button class="accordion-button w-full flex justify-between items-center text-left p-5 font-semibold text-title hover:bg-opacity-80 transition">
+                        <span>3. Fragile Hope is Destructive</span>
+                        <span class="accordion-arrow text-2xl transform transition-transform duration-300">&darr;</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="p-5 pt-0 text-body">Hoping for a perfect, pain-free future is a form of avoidance. This kind of hope is fragile because it depends on external outcomes we can't control. Mature, resilient hope is found in discovering things worth doing *despite* the inevitable pain and hardship involved.</div>
+                    </div>
+                </div>
+                <div class="accordion-item bg-secondary rounded-lg shadow-md">
+                    <button class="accordion-button w-full flex justify-between items-center text-left p-5 font-semibold text-title hover:bg-opacity-80 transition">
+                        <span>4. The Goal is to Be "Anti-Fragile"</span>
+                        <span class="accordion-arrow text-2xl transform transition-transform duration-300">&darr;</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="p-5 pt-0 text-body">Modern life shields us from adversity, making us emotionally fragile. The goal of a mature adult should be to become "anti-fragile"—to develop the ability to gain strength, resilience, and wisdom from life's stressors and shocks, rather than trying to avoid them.</div>
+                    </div>
+                </div>
+                 <div class="accordion-item bg-secondary rounded-lg shadow-md">
+                    <button class="accordion-button w-full flex justify-between items-center text-left p-5 font-semibold text-title hover:bg-opacity-80 transition">
+                        <span>5. Virtue is the Only Compass</span>
+                        <span class="accordion-arrow text-2xl transform transition-transform duration-300">&darr;</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="p-5 pt-0 text-body">In a world driven by fleeting feelings and outrage (the "Feeling Economy"), the only reliable guide for our actions is a commitment to timeless virtues. Manson advocates for Kant's "Formula of Humanity": always treat people as an end in themselves, never merely as a means to get what you want.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="deep-dive" class="mb-16 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-title text-center mb-8">Key Concepts: A Deep Dive</h3>
+            <div class="max-w-4xl mx-auto space-y-8">
+                <div class="bg-secondary p-6 rounded-lg shadow-lg">
+                    <h4 class="text-xl font-bold text-title mb-2">The Clown Car: Our Thinking vs. Feeling Brains</h4>
+                    <p>This is Manson's central metaphor for our psychology. The "Feeling Brain" is the impulsive, emotional, short-sighted driver, while the "Thinking Brain" is the logical, long-term planning passenger. The driver holds the wheel, meaning our emotions ultimately dictate our actions. The passenger can suggest routes, but can't force a turn. The key to self-discipline isn't for the passenger to yell louder, but to slowly, through action and experience, teach the driver better habits and destinations.</p>
+                </div>
+                 <div class="bg-secondary p-6 rounded-lg shadow-lg">
+                    <h4 class="text-xl font-bold text-title mb-2">Anti-Fragility: Gaining from Disorder</h4>
+                    <p>Borrowed from Nassim Nicholas Taleb, this concept is crucial. Something that is fragile breaks under stress. Something robust resists stress. But something anti-fragile *gains* from stress. Our immune system is anti-fragile; it gets stronger when exposed to pathogens. Manson argues our character should be the same. By facing challenges, having difficult conversations, and enduring discomfort, we don't just survive—we become stronger, more capable, and more resilient.</p>
+                </div>
+                 <div class="bg-secondary p-6 rounded-lg shadow-lg">
+                    <h4 class="text-xl font-bold text-title mb-2">The Feeling Economy</h4>
+                    <p>Manson's term for our modern culture where emotions—particularly outrage—have become a commodity. Businesses, politicians, and media platforms have learned to manipulate our Feeling Brains for profit and influence. This creates a society driven by emotional tribalism, where feeling right is more important than being right, and moral grandstanding replaces genuine virtue.</p>
+                </div>
+                 <div class="bg-secondary p-6 rounded-lg shadow-lg">
+                    <h4 class="text-xl font-bold text-title mb-2">Freedom Through Limitation</h4>
+                    <p>This is a paradoxical but profound idea. True freedom is not having infinite choices, which often leads to anxiety and meaninglessness. Instead, true freedom is found in choosing your limitations. By committing to a value, a person, or a craft, you willingly sacrifice other options. It is in this chosen sacrifice that deep meaning and purpose are found.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="context" class="mb-16 scroll-mt-20">
+             <h3 class="text-3xl font-bold text-title text-center mb-12">Understanding the Context</h3>
+             <div class="space-y-12">
+                <div>
+                     <h4 class="text-2xl font-bold text-title text-center mb-6">The Paradox of Progress</h4>
+                     <p class="max-w-3xl mx-auto text-center mb-8">The book's entire premise rests on this paradox: externally, life is the best it's ever been. Internally, we're struggling with unprecedented rates of anxiety and depression. Manson argues that as we solve external problems (survival, safety), our minds invent new, internal problems to worry about.</p>
+                     <div class="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="border-2 border-accent p-4 rounded-lg bg-secondary">
+                           <h5 class="font-bold text-lg text-center mb-2">Historical Problems (External)</h5>
+                           <ul class="list-disc list-inside text-body space-y-1">
+                                <li>Famine & Starvation</li>
+                                <li>War & Violence</li>
+                                <li>Plagues & Disease</li>
+                                <li>Lack of Shelter</li>
+                                <li>Predators</li>
+                           </ul>
+                        </div>
+                        <div class="border-2 border-accent p-4 rounded-lg bg-secondary">
+                           <h5 class="font-bold text-lg text-center mb-2">Modern Problems (Internal)</h5>
+                           <ul class="list-disc list-inside text-body space-y-1">
+                               <li>Anxiety & Stress</li>
+                               <li>Feeling of Meaninglessness</li>
+                               <li>Political Polarization</li>
+                               <li>Information Overload</li>
+                               <li>Social Media FOMO</li>
+                           </ul>
+                        </div>
+                     </div>
+                </div>
+
+                <div>
+                    <h4 class="text-2xl font-bold text-title text-center mb-6">The Modern World: Our Paradoxical Setting</h4>
+                    <p class="max-w-3xl mx-auto text-center">The book treats the late-2010s Western world not just as a backdrop, but as an active antagonist. It's a setting that, by promoting comfort and avoiding pain at all costs, systematically creates the emotional fragility and immaturity it then criticizes. This environment shields us from the very experiences necessary to build character, making the pursuit of a meaningful life an act of rebellion against our culture.</p>
+                </div>
+                
+                <div>
+                     <h4 class="text-2xl font-bold text-title text-center mb-6">Critical Reception & Legacy</h4>
+                     <div class="max-w-3xl mx-auto bg-secondary p-6 rounded-lg shadow-lg">
+                        <p>The book became an instant bestseller, resonating with a generation feeling disillusioned despite material comfort. Critics generally praised its intellectual depth, noting it was more philosophically dense than its predecessor, *The Subtle Art*. Its legacy lies in solidifying the "anti-self-help" genre, which challenges toxic positivity and instead advocates for resilience through accepting life's inherent difficulties. It successfully brought complex philosophical ideas from figures like Kant and Nietzsche to a mainstream audience.</p>
+                     </div>
+                </div>
+             </div>
+        </section>
+
+        <section id="author" class="mb-16 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-title text-center mb-8">About the Author: Mark Manson</h3>
+            <div class="max-w-4xl mx-auto bg-secondary p-8 rounded-lg shadow-lg flex flex-col md:flex-row items-center gap-8">
+                <div></div>
+                <div class="flex-1">
+                    <p class="mb-4">Mark Manson is a bestselling author and blogger who writes about personal development from a counter-intuitive, "no-BS" perspective. He is a leading voice in the "anti-self-help" movement, focusing on embracing life's challenges rather than chasing an elusive and unrealistic idea of happiness. His writing blends academic research, philosophical concepts, and profane, straight-talk humor to make his ideas accessible and impactful.</p>
+                    <h5 class="font-bold text-lg mb-2 text-title">Other Notable Works:</h5>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li><strong>The Subtle Art of Not Giving a F*ck:</strong> His breakout international bestseller that argues for caring less about more things and focusing only on what truly matters.</li>
+                         <li><strong>Models: Attract Women Through Honesty:</strong> His first book, a guide to dating and relationships for men based on vulnerability and honesty rather than manipulation.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="engage" class="scroll-mt-20">
+            <h3 class="text-3xl font-bold text-title text-center mb-8">Engage & Reflect</h3>
+            <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+                 <div class="bg-secondary p-8 rounded-lg shadow-lg">
+                    <h4 class="text-2xl font-bold text-title text-center mb-6">Is This Book For You?</h4>
+                    <p class="mb-4">This book is recommended if you...</p>
+                    <ul class="space-y-3">
+                        <li class="checklist-item">Feel that something is missing, despite having a comfortable life.</li>
+                        <li class="checklist-item">Are tired of "toxic positivity" and want a more realistic approach to life.</li>
+                        <li class="checklist-item">Are interested in philosophy and psychology but find academic texts daunting.</li>
+                        <li class="checklist-item">Appreciated *The Subtle Art* and are ready for a deeper, more foundational argument.</li>
+                         <li class="checklist-item">Are seeking a more resilient, durable form of hope not based on things going your way.</li>
+                    </ul>
+                </div>
+                <div class="bg-secondary p-8 rounded-lg shadow-lg">
+                    <h4 class="text-2xl font-bold text-title text-center mb-6">Thought-Provoking Questions</h4>
+                    <ol class="list-decimal list-inside space-y-4">
+                        <li>Can you recall a recent decision where your "Feeling Brain" took the wheel? How might you approach it differently now?</li>
+                        <li>In what area of your life are you acting "fragile"? What's one small step you could take to build "anti-fragility"?</li>
+                        <li>How have you seen the "Feeling Economy" play out this week?</li>
+                        <li>Think of a recent interaction. Did you treat the other person as an end, or as a means to an end?</li>
+                        <li>After exploring these ideas, has your personal definition of "hope" changed? If so, how?</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+      
+    </main>
+    
+    <footer class="text-center py-8 mt-12 border-t border-accent">
+        <p class="text-sm text-gray-500">This is an interactive guide based on the book "Everything is Fucked" by Mark Manson. All ideas and concepts are derived from the original work.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const accordionButtons = document.querySelectorAll('.accordion-button');
+            accordionButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const content = button.nextElementSibling;
+                    const isOpen = button.classList.contains('open');
+                    
+                    button.classList.toggle('open');
+                    
+                    if (isOpen) {
+                        content.style.maxHeight = null;
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                    }
+                });
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.3
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                let lastIntersectingId = '';
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        lastIntersectingId = entry.target.id;
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').substring(1) === lastIntersectingId) {
+                        link.classList.add('active');
+                    }
+                });
+
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            navLinks.forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetSection = document.querySelector(this.getAttribute('href'));
+                    if (targetSection) {
+                         // A little offset to account for the sticky header
+                        const headerOffset = 80;
+                        const elementPosition = targetSection.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                        
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: "smooth"
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
