@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive IMG Guide to the DHA Exam</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The SPA has been redesigned into a comprehensive, multi-section guide that follows a logical journey for an International Medical Graduate. It begins with high-level discovery (Overview, Salary, Comparison), moves to detailed requirements (Eligibility, Costs), then into the actionable process (Registration, Beginner's Guide), and finally offers resources for success (Exams & Prep, Study Plan, Key Concepts, Insights, FAQ). This top-down, funnel-like structure allows a user to self-qualify and gather all necessary information in one place before starting the application, making it highly user-centric and efficient. The sticky, scroll-spy navigation is crucial for managing the longer page content. -->
+    <!-- Visualization & Content Choices: 
+        1. Application Process -> Goal: Organize/Inform -> Viz: Interactive HTML/JS Stepper -> Interaction: Click a step to reveal details -> Justification: Breaks a complex workflow into digestible parts, preventing user overload. -> Library/Method: Vanilla JS + Tailwind.
+        2. Costs -> Goal: Inform -> Viz: Structured Table -> Interaction: Static text -> Justification: A table provides the clearest, most scannable format for financial data. -> Library/Method: HTML + Tailwind.
+        3. Pass Rates -> Goal: Compare -> Viz: Bar Chart -> Interaction: Filter by year, hover for tooltips -> Justification: Bar charts are ideal for comparing discrete categories (professions). -> Library/Method: Chart.js.
+        4. Comparison -> Goal: Compare -> Viz: Structured Table -> Interaction: Static text -> Justification: A table is the most effective way to compare features across multiple entities (DHA vs HAAD vs MOH). -> Library/Method: HTML + Tailwind.
+        5. FAQ/Key Concepts -> Goal: Organize/Inform -> Viz: Accordion List -> Interaction: Click question to toggle answer visibility -> Justification: Keeps the UI clean by hiding dense text until requested. -> Library/Method: Vanilla JS + Tailwind.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-bottom-color 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #0d9488;
+            border-bottom-color: #0d9488;
+        }
+        .step.active {
+            background-color: #0d9488;
+            color: white;
+        }
+        .step {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .accordion-content.open {
+            max-height: 500px;
+        }
+        .scroll-mt-extra {
+            scroll-margin-top: 80px; /* Adjust based on header height */
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-teal-700">IMG's DHA Guide</h1>
+            <div class="hidden lg:flex flex-wrap items-center justify-center space-x-6 text-sm">
+                <a href="#overview" class="nav-link font-medium pb-1">Overview</a>
+                <a href="#eligibility" class="nav-link font-medium pb-1">Eligibility</a>
+                <a href="#process" class="nav-link font-medium pb-1">Beginner Guide</a>
+                <a href="#exams" class="nav-link font-medium pb-1">Exams & Prep</a>
+                <a href="#costs" class="nav-link font-medium pb-1">Costs</a>
+                <a href="#comparison" class="nav-link font-medium pb-1">Comparison</a>
+                <a href="#salary" class="nav-link font-medium pb-1">Salary</a>
+                <a href="#registration" class="nav-link font-medium pb-1">Register</a>
+            </div>
+            <button id="mobile-menu-button" class="lg:hidden focus:outline-none">
+                <span class="text-3xl">☰</span>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden lg:hidden bg-white py-2 absolute w-full shadow-lg">
+            <a href="#overview" class="block text-center py-2 px-4 text-sm hover:bg-teal-50">Overview</a>
+            <a href="#eligibility" class="block text-center py-2 px-4 text-sm hover:bg-teal-50">Eligibility & Pathway</a>
+            <a href="#process" class="block text-center py-2 px-4 text-sm hover:bg-teal-50">Beginner Guide</a>
+            <a href="#exams" class="block text-center py-2 px-4 text-sm hover:bg-teal-50">Exams & Prep</a>
+            <a href="#costs" class="block text-center py-2 px-4 text-sm hover:bg-teal-50">Costs</a>
+            <a href="#comparison" class="block text-center py-2 px-4 text-sm hover:bg-teal-50">Comparison</a>
+            <a href="#salary" class="block text-center py-2 px-4 text-sm hover:bg-teal-50">Salary & Lifestyle</a>
+            <a href="#registration" class="block text-center py-2 px-4 text-sm hover:bg-teal-50">Registration</a>
+            <a href="#study-plan" class="block text-center py-2 px-4 text-sm hover:bg-teal-50">Study Plan</a>
+            <a href="#concepts" class="block text-center py-2 px-4 text-sm hover:bg-teal-50">Key Concepts</a>
+            <a href="#insights" class="block text-center py-2 px-4 text-sm hover:bg-teal-50">Insights</a>
+            <a href="#faq" class="block text-center py-2 px-4 text-sm hover:bg-teal-50">FAQ</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        <section id="overview" class="text-center scroll-mt-extra">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">Your Complete Guide to the DHA License for IMGs</h2>
+            <p class="max-w-3xl mx-auto text-slate-600 mb-12">The Dubai Health Authority (DHA) exam is the gateway for International Medical Graduates (IMGs) and other healthcare professionals to practice in Dubai. This guide breaks down the entire process into clear, manageable sections to help you navigate your journey with confidence.</p>
+        </section>
+
+        <section id="eligibility" class="mt-16 scroll-mt-extra">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Eligibility & Pathway</h2>
+                <p class="max-w-3xl mx-auto text-slate-600">Understanding the requirements is the first and most critical step. DHA has specific criteria regarding education and experience.</p>
+            </div>
+            <div class="bg-white p-8 rounded-lg shadow-lg">
+                <h3 class="text-2xl font-bold text-teal-700 mb-4">Core Eligibility Requirements</h3>
+                <ul class="space-y-4 text-slate-700">
+                    <li><strong class="font-semibold">Educational Qualifications:</strong> Your degree must be from a medical school/university listed in the World Directory of Medical Schools (WDOMS).</li>
+                    <li><strong class="font-semibold">Professional Experience:</strong> For General Practitioners (GPs), a minimum of two years of clinical experience post-internship is required. For specialists, this is typically three years or more in your specialty after your master's degree.</li>
+                    <li><strong class="font-semibold">Licensure:</strong> You must hold a valid and current professional license to practice in your home country or country of last employment.</li>
+                    <li><strong class="font-semibold">Good Standing:</strong> A Good Standing Certificate (GSC) from the medical council/authority you are registered with is mandatory. It must be recent (usually issued within the last 6 months).</li>
+                </ul>
+                <div class="text-center mt-8">
+                    <a href="https://www.dha.gov.ae/en/services/eservices/individual-services/health-professionals-self-assessment-tool" target="_blank" class="bg-teal-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-teal-700 transition duration-300">Use the Official DHA Self-Assessment Tool</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="process" class="mt-20 scroll-mt-extra">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Beginner's Guide: The Step-by-Step Journey</h2>
+                <p class="max-w-3xl mx-auto text-slate-600">The path to your DHA license involves several key stages. This interactive timeline clarifies each step. Click on any step to see details and required actions.</p>
+            </div>
+            <div id="steps-container" class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-4 mb-8"></div>
+            <div id="step-content" class="bg-white p-8 rounded-lg shadow-lg min-h-[250px]"></div>
+        </section>
+        
+        <section id="registration" class="mt-20 scroll-mt-extra">
+            <div class="text-center mb-12">
+                 <h2 class="text-3xl md:text-4xl font-bold mb-4">Registration: Start Your Application</h2>
+                 <p class="max-w-3xl mx-auto text-slate-600">All applications, document submissions, and fee payments are handled through the official DHA portal, known as Sheryan. This is your command center for the entire licensing process.</p>
+            </div>
+             <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+                <h3 class="text-2xl font-bold text-teal-700 mb-4">Ready to Begin?</h3>
+                <p class="text-slate-600 mb-6">Create your account on the Sheryan portal to officially start your application. Ensure all your documents are scanned and ready for upload as per the requirements.</p>
+                <a href="https://www.dha.gov.ae/en/sso-login?redirect_url=https://services.dha.gov.ae/sheryan/wps/portal/home/services-professional" target="_blank" class="bg-teal-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-teal-700 transition duration-300 text-lg">Go to Sheryan Portal</a>
+            </div>
+        </section>
+
+        <section id="costs" class="mt-20 scroll-mt-extra">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Costs & Fees Breakdown</h2>
+                <p class="max-w-3xl mx-auto text-slate-600">Budgeting for the DHA process is important. Below is an estimate of the various fees involved. Prices are in AED and subject to change.</p>
+            </div>
+            <div class="bg-white p-8 rounded-lg shadow-lg">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="border-b-2 border-slate-200">
+                                <th class="py-3 px-4 font-semibold">Service</th>
+                                <th class="py-3 px-4 font-semibold">Estimated Cost (AED)</th>
+                                <th class="py-3 px-4 font-semibold">Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-slate-100">
+                                <td class="py-3 px-4">Application Fee</td>
+                                <td class="py-3 px-4">200</td>
+                                <td class="py-3 px-4">One-time, non-refundable fee.</td>
+                            </tr>
+                            <tr class="border-b border-slate-100 bg-slate-50">
+                                <td class="py-3 px-4">Primary Source Verification (PSV)</td>
+                                <td class="py-3 px-4">900 - 1,500+</td>
+                                <td class="py-3 px-4">Varies based on the number of documents.</td>
+                            </tr>
+                            <tr class="border-b border-slate-100">
+                                <td class="py-3 px-4">CBT Assessment Fee</td>
+                                <td class="py-3 px-4">~980 (Approx. $265 USD)</td>
+                                <td class="py-3 px-4">Paid to Prometric; varies with exchange rate.</td>
+                            </tr>
+                            <tr class="border-b border-slate-100 bg-slate-50">
+                                <td class="py-3 px-4">License Registration/Activation</td>
+                                <td class="py-3 px-4">1,000 - 3,000</td>
+                                <td class="py-3 px-4">Depends on the professional title.</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                             <tr class="font-bold">
+                                <td class="py-3 px-4">Total Estimated</td>
+                                <td class="py-3 px-4">~3,000 - 5,700+</td>
+                                <td class="py-3 px-4">Excludes document translation or attestation costs.</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="exams" class="mt-20 scroll-mt-extra">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Exams & Preparation</h2>
+                <p class="max-w-3xl mx-auto text-slate-600">The DHA assessment is designed to test your clinical knowledge and decision-making skills according to UAE healthcare standards.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-lg shadow">
+                    <h3 class="text-2xl font-bold text-teal-700 mb-4">Exam Format</h3>
+                    <p class="text-slate-600">For most professions, the assessment is a Computer-Based Test (CBT). Key features include:</p>
+                    <ul class="list-disc list-inside mt-4 space-y-2">
+                        <li><strong>Structure:</strong> Multiple-Choice Questions (MCQs).</li>
+                        <li><strong>Duration:</strong> Typically 2-3 hours.</li>
+                        <li><strong>Content:</strong> Covers topics relevant to your specialty. Focuses on clinical scenarios.</li>
+                        <li><strong>Administration:</strong> Conducted globally at Prometric test centers.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow">
+                    <h3 class="text-2xl font-bold text-teal-700 mb-4">Syllabus & Resources</h3>
+                    <p class="text-slate-600">DHA does not provide a fixed syllabus. The exam is based on your specialty's core competencies. Recommended resources include:</p>
+                     <ul class="list-disc list-inside mt-4 space-y-2">
+                        <li>Standard international textbooks for your specialty.</li>
+                        <li>Review materials for board exams (e.g., USMLE, PLAB, MRCP).</li>
+                        <li>Online question banks and mock exams specific to Gulf country medical exams.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="study-plan" class="mt-20 scroll-mt-extra">
+             <div class="text-center mb-12">
+                 <h2 class="text-3xl md:text-4xl font-bold mb-4">Sample 3-Month Study Plan</h2>
+                 <p class="max-w-3xl mx-auto text-slate-600">A structured approach to your preparation can significantly increase your chances of success. Here is a suggested timeline.</p>
+             </div>
+             <div class="grid md:grid-cols-3 gap-8 text-center">
+                 <div class="bg-white p-6 rounded-lg shadow">
+                     <h3 class="text-xl font-bold text-teal-700 mb-2">Month 1: Foundation</h3>
+                     <p class="text-slate-600">Review core subjects and fundamental concepts. Identify weak areas. Go through major clinical guidelines relevant to your field.</p>
+                 </div>
+                 <div class="bg-white p-6 rounded-lg shadow">
+                     <h3 class="text-xl font-bold text-teal-700 mb-2">Month 2: Application</h3>
+                     <p class="text-slate-600">Focus on solving MCQs and clinical scenarios. Start with topic-wise questions and gradually move to mixed-subject tests.</p>
+                 </div>
+                 <div class="bg-white p-6 rounded-lg shadow">
+                     <h3 class="text-xl font-bold text-teal-700 mb-2">Month 3: Simulation</h3>
+                     <p class="text-slate-600">Take full-length mock exams under timed conditions. Analyze your performance, review mistakes, and work on time management.</p>
+                 </div>
+             </div>
+        </section>
+        
+        <section id="concepts" class="mt-20 scroll-mt-extra">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Key Concepts & Terms</h2>
+                <p class="max-w-3xl mx-auto text-slate-600">Navigating the DHA process involves new terminology. Here’s a quick glossary of important terms.</p>
+            </div>
+            <div id="concepts-container" class="max-w-4xl mx-auto space-y-4"></div>
+        </section>
+
+        <section id="salary" class="mt-20 scroll-mt-extra">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Salary & Lifestyle in Dubai</h2>
+                <p class="max-w-3xl mx-auto text-slate-600">Dubai offers competitive, tax-free salaries and a high standard of living for healthcare professionals.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                 <div class="bg-white p-8 rounded-lg shadow">
+                     <h3 class="text-2xl font-bold text-teal-700 mb-4">Illustrative Monthly Salaries (AED)</h3>
+                     <p class="text-sm text-slate-500 mb-4">Salaries vary based on experience, specialty, and the employing facility (government vs. private).</p>
+                     <ul class="space-y-3 text-slate-700">
+                         <li><strong>General Practitioner:</strong> 18,000 - 30,000+</li>
+                         <li><strong>Specialist Physician:</strong> 35,000 - 60,000+</li>
+                         <li><strong>Registered Nurse:</strong> 7,000 - 14,000+</li>
+                         <li><strong>Pharmacist:</strong> 10,000 - 18,000+</li>
+                     </ul>
+                 </div>
+                 <div class="bg-white p-8 rounded-lg shadow">
+                     <h3 class="text-2xl font-bold text-teal-700 mb-4">Lifestyle Benefits</h3>
+                     <ul class="list-disc list-inside mt-4 space-y-2 text-slate-600">
+                        <li><strong>Tax-Free Income:</strong> Your salary is not subject to income tax.</li>
+                        <li><strong>Multicultural Environment:</strong> Live and work with people from all over the world.</li>
+                        <li><strong>Safety & Security:</strong> Dubai is one of the safest cities globally.</li>
+                        <li><strong>Travel Hub:</strong> Excellent connectivity for international travel.</li>
+                        <li><strong>Benefits Package:</strong> Employers typically offer health insurance, annual air tickets, and paid leave.</li>
+                     </ul>
+                 </div>
+            </div>
+        </section>
+
+        <section id="comparison" class="mt-20 scroll-mt-extra">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Comparison: DHA, DoH, MOHAP</h2>
+                <p class="max-w-3xl mx-auto text-slate-600">Understanding the different health authorities in the UAE is key to planning your career.</p>
+            </div>
+             <div class="bg-white p-8 rounded-lg shadow-lg">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                             <tr class="border-b-2 border-slate-200">
+                                <th class="py-3 px-4 font-semibold">Feature</th>
+                                <th class="py-3 px-4 font-semibold">DHA</th>
+                                <th class="py-3 px-4 font-semibold">DoH (formerly HAAD)</th>
+                                <th class="py-3 px-4 font-semibold">MOHAP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-slate-100">
+                                <td class="py-3 px-4">Jurisdiction</td>
+                                <td class="py-3 px-4 font-medium text-teal-700">Dubai</td>
+                                <td class="py-3 px-4">Abu Dhabi</td>
+                                <td class="py-3 px-4">Northern Emirates (Sharjah, Ajman, etc.)</td>
+                            </tr>
+                             <tr class="border-b border-slate-100 bg-slate-50">
+                                <td class="py-3 px-4">Portability</td>
+                                <td class="py-3 px-4">Transferable to other Emirates (with conditions).</td>
+                                <td class="py-3 px-4">Transferable to other Emirates (with conditions).</td>
+                                <td class="py-3 px-4">Generally accepted across UAE except Dubai/Abu Dhabi.</td>
+                            </tr>
+                             <tr class="border-b border-slate-100">
+                                <td class="py-3 px-4">Process</td>
+                                <td class="py-3 px-4">Sheryan portal, DataFlow PSV, Prometric exam.</td>
+                                <td class="py-3 px-4">TAMM portal, DataFlow PSV, Pearson VUE exam.</td>
+                                <td class="py-3 px-4">MOHAP portal, DataFlow PSV, Prometric exam.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="insights" class="mt-20 scroll-mt-extra">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Data-Driven Insights</h2>
+                <p class="max-w-3xl mx-auto text-slate-600">These charts provide insights into exam pass rates and the application timeline. Use the filter to explore data from different years.</p>
+            </div>
+            <div class="grid lg:grid-cols-2 gap-12">
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold">Exam Pass Rates by Profession</h3>
+                        <select id="year-filter" class="border border-slate-300 rounded-md px-3 py-1">
+                            <option value="2025" selected>2025</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                        </select>
+                    </div>
+                    <p class="text-sm text-slate-500 mb-4">This chart shows illustrative pass rates across key healthcare professions. Note: Data is for demonstration purposes.</p>
+                    <div class="chart-container">
+                        <canvas id="passRateChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="text-xl font-bold mb-4">Average Application Timeline Breakdown</h3>
+                    <p class="text-sm text-slate-500 mb-4">This chart illustrates how an applicant's time is typically divided across the main phases of the DHA licensing process.</p>
+                    <div class="chart-container">
+                        <canvas id="timelineChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq" class="mt-20 scroll-mt-extra">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Frequently Asked Questions</h2>
+                <p class="max-w-3xl mx-auto text-slate-600">Here are answers to common questions about the DHA exam. Click on a question to reveal the answer.</p>
+            </div>
+            <div id="faq-container" class="max-w-4xl mx-auto space-y-4"></div>
+        </section>
+    </main>
+    
+    <footer class="bg-slate-800 text-white mt-20">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p>&copy; 2025 Comprehensive IMG Guide to the DHA Exam.</p>
+            <p class="text-sm text-slate-400 mt-2">Disclaimer: This website provides informational guidance and uses illustrative data. Always refer to the official DHA website for the most current and accurate information.</p>
+        </div>
+    </footer>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const processData = [
+                {
+                    title: "Self Assessment",
+                    content: "<h3>Step 1: Initial Self Assessment</h3><p>Before you begin, use the official DHA's Self-Assessment Tool (SAT) to check your eligibility. This preliminary check reviews your educational background and experience against DHA requirements. This step is crucial to avoid applying if you do not meet the minimum criteria.</p><p class='mt-4'><a href='https://www.dha.gov.ae/en/services/eservices/individual-services/health-professionals-self-assessment-tool' target='_blank' class='text-teal-600 font-semibold hover:underline'>Link to Self-Assessment Tool &rarr;</a></p>"
+                },
+                {
+                    title: "Create Account",
+                    content: "<h3>Step 2: Create a Sheryan Account</h3><p>The Sheryan portal is the official DHA online licensing system. You must create a personal account. This portal will be your primary interface for submitting documents, tracking your application status, paying fees, and scheduling exams.</p><p class='mt-4'><a href='https://www.dha.gov.ae/en/sso-login?redirect_url=https://services.dha.gov.ae/sheryan/wps/portal/home/services-professional' target='_blank' class='text-teal-600 font-semibold hover:underline'>Link to Sheryan Portal &rarr;</a></p>"
+                },
+                {
+                    title: "PSV by DataFlow",
+                    content: "<h3>Step 3: Primary Source Verification (PSV)</h3><p>The DHA partners with the DataFlow Group to verify your credentials directly from the issuing source (e.g., your university). This is a critical step to ensure authenticity. You'll need to submit all required documents and pay the PSV fees directly to them.</p><p class='mt-4'><a href='https://www.dfdha.com/' target='_blank' class='text-teal-600 font-semibold hover:underline'>Link to DataFlow Group (DHA) &rarr;</a></p>"
+                },
+                {
+                    title: "Book Exam",
+                    content: "<h3>Step 4: Book Your Exam via Prometric</h3><p>Once your PSV report is positive, you'll be deemed eligible for the assessment. You can then schedule your Computer-Based Test (CBT) through the Prometric website. Exam slots are available at various centers worldwide.</p><p class='mt-4'><a href='https://www.prometric.com/dha' target='_blank' class='text-teal-600 font-semibold hover:underline'>Link to Prometric (DHA) &rarr;</a></p>"
+                },
+                {
+                    title: "Take Exam",
+                    content: "<h3>Step 5: Take the Assessment</h3><p>Attend your scheduled assessment. For CBT exams, results are typically available within 48 hours and will be updated on your Sheryan profile. A successful outcome is required to proceed.</p>"
+                },
+                {
+                    title: "Activate License",
+                    content: "<h3>Step 6: Activate Professional License</h3><p>After passing the exam, you need an offer of employment from a DHA-licensed healthcare facility. Your employer will issue an offer letter and assist in getting your eligibility letter. Once this is issued, you can pay the license activation fees through Sheryan to receive your license.</p>"
+                }
+            ];
+            
+            const conceptsData = [
+                {
+                    question: "Sheryan",
+                    answer: "The official online portal of the DHA for managing all aspects of healthcare professional licensing, from application submission to license renewal."
+                },
+                {
+                    question: "Primary Source Verification (PSV)",
+                    answer: "The process of verifying the authenticity of an applicant's documents (e.g., educational degrees, experience certificates) directly from the original issuing authority. This is handled by a third-party company called the DataFlow Group."
+                },
+                {
+                    question: "Good Standing Certificate (GSC)",
+                    answer: "A document issued by the medical licensing authority of the country where you last worked. It confirms you have no disciplinary actions against you and are fit to practice. It is usually valid for six months from the date of issue."
+                },
+                {
+                    question: "Prometric",
+                    answer: "A global company that conducts computer-based tests for professional licensing and certification. DHA uses Prometric for its CBT assessments."
+                }
+            ];
+
+            const faqData = [
+                {
+                    question: "How long is the DHA license valid?",
+                    answer: "A DHA professional license is typically valid for one year. It must be renewed annually."
+                },
+                {
+                    question: "What is the format of the CBT exam?",
+                    answer: "The Computer-Based Test (CBT) usually consists of multiple-choice questions (MCQs). The number of questions and duration vary depending on the profession."
+                },
+                {
+                    question: "Can I retake the exam if I fail?",
+                    answer: "Yes, candidates are generally allowed up to three attempts. However, there might be specific conditions or waiting periods between attempts. Always check the latest DHA guidelines."
+                },
+                {
+                    question: "Is work experience mandatory?",
+                    answer: "Yes, most professions require a minimum amount of clinical experience post-qualification. For general practitioners, it's typically 2 years. This varies by specialty, so check the specific requirements for your role on the DHA website."
+                }
+            ];
+
+            const chartData = {
+                '2025': [82, 75, 88, 79, 91],
+                '2024': [80, 78, 85, 76, 89],
+                '2023': [77, 72, 86, 75, 90]
+            };
+            const chartLabels = ['Registered Nurse', 'General Practitioner', 'Pharmacist', 'General Dentist', 'Physiotherapist'];
+            
+            const timelineChartData = {
+                labels: ['DataFlow PSV', 'Exam Preparation & Scheduling', 'Admin & Processing'],
+                data: [45, 35, 20]
+            };
+
+            const stepsContainer = document.getElementById('steps-container');
+            const stepContent = document.getElementById('step-content');
+            let activeStep = 0;
+
+            function renderSteps() {
+                stepsContainer.innerHTML = '';
+                processData.forEach((step, index) => {
+                    const isLast = index === processData.length - 1;
+                    const stepElement = document.createElement('div');
+                    stepElement.className = 'flex-1 flex items-center w-full';
+                    
+                    const button = document.createElement('button');
+                    button.className = `step w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg border-2 border-teal-600 ${index === activeStep ? 'active' : 'bg-white text-teal-600'}`;
+                    button.textContent = index + 1;
+                    button.dataset.index = index;
+                    button.onclick = () => updateStep(index);
+                    stepElement.appendChild(button);
+
+                    if (!isLast) {
+                        const line = document.createElement('div');
+                        line.className = 'flex-1 h-1 bg-teal-300';
+                        stepElement.appendChild(line);
+                    }
+                    
+                    stepsContainer.appendChild(stepElement);
+                });
+            }
+
+            function updateStep(index) {
+                activeStep = index;
+                stepContent.innerHTML = processData[index].content;
+                renderSteps();
+            }
+
+            renderSteps();
+            updateStep(0);
+            
+            function createAccordion(containerId, data) {
+                const container = document.getElementById(containerId);
+                data.forEach(item => {
+                    const faqItem = document.createElement('div');
+                    faqItem.className = 'bg-white rounded-lg shadow-sm';
+                    const questionButton = document.createElement('button');
+                    questionButton.className = 'w-full flex justify-between items-center text-left p-5 font-semibold text-slate-700 focus:outline-none';
+                    questionButton.innerHTML = `<span>${item.question}</span><span class="transform transition-transform duration-300 text-teal-500 text-2xl">+</span>`;
+                    const answerDiv = document.createElement('div');
+                    answerDiv.className = 'accordion-content px-5 pb-5 text-slate-600';
+                    answerDiv.innerHTML = `<p>${item.answer}</p>`;
+                    faqItem.appendChild(questionButton);
+                    faqItem.appendChild(answerDiv);
+                    questionButton.addEventListener('click', () => {
+                        const wasOpen = answerDiv.classList.contains('open');
+                        document.querySelectorAll(`#${containerId} .accordion-content.open`).forEach(el => {
+                            el.classList.remove('open');
+                            el.previousElementSibling.querySelector('span:last-child').style.transform = 'rotate(0deg)';
+                        });
+                        if (!wasOpen) {
+                            answerDiv.classList.add('open');
+                            questionButton.querySelector('span:last-child').style.transform = 'rotate(45deg)';
+                        }
+                    });
+                    container.appendChild(faqItem);
+                });
+            }
+
+            createAccordion('faq-container', faqData);
+            createAccordion('concepts-container', conceptsData);
+
+            const yearFilter = document.getElementById('year-filter');
+            
+            function formatLabel(value, maxLen = 16) {
+                if (value.length <= maxLen) return value;
+                const words = value.split(' ');
+                let currentLine = '';
+                const lines = [];
+                for(let word of words) {
+                    if ((currentLine + word).length > maxLen) {
+                        lines.push(currentLine.trim());
+                        currentLine = '';
+                    }
+                    currentLine += word + ' ';
+                }
+                lines.push(currentLine.trim());
+                return lines;
+            }
+
+            const ctxPassRate = document.getElementById('passRateChart').getContext('2d');
+            const passRateChart = new Chart(ctxPassRate, {
+                type: 'bar',
+                data: {
+                    labels: chartLabels.map(label => formatLabel(label)),
+                    datasets: [{
+                        label: 'Pass Rate (%)',
+                        data: chartData[yearFilter.value],
+                        backgroundColor: 'rgba(13, 148, 136, 0.6)',
+                        borderColor: 'rgba(13, 148, 136, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100, title: { display: true, text: 'Pass Rate (%)' } }, x: { ticks: { autoSkip: false, maxRotation: 0, minRotation: 0, } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { return `Pass Rate: ${context.raw}%`; } } } } }
+            });
+
+            yearFilter.addEventListener('change', (e) => {
+                passRateChart.data.datasets[0].data = chartData[e.target.value];
+                passRateChart.update();
+            });
+
+            const ctxTimeline = document.getElementById('timelineChart').getContext('2d');
+            new Chart(ctxTimeline, {
+                type: 'doughnut',
+                data: {
+                    labels: timelineChartData.labels,
+                    datasets: [{
+                        label: 'Time Allocation',
+                        data: timelineChartData.data,
+                        backgroundColor: ['rgba(13, 148, 136, 0.7)', 'rgba(15, 118, 110, 0.7)', 'rgba(190, 242, 100, 0.7)'],
+                        borderColor: ['#ffffff'],
+                        borderWidth: 2
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', }, tooltip: { callbacks: { label: function(context) { return `${context.label}: ${context.raw}%`; } } } } }
+            });
+            
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if(!mobileMenu.classList.contains('hidden')){
+                         mobileMenu.classList.add('hidden');
+                    }
+                })
+            });
+
+            const sections = document.querySelectorAll('section');
+            const mainNavLinks = document.querySelectorAll('header nav .hidden a');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        mainNavLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: '-100px 0px -50% 0px'});
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
+
