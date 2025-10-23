@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samsung Galaxy XR: An Interactive Deep Dive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutral Harmony -->
+    <!-- Application Structure Plan: A tabbed single-page application (SPA) structure was chosen to logically segment the complex technical and market information. This design allows users to self-direct their exploration without being overwhelmed by a long, linear document. The structure includes: 1) An 'Overview' tab for a high-level summary, 2) a 'Hardware' tab with an interactive diagram for component deep-dives, 3) a 'Software & AI' tab to detail the crucial roles of Android XR and Gemini, and 4) a 'Market Context' tab with a comparative chart. This user-centric approach enhances comprehension by breaking down the report into digestible, interactive thematic sections, making it easier to synthesize the product's key value propositions. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Core Pillars (Hardware, Software, AI). Goal: Inform at a glance. Viz: Summary cards in a grid layout. Interaction: Clickable cards leading to sections. Justification: Provides an immediate, high-level understanding of the product's foundation. Method: HTML/Tailwind.
+        - Report Info: Hardware Specifications. Goal: Organize & Explore. Viz: An interactive diagram of a headset. Interaction: Hovering over labeled hotspots reveals detailed component information. Justification: Creates a more engaging and spatially relevant experience than a simple list. Method: HTML/Tailwind + JS for hover events.
+        - Report Info: Gemini AI Features. Goal: Explain. Viz: A clickable list of potential AI capabilities. Interaction: Clicking a feature updates a description panel. Justification: Allows users to focus on specific AI functions of interest in a clean, uncluttered way. Method: HTML/Tailwind + JS for click events.
+        - Report Info: Competitive Landscape. Goal: Compare. Viz: Grouped bar chart. Interaction: Tooltips on hover provide specific data points. Justification: A bar chart is the most effective visual tool for direct feature-by-feature comparison against competitors. Method: Chart.js Canvas. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #333;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+        }
+        .nav-link.active {
+            border-bottom-color: #0d9488;
+            color: #0d9488;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 50vh;
+            width: 100%;
+            max-width: 800px;
+            max-height: 450px;
+        }
+        .hardware-hotspot {
+            position: absolute;
+            width: 2.5rem;
+            height: 2.5rem;
+            background-color: rgba(13, 148, 136, 0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            backdrop-filter: blur(4px);
+            border: 2px solid white;
+        }
+        .hardware-hotspot:hover {
+            transform: scale(1.2);
+            background-color: rgba(13, 148, 136, 1);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .active {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .ai-feature.active {
+            background-color: #ccfbf1;
+            border-left-color: #0d9488;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 py-8 md:py-12">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-zinc-800 mb-2">Samsung Galaxy XR Headset</h1>
+            <p class="text-lg text-zinc-600 max-w-3xl mx-auto">An interactive deep dive into the collaboration between Samsung, Google, and Qualcomm that's shaping the future of extended reality.</p>
+        </header>
+
+        <nav class="flex justify-start md:justify-center border-b border-zinc-200 mb-8 overflow-x-auto">
+            <button data-target="overview" class="nav-link active text-zinc-600 font-medium py-3 px-4 md:px-6">Overview</button>
+            <button data-target="hardware" class="nav-link text-zinc-600 font-medium py-3 px-4 md:px-6">Hardware</button>
+            <button data-target="specs" class="nav-link text-zinc-600 font-medium py-3 px-4 md:px-6">Detailed Specs</button>
+            <button data-target="software-ai" class="nav-link text-zinc-600 font-medium py-3 px-4 md:px-6">Software & AI</button>
+            <button data-target="use-cases" class="nav-link text-zinc-600 font-medium py-3 px-4 md:px-6">Use Cases</button>
+            <button data-target="alliance" class="nav-link text-zinc-600 font-medium py-3 px-4 md:px-6">Strategy</button>
+            <button data-target="positioning" class="nav-link text-zinc-600 font-medium py-3 px-4 md:px-6">Positioning</button>
+            <button data-target="market" class="nav-link text-zinc-600 font-medium py-3 px-4 md:px-6">Market</button>
+        </nav>
+
+        <main>
+            <section id="overview" class="content-section active">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-zinc-800">The Three Pillars of Galaxy XR</h2>
+                    <p class="mt-2 text-zinc-600 max-w-2xl mx-auto">The Galaxy XR headset is not just a device; it's an ecosystem built on the synergy of three industry leaders. This section provides a high-level look at the foundational components that define this next-generation platform. Explore each pillar to understand how they combine to create a seamless and powerful XR experience.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-zinc-200">
+                        <h3 class="font-bold text-xl mb-2 text-teal-700">Advanced Hardware</h3>
+                        <p class="text-zinc-600">Samsung brings its expertise in manufacturing to deliver cutting-edge components, including dual Micro-OLED displays for unparalleled visual fidelity and a suite of cameras for precise tracking and high-quality passthrough, all powered by a specialized Qualcomm chipset.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-zinc-200">
+                        <h3 class="font-bold text-xl mb-2 text-teal-700">Unified Software Platform</h3>
+                        <p class="text-zinc-600">Google provides the software foundation with Android XR, a new platform designed for immersive devices. This ensures a familiar yet optimized operating system for developers and users, fostering a rich ecosystem of applications and experiences.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-zinc-200">
+                        <h3 class="font-bold text-xl mb-2 text-teal-700">Integrated AI Intelligence</h3>
+                        <p class="text-zinc-600">Google's Gemini AI is deeply integrated, moving beyond simple commands to offer contextual, on-device assistance. This AI layer aims to make interactions more natural, intuitive, and genuinely helpful in both virtual and mixed-reality environments.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="hardware" class="content-section">
+                 <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-zinc-800">Under the Hood: Hardware Specifications</h2>
+                    <p class="mt-2 text-zinc-600 max-w-2xl mx-auto">A device's performance is defined by its components. Here, we explore the core hardware of the Galaxy XR. Interact with the diagram below by hovering over the numbered hotspots to reveal details about the key technologies Samsung has engineered into the headset, from the processor that drives the experience to the displays that bring virtual worlds to life.</p>
+                </div>
+                <div class="flex flex-col lg:flex-row gap-8 items-center">
+                    <div class="w-full lg:w-1/2 h-96 relative bg-zinc-100 rounded-lg flex items-center justify-center p-4">
+                        <div class="relative w-full max-w-md h-48 bg-zinc-800 rounded-2xl shadow-2xl flex items-center justify-between px-8">
+                            <div class="w-24 h-24 bg-zinc-700 rounded-full"></div>
+                            <div class="w-24 h-24 bg-zinc-700 rounded-full"></div>
+                        </div>
+                        <div data-spec="processor" class="hardware-hotspot" style="top: 20%; left: 45%;">1</div>
+                        <div data-spec="display" class="hardware-hotspot" style="top: 40%; left: 25%;">2</div>
+                        <div data-spec="cameras" class="hardware-hotspot" style="top: 40%; right: 25%;">3</div>
+                        <div data-spec="controllers" class="hardware-hotspot" style="bottom: 15%; left: 5%;">4</div>
+                    </div>
+                    <div id="spec-display" class="w-full lg:w-1/2 min-h-[16rem] bg-white p-6 rounded-lg shadow-sm border border-zinc-200">
+                        <h3 id="spec-title" class="font-bold text-xl mb-2 text-teal-700">Hover over a hotspot</h3>
+                        <p id="spec-description" class="text-zinc-600">Select a component on the diagram to learn more about its specifications and role within the headset.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="specs" class="content-section">
+                 <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-zinc-800">Detailed Technical Specifications</h2>
+                    <p class="mt-2 text-zinc-600 max-w-2xl mx-auto">While the interactive diagram provides an overview, this table offers a granular look at the anticipated specifications. This data is based on industry analysis and reports, positioning the Galaxy XR as a premium, high-performance device.</p>
+                </div>
+                <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-sm border border-zinc-200 overflow-hidden">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Component</th>
+                                <th>Anticipated Specification</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Display</td>
+                                <td>Dual 1.3-inch Micro-OLED panels</td>
+                            </tr>
+                            <tr>
+                                <td>Resolution</td>
+                                <td>~3,500 - 4,000 pixels per inch (PPI)</td>
+                            </tr>
+                            <tr>
+                                <td>Processor</td>
+                                <td>Qualcomm Snapdragon XR2+ Gen 2</td>
+                            </tr>
+                            <tr>
+                                <td>RAM</td>
+                                <td>12GB - 16GB LPDDR5X</td>
+                            </tr>
+                            <tr>
+                                <td>Storage</td>
+                                <td>256GB / 512GB UFS 4.0</td>
+                            </tr>
+                            <tr>
+                                <td>Tracking</td>
+                                <td>6DoF Inside-Out via 4-6 cameras</td>
+                            </tr>
+                            <tr>
+                                <td>Passthrough</td>
+                                <td>Dual high-resolution RGB cameras (low-latency color)</td>
+                            </tr>
+                            <tr>
+                                <td>Sensors</td>
+                                <td>Eye Tracking, Hand Tracking, Depth Sensor, IMU</td>
+                            </tr>
+                            <tr>
+                                <td>Audio</td>
+                                <td>Integrated spatial audio speakers</td>
+                            </tr>
+                            <tr>
+                                <td>Battery</td>
+                                <td>External, belt-mounted pack (estimated 2-3 hours)</td>
+                            </tr>
+                            <tr>
+                                <td>Weight</td>
+                                <td>~300-400g (Headset only)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="software-ai" class="content-section">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-zinc-800">The Brains: Android XR & Gemini AI</h2>
+                    <p class="mt-2 text-zinc-600 max-w-2xl mx-auto">Software and intelligence are what transform powerful hardware into a meaningful experience. This section focuses on the two key software pillars: Google's Android XR operating system and the integrated Gemini AI. Explore the features below to see how they create a smart, responsive, and application-rich environment.</p>
+                </div>
+                <div class="grid md:grid-cols-5 gap-8">
+                    <div class="md:col-span-2">
+                         <h3 class="font-bold text-xl mb-4 text-teal-700">Gemini AI Capabilities</h3>
+                         <div class="flex flex-col gap-2">
+                             <button data-ai="assistant" class="ai-feature active text-left p-3 rounded-md border-l-4 border-transparent transition">Contextual Assistant</button>
+                             <button data-ai="translation" class="ai-feature text-left p-3 rounded-md border-l-4 border-transparent transition">Real-time Translation</button>
+                             <button data-ai="recognition" class="ai-feature text-left p-3 rounded-md border-l-4 border-transparent transition">Object Recognition</button>
+                             <button data-ai="generation" class="ai-feature text-left p-3 rounded-md border-l-4 border-transparent transition">Generative Content</button>
+                         </div>
+                    </div>
+                    <div class="md:col-span-3 bg-white p-6 rounded-lg shadow-sm border border-zinc-200 min-h-[16rem]">
+                        <h3 id="ai-title" class="font-bold text-xl mb-2 text-teal-700">Contextual Assistant</h3>
+                        <p id="ai-description" class="text-zinc-600">Leveraging on-device processing, Gemini can understand your current environment and task to provide proactive assistance. For example, it could guide you through a repair task by recognizing components or provide information about landmarks you're looking at in passthrough mode.</p>
+                    </div>
+                </div>
+                 <div class="mt-12 bg-white p-6 rounded-lg shadow-sm border border-zinc-200">
+                    <h3 class="font-bold text-xl mb-2 text-teal-700">Android XR: A Unified Platform</h3>
+                    <p class="text-zinc-600">Android XR is Google's strategic move to create a standardized operating system for extended reality, much like Android for smartphones. For the Galaxy XR, this means access to a familiar interface, robust security, and, most importantly, a vast ecosystem of developers. By providing common APIs and tools, Google aims to simplify app development, encouraging a wider variety of high-quality games, productivity tools, and immersive experiences on the platform from day one.</p>
+                </div>
+            </section>
+
+            <section id="use-cases" class="content-section">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-zinc-800">Core Use Cases & Applications</h2>
+                    <p class="mt-2 text-zinc-600 max-w-2xl mx-auto">What will you actually do with the Galaxy XR? This section explores the four key pillars of the user experience, moving from high-stakes productivity to immersive entertainment. The combination of high-resolution passthrough and powerful AI enables a true mixed-reality experience.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-zinc-200">
+                        <h3 class="font-bold text-xl mb-2 text-teal-700">Productivity</h3>
+                        <p class="text-zinc-600">Replace your physical monitors with multiple, resizable virtual screens. Collaborate with colleagues in virtual meeting rooms. Manipulate complex 3D models and data visualizations in a shared space, powered by Gemini's ability to organize information on the fly.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-zinc-200">
+                        <h3 class="font-bold text-xl mb-2 text-teal-700">Immersive Gaming</h3>
+                        <p class="text-zinc-600">Leverage the power of the Snapdragon chipset for high-fidelity VR gaming. The Android XR platform opens access to a massive library of existing Android games, potentially playable on a giant virtual screen, in addition to new, purpose-built mixed-reality titles.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-zinc-200">
+                        <h3 class="font-bold text-xl mb-2 text-teal-700">Media Consumption</h3>
+                        <p class="text-zinc-600">Watch movies and shows in your own private virtual theater. Experience spatial video and 360-degree content with a level of immersion impossible on a flat screen. The Micro-OLED displays will ensure deep blacks and vibrant colors for a premium viewing experience.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-zinc-200">
+                        <h3 class="font-bold text-xl mb-2 text-teal-700">Social & Communication</h3>
+                        <p class="text-zinc-600">Interact with realistic avatars in shared virtual spaces. With high-quality passthrough, you can bring virtual elements into your real room, playing a board game with a friend on your actual coffee table, or see a realistic hologram of them sitting across from you.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="alliance" class="content-section">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-zinc-800">The "Tri-Party" Strategic Alliance</h2>
+                    <p class="mt-2 text-zinc-600 max-w-2xl mx-auto">The Galaxy XR is the product of a powerful partnership, a strategic move to create a dominant "open" ecosystem for spatial computing, directly challenging Apple's "walled garden." Each company plays a distinct and critical role in this alliance.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-zinc-200">
+                        <h3 class="font-bold text-xl mb-2 text-teal-700">Samsung: The Manufacturer</h3>
+                        <p class="text-zinc-600">Samsung provides world-class hardware expertise, from R&D to mass production. Its role includes manufacturing the advanced Micro-OLED displays, engineering the device's form factor, and managing the global supply chain and distribution network, bringing the product to millions of consumers.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-zinc-200">
+                        <h3 class="font-bold text-xl mb-2 text-teal-700">Google: The Software Titan</h3>
+                        <p class="text-zinc-600">Google delivers the core software experience. It provides the operating system (Android XR), the intelligence layer (Gemini AI), and the content ecosystem (Google Play Store, YouTube VR). This creates a familiar and developer-friendly platform, crucial for attracting apps.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-zinc-200">
+                        <h3 class="font-bold text-xl mb-2 text-teal-700">Qualcomm: The Chipmaker</h3>
+                        <p class="text-zinc-600">Qualcomm provides the "engine" of the headset: the Snapdragon XR2+ Gen 2 chipset. This custom silicon is optimized for the specific demands of mixed reality, balancing high-performance graphics, low-latency tracking, and efficient on-device AI processing.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="positioning" class="content-section">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-zinc-800">Pricing & Market Positioning</h2>
+                    <p class="mt-2 text-zinc-600 max-w-2xl mx-auto">How will the Galaxy XR fit into the current market? This section analyzes its anticipated price point and target audience, defining its "premium" value proposition as a direct competitor to both Apple and Meta, but with a unique strategic balance.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-zinc-200">
+                        <h3 class="font-bold text-xl mb-2 text-teal-700">Anticipated Price Point</h3>
+                        <div class="text-4xl font-bold text-zinc-800 my-4">$1,500 - $2,000</div>
+                        <p class="text-zinc-600">The device is expected to launch in the premium tier, significantly more expensive than the Meta Quest 3 (~$500) but substantially more accessible than the Apple Vision Pro (~$3,500). This positions it as a high-end "prosumer" device.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-zinc-200">
+                        <h3 class="font-bold text-xl mb-2 text-teal-700">Target Audience & Strategy</h3>
+                        <p class="text-zinc-600">The primary targets are developers, enterprise clients, and high-end consumers ("prosumers") who want top-tier performance without Apple's ecosystem lock-in. The strategy is to offer a "best of both worlds" device: premium hardware and AI that rivals Apple, combined with the open, developer-friendly ecosystem of Android.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="market" class="content-section">
+                 <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-zinc-800">Comparative Market Context</h2>
+                    <p class="mt-2 text-zinc-600 max-w-2xl mx-auto">The Galaxy XR headset enters a competitive market dominated by established players. This chart provides a comparative analysis against its main rivals, the Apple Vision Pro and Meta Quest 3. The visualization scores each device across key categories based on available specifications and strategic focus, offering a clear picture of Samsung's positioning and potential advantages.</p>
+                </div>
+                <div class="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-zinc-200">
+                    <div class="chart-container">
+                        <canvas id="marketChart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    const target = link.getAttribute('data-target');
+                    
+                    navLinks.forEach(nav => nav.classList.remove('active'));
+                    link.classList.add('active');
+                    
+                    contentSections.forEach(section => {
+                        if (section.id === target) {
+                            section.classList.add('active');
+                        } else {
+                            section.classList.remove('active');
+                        }
+                    });
+                });
+            });
+
+            const hardwareSpecs = {
+                processor: {
+                    title: '1. Processor: Snapdragon XR2+ Gen 2',
+                    description: 'The headset is powered by Qualcomm\'s latest chipset designed specifically for XR. This processor offers significant performance gains in both CPU and GPU, enabling higher-resolution rendering, more complex virtual environments, and efficient on-device AI processing without compromising battery life.'
+                },
+                display: {
+                    title: '2. Displays: Dual Micro-OLED',
+                    description: 'Samsung leverages its display leadership by incorporating two Micro-OLED panels. This technology provides superior contrast, deeper blacks, and higher pixel density compared to traditional LCDs or standard OLEDs, resulting in a sharper, more immersive, and realistic visual experience with no screen-door effect.'
+                },
+                cameras: {
+                    title: '3. Cameras & Tracking',
+                    description: 'A multi-camera array facilitates inside-out tracking, eliminating the need for external sensors. It includes high-resolution RGB cameras for realistic color passthrough, allowing for seamless mixed reality experiences. Depth sensors and additional cameras ensure precise tracking of the user\'s head and hands.'
+                },
+                controllers: {
+                    title: '4. Controllers & Input',
+                    description: 'While featuring advanced hand-tracking, the Galaxy XR will also ship with redesigned physical controllers. These controllers are expected to offer improved ergonomics and haptic feedback, providing a more tactile and precise input method for gaming and complex productivity applications.'
+                }
+            };
+            
+            const specTitle = document.getElementById('spec-title');
+            const specDescription = document.getElementById('spec-description');
+            
+            document.querySelectorAll('.hardware-hotspot').forEach(hotspot => {
+                hotspot.addEventListener('mouseenter', () => {
+                    const specKey = hotspot.getAttribute('data-spec');
+                    const spec = hardwareSpecs[specKey];
+                    if (specTitle && specDescription) {
+                        specTitle.textContent = spec.title;
+                        specDescription.textContent = spec.description;
+                    }
+                });
+            });
+
+            const aiFeatures = {
+                assistant: {
+                    title: 'Contextual Assistant',
+                    description: 'Leveraging on-device processing, Gemini can understand your current environment and task to provide proactive assistance. For example, it could guide you through a repair task by recognizing components or provide information about landmarks you\'re looking at in passthrough mode.'
+                },
+                translation: {
+                    title: 'Real-time Translation',
+                    description: 'Gemini can translate spoken language and display subtitles in real-time within your field of view. This feature could revolutionize international meetings, travel, and communication by breaking down language barriers in a mixed-reality overlay.'
+                },
+                recognition: {
+                    title: 'Object & Scene Recognition',
+                    description: 'The AI can identify objects, text, and even complex scenes in the real world. This enables powerful mixed-reality interactions, such as pulling up product information by looking at an item on a shelf or creating interactive tutorials that respond to real-world objects.'
+                },
+                generation: {
+                    title: 'Generative Content Creation',
+                    description: 'Gemini\'s generative capabilities allow users to create virtual objects, environments, or code using natural language commands. You could ask the headset to "create a relaxing beach scene" or "write a script to make this object bounce," streamlining content creation within XR.'
+                }
+};
+
+            const aiTitle = document.getElementById('ai-title');
+            const aiDescription = document.getElementById('ai-description');
+            const aiButtons = document.querySelectorAll('.ai-feature');
+            
+            aiButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const aiKey = button.getAttribute('data-ai');
+                    const feature = aiFeatures[aiKey];
+                    if (aiTitle && aiDescription) {
+                        aiTitle.textContent = feature.title;
+                        aiDescription.textContent = feature.description;
+                    }
+                    
+                    aiButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                });
+            });
+
+            const marketChartEl = document.getElementById('marketChart');
+            if (marketChartEl) {
+                const ctx = marketChartEl.getContext('2d');
+                const marketChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Display Tech', 'Processing Power', 'AI Integration', 'Ecosystem Maturity'],
+                        datasets: [{
+                            label: 'Samsung Galaxy XR',
+                            data: [9, 9, 9, 8],
+                            backgroundColor: '#0d9488',
+                            borderColor: '#047857',
+                            borderWidth: 1
+                        }, {
+                            label: 'Apple Vision Pro',
+                            data: [10, 8, 7, 7],
+                            backgroundColor: '#a1a1aa',
+                            borderColor: '#71717a',
+                            borderWidth: 1
+                        }, {
+                            label: 'Meta Quest 3',
+                            data: [7, 7, 6, 9],
+                            backgroundColor: '#eab308',
+                            borderColor: '#ca8a04',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 10,
+                                title: {
+                                    display: true,
+                                    text: 'Comparative Score (1-10)'
+                                }
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Feature Comparison: XR Headsets',
+                                font: {
+                                    size: 18
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += context.parsed.y + '/10';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+
