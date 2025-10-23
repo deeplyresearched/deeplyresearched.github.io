@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Future of Food: An Interactive Report</title>
+    <!-- Chosen Palette: Earthy Neutrals -->
+    <!-- Application Structure Plan: Retain the 5-section sticky-nav structure (Overview, Technologies, Sustainability, Challenges, Policy) as it provides a clear, logical, and non-linear path for exploration. The update strategy is to significantly deepen each section with new sub-sections, interactive charts, and data-rich components based on the provided PDF, rather than adding more top-level navigation. This enhances user engagement and information density without overwhelming the user. New interactions include a new tabbed interface in 'Challenges' for nutritional data, 4 new Chart.js visualizations for CO2, ingredients, and investments, and new data-driven HTML-based visuals for cost reduction and regulatory milestones. This maintains usability while packing in the requested "10 sections worth" of new data. -->
+    <!-- Visualization & Content Choices:
+        1.  Report Info: Market Projections (Plant-based $34.97B, Cultivated $25B by 2030), Global Investment ($14.2B).
+            - Goal: Inform (Overview).
+            - Viz/Method: ADDED new Key Stat Cards (HTML/Tailwind) with Unicode icons.
+            - Justification: Adds more high-impact data to the initial summary.
+        2.  Report Info: Descriptions of Plant-Based and Cultivated Meat.
+            - Goal: Inform/Organize (Technologies Section).
+            - Viz/Method: Retained Tabbed content area.
+            - Interaction: User clicks buttons to toggle content.
+        3.  Report Info: Cultivated Meat Cost (£250k -> £50/kg) & Scale (440M Liters).
+            - Goal: Inform/Organize (Technologies Section).
+            - Viz/Method: ADDED new sub-sections. Includes an HTML/Tailwind "cost-down" visual and a "capacity" stat block.
+            - Interaction: Static visual display for high impact.
+            - Justification: Clearly illustrates the scale and cost challenges specific to cultivated meat.
+        4.  Report Info: Regulatory Milestones (SG 2020, US 2023, IL 2024).
+            - Goal: Inform (Technologies Section).
+            - Viz/Method: ADDED new "Regulatory Timeline" card layout (HTML/Tailwind).
+            - Justification: Provides a clear, scannable overview of market-access progress.
+        5.  Report Info: Sustainability Metrics (GHG, Land, Water reductions).
+            - Goal: Compare (Sustainability Section).
+            - Viz/Method: Retained 3 Bar Charts (Chart.js). Data updated for more precision.
+        6.  Report Info: Absolute CO2eq Comparison (Beef 50kg, Plant 0.99kg).
+            - Goal: Compare (Sustainability Section).
+            - Viz/Method: ADDED new Horizontal Bar Chart (Chart.js).
+            - Interaction: Tooltips.
+            - Justification: Provides a more direct, absolute comparison of emissions, which is highly impactful.
+            - Library: Chart.js (Canvas).
+        7.  Report Info: Socio-Economic Challenges (Cost, Jobs, Acceptance).
+            - Goal: Organize/Inform (Challenges Section).
+            - Viz/Method: Retained 4-column "Challenge Cards" (HTML/Tailwind) as a high-level summary for this section.
+        8.  Report Info: Nutritional Concerns (UPF, Bioavailability, DIAAS scores).
+            - Goal: Inform/Compare (Challenges Section).
+            - Viz/Method: ADDED new sub-section with an INTERACTIVE TAB component (HTML/JS) to separate "Ultra-Processed" vs. "Bioavailability".
+            - Interaction: User clicks tabs to switch content.
+            - Justification: Organizes complex, nuanced nutritional data into digestible, user-selectable topics.
+        9.  Report Info: Infrastructure Needs ($27B, 800 factories, ingredient squeeze).
+            - Goal: Inform/Organize (Challenges Section).
+            - Viz/Method: ADDED new sub-section with stat cards.
+            - Viz/Method: ADDED new Donut Chart (Chart.js) for "Projected Pea Production Needed (2030)".
+            - Interaction: Tooltips.
+            - Justification: Visualizes the specific supply chain bottleneck for a key ingredient.
+            - Library: Chart.js (Canvas).
+        10. Report Info: Consumer Acceptance (Neophobia, Drivers, Barriers).
+            - Goal: Inform/Organize (Challenges Section).
+            - Viz/Method: ADDED new sub-section with a 2-column "Drivers vs. Barriers" layout (HTML/Tailwind).
+            - Justification: Clearly summarizes the key psychological factors for the user.
+        11. Report Info: Global Government Investment ($510M H1 2025, country specifics).
+            - Goal: Inform/Compare (Policy Section).
+            - Viz/Method: ADDED new sub-section.
+            - Viz/Method: ADDED new Bar Chart (Chart.js) "Selected Public Investments (H1 2025)".
+            - Interaction: Tooltips.
+            - Justification: Visualizes the global public investment landscape.
+            - Library: Chart.js (Canvas).
+        12. Report Info: Strategic National Initiatives (India, Canada).
+            - Goal: Inform (Policy Section).
+            - Viz/Method: ADDED new sub-section with styled "Initiative Cards" (HTML/Tailwind) with Unicode flags.
+            - Justification: Highlights specific national strategies in an engaging way.
+        -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .nav-link {
+            @apply px-4 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-emerald-50 hover:text-emerald-700 transition-colors;
+        }
+        .nav-link.active {
+            @apply font-semibold text-emerald-700;
+        }
+        .content-section {
+            @apply px-6 py-20 md:py-28 lg:px-8;
+        }
+        .section-break {
+            @apply border-t-2 border-dashed border-gray-300 my-16 max-w-4xl mx-auto;
+        }
+        .card {
+            @apply bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow;
+        }
+        .tech-button {
+            @apply px-6 py-3 text-lg font-semibold rounded-t-lg border-b-4 transition-all;
+        }
+        .tech-button.active {
+            @apply border-emerald-600 text-emerald-700;
+        }
+        .tech-button.inactive {
+            @apply border-transparent text-gray-500 hover:text-gray-800;
+        }
+        
+        .nutrition-tab {
+            @apply px-5 py-2.5 text-base font-medium rounded-md cursor-pointer transition-all;
+        }
+        .nutrition-tab.active {
+            @apply bg-emerald-700 text-white shadow-md;
+        }
+        .nutrition-tab.inactive {
+            @apply bg-gray-200 text-gray-700 hover:bg-gray-300;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'warm-gray': {
+                            50: '#F9F9F8',
+                            100: '#F3F3F1',
+                            800: '#312E2B',
+                        },
+                        'emerald': {
+                            50: '#ECFDF5',
+                            500: '#10B981',
+                            600: '#059669',
+                            700: '#047857',
+                            900: '#064E3B',
+                        },
+                        'amber': {
+                            600: '#D97706',
+                            800: '#92400E',
+                        },
+                        'sky': {
+                            500: '#0EA5E9',
+                            600: '#0284C7',
+                            700: '#0369A1',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-warm-gray-50 text-warm-gray-800">
+
+    <!-- Header & Navigation -->
+    <header id="header" class="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm shadow-md">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <span class="text-xl font-bold text-emerald-700">Future of Food</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link active" data-section="overview">Overview</a>
+                        <a href="#tech" class="nav-link" data-section="tech">The Technologies</a>
+                        <a href="#sustainability" class="nav-link" data-section="sustainability">Sustainability</a>
+                        <a href="#challenges" class="nav-link" data-section="challenges">Challenges</a>
+                        <a href="#policy" class="nav-link" data-section="policy">Policy & Investment</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <select id="mobile-nav" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500">
+                        <option value="overview">Overview</option>
+                        <option value="tech">The Technologies</option>
+                        <option value="sustainability">Sustainability</option>
+                        <option value="challenges">Challenges</option>
+                        <option value="policy">Policy & Investment</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+        <!-- Section 1: Overview -->
+        <section id="overview" class="content-section flex flex-col justify-center items-center text-center bg-white">
+            <div class="max-w-5xl mx-auto">
+                <h1 class="text-4xl font-bold tracking-tight text-emerald-900 sm:text-6xl">The Future of Food</h1>
+                <h2 class="mt-4 text-2xl font-semibold text-warm-gray-800 sm:text-3xl">Novel Technologies & Global Food Security</h2>
+                <p class="mt-6 text-lg leading-8 text-gray-600">
+                    This interactive report explores the impact of novel food technologies, specifically plant-based alternatives and cultivated meat, on global food security. These innovations offer a profound opportunity to build a more sustainable and resilient food system. This application allows you to explore the data, understand the opportunities, and examine the critical challenges and policy frameworks that will shape this transition, based on a comprehensive analysis of the current landscape.
+                </p>
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="card text-left">
+                        <span class="text-4xl">📈</span>
+                        <h3 class="mt-4 text-xl font-semibold text-emerald-700">Plant-Based Market</h3>
+                        <p class="mt-2 text-gray-600">The plant-based protein market is projected to grow from <strong class="text-emerald-900">$23.89B</strong> in 2025 to <strong class="text-emerald-900">$34.97B</strong> by 2030.</p>
+                    </div>
+                    <div class="card text-left">
+                        <span class="text-4xl">💰</span>
+                        <h3 class="mt-4 text-xl font-semibold text-emerald-700">Cultivated Meat Market</h3>
+                        <p class="mt-2 text-gray-600">The global cultivated meat market is projected to reach <strong class="text-emerald-900">$25 Billion</strong> by 2030, signaling major commercial momentum.</p>
+                    </div>
+                    <div class="card text-left">
+                        <span class="text-4xl">💸</span>
+                        <h3 class="mt-4 text-xl font-semibold text-emerald-700">Global Investment</h3>
+                        <p class="mt-2 text-gray-600">The alternative protein sector has attracted over <strong class="text-emerald-900">$14.2 Billion</strong> in investment over the past decade.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: The Technologies -->
+        <section id="tech" class="content-section bg-warm-gray-50">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-3xl font-bold tracking-tight text-center text-emerald-900 sm:text-4xl">Meet the Alternatives</h2>
+                <p class="mt-4 text-lg leading-8 text-gray-600 text-center">
+                    Two key innovations are at the forefront of this food revolution: advanced plant-based products and cultivated (cell-based) meat. While both offer alternatives to conventional livestock, they are fundamentally different in their science and production. Use the tabs below to explore each technology.
+                </body
+                
+                <div class="mt-12">
+                    <div class="flex justify-center border-b border-gray-300">
+                        <button id="btn-plant" class="tech-button active">
+                            <span>🌱</span> Plant-Based Proteins
+                        </button>
+                        <button id="btn-cultivated" class="tech-button inactive">
+                            <span>🔬</span> Cultivated Meat
+                        </button>
+                    </div>
+                    
+                    <div class="mt-8">
+                        <div id="content-plant" class="">
+                            <h3 class="text-2xl font-semibold text-emerald-700">Plant-Based Proteins</h3>
+                            <p class="mt-4 text-gray-600">
+                                This category includes next-generation products that go beyond traditional veggie burgers. Using advanced extrusion and fermentation (e.g., mycoprotein), companies create alternatives from proteins like soy, pea, and wheat that mimic the taste and texture of conventional meat.
+                            </p>
+                            <ul class="mt-4 space-y-2 list-disc list-inside text-gray-600">
+                                <li><strong>Technology:</strong> High-moisture extrusion, shear-cell technology, fermentation.</li>
+                                <li><strong>Key Sources:</strong> Soy protein isolate, pea protein, mycoprotein, wheat gluten.</li>
+                                <li><strong>Market Status:</strong> Widely available commercially. Rapidly approaching price parity with some conventional meats.</li>
+                            </ul>
+                        </div>
+                        <div id="content-cultivated" class="hidden">
+                            <h3 class="text-2xl font-semibold text-sky-700">Cultivated Meat</h3>
+                            <p class="mt-4 text-gray-600">
+                                Also known as cell-based or cultured meat, this is genuine animal meat produced by cultivating animal cells directly. This process allows for the creation of meat products without the need to raise and farm animals.
+                            </p>
+                            <ul class="mt-4 space-y-2 list-disc list-inside text-gray-600">
+                                <li><strong>Technology:</strong> Cellular agriculture. Involves a cell line, a growth medium, and a bioreactor.</li>
+                                <li><strong>Process:</strong> Cells are harvested and grown in a nutrient-rich environment, where they differentiate into muscle and fat.</li>
+                                <li><strong>Market Status:</strong> Commercially approved and available on a small scale in select countries. High production cost remains the primary barrier.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-break"></div>
+                
+                <div id="tech-details-cultivated" class="mt-12">
+                     <h3 class="text-2xl font-bold tracking-tight text-center text-sky-900 sm:text-3xl">The Scale-Up Challenge: Cultivated Meat</h3>
+                     <p class="mt-4 text-lg leading-8 text-gray-600 text-center max-w-4xl mx-auto">
+                        While plant-based proteins are scaling, cultivated meat faces enormous technical and financial hurdles to reach commercial viability.
+                     </p>
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
+                        <div class="card">
+                            <h4 class="text-xl font-semibold text-sky-700">The 99% Cost Reduction</h4>
+                            <p class="mt-2 text-gray-600">Production cost has plummeted, but the "last mile" to price parity is the hardest.</p>
+                            <div class="mt-4 space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm font-medium text-gray-700">2013: First Burger</span>
+                                    <span class="text-sm font-bold text-gray-500">~£250,000</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-gradient-to-r from-red-500 to-amber-500 h-2.5 rounded-full" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="mt-3 space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm font-medium text-gray-700">2025: Small-Scale</span>
+                                    <span class="text-sm font-bold text-sky-700">~£50 / kg</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-gradient-to-r from-amber-500 to-sky-600 h-2.5 rounded-full" style="width: 10%"></div>
+                                </div>
+                            </div>
+                            <div class="mt-3 space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm font-medium text-gray-700">Target: Price Parity</span>
+                                    <span class="text-sm font-bold text-emerald-700">~£5 / kg</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-emerald-600 h-2.5 rounded-full" style="width: 1%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h4 class="text-xl font-semibold text-sky-700">The "Swimming Pool" Problem</h4>
+                            <p class="mt-2 text-gray-600">The infrastructure needed to meet 2030 market projections is staggering.</p>
+                            <div class="mt-4 space-y-4">
+                                <div>
+                                    <span class="block text-sm text-gray-500">Current global pharmaceutical cell-culture capacity:</span>
+                                    <span class="text-3xl font-bold text-sky-600">&lt; 10</span>
+                                    <span class="text-xl ml-1 text-gray-600">Olympic pools</span>
+                                </div>
+                                <div>
+                                    <span class="block text-sm text-gray-500">Capacity needed for 2030 projection (1.5M metric tons):</span>
+                                    <span class="text-3xl font-bold text-amber-800">~ 176</span>
+                                    <span class="text-xl ml-1 text-gray-600">Olympic pools</span>
+                                </div>
+                            </div>
+                            <p class="mt-4 text-sm text-gray-600">Furthermore, the growth media (nutrients for the cells) can account for <strong class="text-sky-900">55-95% of total production cost</strong>.</p>
+                        </div>
+                     </div>
+                </div>
+
+                <div class="section-break"></div>
+
+                <div class="mt-12">
+                     <h3 class="text-2xl font-bold tracking-tight text-center text-emerald-900 sm:text-3xl">Global Regulatory Milestones</h3>
+                     <p class="mt-4 text-lg leading-8 text-gray-600 text-center max-w-4xl mx-auto">
+                        Commercialization depends on government approval. The path is slow, but accelerating.
+                     </p>
+                     <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="card text-center">
+                            <div class="text-5xl">🇸🇬</div>
+                            <h4 class="mt-4 text-xl font-semibold text-gray-800">Singapore</h4>
+                            <span class="text-3xl font-bold text-emerald-700">2020</span>
+                            <p class="mt-2 text-gray-600">Became the first country in the world to approve the sale of a cultivated meat product (chicken).</p>
+                        </div>
+                        <div class="card text-center">
+                            <div class="text-5xl">🇺🇸</div>
+                            <h4 class="mt-4 text-xl font-semibold text-gray-800">United States</h4>
+                            <span class="text-3xl font-bold text-emerald-700">2023</span>
+                            <p class="mt-2 text-gray-600">The FDA and USDA jointly granted approval for two companies to sell cultivated chicken products.</p>
+                        </div>
+                        <div class="card text-center">
+                            <div class="text-5xl">🇮🇱</div>
+                            <h4 class="mt-4 text-xl font-semibold text-gray-800">Israel</h4>
+                            <span class="text-3xl font-bold text-emerald-700">2024</span>
+                            <p class="mt-2 text-gray-600">Became the third country to approve cultivated meat, greenlighting the sale of cultivated beef.</p>
+                        </div>
+                     </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Section 3: Sustainability Impact -->
+        <section id="sustainability" class="content-section bg-white">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-3xl font-bold tracking-tight text-center text-emerald-900 sm:text-4xl">A Lighter Environmental Footprint</h2>
+                <p class="mt-4 text-lg leading-8 text-gray-600 text-center max-w-4xl mx-auto">
+                    The most significant driver for alternative proteins is their potential for dramatic environmental benefits. The charts below compare the projected impact of plant-based and cultivated meat against conventional beef, which serves as a baseline (100%) for resource use.
+                </p>
+
+                <div class="mt-16 grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="card flex flex-col">
+                        <h3 class="text-xl font-semibold text-center text-emerald-700">Greenhouse Gas Emissions</h3>
+                        <p class="text-sm text-gray-500 text-center mb-4">(% Reduction vs. Beef)</p>
+                        <div class="relative w-full max-w-xl mx-auto h-72 sm:h-80">
+                            <canvas id="ghgChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card flex flex-col">
+                        <h3 class="text-xl font-semibold text-center text-emerald-700">Land Use</h3>
+                        <p class="text-sm text-gray-500 text-center mb-4">(% Reduction vs. Beef)</p>
+                        <div class="relative w-full max-w-xl mx-auto h-72 sm:h-80">
+                            <canvas id="landChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card flex flex-col">
+                        <h3 class="text-xl font-semibold text-center text-emerald-700">Water Use</h3>
+                        <p class="text-sm text-gray-500 text-center mb-4">(% Reduction vs. Beef)</p>
+                        <div class="relative w-full max-w-xl mx-auto h-72 sm:h-80">
+                            <canvas id="waterChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-break"></div>
+
+                <div class="mt-12">
+                     <h3 class="text-2xl font-bold tracking-tight text-center text-emerald-900 sm:text-3xl">Absolute Climate Impact</h3>
+                     <p class="mt-4 text-lg leading-8 text-gray-600 text-center max-w-4xl mx-auto">
+                        While relative reductions are useful, the absolute numbers are staggering. This chart compares the CO2 equivalents (CO2eq) emitted to produce 100 grams of protein from different sources.
+                     </p>
+                     <div class="mt-12 card">
+                        <h4 class="text-xl font-semibold text-center text-emerald-700">CO2eq Emissions per 100g Protein</h4>
+                        <div class="relative w-full max-w-4xl mx-auto h-80 sm:h-96">
+                            <canvas id="co2Chart"></canvas>
+                        </div>
+                     </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Section 4: Socio-Economic Challenges -->
+        <section id="challenges" class="content-section bg-warm-gray-50">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-3xl font-bold tracking-tight text-center text-emerald-900 sm:text-4xl">Hurdles on the Horizon</h2>
+                <p class="mt-4 text-lg leading-8 text-gray-600 text-center max-w-4xl mx-auto">
+                    Despite the promise, transitioning our global food system is immensely complex. Significant socio-economic, nutritional, and logistical challenges must be addressed to ensure this shift is equitable, accessible, and successful at a global scale.
+                </p>
+
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="card">
+                        <span class="text-4xl">💰</span>
+                        <h3 class="mt-4 text-xl font-semibold text-amber-800">Cost & Accessibility</h3>
+                        <p class="mt-2 text-gray-600">Price parity is the single biggest hurdle. Cultivated meat is still prohibitively expensive, and while plant-based options are improving, they must become affordable for all income levels to impact global food security.</p>
+                    </div>
+                    <div class="card">
+                        <span class="text-4xl">👨‍🌾</span>
+                        <h3 class="mt-4 text-xl font-semibold text-amber-800">Employment Disruption</h3>
+                        <p class="mt-2 text-gray-600">Traditional agriculture is the backbone of many economies. A rapid shift could displace millions of farmers and workers, requiring a "Just Transition" strategy.</p>
+                    </div>
+                    <div class="card">
+                        <span class="text-4xl">🤔</span>
+                        <h3 class="mt-4 text-xl font-semibold text-amber-800">Consumer Acceptance</h3>
+                        <p class="mt-2 text-gray-600">Consumers are driven by taste, texture, price, and culture. Products must match sensory expectations and overcome "food neophobia," or the fear of new foods.</p>
+                    </div>
+                    <div class="card">
+                        <span class="text-4xl">🏭</span>
+                        <h3 class="mt-4 text-xl font-semibold text-amber-800">Infrastructure & Scale</h3>
+                        <p class="mt-2 text-gray-600">Scaling requires an entirely new industrial infrastructure, from bioreactors to extrusion factories, demanding immense capital investment and solving complex engineering challenges.</p>
+                    </div>
+                </div>
+
+                <div class="section-break"></div>
+
+                <div class="mt-12">
+                     <h3 class="text-2xl font-bold tracking-tight text-center text-amber-800 sm:text-3xl">The Nutrition Debate</h3>
+                     <p class="mt-4 text-lg leading-8 text-gray-600 text-center max-w-4xl mx-auto">
+                        A major challenge is navigating the complex nutritional profile of these new products. Click the tabs below to explore the two primary concerns: processing and bioavailability.
+                     </p>
+                     
+                     <div class="mt-12 max-w-4xl mx-auto">
+                        <div class="flex justify-center space-x-4 mb-6">
+                            <button id="btn-upf" class="nutrition-tab active">Ultra-Processed Food (UPF) Concerns</button>
+                            <button id="btn-bio" class="nutrition-tab inactive">Protein Bioavailability</button>
+                        </div>
+                        
+                        <div id="content-upf" class="card">
+                            <h4 class="text-xl font-semibold text-amber-700">The "Ultra-Processed" Label</h4>
+                            <p class="mt-2 text-gray-600">Many plant-based meat alternatives are classified as ultra-processed foods (UPFs), which raises health concerns. Studies link high UPF consumption to negative health outcomes.</p>
+                            <div class="my-4 p-4 bg-amber-50 border-l-4 border-amber-600">
+                                <span class="block text-2xl font-bold text-amber-800">5% Increased Risk</span>
+                                <span class="text-gray-700">for cardiovascular disease for every 10% increase in calories from ultra-processed plant-based foods.</span>
+                            </div>
+                            <h5 class="font-semibold text-gray-700 mt-4">The Counter-Argument:</h5>
+                            <p class="text-gray-600">This concern must be contextualized. In the studies, plant-based meats represented only <strong class="text-gray-900">0.5%</strong> of the UPFs consumed (most were breads, cookies, etc.). Furthermore, processed conventional meat (e.g., bacon, sausage) carries well-established links to heart disease and cancer.</p>
+                        </div>
+                        
+                        <div id="content-bio" class="card hidden">
+                            <h4 class="text-xl font-semibold text-amber-700">Protein Quality & Bioavailability</h4>
+                            <p class="mt-2 text-gray-600">Animal protein is generally more digestible and has a more complete amino acid profile. Plant proteins can contain "anti-nutritional factors" (like phytates) that reduce nutrient absorption.</p>
+                            <div class="my-4 p-4 bg-amber-50 border-l-4 border-amber-600">
+                                <h5 class="font-semibold text-amber-800">Digestibility Scores (DIAAS)</h5>
+                                <p class="text-gray-700">Studies on protein bars show a significant gap:</p>
+                                <ul class="list-disc list-inside mt-2">
+                                    <li>Animal Protein Bars (Whey): <strong class="text-gray-900">73.6% - 85.9%</strong> digestibility</li>
+                                    <li>Plant Protein Bars (Pea/Rice): <strong class="text-gray-900">46.7%</strong> digestibility</li>
+                                </ul>
+                            </div>
+                            <h5 class="font-semibold text-gray-700 mt-4">The Path Forward:</h5>
+                            <p class="text-gray-600">New technologies like <strong class="text-gray-900">fermentation</strong> and <strong class="text-gray-900">enzymatic processing</strong> are being used to reduce anti-nutritional factors and improve the bioavailability of plant proteins, closing the nutritional gap.</p>
+                        </div>
+                     </div>
+                </div>
+
+                <div class="section-break"></div>
+
+                <div class="mt-12">
+                     <h3 class="text-2xl font-bold tracking-tight text-center text-amber-800 sm:text-3xl">The Infrastructure & Supply Chain Squeeze</h3>
+                     <p class="mt-4 text-lg leading-8 text-gray-600 text-center max-w-4xl mx-auto">
+                        Meeting projected 2030 demand requires massive investment in new factories and a huge increase in raw ingredient production.
+                     </p>
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
+                        <div class="card">
+                            <h4 class="text-xl font-semibold text-amber-700">Building the Future</h4>
+                            <ul class="mt-2 space-y-4">
+                                <li class="flex items-start">
+                                    <span class="text-3xl mr-3">🏭</span>
+                                    <div>
+                                        <span class="font-bold text-2xl text-amber-800">800</span>
+                                        <span class="block text-gray-600">new extrusion factories needed by 2030.</span>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-3xl mr-3">💸</span>
+                                    <div>
+                                        <span class="font-bold text-2xl text-amber-800">$27 Billion</span>
+                                        <span class="block text-gray-600">in total manufacturing investment required.</span>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-3xl mr-3">🇮🇳</span>
+                                    <div>
+                                        <span class="font-bold text-2xl text-amber-800">90%</span>
+                                        <span class="block text-gray-600">of India's plant protein ingredients are currently imported, showing a major infrastructure gap.</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card flex flex-col">
+                            <h4 class="text-xl font-semibold text-center text-amber-700">Ingredient Bottleneck</h4>
+                            <p class="text-sm text-gray-500 text-center mb-4">Projected % of total global pea production needed for plant-based meat by 2030.</p>
+                            <div class="relative w-full max-w-xs mx-auto h-64 sm:h-72">
+                                <canvas id="peaChart"></canvas>
+                            </div>
+                        </div>
+                     </div>
+                </div>
+                
+            </div>
+        </section>
+
+        <!-- Section 5: The Path Forward (Policy) -->
+        <section id="policy" class="content-section bg-white">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-3xl font-bold tracking-tight text-center text-emerald-900 sm:text-4xl">Policy & Global Investment</h2>
+                <p class="mt-4 text-lg leading-8 text-gray-600 text-center max-w-4xl mx-auto">
+                    To harness the benefits of these technologies, a robust and proactive policy framework is essential. Governments are beginning to invest, recognizing alternative proteins as a strategic sector for economic and environmental goals.
+                </p>
+
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="card border-l-4 border-emerald-600">
+                        <h3 class="text-xl font-semibold text-emerald-700">Public R&D Funding</h3>
+                        <p class="mt-2 text-gray-600">Governments must invest in open-access research to improve taste, texture, and scalability, and to reduce production costs—especially for cultivated meat—to accelerate price parity and accessibility.</p>
+                    </div>
+                    <div class="card border-l-4 border-emerald-600">
+                        <h3 class="text-xl font-semibold text-emerald-700">Clear Regulatory Pathways</h3>
+                        <p class="mt-2 text-gray-600">Standardized, transparent, and science-based frameworks for safety assessment and labeling are crucial. Clear labeling builds consumer trust and ensures a level playing field.</p>
+                    </div>
+                    <div class="card border-l-4 border-emerald-600">
+                        <h3 class="text-xl font-semibold text-emerald-700">A "Just Transition" for Farmers</h3>
+                        <p class="mt-2 text-gray-600">Policies must support and incentivize farmers to transition. This could include subsidies for shifting from livestock feed to cultivating high-demand protein crops like peas and faba beans.</p>
+                    </div>
+                    <div class="card border-l-4 border-emerald-600">
+                        <h3 class="text-xl font-semibold text-emerald-700">Realigning Subsidies</h3>
+                        <p class="mt-2 text-gray-600">Current agricultural subsidies often favor conventional livestock. Re-evaluating and realigning these financial incentives to support more sustainable protein production can accelerate the market transition.</p>
+                    </div>
+                </div>
+                
+                <div class="section-break"></div>
+                
+                <div class="mt-12">
+                     <h3 class="text-2xl font-bold tracking-tight text-center text-emerald-900 sm:text-3xl">Global Government Investment</h3>
+                     <p class="mt-4 text-lg leading-8 text-gray-600 text-center max-w-4xl mx-auto">
+                        Governments worldwide are committing public funds. In the first half of 2025 alone, <strong class="text-emerald-900">$510 million</strong> in new support was announced.
+                     </p>
+                     <div class="mt-12 card">
+                        <h4 class="text-xl font-semibold text-center text-emerald-700">Selected Public Investments (Announced H1 2025)</h4>
+                        <div class="relative w-full max-w-4xl mx-auto h-96">
+                            <canvas id="investmentChart"></canvas>
+                        </div>
+                     </div>
+                </div>
+                
+                <div class="section-break"></div>
+                
+                <div class="mt-12">
+                     <h3 class="text-2xl font-bold tracking-tight text-center text-emerald-900 sm:text-3xl">Strategic National Initiatives</h3>
+                     <p class="mt-4 text-lg leading-8 text-gray-600 text-center max-w-4xl mx-auto">
+                        Beyond direct funding, nations are building entire strategies around the "bioeconomy."
+                     </p>
+                     <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="card">
+                            <h4 class="text-2xl font-semibold">🇮🇳 India: BioE3 Policy</h4>
+                            <p class="mt-3 text-gray-600">Approved in 2024, the "Biotechnology for Economy, Environment and Employment" (BioE3) policy identifies smart proteins as a strategic sector for large-scale manufacturing, aiming to make India a top-five global biomanufacturing hub by 2025.</p>
+                        </div>
+                        <div class="card">
+                            <h4 class="text-2xl font-semibold">🇨🇦 Canada: Protein Supercluster</h4>
+                            <p class="mt-3 text-gray-600">Canada invested close to <strong class="text-emerald-900">$110 million</strong> in 2023 to expand processing for plant-based proteins. This supports "Protein Industries Canada," a supercluster connecting companies and research to develop plant proteins from indigenous crops.</p>
+                        </div>
+                     </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-warm-gray-800 text-warm-gray-100 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p>&copy; 2025 Interactive Report. Data synthesized from "The Impact of Novel Food Technologies on Global Food Security."</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Tech Toggler Logic ---
+            const btnPlant = document.getElementById('btn-plant');
+            const btnCultivated = document.getElementById('btn-cultivated');
+            const contentPlant = document.getElementById('content-plant');
+            const contentCultivated = document.getElementById('content-cultivated');
+            const techDetailsCultivated = document.getElementById('tech-details-cultivated');
+
+            function toggleTech(showType) {
+                if (showType === 'plant') {
+                    btnPlant.classList.add('active');
+                    btnPlant.classList.remove('inactive');
+                    btnCultivated.classList.add('inactive');
+                    btnCultivated.classList.remove('active');
+                    
+                    contentPlant.classList.remove('hidden');
+                    contentCultivated.classList.add('hidden');
+                    techDetailsCultivated.classList.add('hidden');
+                } else {
+                    btnCultivated.classList.add('active');
+                    btnCultivated.classList.remove('inactive');
+                    btnPlant.classList.add('inactive');
+                    btnPlant.classList.remove('active');
+
+                    contentCultivated.classList.remove('hidden');
+                    contentPlant.classList.add('hidden');
+                    techDetailsCultivated.classList.remove('hidden');
+                }
+            }
+            
+            toggleTech('plant');
+            btnPlant.addEventListener('click', () => toggleTech('plant'));
+            btnCultivated.addEventListener('click', () => toggleTech('cultivated'));
+            
+            // --- Nutrition Toggler Logic ---
+            const btnUPF = document.getElementById('btn-upf');
+            const btnBio = document.getElementById('btn-bio');
+            const contentUPF = document.getElementById('content-upf');
+            const contentBio = document.getElementById('content-bio');
+            
+            function toggleNutrition(showType) {
+                if (showType === 'upf') {
+                    btnUPF.classList.add('active');
+                    btnUPF.classList.remove('inactive');
+                    btnBio.classList.add('inactive');
+                    btnBio.classList.remove('active');
+                    contentUPF.classList.remove('hidden');
+                    contentBio.classList.add('hidden');
+                } else {
+                    btnBio.classList.add('active');
+                    btnBio.classList.remove('inactive');
+                    btnUPF.classList.add('inactive');
+                    btnUPF.classList.remove('active');
+                    contentBio.classList.remove('hidden');
+                    contentUPF.classList.add('hidden');
+                }
+            }
+            
+            btnUPF.addEventListener('click', () => toggleNutrition('upf'));
+            btnBio.addEventListener('click', () => toggleNutrition('bio'));
+
+            // --- Navigation Logic ---
+            const navLinks = document.querySelectorAll('nav a');
+            const mobileNav = document.getElementById('mobile-nav');
+            const sections = document.querySelectorAll('.content-section');
+            const header = document.getElementById('header');
+            const headerHeight = header.offsetHeight;
+
+            function changeActiveLink() {
+                let index = sections.length;
+
+                while(--index && window.scrollY + headerHeight < sections[index].offsetTop) {}
+                
+                navLinks.forEach((link) => link.classList.remove('active'));
+                
+                const activeLink = document.querySelector(`nav a[data-section="${sections[index].id}"]`);
+                if(activeLink) {
+                    activeLink.classList.add('active');
+                }
+                
+                if(mobileNav.value !== sections[index].id) {
+                    mobileNav.value = sections[index].id;
+                }
+            }
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    const targetPosition = targetElement.offsetTop - headerHeight + 1;
+                    
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                });
+            });
+            
+            mobileNav.addEventListener('change', (e) => {
+                 const targetId = `#${e.target.value}`;
+                 const targetElement = document.querySelector(targetId);
+                 const targetPosition = targetElement.offsetTop - headerHeight + 1;
+                 window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                 });
+            });
+
+            window.addEventListener('scroll', changeActiveLink);
+            changeActiveLink();
+
+            // --- Chart.js Logic ---
+            const chartLabels = ['Conventional Beef', 'Plant-Based', 'Cultivated Meat'];
+            
+            const chartColors = {
+                beef: 'rgba(146, 64, 14, 0.7)',
+                plant: 'rgba(4, 120, 87, 0.7)',
+                cultivated: 'rgba(14, 165, 233, 0.7)'
+            };
+            
+            const chartColorsHex = {
+                beef: '#92400E',
+                plant: '#047857',
+                cultivated: '#0EA5E9'
+            };
+
+            const defaultChartOptions = (yTitle) => ({
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                if(context.label === 'Conventional Beef') {
+                                    return 'Baseline: 100%';
+                                }
+                                return `~${100 - context.parsed.y}% reduction vs. Beef`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: yTitle || 'Relative Impact (Beef = 100)'
+                        }
+                    }
+                }
+            });
+
+            // Chart 1: GHG
+            new Chart(document.getElementById('ghgChart'), {
+                type: 'bar',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: 'GHG Emissions',
+                        data: [100, 10, 8], // 90% reduction, 92% reduction (w/ renewables)
+                        backgroundColor: [chartColors.beef, chartColors.plant, chartColors.cultivated]
+                    }]
+                },
+                options: defaultChartOptions('Relative GHG Emissions')
+            });
+
+            // Chart 2: Land Use
+            new Chart(document.getElementById('landChart'), {
+                type: 'bar',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: 'Land Use',
+                        data: [100, 10, 36], // 64-90% reduction (using 90), 64% reduction
+                        backgroundColor: [chartColors.beef, chartColors.plant, chartColors.cultivated]
+                    }]
+                },
+                options: defaultChartOptions('Relative Land Use')
+            });
+
+            // Chart 3: Water Use
+            new Chart(document.getElementById('waterChart'), {
+                type: 'bar',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: 'Water Use',
+                        data: [100, 1, 34], // up to 99% reduction, 66% reduction
+                        backgroundColor: [chartColors.beef, chartColors.plant, chartColors.cultivated]
+                    }]
+                },
+                options: defaultChartOptions('Relative Water Use')
+            });
+
+            // Chart 4: Absolute CO2
+            new Chart(document.getElementById('co2Chart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Conventional Beef', 'Cultivated Meat (w/ Renewables)', 'Plant-Based Meat'],
+                    datasets: [{
+                        label: 'kg CO2eq per 100g protein',
+                        data: [50, 4, 0.99],
+                        backgroundColor: [chartColorsHex.beef, chartColorsHex.cultivated, chartColorsHex.plant]
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `${context.parsed.x} kg CO2eq`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'kg CO2eq per 100g Protein'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Chart 5: Pea Chart
+            new Chart(document.getElementById('peaChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Needed for Plant-Based Meat', 'Remaining Global Supply'],
+                    datasets: [{
+                        data: [34, 66],
+                        backgroundColor: [chartColorsHex.plant, '#E5E7EB']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => ` ${context.label}: ${context.parsed}%`
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Chart 6: Investment Chart
+            new Chart(document.getElementById('investmentChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Netherlands (for Vivici)', 'EU (for Formo)', 'Finland (for Solar Foods)', 'USA (Tender Food)', 'USA (Ginkgo Bioworks)'],
+                    datasets: [{
+                        label: 'Investment (in millions USD)',
+                        data: [36, 34, 10.6, 5.4, 2.4],
+                        backgroundColor: [
+                            '#047857',
+                            '#059669',
+                            '#10B981',
+                            '#34D399',
+                            '#6EE7B7'
+                        ]
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `$${context.parsed.x} Million`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Investment (in millions USD)'
+                            }
+                        }
+                    }
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
+
