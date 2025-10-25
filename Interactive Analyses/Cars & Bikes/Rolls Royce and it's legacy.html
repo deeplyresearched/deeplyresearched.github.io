@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Enduring Legacy of Rolls-Royce</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Warm Neutrals (Tailwind 'Stone') -->
+    <!-- Application Structure Plan: Expanded 10-tab thematic SPA. Based on the detailed report, the structure is now: 1) Intro, 2) Dual Pillars (Aero/Auto), 3) Key Concepts (New: Interactive definitions), 4) Evolution & Ownership (New: BMW/Goodwood), 5) Craftsmanship (Old 'Bespoke'), 6) Strategic Expansion (New: Cullinan/Spectre), 7) Contemporary Luxury (New: Sustainability/Private Offices), 8) Market Impact (Existing), 9) Global Performance (New: Sales charts/data), 10) Brand Perception (Old 'Dashboard'). This 10-section thematic structure allows users to deeply explore the specific concepts and historical periods from the report, such as the BMW acquisition, the move to electrification, and the modern definition of luxury. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Key RR Concepts (Best Car, Magic Carpet, House of Luxury). Goal: Inform/Define. Viz/Method: Interactive HTML/JS clickable list. Interaction: Click concept -> JS shows detailed definition from report. Justification: Fulfills user request for a 'key concepts' section interactively.
+        - Report Info: Ownership/Evolution (1971 split, 1998 BMW, Goodwood). Goal: Inform/Change. Viz/Method: HTML/Tailwind timeline/text blocks. Interaction: Reading. Justification: Clearly explains the crucial corporate history from the report.
+        - Report Info: Strategic Expansion (Cullinan, Spectre). Goal: Inform/Change. Viz/Method: 2-col HTML/Tailwind layout with key data points (e.g., 0.25 drag coefficient). Interaction: Reading. Justification: Highlights modern product strategy.
+        - Report Info: Contemporary Luxury (Net-zero, Private Offices). Goal: Inform. Viz/Method: HTML/Tailwind text blocks. Interaction: Reading. Justification: Explains the brand's adaptation to modern UHNW demands.
+        - Report Info: Market Performance (Sales data 2010-2023). Goal: Compare/Change. Viz/Method: New Chart.js Line Chart. Interaction: Hover tooltips. Justification: Quantifies the "Global Performance" section using specific sales data from the report (2,711 to 6,032 units). Library: Chart.js (Canvas).
+        - CONFIRMATION: All existing charts (Perception, Value, Market Share) retained in 'Brand Perception' section.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        stone: {
+                            50: '#fafaf9',
+                            100: '#f5f5f4',
+                            200: '#e7e5e4',
+                            300: '#d6d3d1',
+                            400: '#a8a29e',
+                            500: '#78716c',
+                            600: '#57534e',
+                            700: '#44403c',
+                            800: '#292524',
+                            900: '#1c1917',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .nav-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 0.75rem 1.25rem;
+            white-space: nowrap;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .nav-btn:hover {
+            background-color: #44403c;
+        }
+        .nav-btn.active {
+            background-color: #fafaf9;
+            color: #1c1917;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .interactive-item {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .interactive-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .group-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s, color 0.2s;
+            cursor: default;
+            font-weight: 600;
+        }
+        .group-btn:hover {
+            background-color: #44403c;
+        }
+        .group-btn.active-group {
+            background-color: #44403c;
+        }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 50;
+            background-color: #292524;
+            border-radius: 0.375rem;
+            margin-top: 0.25rem;
+            min-width: 200px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .group:hover .dropdown-menu {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-900 font-sans leading-relaxed">
+
+    <header class="bg-stone-800 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center py-4">
+                <h1 class="text-2xl md:text-3xl font-bold text-center">
+                    The Enduring Legacy of Rolls-Royce
+                </h1>
+                <nav class="flex flex-wrap justify-center gap-2 md:gap-3 mt-4 md:mt-0">
+                    
+                    <!-- Group 1: Foundation -->
+                    <div class="relative group">
+                        <button id="group-btn-foundation" class="group-btn active-group">Foundation</button>
+                        <div class="dropdown-menu">
+                            <button class="nav-btn dropdown-item active" data-section="section-intro" data-group="group-btn-foundation">Introduction</button>
+                            <button class="nav-btn dropdown-item" data-section="section-pillars" data-group="group-btn-foundation">Dual Pillars</button>
+                            <button class="nav-btn dropdown-item" data-section="section-concepts" data-group="group-btn-foundation">Key Concepts</button>
+                        </div>
+                    </div>
+
+                    <!-- Group 2: The Brand -->
+                    <div class="relative group">
+                        <button id="group-btn-brand" class="group-btn">The Brand</button>
+                        <div class="dropdown-menu">
+                            <button class="nav-btn dropdown-item" data-section="section-evolution" data-group="group-btn-brand">Evolution</button>
+                            <button class="nav-btn dropdown-item" data-section="section-craft" data-group="group-btn-brand">Craftsmanship</button>
+                            <button class="nav-btn dropdown-item" data-section="section-expansion" data-group="group-btn-brand">Expansion</button>
+                        </div>
+                    </div>
+
+                    <!-- Group 3: Market -->
+                    <div class="relative group">
+                        <button id="group-btn-market" class="group-btn">Market Impact</button>
+                        <div class="dropdown-menu">
+                            <button class="nav-btn dropdown-item" data-section="section-contemporary" data-group="group-btn-market">Contemporary</button>
+                            <button class="nav-btn dropdown-item" data-section="section-impact" data-group="group-btn-market">Market Impact</button>
+                            <button class="nav-btn dropdown-item" data-section="section-performance" data-group="group-btn-market">Performance</button>
+                            <button class="nav-btn dropdown-item" data-section="section-perception" data-group="group-btn-market">Perception</button>
+                        </div>
+                    </div>
+
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 md:p-8 mt-8">
+        
+        <section id="section-intro" class="content-section active">
+            <h2 class="text-3xl font-bold text-stone-800 mb-4">An Unparalleled Influence</h2>
+            <p class="text-lg text-stone-700 mb-8">
+                This application explores the enduring legacy of Rolls-Royce, analyzing how its unique synthesis of luxury branding and engineering excellence has profoundly shaped the global automotive industry. From its founding in 1906, Rolls-Royce established a benchmark not just for cars, but for the very *idea* of luxury. This was not a passive brand; it was an active force that created a new "super-luxury" category, compelling competitors to react and fundamentally altering consumer expectations for what a car could be.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-md border border-stone-200">
+                    <h3 class="text-xl font-semibold text-stone-800 mb-2">Engineering Excellence</h3>
+                    <p class="text-stone-600">The foundation of the brand, built on reliability in both its "best in the world" cars and its world-changing aero engines.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-stone-200">
+                    <h3 class="text-xl font-semibold text-stone-800 mb-2">Definitive Luxury</h3>
+                    <p class="text-stone-600">More than just materials, Rolls-Royce defined luxury as silence, comfort, and "effortless" performance—a "magic carpet ride."</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-stone-200">
+                    <h3 class="text-xl font-semibold text-stone-800 mb-2">Bespoke Heritage</h3>
+                    <p class="text-stone-600">From early coachbuilding to modern personalization, the brand made the car an expression of individual identity, not just a product.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-pillars" class="content-section">
+            <h2 class="text-3xl font-bold text-stone-800 mb-4">The Dual Pillars: Cars and Aero Engines</h2>
+            <p class="text-lg text-stone-700 mb-8">
+                This section explores the symbiotic relationship between Rolls-Royce's automotive and aerospace divisions. This dual heritage is the core of the brand's identity. The same engineering rigor that made the Silver Ghost reliable also powered allied victory in two world wars with the Eagle and Merlin engines. This cross-pollination created an unrivaled public perception of reliability and performance, where "luxury" was a direct result of uncompromising engineering.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md border border-stone-200">
+                    <h3 class="text-2xl font-semibold text-stone-800 mb-4">Automotive Engineering</h3>
+                    <p class="text-stone-700 mb-4">The brand's automotive identity was forged on silence, durability, and "effortless" power. The 40/50 H.P. "Silver Ghost" set the standard by running 15,000 miles with near-perfect reliability in 1907. This legacy continued with the Phantom series, which introduced the "magic carpet ride," isolating passengers from the road.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-stone-200">
+                    <h3 class="text-2xl font-semibold text-stone-800 mb-4">Aerospace Power</h3>
+                    <p class="text-stone-700 mb-4">The Eagle engine (1915) powered half of all Allied aircraft by 1918. The legendary Merlin V12 (powering the Spitfire and Hurricane) was critical to Allied victory in WWII, with over 160,000 units produced. This reputation for high-stakes reliability subconsciously reinforces the quality of the motor cars.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-concepts" class="content-section">
+            <h2 class="text-3xl font-bold text-stone-800 mb-4">Elaboration of Key Concepts</h2>
+            <p class="text-lg text-stone-700 mb-8">
+                The Rolls-Royce legacy is built on several key concepts that define its brand and engineering philosophy. These are not mere marketing terms but foundational principles that have shaped the company and the industry's perception of luxury. Click on a concept below to see its detailed explanation based on the report.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="concept-item interactive-item bg-white p-4 rounded-lg shadow-md border border-stone-200 cursor-pointer" data-key="best-car">
+                        <h4 class="font-semibold text-center text-stone-800">"Best Car in the World"</h4>
+                    </div>
+                    <div class="concept-item interactive-item bg-white p-4 rounded-lg shadow-md border border-stone-200 cursor-pointer" data-key="magic-carpet">
+                        <h4 class="font-semibold text-center text-stone-800">"Magic Carpet Ride"</h4>
+                    </div>
+                    <div class="concept-item interactive-item bg-white p-4 rounded-lg shadow-md border border-stone-200 cursor-pointer" data-key="house-luxury">
+                        <h4 class="font-semibold text-center text-stone-800">"House of Luxury"</h4>
+                    </div>
+                    <div class="concept-item interactive-item bg-white p-4 rounded-lg shadow-md border border-stone-200 cursor-pointer" data-key="symbolic-capital">
+                        <h4 class="font-semibold text-center text-stone-800">"Symbolic Capital"</h4>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-inner border border-stone-200 h-full min-h-[300px]">
+                    <h3 id="concept-detail-title" class="text-2xl font-semibold text-stone-800 mb-4">Select a Concept</h3>
+                    <p id="concept-detail-text" class="text-stone-700">Click one of the key concepts to the left to learn about its origin and significance to the Rolls-Royce legacy.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-evolution" class="content-section">
+            <h2 class="text-3xl font-bold text-stone-800 mb-4">Evolution Through Ownership</h2>
+            <p class="text-lg text-stone-700 mb-8">
+                This section details the critical junctures in Rolls-Royce's corporate history. The 1971 financial crisis, driven by the RB211 aero engine development, was a pivotal moment that led to the separation of the automotive and aerospace divisions. The subsequent acquisition by BMW in 1998 (effective 2003) marked the beginning of the modern era, repositioning the brand and preserving its heritage through strategic investment.
+            </p>
+            <div class="bg-white p-6 rounded-lg shadow-md border border-stone-200">
+                <h3 class="text-2xl font-semibold text-stone-800 mb-6 text-center">A Timeline of Transformation</h3>
+                <div class="relative pl-6 border-l-2 border-stone-300">
+                    <div class="mb-8 ml-4">
+                        <div class="absolute w-4 h-4 bg-stone-800 rounded-full -left-[9px] border-2 border-white"></div>
+                        <h4 class="text-lg font-semibold text-stone-700">1971: Financial Crisis & Nationalization</h4>
+                        <p class="text-stone-600">The development costs of the RB211 aero engine bankrupt the original company. The UK government nationalizes Rolls-Royce, and in 1973, Rolls-Royce Motors is separated from the aerospace division (Rolls-Royce plc).</p>
+                    </div>
+                    <div class="mb-8 ml-4">
+                        <div class="absolute w-4 h-4 bg-stone-800 rounded-full -left-[9px] border-2 border-white"></div>
+                        <h4 class="text-lg font-semibold text-stone-700">1998: The BMW Acquisition</h4>
+                        <p class="text-stone-600">After a complex bidding war with Volkswagen, BMW Group secures the rights to the Rolls-Royce brand name and logo, effective from 2003. This begins a new era of modernization, investment, and strategic brand management.</p>
+                    </div>
+                    <div class="mb-8 ml-4">
+                        <div class="absolute w-4 h-4 bg-stone-800 rounded-full -left-[9px] border-2 border-white"></div>
+                        <h4 class="text-lg font-semibold text-stone-700">2003: The Home of Rolls-Royce at Goodwood</h4>
+                        <p class="text-stone-600">BMW builds a new, state-of-the-art manufacturing facility at Goodwood. This move symbolizes the brand's shift from a traditional manufacturer to a "House of Luxury," blending modern engineering with artisanal craftsmanship.</p>
+                    </div>
+                    <div class="ml-4">
+                        <div class="absolute w-4 h-4 bg-stone-800 rounded-full -left-[9px] border-2 border-white"></div>
+                        <h4 class="text-lg font-semibold text-stone-700">2003: Phantom VII & A New Clientele</h4>
+                        <p class="text-stone-600">The first car of the BMW era, the Phantom VII, is launched. It successfully attracts a younger, self-made, and more diverse clientele, lowering the average customer age from 56 to 45 by 2018 while reinforcing exclusivity.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-craft" class="content-section">
+            <h2 class="text-3xl font-bold text-stone-800 mb-4">Craftsmanship as Competitive Advantage</h2>
+            <p class="text-lg text-stone-700 mb-8">
+                This section delves into "Bespoke," the brand's core philosophy of ultimate personalization. The Goodwood facility exemplifies this, with each vehicle requiring over 600 hours and 60 pairs of skilled hands. This artisanal process, from hand-painted coachlines to complex embroideries, is a key differentiator. Click on the features below to learn more about how Rolls-Royce defines modern craft.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bespoke-item interactive-item bg-white p-4 rounded-lg shadow-md border border-stone-200 cursor-pointer" data-key="starlight">
+                        <h4 class="font-semibold text-center text-stone-800">Starlight Headliner</h4>
+                    </div>
+                    <div class="bespoke-item interactive-item bg-white p-4 rounded-lg shadow-md border border-stone-200 cursor-pointer" data-key="gallery">
+                        <h4 class="font-semibold text-center text-stone-800">The 'Gallery'</h4>
+                    </div>
+                    <div class="bespoke-item interactive-item bg-white p-4 rounded-lg shadow-md border border-stone-200 cursor-pointer" data-key="coachbuild">
+                        <h4 class="font-semibold text-center text-stone-800">Coachbuild</h4>
+                    </div>
+                    <div class="bespoke-item interactive-item bg-white p-4 rounded-lg shadow-md border border-stone-200 cursor-pointer" data-key="wood">
+                        <h4 class="font-semibold text-center text-stone-800">Wood & Veneer</h4>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-inner border border-stone-200 h-full min-h-[300px]">
+                    <h3 id="bespoke-detail-title" class="text-2xl font-semibold text-stone-800 mb-4">Select a Feature</h3>
+                    <p id="bespoke-detail-text" class="text-stone-700">Click on one of the Bespoke features to the left to see how it contributes to the Rolls-Royce legacy of craftsmanship and personalization.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-expansion" class="content-section">
+            <h2 class="text-3xl font-bold text-stone-800 mb-4">Strategic Expansion: Cullinan & Spectre</h2>
+            <p class="text-lg text-stone-700 mb-8">
+                Rolls-Royce has masterfully expanded its market presence while maintaining exclusivity. This section explores the two most significant product introductions of the modern era: the Cullinan SUV and the all-electric Spectre. These models demonstrate how the brand can embrace new segments and technologies without compromising its core identity.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md border border-stone-200">
+                    <h3 class="text-2xl font-semibold text-stone-800 mb-4">The Cullinan: Redefining the SUV</h3>
+                    <p class="text-stone-700 mb-4">Launched in 2018, the Cullinan addressed the booming luxury SUV segment. To maintain differentiation, the brand initially called it a "high-bodied all-terrain car." The £325,000+ vehicle was an immediate success, contributing to record sales of 5,152 units in 2019 (a 25% increase) and proving that market expansion could coexist with exclusivity.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-stone-200">
+                    <h3 class="text-2xl font-semibold text-stone-800 mb-4">The Spectre: An Electric Future</h3>
+                    <p class="text-stone-700 mb-4">The 2023 Spectre, its first fully electric vehicle, signals the brand's commitment to electrification (full EV by 2030). It preserves heritage while embracing the future, featuring a redesigned Spirit of Ecstasy for a 0.25 drag coefficient (the most aerodynamic RR ever). The car underwent 2.5 million km of testing, equivalent to 400 years of use, ensuring it meets the brand's extreme quality standards.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-contemporary" class="content-section">
+            <h2 class="text-3xl font-bold text-stone-800 mb-4">Redefining Contemporary Luxury</h2>
+            <p class="text-lg text-stone-700 mb-8">
+                In the 21st century, luxury is defined by more than just materials. Rolls-Royce has strategically adapted to the priorities of contemporary Ultra-High-Net-Worth (UHNW) consumers, focusing on sustainability, experiential luxury, and personalization. This section explores how the brand is evolving to meet these new demands.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md border border-stone-200">
+                    <h3 class="text-2xl font-semibold text-stone-800 mb-4">Sustainability as Luxury</h3>
+                    <p class="text-stone-700 mb-4">Modern luxury consumers increasingly prioritize sustainability. Rolls-Royce has addressed this by committing to a fully electric product portfolio by 2030 and achieving net-zero emissions by 2050. The Goodwood facility itself is a model of sustainability. This strategy ensures the brand remains relevant and responsible to a new generation of buyers.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-stone-200">
+                    <h3 class="text-2xl font-semibold text-stone-800 mb-4">Experiential Luxury: Private Offices</h3>
+                    <p class="text-stone-700 mb-4">Recognizing that UHNW clients value experiences, Rolls-Royce began opening "Private Offices" in key markets, starting with Dubai in 2022. These are not dealerships; they are bespoke design studios that bring the Goodwood experience to the client, allowing them to collaborate directly with designers. This represents luxury's evolution from product-centric to experience-centric.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-impact" class="content-section">
+            <h2 class="text-3xl font-bold text-stone-800 mb-4">Shaping the Market and Expectations</h2>
+            <p class="text-lg text-stone-700 mb-8">
+                Rolls-Royce's most significant legacy is its gravitational pull on the entire automotive industry. It doesn't just compete; it sets the standard that others must measure against. This section analyzes its dual impact: how it forced competitors to create new market segments and how it permanently elevated consumer expectations for what true luxury means.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md border border-stone-200">
+                    <h3 class="text-2xl font-semibold text-stone-800 mb-4">The Competitive Landscape</h3>
+                    <p class="text-stone-700 mb-4">Rolls-Royce's success forced competitors to react. Mercedes-Benz re-launched Maybach. Bentley was positioned as the "driver's" alternative. Most significantly, the Cullinan validated the "super-luxury SUV" segment, removing the risk for brands like Lamborghini (Urus), Aston Martin (DBX), and Ferrari (Purosangue) to enter the space.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-stone-200">
+                    <h3 class="text-2xl font-semibold text-stone-800 mb-4">Consumer Expectations</h3>
+                    <p class="text-stone-700 mb-4">The brand has taught consumers to expect more than just features. Key expectations set by Rolls-Royce include ultimate silence, invisible technology, and personalization as a standard. Research shows 80% of luxury customers now expect seamless omnichannel experiences and 90% seek transparency, standards normalized by the RR Bespoke model.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-performance" class="content-section">
+            <h2 class="text-3xl font-bold text-stone-800 mb-4">Global Performance & Market Dominance</h2>
+            <p class="text-lg text-stone-700 mb-8">
+                This section provides a quantitative look at Rolls-Royce's market performance, especially under BMW ownership. The brand's sales trajectory demonstrates highly effective luxury brand management, achieving record growth while simultaneously increasing exclusivity and average transaction value. The data shows a brand successfully engaging diverse global markets.
+            </p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md border border-stone-200">
+                    <h3 class="text-xl font-semibold text-stone-800 mb-4 text-center">Global Sales Growth (Units)</h3>
+                    <div class="chart-container">
+                        <canvas id="salesGrowthChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-stone-200">
+                    <h3 class="text-xl font-semibold text-stone-800 mb-4 text-center">Key Performance Insights</h3>
+                    <ul class="list-disc list-inside text-stone-700 space-y-3">
+                        <li><strong>Record Growth:</strong> Sales grew from 2,711 units in 2010 to a record 6,032 units in 2023.</li>
+                        <li><strong>High Transaction Value:</strong> Extensive Bespoke content drove the average client-paid price to approximately €500,000 per vehicle in 2022.</li>
+                        <li><strong>Key Markets:</strong> The United States and China represent the two largest global markets.</li>
+                        <li><strong>Bespoke Leadership:</strong> The Middle East emerged as the leading region for the most elaborate and expensive Bespoke commissions.</li>
+                        <li><strong>New Growth:</strong> The Asia-Pacific region, particularly Korea, shows significant growth, reflecting new wealthy demographics embracing the brand.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section id="section-perception" class="content-section">
+            <h2 class="text-3xl font-bold text-stone-800 mb-4">Brand Perception Dashboard</h2>
+            <p class="text-lg text-stone-700 mb-8">
+                This dashboard provides a conceptual, illustrative look at the Rolls-Royce brand and its market position. While the brand's value is often intangible, these charts illustrate its perceived position, its growth, and its dominance in the super-luxury space, based on analysis from the report.
+            </p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md border border-stone-200">
+                    <h3 class="text-xl font-semibold text-stone-800 mb-4 text-center">Consumer Brand Perception</h3>
+                    <div class="chart-container">
+                        <canvas id="perceptionChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-stone-200">
+                    <h3 class="text-xl font-semibold text-stone-800 mb-4 text-center">Conceptual Brand Value (Post-1998)</h3>
+                    <div class="chart-container">
+                        <canvas id="brandValueChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-stone-200 lg:col-span-2">
+                    <h3 class="text-xl font-semibold text-stone-800 mb-4 text-center">Share of "Voice" ($300k+ Market)</h3>
+                    <div class="chart-container">
+                        <canvas id="marketShareChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="text-center p-8 mt-12 border-t border-stone-200">
+        <p class="text-stone-500">This interactive report is a conceptual analysis of the Rolls-Royce legacy, based on the provided research.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const conceptData = {
+                'best-car': {
+                    title: '"The Best Car in the World"',
+                    text: 'This phrase was not a company slogan but was coined by Autocar magazine in 1907 after the 40/50 H.P. "Silver Ghost" completed a legendary 15,000-mile reliability trial. This achievement established reliability, silence, and refinement as core luxury attributes, setting a benchmark competitors spent decades trying to match.'
+                },
+                'magic-carpet': {
+                    title: '"Magic Carpet Ride"',
+                    text: 'This term describes the brand\'s engineering philosophy for its suspension system, prioritizing ultimate passenger comfort and isolation from the road. In modern cars like the Spectre, this is achieved with the "Planar" suspension, which can decouple anti-roll bars and uses 18 sensors to create a seamless, floating sensation.'
+                },
+                'house-luxury': {
+                    title: '"House of Luxury"',
+                    text: 'This concept represents the brand\'s strategic repositioning under BMW. The 2003 Goodwood facility is not just a factory but a "House of Luxury," symbolizing a shift from being a car manufacturer to a creator of bespoke, artisanal products. This philosophy centers the client and the craft, not just the vehicle.'
+                },
+                'symbolic-capital': {
+                    title: '"Symbolic Capital"',
+                    text: 'This is the intangible brand value that transcends the car\'s functional attributes. It\'s built from the Spirit of Ecstasy (an icon of aspiration), the brand\'s heritage, and its long-standing association with royalty and cultural icons (e.g., the British Royal Family). This "symbolic capital" makes the brand an automotive monarchy.'
+                }
+            };
+
+            const bespokeData = {
+                starlight: {
+                    title: 'Starlight Headliner',
+                    text: 'This feature uses up to 1,600 hand-placed fiber-optic lights to simulate a night sky. It transformed the "dead space" of a car roof into a canvas for personalization, with clients commissioning their own constellations. It exemplifies how RR turns functional components into artistic expressions.'
+                },
+                gallery: {
+                    title: 'The \'Gallery\'',
+                    text: 'Introduced in the 2018 Phantom, this is a single, sealed piece of glass spanning the dashboard. Clients can commission artists to create unique sculptures or artworks to be installed behind the glass, turning the interior into a private, curated art gallery.'
+                },
+                coachbuild: {
+                    title: 'Modern Coachbuilding',
+                    text: 'A return to the brand\'s roots, modern coachbuilding creates entirely unique car bodies for select clients. Cars like the "Sweptail" and "Boat Tail" are multi-million dollar, one-of-a-kind creations that take years to build, representing the absolute pinnacle of automotive personalization.'
+                },
+                wood: {
+                    title: 'Wood & Veneer',
+                    text: 'Rolls-Royce artisans are masters of book-matched veneers, where consecutive sheets of wood are mirrored to create a perfectly symmetrical grain. This attention to natural materials, often sourced from a single tree, sets the standard for interior craftsmanship.'
+                }
+            };
+            
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const sections = document.querySelectorAll('.content-section');
+            const groupButtons = document.querySelectorAll('.group-btn');
+            
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetSectionId = btn.dataset.section;
+                    const targetGroupId = btn.dataset.group;
+                    
+                    // Deactivate all group buttons
+                    groupButtons.forEach(g => g.classList.remove('active-group'));
+                    
+                    // Deactivate all nav buttons
+                    navButtons.forEach(b => b.classList.remove('active'));
+                    
+                    // Deactivate all sections
+                    sections.forEach(s => s.classList.remove('active'));
+                    
+                    // Activate the target group button
+                    if (targetGroupId) {
+                        document.getElementById(targetGroupId).classList.add('active-group');
+                    }
+                    
+                    // Activate the clicked nav button
+                    btn.classList.add('active');
+                    
+                    // Activate the target section
+                    document.getElementById(targetSectionId).classList.add('active');
+                });
+            });
+
+            function setupInteractiveList(itemClass, titleId, textId, dataObject) {
+                const items = document.querySelectorAll(itemClass);
+                const titleEl = document.getElementById(titleId);
+                const textEl = document.getElementById(textId);
+
+                items.forEach(item => {
+                    item.addEventListener('click', () => {
+                        const dataKey = item.dataset.key;
+                        const data = dataObject[dataKey];
+                        
+                        titleEl.textContent = data.title;
+                        textEl.textContent = data.text;
+                        
+                        items.forEach(i => i.classList.remove('bg-stone-200', 'border-stone-400'));
+                        item.classList.add('bg-stone-200', 'border-stone-400');
+                    });
+                });
+            }
+            
+            setupInteractiveList('.concept-item', 'concept-detail-title', 'concept-detail-text', conceptData);
+            setupInteractiveList('.bespoke-item', 'bespoke-detail-title', 'bespoke-detail-text', bespokeData);
+
+            function renderCharts() {
+                const chartColor = '#57534e';
+                const chartGridColor = '#d6d3d1';
+                
+                const perceptionCtx = document.getElementById('perceptionChart')?.getContext('2d');
+                if (perceptionCtx) {
+                    new Chart(perceptionCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Unmatched Luxury', 'Engineering', 'Heritage', 'Status Symbol'],
+                            datasets: [{
+                                label: 'Brand Association',
+                                data: [95, 85, 75, 90],
+                                backgroundColor: 'rgba(87, 83, 78, 0.2)',
+                                borderColor: 'rgb(87, 83, 78)',
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: '#1c1917',
+                                    titleFont: { weight: 'bold' },
+                                    bodyFont: { size: 14 },
+                                    displayColors: false
+                                }
+                            },
+                            scales: {
+                                y: { beginAtZero: true, max: 100, ticks: { color: chartColor }, grid: { color: chartGridColor } },
+                                x: { ticks: { color: chartColor }, grid: { display: false } }
+                            }
+                        }
+                    });
+                }
+                
+                const brandValueCtx = document.getElementById('brandValueChart')?.getContext('2d');
+                if (brandValueCtx) {
+                    new Chart(brandValueCtx, {
+                        type: 'line',
+                        data: {
+                            labels: ['2003', '2008', '2013', '2018', '2023'],
+                            datasets: [{
+                                label: 'Conceptual Brand Value',
+                                data: [10, 30, 50, 85, 100],
+                                fill: true,
+                                backgroundColor: 'rgba(87, 83, 78, 0.1)',
+                                borderColor: 'rgb(87, 83, 78)',
+                                tension: 0.3,
+                                pointRadius: 4,
+                                pointBackgroundColor: 'rgb(87, 83, 78)'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: '#1c1917',
+                                    displayColors: false,
+                                    callbacks: { label: (context) => `Value Index: ${context.formattedValue}` }
+                                }
+                            },
+                            scales: {
+                                y: { beginAtZero: true, ticks: { color: chartColor }, grid: { color: chartGridColor } },
+                                x: { ticks: { color: chartColor }, grid: { display: false } }
+                            }
+                        }
+                    });
+                }
+
+                const marketShareCtx = document.getElementById('marketShareChart')?.getContext('2d');
+                if (marketShareCtx) {
+                    new Chart(marketShareCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Rolls-Royce', 'Bentley', 'Maybach', 'Ferrari/Lambo (SUVs)', 'Other'],
+                            datasets: [{
+                                data: [40, 25, 15, 15, 5],
+                                backgroundColor: [
+                                    'rgb(87, 83, 78)',
+                                    'rgb(168, 162, 158)',
+                                    'rgb(214, 211, 209)',
+                                    'rgb(120, 113, 108)',
+                                    'rgb(231, 229, 228)'
+                                ],
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'bottom', labels: { color: chartColor } },
+                                tooltip: { backgroundColor: '#1c1917', displayColors: false }
+                            }
+                        }
+                    });
+                }
+
+                const salesGrowthCtx = document.getElementById('salesGrowthChart')?.getContext('2d');
+                if (salesGrowthCtx) {
+                    new Chart(salesGrowthCtx, {
+                        type: 'line',
+                        data: {
+                            labels: ['2010', '2019', '2023'],
+                            datasets: [{
+                                label: 'Global Sales (Units)',
+                                data: [2711, 5152, 6032],
+                                fill: true,
+                                backgroundColor: 'rgba(87, 83, 78, 0.1)',
+                                borderColor: 'rgb(87, 83, 78)',
+                                tension: 0.1,
+                                pointRadius: 4,
+                                pointBackgroundColor: 'rgb(87, 83, 78)'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: '#1c1917',
+                                    displayColors: false,
+                                    callbacks: { label: (context) => `Units Sold: ${context.formattedValue}` }
+                                }
+                            },
+                            scales: {
+                                y: { beginAtZero: false, ticks: { color: chartColor }, grid: { color: chartGridColor } },
+                                x: { ticks: { color: chartColor }, grid: { display: false } }
+                            }
+                        }
+                    });
+                }
+            }
+            
+            renderCharts();
+        });
+    </script>
+</body>
+</html>
+
+
