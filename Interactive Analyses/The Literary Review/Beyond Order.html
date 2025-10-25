@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-R">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expanded Interactive Analysis: Beyond Order</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .sidebar-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .sidebar-link.active {
+            background-color: #eef2ff;
+            color: #1d4ed8;
+            font-weight: 600;
+        }
+        
+        .sidebar-link:not(.active):hover {
+            background-color: #f4f4f5;
+        }
+
+        .rule-btn.active {
+            background-color: #1D4ED8;
+            color: white;
+            font-weight: 700;
+        }
+        .engage-btn.active {
+            background-color: #1D4ED8;
+            color: white;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        
+        #sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+        .sidebar-open {
+            transform: translateX(0) !important;
+        }
+        
+        .card {
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+    <!-- Chosen Palette: Warm Neutral (BG: f8f9fa, Text: neutral-800, Accent: blue-700, Card: white) -->
+    <!-- Application Structure Plan: A side-navigation SPA. On desktop, a 10-item persistent sidebar is visible. On mobile, the sidebar is hidden and toggled by a hamburger menu. This change from a crowded top-nav provides a clean, scalable, and modern UI, improving organization and usability without losing content. User flow is now: open page -> see summary -> use sidebar to select a new section -> content updates in the main area. -->
+    <!-- Visualization & Content Choices: 1. Report Info: Part 2 (12 Rules/Chapters) -> Goal: Organize/Inform -> Viz/Presentation: Interactive 'Rule Explorer' (HTML/JS) -> Interaction: Click button to show rule text -> Justification: Makes a long list digestible. (HTML/JS). 2. Report Info: Part 4 (Themes) -> Goal: Visualize emphasis -> Viz/Presentation: Doughnut Chart (Chart.js/Canvas) -> Interaction: Hover to see theme -> Justification: Provides a visual anchor for the 'Thematic Analysis' section. (Chart.js). 3. Report Info: Part 6 (Engage) -> Goal: Engage/Toggle -> Viz/Presentation: Toggle Buttons (HTML/JS) -> Interaction: Click to swap 'Quotes'/'Questions' -> Justification: Consolidates related content. (HTML/JS). -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="text-neutral-800">
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed top-0 left-0 z-40 h-full w-72 bg-white shadow-lg transform -translate-x-full md:translate-x-0 border-r border-neutral-200">
+        <!-- Sidebar Header -->
+        <div class="flex justify-between items-center p-4 h-16 border-b border-neutral-200">
+            <h2 class="text-xl font-bold text-blue-800">Analysis Menu</h2>
+            <button id="close-btn" class="md:hidden text-neutral-600 hover:text-neutral-900">
+                <span class="text-2xl font-bold">&times;</span>
+            </button>
+        </div>
+        <!-- Nav Links -->
+        <nav id="main-nav" class="flex flex-col p-4 space-y-1">
+            <button data-target="section-summary" class="sidebar-link active w-full text-left px-4 py-2.5 rounded-md text-neutral-700 font-medium">Summary</button>
+            <button data-target="section-author" class="sidebar-link w-full text-left px-4 py-2.5 rounded-md text-neutral-700 font-medium">About the Author</button>
+            <button data-target="section-chapters" class="sidebar-link w-full text-left px-4 py-2.5 rounded-md text-neutral-700 font-medium">Chapter-by-Chapter</button>
+            <button data-target="section-key-concepts" class="sidebar-link w-full text-left px-4 py-2.5 rounded-md text-neutral-700 font-medium">Key Concepts</button>
+            <button data-target="section-setting" class="sidebar-link w-full text-left px-4 py-2.5 rounded-md text-neutral-700 font-medium">Intellectual Setting</button>
+            <button data-target="section-theme-analysis" class="sidebar-link w-full text-left px-4 py-2.5 rounded-md text-neutral-700 font-medium">Thematic Analysis</button>
+            <button data-target="section-style" class="sidebar-link w-full text-left px-4 py-2.5 rounded-md text-neutral-700 font-medium">Stylistic Analysis</button>
+            <button data-target="section-context-authorial" class="sidebar-link w-full text-left px-4 py-2.5 rounded-md text-neutral-700 font-medium">Authorial Context</button>
+            <button data-target="section-legacy" class="sidebar-link w-full text-left px-4 py-2.5 rounded-md text-neutral-700 font-medium">Reception & Legacy</button>
+            <button data-target="section-engage" class="sidebar-link w-full text-left px-4 py-2.5 rounded-md text-neutral-700 font-medium">Engage</button>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div id="main-content-wrapper" class="transition-all duration-300 ease-in-out md:ml-72">
+        <!-- Top Bar (for mobile nav button and title) -->
+        <header class="bg-white shadow-md sticky top-0 z-10 md:hidden h-16 flex items-center border-b border-neutral-200">
+            <div class="w-full mx-auto px-4 flex justify-between items-center">
+                <button id="hamburger-btn" class="md:hidden p-2">
+                    <span class="block w-6 h-0.5 bg-neutral-700"></span>
+                    <span class="block w-6 h-0.5 bg-neutral-700 mt-1.5"></span>
+                    <span class="block w-6 h-0.5 bg-neutral-700 mt-1.5"></span>
+                </button>
+                 <h1 class="text-lg font-bold text-blue-800">Interactive Analysis</h1>
+                 <div class="w-8"></div>
+            </div>
+        </header>
+
+        <!-- Main Scrollable Content -->
+        <main class="max-w-5xl mx-auto p-4 sm:p-8">
+            <h1 class="hidden md:block text-3xl sm:text-4xl font-bold text-center text-blue-800 mb-6">Interactive Analysis: Beyond Order</h1>
+            <p class="text-center text-lg text-neutral-600 mb-10 max-w-3xl mx-auto">
+                This interactive application provides a comprehensive analysis of Jordan Peterson's <i>Beyond Order</i>. 
+                <span class="hidden md:inline">Use the navigation menu on the left to explore.</span>
+                <span class="md:hidden">Use the menu button ☰ to explore.</span>
+            </p>
+
+            <section id="section-summary" class="content-section space-y-8">
+                <h2 class="text-3xl font-bold text-neutral-800 border-b-2 border-neutral-200 pb-2">Executive Summary</h2>
+                <div class="overflow-x-auto card p-6">
+                    <table class="min-w-full divide-y divide-neutral-200">
+                        <tbody class="divide-y divide-neutral-200">
+                            <tr class="hover:bg-neutral-50">
+                                <td class="px-6 py-4 font-semibold text-neutral-700 w-1/3">Book Title & Author</td>
+                                <td class="px-6 py-4 text-neutral-600"><i>Beyond Order: 12 More Rules for Life</i> by Jordan B. Peterson</td>
+                            </tr>
+                            <tr class="hover:bg-neutral-50">
+                                <td class="px-6 py-4 font-semibold text-neutral-700">Genre/Subgenre</td>
+                                <td class="px-6 py-4 text-neutral-600">Psychology / Philosophy / Self-Help</td>
+                            </tr>
+                            <tr class="hover:bg-neutral-50">
+                                <td class="px-6 py-4 font-semibold text-neutral-700">Publication Date</td>
+                                <td class="px-6 py-4 text-neutral-600">March 2, 2021</td>
+                            </tr>
+                            <tr class="hover:bg-neutral-50">
+                                <td class="px-6 py-4 font-semibold text-neutral-700">Core Theme</td>
+                                <td class="px-6 py-4 text-neutral-600">While <i>12 Rules for Life</i> established the necessity of creating order from chaos, <i>Beyond Order</i> argues for the equal necessity of navigating the unknown beyond that order, warning that an excess of structure leads to rigidity, stagnation, and tyranny.</td>
+                            </tr>
+                            <tr class="hover:bg-neutral-50">
+                                <td class="px-6 py-4 font-semibold text-neutral-700">Overall Tone</td>
+                                <td class="px-6 py-4 text-neutral-600">Philosophical, dense, analytical, paternal, and deeply personal.</td>
+                            </tr>
+                            <tr class="hover:bg-neutral-50">
+                                <td class="px-6 py-4 font-semibold text-neutral-700">Target Audience</td>
+                                <td class="px-6 py-4 text-neutral-600">Readers of <i>12 Rules for Life</i>, individuals interested in Jungian psychology and existential philosophy, and those seeking a framework for meaning.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 class="text-3xl font-bold text-neutral-800 border-b-2 border-neutral-200 pb-2 pt-8">Elevator Pitch</h2>
+                <div class="card p-6">
+                    <p class="text-lg text-neutral-700 leading-relaxed"><i>Beyond Order</i> is the thematic counter-balance to Peterson's first <i>12 Rules for Life</i>. It argues that a meaningful life requires a delicate balance between the stability of "Order" (tradition, structure, security) and the creative, revitalizing potential of "Chaos" (the unknown, the new, the challenging). Peterson presents 12 new rules designed to help readers navigate the dangers of excessive order, encouraging them to embrace creativity, confront uncomfortable truths, and shoulder personal responsibility as the true antidote to the suffering inherent in life.</p>
+                </div>
+            </section>
+
+            <section id="section-author" class="content-section hidden space-y-8">
+                <h2 class="text-3xl font-bold text-neutral-800 border-b-2 border-neutral-200 pb-2">About the Author</h2>
+                <div class="card p-6">
+                    <h3 class="text-2xl font-bold text-blue-800 mb-3">Dr. Jordan B. Peterson</h3>
+                    <p class="text-neutral-700 leading-relaxed mb-4">Jordan B. Peterson is a Canadian clinical psychologist, author, and professor emeritus at the University of Toronto. He previously served as a professor at Harvard University. His work, which spans psychology, philosophy, and mythology, gained significant public attention in the late 2010s for his lectures on cultural and political issues.</p>
+                    
+                    <h3 class="text-2xl font-bold text-blue-800 mb-3 pt-4">Other Major Works</h3>
+                    <p class="text-neutral-700 leading-relaxed mb-4">While <i>Beyond Order</i> and its predecessor are his most famous books, his academic work is also foundational to his ideas.</p>
+                    <ul class="list-disc list-inside space-y-3 text-neutral-700">
+                        <li>
+                            <b><i>Maps of Meaning: The Architecture of Belief</i> (1999):</b> His first and most comprehensive academic book. It's a dense work that lays the mythological and psychological groundwork for his later books, exploring how humanity creates meaning through stories and myths.
+                        </li>
+                        <li>
+                            <b><i>12 Rules for Life: An Antidote to Chaos</i> (2018):</b> The international bestseller that preceded <i>Beyond Order</i>. It focuses on establishing structure, discipline, and personal responsibility (Order) as the "antidote to chaos."
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-chapters" class="content-section hidden space-y-6">
+                <h2 class="text-3xl font-bold text-neutral-800 border-b-2 border-neutral-200 pb-2">Chapter-by-Chapter (The 12 Rules)</h2>
+                <p class="text-lg text-neutral-600">The book is structured into 12 chapters, each corresponding to a single rule. This section provides the key point and definition for each chapter's rule. Click any rule number below to read its detailed explanation.</p>
+                
+                <div id="rule-buttons" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                </div>
+
+                <div id="rule-content" class="card p-6 min-h-[200px]">
+                    <h3 id="rule-title" class="text-2xl font-bold text-blue-800 mb-3"></h3>
+                    <p id="rule-text" class="text-lg text-neutral-700 leading-relaxed"></p>
+                </div>
+            </section>
+
+            <section id="section-key-concepts" class="content-section hidden space-y-8">
+                <h2 class="text-3xl font-bold text-neutral-800 border-b-2 border-neutral-200 pb-2">Key Concepts Deep Dive</h2>
+                <p class="text-lg text-neutral-600 mb-6">This section details the core archetypal concepts Peterson uses as the foundation for his arguments. These are the "characters" in the book's psychological drama.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="card p-6">
+                        <h3 class="text-2xl font-bold text-blue-800 mb-3">Order (The Great Father)</h3>
+                        <p class="text-neutral-700">This is the archetype of structure, tradition, law, security, and the known. It is masculine-coded. Its positive aspect is stability; its negative, tyrannical aspect is rigidity and the refusal to adapt.</p>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-2xl font-bold text-blue-800 mb-3">Chaos (The Great Mother)</h3>
+                        <p class="text-neutral-700">This is the archetype of the unknown, potential, nature, creativity, and destruction. It is feminine-coded. Its positive aspect is possibility; its negative, destructive aspect is the overwhelming nature of the unknown.</p>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-2xl font-bold text-blue-800 mb-3">The Hero (The Individual)</h3>
+                        <p class="text-neutral-700">Peterson's ideal for the reader: the individual who stands on the border between order and chaos. They mediate between the two, confronting chaos to gather new information and using it to revitalize stagnant order.</p>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-2xl font-bold text-blue-800 mb-3">The Adversary</h3>
+                        <p class="text-neutral-700">The internal force of resentment, arrogance, and deceit. It is the voice that whispers for you to "do what you hate," to embrace ideology, and to curse life because of its suffering.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="section-setting" class="content-section hidden space-y-8">
+                <h2 class="text-3xl font-bold text-neutral-800 border-b-2 border-neutral-200 pb-2">The Intellectual Setting</h2>
+                <p class="text-lg text-neutral-600 mb-6">The book is not set in a physical place, but at the intersection of several major intellectual and cultural traditions. This "setting" is crucial to understanding its arguments.</p>
+                 <div class="card p-6">
+                    <h3 class="text-2xl font-bold text-blue-800 mb-3">The Setting as a Character</h3>
+                    <p class="text-neutral-700 leading-relaxed">The book is set firmly at the intersection of <b>Jungian psychology, existential philosophy (Nietzsche, Dostoevsky), mythology, and the 21st-century "culture war."</b> The "place" is the modern West, which Peterson views as simultaneously suffering from an excess of rigid, bureaucratic "order" (in its institutions) and a nihilistic, chaotic "disorder" (in its cultural narratives). The book is a direct response to this perceived crisis of meaning.</p>
+                </div>
+            </section>
+
+            <section id="section-theme-analysis" class="content-section hidden space-y-8">
+                <h2 class="text-3xl font-bold text-neutral-800 border-b-2 border-neutral-200 pb-2">Thematic Analysis</h2>
+                <p class="text-lg text-neutral-600 mb-6">This section explores the book's major themes. The chart below offers a conceptual breakdown of the book's thematic focus, visualizing the relative emphasis Peterson places on his core arguments.</p>
+
+                <div class="card p-6">
+                    <h3 class="text-2xl font-bold text-blue-800 mb-4 text-center">Conceptual Thematic Focus</h3>
+                    <div class="chart-container">
+                        <canvas id="themesChart"></canvas>
+                    </div>
+                    <p class="text-center text-neutral-600 mt-4">This doughnut chart represents an analytical interpretation of the book's core message, weighting the "Duality of Order/Chaos" as the foundational framework, "Meaning through Responsibility" as the primary antidote, and "Dangers of Ideology" as a major corollary argument.</p>
+                </div>
+                
+                <div class="card p-6">
+                    <h3 class="text-2xl font-bold text-blue-800 mb-3">Major Themes</h3>
+                    <ul class="list-disc list-inside space-y-3 text-neutral-700 leading-relaxed">
+                        <li><b>The Duality of Order and Chaos:</b> The central theme, often represented by the Taoist yin-yang symbol. Peterson argues that life is a constant negotiation between these two fundamental realities, and a healthy life (or society) is lived on the "edge" between them.</li>
+                        <li><b>Meaning through Responsibility:</b> This is Peterson's core antidote to nihilism and suffering. He argues that life is not meant to be "happy" but "meaningful," and meaning is discovered by voluntarily accepting and shouldering the most profound responsibilities you can.</li>
+                        <li><b>The Dangers of Ideological Possession:</b> Peterson defines ideology as a simple, rigid idea that claims to explain everything. He argues that it is a parasite on the religious instinct, and that surrendering your individual, critical consciousness to *any* ideology (left or right) is a moral and intellectual catastrophe.</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section id="section-style" class="content-section hidden space-y-8">
+                <h2 class="text-3xl font-bold text-neutral-800 border-b-2 border-neutral-200 pb-2">Stylistic Analysis</h2>
+                 <p class="text-lg text-neutral-600 mb-6">This section examines the author's writing style, purpose, and the recurring symbols he uses to convey meaning.</p>
+                <div class="card p-6">
+                    <h3 class="text-2xl font-bold text-blue-800 mb-3">Symbolism & Motifs</h3>
+                    <ul class="list-disc list-inside space-y-2 text-neutral-700">
+                        <li><b>The Dragon:</b> A primary motif for chaos. The dragon hoards gold and captures the virgin—meaning, the unknown (the dragon) contains both the treasure (opportunity, knowledge) and the potential (the virgin) that the hero must rescue.</li>
+                        <li><b>The Garden:</b> Represents a place where chaos (wild nature) is brought into productive order (a cultivated garden). It is a perfect micro-example of the book's central theme.</li>
+                        <li><b>Biblical Narratives:</b> Peterson heavily uses stories like Cain and Abel (resentment), the Tower of Babel (arrogance of a single "order"), and the story of Christ (voluntary acceptance of suffering) as psychological and metaphorical maps.</li>
+                    </ul>
+                </div>
+                
+                <div class="card p-6">
+                    <h3 class="text-2xl font-bold text-blue-800 mb-3">Author's Writing Style & Purpose</h3>
+                    <p class="text-neutral-700 leading-relaxed mb-4">Peterson's style is dense, academic, and deeply earnest. He writes like a philosopher and a clinician, blending abstract philosophical concepts with concrete anecdotes from his clinical practice and personal life. His prose is complex and circuitous, often building an argument by circling it from multiple angles (mythological, scientific, personal).</p>
+                    <p class="text-neutral-700 leading-relaxed">His purpose is to provide a psychological and philosophical toolkit for navigating the "second half" of life's problem. If the first book was about *building* a life (establishing order), this book is about *revitalizing* that life when its structures become stale, rigid, or insufficient, and confronting the suffering that order cannot eliminate.</p>
+                </div>
+            </section>
+
+            <section id="section-context-authorial" class="content-section hidden space-y-8">
+                <h2 class="text-3xl font-bold text-neutral-800 border-b-2 border-neutral-200 pb-2">Authorial & Historical Context</h2>
+                <p class="text-lg text-neutral-600 mb-6">Understanding the book requires understanding the author's personal journey at the time of its creation.</p>
+                
+                <div class="card p-6">
+                    <h3 class="text-2xl font-bold text-blue-800 mb-3">The Author's Personal "Chaos"</h3>
+                    <p class="text-neutral-700 leading-relaxed">This book is inseparable from the author's personal life. It was written in the midst of, and immediately following, a period of intense personal suffering for Peterson and his family, including his wife's cancer diagnosis, his daughter's severe health complications, and his own severe autoimmune reaction to benzodiazepine withdrawal, which led to a medically induced coma and a grueling recovery. This journey into a personal "underworld" or "chaos" (illness, dependence, the unknown) deeply informs the book's tone and its focus on gratitude in the face of suffering (Rule 12).</p>
+                </div>
+            </section>
+
+            <section id="section-legacy" class="content-section hidden space-y-8">
+                <h2 class="text-3xl font-bold text-neutral-800 border-b-2 border-neutral-200 pb-2">Reception & Legacy</h2>
+                <p class="text-lg text-neutral-600 mb-6">The book, like its author, was a commercial success and a source of critical division. This section details its reception and intended audience.</p>
+                
+                <div class="card p-6">
+                    <h3 class="text-2xl font-bold text-blue-800 mb-3">Critical Reception & Legacy</h3>
+                    <p class="text-neutral-700 leading-relaxed mb-4">Like all of Peterson's work, <i>Beyond Order</i> was commercially a massive international bestseller while being critically polarizing. Supporters and fans praised it as a profound, life-affirming, and necessary guide, finding its vulnerability and philosophical depth even more compelling than the first book.</p>
+                    <p class="text-neutral-700 leading-relaxed">Critics, however, often found its prose to be convoluted, self-important, and its ideas either obvious or repackaged from existentialism and Jung. Its legacy is that of a "sequel" that successfully complicated and deepened the "Peterson doctrine," shifting the focus from "cleaning your room" (order) to "confronting the dragon" (chaos).</p>
+                </div>
+                
+                <div class="card p-6">
+                    <h3 class="text-2xl font-bold text-blue-800 mb-3">Recommended For...</h3>
+                    <ul class="list-disc list-inside space-y-2 text-neutral-700">
+                        <li>Readers who found value in <i>12 Rules for Life</i> and are looking for the "next step."</li>
+                        <li>Anyone interested in Jungian psychology, mythology, and existential philosophy.</li>
+                        <li>Individuals feeling "stuck" in a life that has become too predictable, rigid, or meaningless.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-engage" class="content-section hidden space-y-8">
+                <h2 class="text-3xl font-bold text-neutral-800 border-b-2 border-neutral-200 pb-2">Engaging with the Book</h2>
+                <p class="text-lg text-neutral-600 mb-6">Reflect on the book's core ideas through representative quotes and thought-provoking questions. Use the toggles below to switch between views.</p>
+                
+                <div class="text-center mb-6">
+                    <button id="btn-quotes" class="engage-btn active text-lg font-medium py-2 px-6 rounded-l-lg border border-blue-700">Memorable Quotes</button>
+                    <button id="btn-questions" class="engage-btn text-lg font-medium py-2 px-6 rounded-r-lg border border-blue-700 -ml-px">Discussion Questions</button>
+                </div>
+
+                <div id="content-quotes" class="engage-content space-y-4">
+                    <div class="card p-6">
+                        <blockquote class="text-xl text-neutral-700 italic border-l-4 border-blue-700 pl-4 mb-2">"Order is not enough. You can't just be stable, and secure, and unchanging, because there are still vital and important new things to be learned."</blockquote>
+                        <p class="text-neutral-600 pl-5">- On the core theme.</p>
+                    </div>
+                    <div class="card p-6">
+                        <blockquote class="text-xl text-neutral-700 italic border-l-4 border-blue-700 pl-4 mb-2">"Imagine who you could be, and then aim single-mindedly at that. You must determine where you are going in your life, because you cannot get there unless you move in that direction."</blockquote>
+                        <p class="text-neutral-600 pl-5">- On Rule II, the importance of a clear aim.</p>
+                    </div>
+                    <div class="card p-6">
+                        <blockquote class="text-xl text-neutral-700 italic border-l-4 border-blue-700 pl-4 mb-2">"Do not do what you hate. It is a terrible mistake to force yourself to act in a manner that is contrary to your own nature."</blockquote>
+                        <a class="text-neutral-600 pl-5">- On Rule V, using resentment as a guide.</a>
+                    </div>
+                    <div class="card p-6">
+                        <blockquote class="text-xl text-neutral-700 italic border-l-4 border-blue-700 pl-4 mb-2">"In the darkest of times, the light all the more brightly illuminates. To be grateful for what you have, in the face of the suffering that must be endured—that is the final, deepest, and most profound secret of Being."</blockquote>
+                        <p class="text-neutral-600 pl-5">- On Rule XII.</p>
+                    </div>
+                </div>
+
+                <div id="content-questions" class="engage-content hidden card p-6">
+                    <ol class="list-decimal list-inside space-y-4 text-lg text-neutral-700">
+                        <li><i>Beyond Order</i> is a counter-balance to <i>12 Rules for Life</i>. In what ways do the two books "speak" to each other? Can you have one without the other?</li>
+                        <li>Peterson argues that "opportunity lurks where responsibility has been abdicated" (Rule IV). Can you identify an area in your life where a "dragon" exists because no one has taken responsibility for it?</li>
+                        <li>Rule VI, "Abandon ideology," is a central argument. How does Peterson define "ideology," and why does he see it as so dangerous? Do you agree?</li>
+                        <li>Several rules (like Rule VIII, "Make one room beautiful") seem small and domestic. Why does Peterson place such importance on these immediate, aesthetic actions?</li>
+                        <li>The final rule, "Be grateful in spite of your suffering," was born from Peterson's own health crisis. Do you find this argument convincing as a strategy for confronting tragedy?</li>
+                    </ol>
+                </div>
+            </section>
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const rulesData = [
+        { title: "Rule I: Do not carelessly denigrate social institutions or creative achievement.", text: "They are the hard-won products of generations of effort; understand them before you try to tear them down." },
+        { title: "Rule II: Imagine who you could be, and then aim single-mindedly at that.", text: "A high, noble aim or 'meta-goal' provides direction and organizes your personality." },
+        { title: "Rule III: Do not hide unwanted things in the fog.", text: "Confront problems, large or small, as soon as they appear. Unarticulated problems fester and grow." },
+        { title: "Rule IV: Notice that opportunity lurks where responsibility has been abdicated.", text: "Meaning is not found in happiness but in shouldering the heaviest, most necessary burden you can manage." },
+        { title: "Rule V: Do not do what you hate.", text: "Your own resentment and bitterness are powerful signals that you are either acting inauthentically or allowing yourself to be exploited." },
+        { title: "Rule VI: Abandon ideology.", text: "Ideologies are incomplete, 'one-size-fits-all' maps for reality that tempt you to surrender your individual consciousness and responsibility." },
+        { title: "Rule VII: Work as hard as you possibly can on at least one thing and see what happens.", text: "The value of deep, committed, focused effort in a single domain can transform your entire life." },
+        { title: "Rule VIII: Try to make one room in your home as beautiful as possible.", text: "Actively appreciating and creating beauty is a necessary bulwark against the suffering and ugliness of life." },
+        { title: "Rule IX: If old memories still upset you, write them down carefully and completely.", text: "You must process and articulate the traumas of your past to lay them to rest and free your present." },
+        { title: "Rule X: Plan and work diligently to maintain the romance in your relationship.", text: "Intimacy and trust are not passive states; they require active, conscious, and truthful negotiation." },
+        { title: "Rule XI: Do not allow yourself to become resentful, deceitful, or arrogant.", text: "These are the three great internal 'sins' that lead to a self-made hell and corrupt the soul." },
+        { title: "Rule XII: Be grateful in spite of your suffering.", text: "This is the final, most profound challenge: to voluntarily accept the tragic nature of life and still find a reason for gratitude." }
+    ];
+
+    const romanNumerals = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
+
+    const ruleButtonsContainer = document.getElementById('rule-buttons');
+    const ruleTitle = document.getElementById('rule-title');
+    const ruleText = document.getElementById('rule-text');
+
+    const btnQuotes = document.getElementById('btn-quotes');
+    const btnQuestions = document.getElementById('btn-questions');
+    const contentQuotes = document.getElementById('content-quotes');
+    const contentQuestions = document.getElementById('content-questions');
+    
+    const themesChartCanvas = document.getElementById('themesChart');
+
+    function initSidebarNav() {
+        const sidebar = document.getElementById('sidebar');
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const closeBtn = document.getElementById('close-btn');
+        const navLinks = document.querySelectorAll('.sidebar-link');
+        const contentSections = document.querySelectorAll('.content-section');
+
+        hamburgerBtn.addEventListener('click', () => {
+            sidebar.classList.add('sidebar-open');
+        });
+
+        closeBtn.addEventListener('click', () => {
+            sidebar.classList.remove('sidebar-open');
+        });
+
+        document.getElementById('main-nav').addEventListener('click', (e) => {
+            if (e.target.classList.contains('sidebar-link')) {
+                const targetId = e.target.getAttribute('data-target');
+                
+                navLinks.forEach(link => link.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                contentSections.forEach(section => {
+                    if (section.id === targetId) {
+                        section.classList.remove('hidden');
+                        section.classList.add('block');
+                    } else {
+                        section.classList.remove('block');
+                        section.classList.add('hidden');
+                    }
+                });
+                
+                if (window.innerWidth < 768) {
+                    sidebar.classList.remove('sidebar-open');
+                }
+
+                if (targetId === 'section-theme-analysis' && !themesChartInstance) {
+                    renderThemesChart();
+                } else if (targetId === 'section-theme-analysis' && themesChartInstance) {
+                    themesChartInstance.destroy();
+                    renderThemesChart();
+                }
+            }
+        });
+    }
+    
+    function initRules() {
+        rulesData.forEach((rule, index) => {
+            const button = document.createElement('button');
+            button.classList.add('rule-btn', 'p-4', 'border', 'rounded-lg', 'hover:bg-blue-50', 'cursor-pointer', 'text-center', 'font-medium', 'text-neutral-700', 'transition-all');
+            button.textContent = `Rule ${romanNumerals[index]}`;
+            button.dataset.index = index;
+            ruleButtonsContainer.appendChild(button);
+        });
+
+        ruleButtonsContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('rule-btn')) {
+                const index = e.target.dataset.index;
+                updateRuleContent(index);
+                
+                document.querySelectorAll('.rule-btn').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+            }
+        });
+
+        updateRuleContent(0);
+        if (ruleButtonsContainer.querySelector('.rule-btn')) {
+            ruleButtonsContainer.querySelector('.rule-btn').classList.add('active');
+        }
+    }
+
+    function updateRuleContent(index) {
+        if(ruleTitle && ruleText) {
+            ruleTitle.textContent = rulesData[index].title;
+            ruleText.textContent = rulesData[index].text;
+        }
+    }
+    
+    function initEngage() {
+        btnQuotes.addEventListener('click', () => {
+            contentQuotes.classList.remove('hidden');
+            contentQuestions.classList.add('hidden');
+            btnQuotes.classList.add('active');
+            btnQuestions.classList.remove('active');
+        });
+
+        btnQuestions.addEventListener('click', () => {
+            contentQuestions.classList.remove('hidden');
+            contentQuotes.classList.add('hidden');
+            btnQuestions.classList.add('active');
+            btnQuotes.classList.remove('active');
+        });
+    }
+
+    let themesChartInstance = null;
+    function renderThemesChart() {
+        if (themesChartInstance) {
+            themesChartInstance.destroy();
+        }
+        
+        if (themesChartCanvas) {
+            const ctx = themesChartCanvas.getContext('2d');
+            themesChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Duality of Order/Chaos', 'Meaning via Responsibility', 'Dangers of Ideology'],
+                    datasets: [{
+                        label: 'Thematic Focus',
+                        data: [40, 35, 25],
+                        backgroundColor: [
+                            'rgba(29, 78, 216, 0.8)', 
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(147, 197, 253, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(29, 78, 216, 1)',
+                            'rgba(59, 130, 246, 1)',
+                            'rgba(147, 197, 253, 1)'
+                        ],
+                        borderWidth: 1,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#404040',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    initSidebarNav();
+    initRules();
+    initEngage();
+    
+});
+</script>
+</body>
+</html>
+
