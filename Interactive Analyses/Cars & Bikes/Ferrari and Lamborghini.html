@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferrari vs. Lamborghini: An Interactive Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+                max-height: 60vh;
+            }
+        }
+        nav {
+            overflow-x: auto;
+            white-space: nowrap;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        nav::-webkit-scrollbar {
+            display: none;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        .nav-link.active {
+            background-color: #1f2937;
+            color: #ffffff;
+        }
+        .timeline-card {
+            transition: opacity 0.5s ease-in-out, max-height 0.5s ease-in-out;
+            overflow: hidden;
+        }
+        .timeline-card.hidden {
+            opacity: 0;
+            max-height: 0;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+    </style>
+    <!-- Chosen Palette: Warm Neutrals (Gray/White) with Muted Red and Amber Accents -->
+    <!-- Application Structure Plan: Expanded SPA from 3 to 8 tabs. The original 3 (Performance, Design, Philosophy) provide a high-level overview. The 5 new tabs ('Key Concepts', 'Engines', 'Aero/Handling', 'Chassis/Tech', 'Landscape') serve as deep-dive "elaboration" sections, as requested. This structure allows users to get a quick comparison or explore nuanced topics. The 'Key Concepts' tab directly addresses the user's request for a dedicated elaboration section. Navigation is now a horizontally scrolling tab bar to accommodate all sections accessibly. -->
+    <!-- Visualization & Content Choices: 1. (Existing) Performance: Dynamic Bar Chart (Chart.js) + Dynamic Text. Interaction: Dropdown. Justification: Clear comparison. 2. (Existing) Design: Filterable Timeline (HTML/JS). Interaction: Buttons. Justification: Manages historical data. 3. (New) Key Concepts: Static Text Grid (HTML/Tailwind). Goal: Define/Elaborate. Justification: Directly answers user request for elaboration in a clear, digestible format. 4. (New) Engines, Aero/Handling, Chassis/Tech: 2-Column Comparison Layout (HTML/Tailwind). Goal: Compare/Detail. Justification: Easy side-by-side analysis. 5. (New) Landscape: Static Text Grid (HTML/Tailwind). Goal: Contextualize. Justification: Provides external context vs. rivals. All new sections use static text as their goal is informational deep-dive, not data visualization. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-2">The Italian Icons</h1>
+            <p class="text-xl text-gray-600">An Interactive Analysis of Ferrari & Lamborghini</p>
+        </header>
+
+        <nav class="flex justify-start space-x-2 md:space-x-4 mb-8 bg-white p-2 rounded-lg shadow-md">
+            <button id="nav-performance" class="nav-link active text-sm md:text-base font-medium py-3 px-4 rounded-lg text-gray-700 hover:bg-gray-200" onclick="showPanel('performance')">
+                Performance
+            </button>
+            <button id="nav-design" class="nav-link text-sm md:text-base font-medium py-3 px-4 rounded-lg text-gray-700 hover:bg-gray-200" onclick="showPanel('design')">
+                Design Evolution
+            </button>
+            <button id="nav-philosophy" class="nav-link text-sm md:text-base font-medium py-3 px-4 rounded-lg text-gray-700 hover:bg-gray-200" onclick="showPanel('philosophy')">
+                Brand Philosophy
+            </button>
+            <button id="nav-concepts" class="nav-link text-sm md:text-base font-medium py-3 px-4 rounded-lg text-gray-700 hover:bg-gray-200" onclick="showPanel('concepts')">
+                Key Concepts
+            </button>
+            <button id="nav-engine" class="nav-link text-sm md:text-base font-medium py-3 px-4 rounded-lg text-gray-700 hover:bg-gray-200" onclick="showPanel('engine')">
+                Engine Philosophy
+            </button>
+            <button id="nav-aero" class="nav-link text-sm md:text-base font-medium py-3 px-4 rounded-lg text-gray-700 hover:bg-gray-200" onclick="showPanel('aero')">
+                Aero & Handling
+            </button>
+            <button id="nav-tech" class="nav-link text-sm md:text-base font-medium py-3 px-4 rounded-lg text-gray-700 hover:bg-gray-200" onclick="showPanel('tech')">
+                Chassis & Tech
+            </button>
+            <button id="nav-landscape" class="nav-link text-sm md:text-base font-medium py-3 px-4 rounded-lg text-gray-700 hover:bg-gray-200" onclick="showPanel('landscape')">
+                Market Landscape
+            </button>
+        </nav>
+
+        <main id="content-container">
+
+            <section id="panel-performance" class="content-panel bg-white p-6 rounded-lg shadow-lg">
+                <div class="max-w-3xl mx-auto text-center mb-6">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">By the Numbers: Performance</h2>
+                    <p class="text-gray-600">
+                        This section provides a direct performance comparison between contemporary models.
+                        Select a vehicle class from the dropdown to see how a representative Ferrari and Lamborghini stack up in key metrics.
+                        The chart visualizes quantitative data, while the cards below offer qualitative insights into their handling and character.
+                    </p>
+                </div>
+
+                <div class="flex justify-center mb-6">
+                    <select id="performance-selector" class="block w-full max-w-xs p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500" onchange="updatePerformanceData(this.value)">
+                        <option value="hybrid">Hypercar (Hybrid)</option>
+                        <option value="v10v6">V10 (NA) vs. V6 (Hybrid)</option>
+                        <option value="v12">V12 Icons</option>
+                    </select>
+                </div>
+
+                <div class="chart-container mb-6">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div id="ferrari-performance-text" class="border-l-4 border-red-700 bg-gray-50 p-6 rounded-lg shadow">
+                    </div>
+                    <div id="lambo-performance-text" class="border-l-4 border-amber-500 bg-gray-50 p-6 rounded-lg shadow">
+                    </div>
+                </div>
+            </section>
+
+            <section id="panel-design" class="content-panel hidden bg-white p-6 rounded-lg shadow-lg">
+                <div class="max-w-3xl mx-auto text-center mb-6">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">The Evolution of Form</h2>
+                    <p class="text-gray-600">
+                        Explore the shifting design philosophies of both brands through the decades.
+                        From the flowing curves of the 60s to the aggressive aerodynamics of today, this timeline highlights the key aesthetic trends.
+                        Use the filters to focus on one brand or see their parallel evolution.
+                    </p>
+                </div>
+
+                <div class="flex justify-center space-x-2 md:space-x-4 mb-8">
+                    <button class="bg-gray-700 text-white py-2 px-4 rounded-lg hover:bg-gray-600" onclick="filterTimeline('all')">Show All</button>
+                    <button class="bg-red-700 text-white py-2 px-4 rounded-lg hover:bg-red-600" onclick="filterTimeline('ferrari')">Ferrari Only</button>
+                    <button class="bg-amber-500 text-white py-2 px-4 rounded-lg hover:bg-amber-400" onclick="filterTimeline('lambo')">Lamborghini Only</button>
+                </div>
+
+                <div id="timeline-container" class="space-y-8">
+                    <div class="timeline-era p-4">
+                        <h3 class="text-2xl font-bold text-gray-800 text-center mb-4">1960s-1970s: The Originals</h3>
+                        <div class="timeline-brands grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="timeline-card ferrari-card border border-gray-200 rounded-lg p-4 shadow-sm">
+                                <h4 class="text-xl font-semibold text-red-700 mb-2">Ferrari: Flowing Elegance</h4>
+                                <p>This era was defined by soft, flowing lines and classic proportions. Cars like the 250 GTO and Dino 246 prioritized beauty and aerodynamic efficiency in a way that felt organic and sculpted. Designs were penned by studios like Pininfarina, creating timeless automotive art.</p>
+                            </div>
+                            <div class="timeline-card lambo-card border border-gray-200 rounded-lg p-4 shadow-sm">
+                                <h4 class="text-xl font-semibold text-amber-500 mb-2">Lamborghini: The Shockwave</h4>
+                                <p>Lamborghini started with the beautiful, conventional Miura but shattered the mold with the Countach in 1971. This car single-handedly invented the "wedge" silhouette, prioritizing shock value, futuristic angles, and raw aggression over classic beauty. It set the brand's DNA for decades.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-era p-4">
+                        <h3 class="text-2xl font-bold text-gray-800 text-center mb-4">1980s-1990s: The Wedge Era</h3>
+                        <div class="timeline-brands grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="timeline-card ferrari-card border border-gray-200 rounded-lg p-4 shadow-sm">
+                                <h4 class="text-xl font-semibold text-red-700 mb-2">Ferrari: Angular Power</h4>
+                                <p>Ferrari embraced the wedge with icons like the Testarossa and F40. While still retaining a sense of proportion, designs became much more angular, wide, and aggressive. Pop-up headlights and large side strakes (Testarossa) or massive wings (F40) defined the look, driven by performance.</p>
+                            </div>
+                            <div class="timeline-card lambo-card border border-gray-200 rounded-lg p-4 shadow-sm">
+                                <h4 class="text-xl font-semibold text-amber-500 mb-2">Lamborghini: Extreme Aggression</h4>
+                                <p>Lamborghini doubled down on the wedge. The Countach evolved with more wings and flares, and its successor, the Diablo, refined the look into a smoother but equally dramatic and intimidating package. The philosophy was simple: be the most extreme car on the road. Width and anger were key.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-era p-4">
+                        <h3 class="text-2xl font-bold text-gray-800 text-center mb-4">2000s-Present: Aero & Geometry</h3>
+                        <div class="timeline-brands grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="timeline-card ferrari-card border border-gray-200 rounded-lg p-4 shadow-sm">
+                                <h4 class="text-xl font-semibold text-red-700 mb-2">Ferrari: Functional Aero</h4>
+                                <p>Modern Ferraris (458 Italia, SF90) are sculpted by the wind. Design is now intrinsically linked with aerodynamics, creating complex surfaces, "aero-bridges," and active aero elements that are both beautiful and functional. The F1 team's influence is directly visible in the designs.</p>
+                            </div>
+                            <div class="timeline-card lambo-card border border-gray-200 rounded-lg p-4 shadow-sm">
+                                <h4 class="text-xl font-semibold text-amber-500 mb-2">Lamborghini: Stealth Fighter</h4>
+                                <p>Inspired by stealth aircraft (Reventón), modern Lamborghinis (Aventador, Revuelto) are defined by sharp creases, hexagons, and "Y" shapes. The design language is pure geometry and aggression. Every car is an unmistakable statement, prioritizing futuristic, angular drama.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="panel-philosophy" class="content-panel hidden bg-white p-6 rounded-lg shadow-lg">
+                <div class="max-w-3xl mx-auto text-center mb-6">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Core Philosophy: The "Why"</h2>
+                    <p class="text-gray-600">
+                        While they are direct competitors, the driving force behind each brand is distinct. This section summarizes the core DNA and underlying philosophy that informs every car they build. It's the "soul" that differentiates a Ferrari from a Lamborghini, even when their performance numbers are similar.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border-l-4 border-red-700 bg-gray-50 p-6 rounded-lg shadow">
+                        <h3 class="text-2xl font-bold text-red-700 mb-3">Ferrari: The Racing Soul</h3>
+                        <p class="text-gray-700">
+                            Ferrari's philosophy is born from "Scuderia Ferrari," its racing division. Every road car is seen as an extension of its F1 and endurance racing heritage. The focus is on precision, agility, high-revving engine performance, and creating the ultimate "driver's car." The experience is about feeling connected to the machine and the road, a symphony of engineering and feedback.
+                        </p>
+                    </div>
+                    <div class="border-l-4 border-amber-500 bg-gray-50 p-6 rounded-lg shadow">
+                        <h3 class="text-2xl font-bold text-amber-500 mb-3">Lamborghini: The Audacious Drama</h3>
+                        <p class="text-gray-700">
+                            Lamborghini's philosophy is rooted in audacity. It was founded to be an alternative, a statement against the establishment. The focus is on drama, "wow" factor, and raw emotion. This is achieved through aggressive, unmistakable design and the visceral sound and power of their signature V12 (and V10) engines. A Lamborghini is designed to be an event, a spectacle of noise and form.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="panel-concepts" class="content-panel hidden bg-white p-6 rounded-lg shadow-lg">
+                <div class="max-w-3xl mx-auto text-center mb-6">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Elaboration on Key Concepts</h2>
+                    <p class="text-gray-600">
+                        The world of supercars is full of specific terminology. This section elaborates on the key metrics and concepts that define these vehicles, providing context for what makes them "super."
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-gray-50 p-6 rounded-lg shadow">
+                        <h3 class="text-xl font-bold text-gray-800 mb-3">Acceleration Metrics</h3>
+                        <p class="text-gray-700">
+                            While 0-60 mph is the standard benchmark, contemporary metrics also include 0-124 mph (0-200 km/h) and the quarter-mile time. These figures give a better sense of a car's relentless pulling power at higher speeds. With instant-torque electric motors, hybrid supercars are now achieving 0-60 times under 2.5 seconds, previously thought impossible for road cars.
+                        </p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg shadow">
+                        <h3 class="text-xl font-bold text-gray-800 mb-3">Top Speed: The Bragging Right</h3>
+                        <p class="text-gray-700">
+                            In the modern era, top speed is more of a theoretical metric than a usable one. Any speed over 200 mph (320 km/h) is academic for 99.9% of owners. It serves as an engineering benchmark and a key "bragging right" for a car's V12 or hybrid powertrain, demonstrating its ultimate stability and power.
+                        </p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg shadow">
+                        <h3 class="text-xl font-bold text-gray-800 mb-3">Handling Characteristics</h3>
+                        <p class="text-gray-700">
+                            This is the most complex metric. It's not just about grip (lateral Gs). It's a combination of chassis balance (influenced by engine placement), steering feedback, and suspension tuning. Modern "handling" is also heavily defined by electronic aids like torque vectoring, all-wheel steering, and active differentials, which work to make the car faster and more accessible.
+                        </p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg shadow">
+                        <h3 class="text-xl font-bold text-gray-800 mb-3">Design Philosophy</h3>
+                        <p class="text-gray-700">
+                            This is the "why" behind the "what." Ferrari's philosophy is "form follows function," where every scoop and vent is (usually) for an aerodynamic or cooling purpose. Lamborghini's is "form follows drama," where the primary goal is to create an emotional, shocking, and unmistakable shape, often inspired by aircraft or futuristic concepts.
+                        </p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg shadow">
+                        <h3 class="text-xl font-bold text-gray-800 mb-3">Aesthetic Trends</h3>
+                        <p class="text-gray-700">
+                            These are the specific design cues that define an era. Examples include the "wedge" shape of the 1970s/80s (Countach, Testarossa), the move to "active aero" in the 2010s (wings and flaps that move), and signature brand elements like Lamborghini's "Y" shaped lights and scissor doors, or Ferrari's classic round tail lights (which are now often re-interpreted).
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="panel-engine" class="content-panel hidden bg-white p-6 rounded-lg shadow-lg">
+                <div class="max-w-3xl mx-auto text-center mb-6">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Engine Philosophy: The Heart of the Beast</h2>
+                    <p class="text-gray-600">
+                        The engine is the core of a supercar's identity. Ferrari and Lamborghini have historically had very different, yet equally iconic, approaches to their powertrains.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border-l-4 border-red-700 bg-gray-50 p-6 rounded-lg shadow">
+                        <h3 class="text-2xl font-bold text-red-700 mb-3">Ferrari</h3>
+                        <p class="text-gray-700 mb-4">
+                            <strong>The V12:</strong> Ferrari's soul. Traditionally front-engined, high-revving, and sonorous. They represent the ultimate GT and a direct link to their earliest cars. (e.g., 812 Superfast).
+                        </p>
+                        <p class="text-gray-700 mb-4">
+                            <strong>The V8:</strong> The heart of their mid-engined "berlinetta" line for decades. Known for high-revving, flat-plane-crank wail and incredible responsiveness. (e.g., 458 Italia, F8 Tributo).
+                        </p>
+                        <p class="text-gray-700">
+                            <strong>The Hybrid:</strong> Ferrari has aggressively embraced hybrids, first in the LaFerrari (V12) and now in their core models (SF90, 296). They use electric power for "torque-fill" and blistering acceleration, seeing it as a performance-enhancer.
+                        </p>
+                    </div>
+                    <div class="border-l-4 border-amber-500 bg-gray-50 p-6 rounded-lg shadow">
+                        <h3 class="text-2xl font-bold text-amber-500 mb-3">Lamborghini</h3>
+                        <p class="text-gray-700 mb-4">
+                            <strong>The V12:</strong> Lamborghini's identity. Always mid-engined, always naturally-aspirated (until the new Revuelto). It's a statement of raw, visceral power and noise. The engine is a core part of the drama. (e.g., Aventador).
+                        </p>
+                        <p class="text-gray-700 mb-4">
+                            <strong>The V10:</strong> The iconic powertrain of their "smaller" bull. The Huracán's V10 is celebrated for its unique firing order, sharp throttle response, and a sound that is pure motorsport.
+                        </p>
+                        <p class="text-gray-700">
+                            <strong>The Hybrid:</strong> Lamborghini has been slower to adopt hybrids, using a "supercapacitor" in the Sián for a mild boost. The Revuelto is their first true V12-hybrid, designed to enhance the V12 experience, not replace its character.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="panel-aero" class="content-panel hidden bg-white p-6 rounded-lg shadow-lg">
+                <div class="max-w-3xl mx-auto text-center mb-6">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Aero & Handling: The Physics of Speed</h2>
+                    <p class="text-gray-600">
+                        How a car cuts through the air and sticks to the road is as important as its engine. Both brands have pioneered unique approaches to aerodynamics and handling.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border-l-4 border-red-700 bg-gray-50 p-6 rounded-lg shadow">
+                        <h3 class="text-2xl font-bold text-red-700 mb-3">Ferrari: F1-Derived Function</h3>
+                        <p class="text-gray-700">
+                            Ferrari's design is heavily influenced by their F1 team. They pioneered "active aerodynamics" (flaps that move) in road cars.
+                        </p>
+                        <ul class="list-disc list-inside text-gray-700 mt-4 space-y-2">
+                            <li><strong>S-Duct:</strong> Seen on the 488 Pista, this F1-derived concept channels air from the front bumper up through the hood, creating massive front-end downforce.</li>
+                            <li><strong>Aero Bridge:</strong> The F12berlinetta used channels on its front fenders to direct air, blending form and function seamlessly.</li>
+                            <li><strong>Handling Focus:</strong> Ferrari's handling is tuned for agility and "at-the-limit" fun. Their electronics are designed to help the driver slide the car, not prevent it.</li>
+                        </ul>
+                    </div>
+                    <div class="border-l-4 border-amber-500 bg-gray-50 p-6 rounded-lg shadow">
+                        <h3 class="text-2xl font-bold text-amber-500 mb-3">Lamborghini: Aggressive Geometry</h3>
+                        <p class="text-gray-700">
+                            Lamborghini's aero is often a core part of its "stealth fighter" design. The shapes themselves are designed to manage airflow in a dramatic way.
+                        </p>
+                        <ul class="list-disc list-inside text-gray-700 mt-4 space-y-2">
+                            <li><strong>ALA System:</strong> (Aerodinamica Lamborghini Attiva) A groundbreaking system on the Huracán Performante. It used active flaps to "stall" the rear wing on straights (for less drag) or send air to only one side in a corner (for "aero vectoring").</li>
+                            <li><strong>Massive Diffusers:</strong> A signature of their V12 cars, these huge rear diffusers are key to generating downforce.</li>
+                            <li><strong>Handling Focus:</strong> Lamborghini's handling is traditionally dominated by its AWD systems, providing immense grip and all-weather stability. It's about feeling planted and secure, even with 700+ hp.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="panel-tech" class="content-panel hidden bg-white p-6 rounded-lg shadow-lg">
+                <div class="max-w-3xl mx-auto text-center mb-6">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Chassis & Tech: The Electronic Brain</h2>
+                    <p class="text-gray-600">
+                        Modern supercars are defined by their advanced materials and the sophisticated electronics that manage their performance.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border-l-4 border-red-700 bg-gray-50 p-6 rounded-lg shadow">
+                        <h3 class="text-2xl font-bold text-red-700 mb-3">Ferrari: Driver Enhancement</h3>
+                        <p class="text-gray-700">
+                            Ferrari's tech focuses on making the driver feel like a hero. Their chassis are typically aluminum space-frames (V8s) or carbon tubs (hypercars).
+                        </p>
+                        <ul class="list-disc list-inside text-gray-700 mt-4 space-y-2">
+                            <li><strong>Manettino Dial:</strong> The red steering-wheel dial that controls everything (Wet, Sport, Race, CT Off). It's the central command for the car's personality.</li>
+                            <li><strong>Side Slip Control (SSC):</strong> A revolutionary system that analyzes the car's "slip angle" and actively helps the driver hold a controlled drift. It's "fun" by design.</li>
+                            <li><strong>E-Diff:</strong> The electronic differential is key to their handling, precisely managing power to each rear wheel.</li>
+                        </ul>
+                    </div>
+                    <div class="border-l-4 border-amber-500 bg-gray-50 p-6 rounded-lg shadow">
+                        <h3 class="text-2xl font-bold text-amber-500 mb-3">Lamborghini: Total Control</h3>
+                        <p class="text-gray-700">
+                            Lamborghini's tech is about managing the "bull." Their V12 models have used full carbon-fiber monocoques since the Aventador for rigidity.
+                        </p>
+                        <ul class="list-disc list-inside text-gray-700 mt-4 space-y-2">
+                            <li><strong>LDVI System:</strong> (Lamborghini Dinamica Veicolo Integrata) The "brain" of the Huracán EVO and new Revuelto. It's a predictive system that anticipates the driver's next move and prepares the car's chassis, steering, and AWD.</li>
+                            <li><strong>All-Wheel Drive:</strong> A brand signature. Their AWD systems provide massive traction and are tuned for stability, though newer models are more rear-biased.</li>
+                            <li><strong>All-Wheel Steering:</strong> Used on the Aventador and Revuelto, this turns the rear wheels slightly to make the long V12 cars feel more agile at low speeds and more stable at high speeds.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="panel-landscape" class="content-panel hidden bg-white p-6 rounded-lg shadow-lg">
+                <div class="max-w-3xl mx-auto text-center mb-6">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">The Contemporary Landscape: Context</h2>
+                    <p class="text-gray-600">
+                        Ferrari and Lamborghini no longer compete in a vacuum. The "contemporary sports car metrics" landscape includes new, highly specialized rivals that challenge them in different ways.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-gray-50 p-6 rounded-lg shadow">
+                        <h3 class="text-xl font-bold text-gray-800 mb-3">The British Rival: McLaren</h3>
+                        <p class="text-gray-700">
+                            McLaren competes directly with Ferrari's mid-engined cars (720S, Artura). Their philosophy is built on a lightweight carbon-fiber "MonoCell" tub for *every* car, and they prioritize hydraulic steering for ultimate road-feel. They are seen as the "surgical" or "analytical" choice compared to Ferrari's "passion."
+                        </p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg shadow">
+                        <h3 class="text-xl font-bold text-gray-800 mb-3">The German Rival: Porsche</h3>
+                        <p class="text-gray-700">
+                            The 911 Turbo S and 911 GT3 RS are the benchmarks. The Turbo S often *beats* both brands in 0-60 acceleration due to its "launch control" and AWD, while being a usable daily driver. The GT3 RS is a track-focused handling-first rival that challenges the "racing soul" concept of Ferrari's special editions.
+                        </p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg shadow">
+                        <h3 class="text-xl font-bold text-gray-800 mb-3">The EV Disrupter: Rimac</h3>
+                        <p class="text-gray-700">
+                            EV hypercars like the Rimac Nevera have completely rewritten the "acceleration" metric, with sub-2-second 0-60 times. This has forced Ferrari and Lamborghini to adopt hybrids, not just for efficiency, but to stay relevant in straight-line speed. It also re-emphasizes the importance of "handling" and "sound," which EVs lack.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        let performanceChart;
+
+        const performanceData = {
+            hybrid: {
+                labels: ['Horsepower (HP)', '0-60 mph (s)', 'Top Speed (mph)'],
+                ferrari: {
+                    model: 'Ferrari SF90 Stradale',
+                    engine: 'V8 Twin-Turbo + 3 Electric Motors',
+                    data: [986, 2.5, 211],
+                    handling: 'F1-derived "Assetto Fiorano" package. Torque-vectoring AWD and advanced aerodynamics provide razor-sharp, precise handling. It feels incredibly agile and technologically advanced, prioritizing lap times and driver feedback.'
+                },
+                lambo: {
+                    model: 'Lamborghini Revuelto',
+                    engine: 'V12 NA + 3 Electric Motors',
+                    data: [1001, 2.5, 217],
+                    handling: 'AWD with electric torque vectoring on the front axle. It feels planted, stable, and immensely powerful. The handling is designed to be dramatic yet secure, managing its V12 power with overwhelming grip and stability.'
+                }
+            },
+            v10v6: {
+                labels: ['Horsepower (HP)', '0-60 mph (s)', 'Top Speed (mph)'],
+                ferrari: {
+                    model: 'Ferrari 296 GTB',
+                    engine: 'V6 Twin-Turbo + Electric Motor',
+                    data: [819, 2.9, 205],
+                    handling: 'Known as the "piccolo V12," its short wheelbase and powerful hybrid system make it exceptionally agile and responsive. It feels light, immediate, and playful, often compared to a "super-hot-hatch" in its eagerness to change direction.'
+                },
+                lambo: {
+                    model: 'Lamborghini Huracán Tecnica',
+                    engine: 'V10 Naturally Aspirated',
+                    data: [631, 3.2, 202],
+                    handling: 'A RWD setup with rear-wheel steering. This car is a celebration of the NA V10. The handling is raw, visceral, and engaging. It demands driver respect but rewards with a pure, analogue-feeling experience and incredible high-speed stability.'
+                }
+            },
+            v12: {
+                labels: ['Horsepower (HP)', '0-60 mph (s)', 'Top Speed (mph)'],
+                ferrari: {
+                    model: 'Ferrari 812 Superfast',
+                    engine: 'V12 Naturally Aspirated',
+                    data: [789, 2.9, 211],
+                    handling: 'A front-engine, RWD V12 grand tourer. It uses "Virtual Short Wheelbase" (rear-wheel steering) to feel more agile. It\'s a blend of ferocious straight-line speed and surprisingly nimble, "pointy" handling for such a large car.'
+                },
+                lambo: {
+                    model: 'Lamborghini Aventador Ultimae',
+                    engine: 'V12 Naturally Aspirated',
+                    data: [769, 2.8, 221],
+                    handling: 'The final form of the Aventador. Its carbon-fiber monocoque and powerful AWD system provide immense grip and a sense of "brute force" stability. The handling is dramatic, heavy, and incredibly stable, dominated by the V12 engine.'
+                }
+            }
+        };
+
+        function showPanel(panelId) {
+            document.querySelectorAll('.content-panel').forEach(panel => {
+                panel.classList.add('hidden');
+            });
+            document.getElementById('panel-' + panelId).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.getElementById('nav-' + panelId).classList.add('active');
+        }
+
+        function filterTimeline(brand) {
+            const ferrariCards = document.querySelectorAll('.ferrari-card');
+            const lamboCards = document.querySelectorAll('.lambo-card');
+
+            if (brand === 'all') {
+                ferrariCards.forEach(card => card.classList.remove('hidden'));
+                lamboCards.forEach(card => card.classList.remove('hidden'));
+            } else if (brand === 'ferrari') {
+                ferrariCards.forEach(card => card.classList.remove('hidden'));
+                lamboCards.forEach(card => card.classList.add('hidden'));
+            } else if (brand === 'lambo') {
+                ferrariCards.forEach(card => card.classList.add('hidden'));
+                lamboCards.forEach(card => card.classList.remove('hidden'));
+            }
+        }
+
+        function updatePerformanceData(pairKey) {
+            const data = performanceData[pairKey];
+
+            performanceChart.data.labels = data.labels;
+            performanceChart.data.datasets[0].data = data.ferrari.data;
+            performanceChart.data.datasets[1].data = data.lambo.data;
+            performanceChart.update();
+
+            document.getElementById('ferrari-performance-text').innerHTML = `
+                <h3 class="text-2xl font-bold text-red-700 mb-3">${data.ferrari.model}</h3>
+                <p class="font-medium text-gray-700 mb-2"><strong>Engine:</strong> ${data.ferrari.engine}</p>
+                <p class="text-gray-600"><strong>Handling:</strong> ${data.ferrari.handling}</p>
+            `;
+            document.getElementById('lambo-performance-text').innerHTML = `
+                <h3 class="text-2xl font-bold text-amber-500 mb-3">${data.lambo.model}</h3>
+                <p class="font-medium text-gray-700 mb-2"><strong>Engine:</strong> ${data.lambo.engine}</p>
+                <p class="text-gray-600"><strong>Handling:</strong> ${data.lambo.handling}</p>
+            `;
+        }
+
+        function initPerformanceChart() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            performanceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Ferrari',
+                            data: [],
+                            backgroundColor: 'rgba(220, 38, 38, 0.8)',
+                            borderColor: 'rgba(220, 38, 38, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Lamborghini',
+                            data: [],
+                            backgroundColor: 'rgba(245, 158, 11, 0.8)',
+                            borderColor: 'rgba(245, 158, 11, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true
+                        },
+                        y: {
+                            ticks: {
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    let value = context.raw;
+                                    if (context.label === '0-60 mph (s)') {
+                                        label += value + ' s';
+                                    } else if (context.label === 'Top Speed (mph)') {
+                                        label += value + ' mph';
+                                    } else {
+                                        label += value;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initPerformanceChart();
+            updatePerformanceData('hybrid');
+        });
+    </script>
+</body>
+</html>
+
