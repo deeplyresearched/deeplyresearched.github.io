@@ -3,10 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analysis of Presidential Conflicts of Interest</title>
+    <title>Trump Conflicts of Interest: Ethics & Financial Analysis</title>
+    <meta name="description" content="Explore an interactive analysis of over 3,400 potential conflicts of interest during the Trump presidency, covering emoluments, financial ties, and institutional impact.">
+    <meta name="keywords" content="Trump conflicts of interest, presidential ethics, Trump Organization, Emoluments Clause, Jared Kushner, government ethics, Trump presidency, financial conflicts, DOJ weaponization, political transparency, foreign influence, nepotism, Trump businesses, ethics violations, federal contracts">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+
+    <!-- Open Graph / Facebook -->
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://deeplyresearched.github.io/Interactive%20Analyses/Civic-spectrum/Presidential%20Duties%20vs.%20Private%20Business.html">
+<meta property="og:title" content="Interactive Analysis: Unpacking Trump's Conflicts of Interest">
+<meta property="og:description" content="Dive deep into the unprecedented ethical and financial entanglements of the Trump presidency. Our interactive guide examines emoluments, foreign payments, and the impact on government institutions.">
+<meta property="og:image" content="https://images.indianexpress.com/2025/01/US-2.jpg">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="https://deeplyresearched.github.io/Interactive%20Analyses/Civic-spectrum/Presidential%20Duties%20vs.%20Private%20Business.html">
+<meta property="twitter:title" content="Interactive Analysis: Unpacking Trump's Conflicts of Interest">
+<meta property="twitter:description" content="Dive deep into the unprecedented ethical and financial entanglements of the Trump presidency. Our interactive guide examines emoluments, foreign payments, and the impact on government institutions.">
+<meta property="twitter:image" content="https://images.indianexpress.com/2025/01/US-2.jpg">
+
+
+
+    <!-- Canonical URL -->
+<link rel="canonical" href="https://deeplyresearched.github.io/Interactive%20Analyses/Civic-spectrum/Presidential%20Duties%20vs.%20Private%20Business.html" />
+
+<!-- JSON-LD Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Trump Conflicts of Interest: Ethics & Financial Analysis",
+  "description": "This interactive application provides a detailed analysis of potential conflicts of interest that arose during Donald Trump's presidency due to his retention of the Trump Organization. It covers key legal and ethical concepts like the Emoluments Clauses, anti-nepotism laws, examines specific case studies involving foreign governments and lobbyists, visualizes financial data, outlines the impact on government institutions like the DOJ and OGE, and reviews the unresolved legal challenges and new personal conflicts. The goal is to inform users about the complex blending of presidential duties with private business interests.",
+  "image": "https://images.indianexpress.com/2025/01/US-2.jpg",
+  "author": {
+    "@type": "Person",
+    "name": "deeplyresearched"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "deeplyresearched.github.io",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://deeplyresearched.github.io/logo.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://deeplyresearched.github.io/Interactive%20Analyses/Civic-spectrum/Presidential%20Duties%20vs.%20Private%20Business.html"
+  }
+}
+</script>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9366280694141719"
+     crossorigin="anonymous">
+     </script>
+
+    
     <!-- Chosen Palette: Neutral Gray & Deep Blue -->
     <!-- Application Structure Plan: The SPA uses a 7-tab navigation to segment a large amount of complex information. This prevents user overload. The tabs are: 1) Overview (intro/summary), 2) Key Concepts (interactive dictionary of legal/ethical terms), 3) Timeline (chronological context), 4) Case Studies (filterable examples), 5) The Org & Data (financials/chart), 6) Ethics & Institutions (impact on gov't agencies), 7) Legal Analysis (lawsuits/implications). This structure allows a user to either follow a linear path or jump directly to their area of interest (e.g., specific "Cases" or the "Timeline"). -->
     <!-- Visualization & Content Choices: 
@@ -90,6 +145,72 @@
         .timeline-item:last-child {
             border-left: 2px solid transparent;
         }
+
+   /* --- STYLES FOR THE NEW "EXPLORE MORE" SECTION --- */
+
+.explore-more-section {
+    padding: 3rem 1.5rem;
+    margin-top: 3rem; /* Adds space above the section */
+    background-color: #f8f7f4; /* A light, neutral background */
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.explore-more-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.explore-more-section p {
+    max-width: 650px;
+    margin: 0 auto 1.75rem auto;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.explore-more-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+}
+
+.explore-more-buttons a {
+    display: inline-block;
+    background-color: #34495e;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.explore-more-buttons a:hover {
+    transform: translateY(-3px);
+    background-color: #2c3e50;
+}
+
+/* Secondary button style */
+.explore-more-buttons a.secondary {
+    background-color: transparent;
+    color: #34495e;
+    border-color: #34495e;
+}
+
+.explore-more-buttons a.secondary:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+  
+        
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -451,6 +572,16 @@
                 </div>
             </section>
 
+<section class="explore-more-section">
+    <h3>Enjoyed This Analysis?</h3>
+    <p>This is just one of many deep dives available. Head back to the main hub to explore more interactive reports or browse the full library of comprehensive PDF documents.</p>
+    <div class="explore-more-buttons">
+<a href="../../index.html">Explore More Analyses</a> 
+<a href="../../research-articles.html" class="secondary">View All PDF Reports</a>
+  </div>
+</section>
+
+            
         </main>
     </div>
 
