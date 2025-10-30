@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Power of Your Subconscious Mind - Interactive Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: The SPA is structured thematically to guide users from foundational concepts to practical applications. It begins with the core duality of the mind, moves to guiding principles, then offers a practical "workbench" for applying techniques to specific life areas, explores key metaphors, and concludes with the book's legacy. This non-linear, thematic approach is more intuitive for learning and application than a simple chapter-by-chapter summary, allowing users to explore based on their interests. -->
+    <!-- Visualization & Content Choices: 1. Mind Duality Diagram (HTML/CSS): Goal is to inform. An interactive diagram shows the relationship between conscious and subconscious minds. Hover interactions provide details. Justification: Visualizes the book's most fundamental concept in a clear, engaging way. 2. Principles Explorer (JS-driven content switching): Goal is to organize. Users click buttons to reveal detailed text. Justification: Prevents information overload by breaking down dense principles into digestible, user-selected chunks. 3. Application Workbench (JS-driven filter): Goal is to provide practical tools. Users select a life area to see relevant techniques. Justification: A task-oriented design that lets users find actionable advice quickly. 4. Mind Power Chart (Chart.js Bar Chart): Goal is to compare abstract concepts. Visually represents the relative influence of different mental faculties. Justification: Simplifies a key argument of the book into an easy-to-grasp visual comparison. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #3D405B;
+        }
+        .active-nav {
+            color: #D36A3D;
+            border-bottom: 2px solid #D36A3D;
+        }
+        .nav-link {
+            cursor: pointer;
+            padding-bottom: 4px;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        .nav-link:hover {
+            color: #D36A3D;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .interactive-card {
+            background-color: #FFFFFF;
+            border: 1px solid #E0E0E0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .interactive-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+        .control-button {
+            background-color: #F4F1DE;
+            color: #3D405B;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .control-button:hover {
+            background-color: #E07A5F;
+            color: #FFFFFF;
+        }
+        .control-button.active {
+            background-color: #D36A3D;
+            color: #FFFFFF;
+            font-weight: 600;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .accordion-item-header {
+            cursor: pointer;
+        }
+        .accordion-item-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#3D405B] tracking-tight">The Power of Your Subconscious Mind</h1>
+            <p class="text-xl text-[#81839B] mt-2">An Interactive Analysis of Joseph Murphy's Classic</p>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="flex flex-wrap justify-center gap-x-4 sm:gap-x-8 gap-y-2 border-b-2 border-gray-200 mb-12 pb-2">
+            <a id="nav-concepts" class="nav-link active-nav text-sm sm:text-base">Core Concepts</a>
+            <a id="nav-deepdive" class="nav-link text-sm sm:text-base">Key Concepts Deep Dive</a>
+            <a id="nav-principles" class="nav-link text-sm sm:text-base">Guiding Principles</a>
+            <a id="nav-chapters" class="nav-link text-sm sm:text-base">Chapter Highlights</a>
+            <a id="nav-techniques" class="nav-link text-sm sm:text-base">Mastering the Techniques</a>
+            <a id="nav-workbench" class="nav-link text-sm sm:text-base">Application Workbench</a>
+            <a id="nav-metaphors" class="nav-link text-sm sm:text-base">The Power of Metaphors</a>
+            <a id="nav-quotes" class="nav-link text-sm sm:text-base">Memorable Quotes</a>
+            <a id="nav-author" class="nav-link text-sm sm:text-base">About the Author</a>
+            <a id="nav-legacy" class="nav-link text-sm sm:text-base">Legacy & Impact</a>
+        </nav>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Section 1: Core Concepts -->
+            <section id="section-concepts" class="content-section active">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold mb-2">The Dual Nature of Your Mind</h2>
+                    <p class="max-w-3xl mx-auto text-lg text-gray-600">The book's central thesis is that you have one mind with two distinct functions: the conscious and the subconscious. Understanding their relationship is the key to unlocking your potential.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="interactive-card p-6 rounded-lg">
+                        <h3 class="text-2xl font-semibold text-center text-[#E07A5F] mb-4">The Conscious Mind</h3>
+                        <p class="text-center mb-4"><strong>The Captain of the Ship</strong></p>
+                        <p>This is your reasoning, objective mind. It uses the five senses to perceive the world, makes decisions, and chooses your thoughts. Its primary job is to act as a "watchman at the gate," protecting the subconscious from false impressions.</p>
+                    </div>
+                    <div class="flex items-center justify-center text-5xl font-bold text-[#81B29A] my-6 md:my-0">
+                        &#8644;
+                    </div>
+                    <div class="interactive-card p-6 rounded-lg md:col-start-1 md:row-start-1">
+                        <h3 class="text-2xl font-semibold text-center text-[#81B29A] mb-4">The Subconscious Mind</h3>
+                        <p class="text-center mb-4"><strong>The Engine Room</strong></p>
+                        <p>This is your non-reasoning, subjective mind. It controls all bodily functions and emotions. It accepts any thought or belief your conscious mind impresses upon it as true and works tirelessly to bring it into your reality. It does not argue; it only acts.</p>
+                    </div>
+                </div>
+                 <div class="mt-12">
+                    <div class="text-center mb-10">
+                        <h2 class="text-3xl font-bold mb-2">The Dynamics of Mental Power</h2>
+                        <p class="max-w-3xl mx-auto text-lg text-gray-600">Murphy argues that different mental faculties have varying levels of influence over the subconscious. Belief and imagination, when aligned, are far more powerful than simple willpower.</p>
+                    </div>
+                    <div class="interactive-card p-6 rounded-lg">
+                        <div class="chart-container">
+                            <canvas id="mindPowerChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section: Key Concepts Deep Dive -->
+            <section id="section-deepdive" class="content-section">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold mb-2">Key Concepts: Deeper Meanings</h2>
+                    <p class="max-w-3xl mx-auto text-lg text-gray-600">Let's elaborate on the foundational ideas that form the bedrock of Murphy's philosophy. These concepts are the 'why' behind the techniques.</p>
+                </div>
+                <div class="space-y-6">
+                    <div class="interactive-card rounded-lg p-6">
+                        <h3 class="text-2xl font-semibold text-[#D36A3D] mb-3">Mind Over Matter</h3>
+                        <p>This is the core theme that mental states directly create physical reality. It's not just positive thinking; it's the belief that your internal world of thought and feeling is the primary creative force, and the external world is a direct reflection or printout of it. Health, wealth, and events are seen as effects, with thought being the primary cause.</p>
+                    </div>
+                    <div class="interactive-card rounded-lg p-6">
+                        <h3 class="text-2xl font-semibold text-[#81B29A] mb-3">Scientific Prayer</h3>
+                        <p>Murphy redefines prayer not as supplication but as a deliberate and structured mental technique. It's 'scientific' because it's based on the predictable law of mind: what you impress on the subconscious will be expressed. It involves choosing a specific idea, feeling its reality, and releasing it with faith, trusting the subconscious to handle the 'how'.</p>
+                    </div>
+                     <div class="interactive-card rounded-lg p-6">
+                        <h3 class="text-2xl font-semibold text-[#E07A5F] mb-3">The Law of Reversibility</h3>
+                        <p>This principle states that just as your thoughts create your reality, you can change your reality by changing your thoughts. If a negative belief has created an undesirable condition, you can reverse it by instilling the opposite, positive belief. The mind is a creative medium, not a fixed state, meaning no condition is permanent if you change the mental cause behind it.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Guiding Principles -->
+            <section id="section-principles" class="content-section">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold mb-2">The Guiding Principles</h2>
+                    <p class="max-w-3xl mx-auto text-lg text-gray-600">These are the fundamental laws governing how your subconscious mind operates. Click on each principle to learn more.</p>
+                </div>
+                <div class="flex flex-wrap justify-center gap-4 mb-8">
+                    <button class="control-button py-2 px-4 rounded-full active" data-principle="belief">The Law of Belief</button>
+                    <button class="control-button py-2 px-4 rounded-full" data-principle="suggestion">The Power of Suggestion</button>
+                    <button class="control-button py-2 px-4 rounded-full" data-principle="imagination">Imagination Over Willpower</button>
+                    <button class="control-button py-2 px-4 rounded-full" data-principle="attraction">You Attract What You Contemplate</button>
+                </div>
+                <div id="principle-content" class="interactive-card p-8 rounded-lg min-h-[250px] flex items-center justify-center">
+                </div>
+            </section>
+            
+            <!-- Section: Chapter Highlights -->
+            <section id="section-chapters" class="content-section">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold mb-2">Chapter-by-Chapter Highlights</h2>
+                    <p class="max-w-3xl mx-auto text-lg text-gray-600">Explore the key takeaway from each chapter of the book. Click on a title to expand its core message.</p>
+                </div>
+                <div id="accordion-container" class="space-y-2">
+                    <!-- Accordion items will be injected here by JS -->
+                </div>
+            </section>
+            
+            <!-- Section: Mastering the Techniques -->
+            <section id="section-techniques" class="content-section">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold mb-2">Mastering the Core Techniques</h2>
+                    <p class="max-w-3xl mx-auto text-lg text-gray-600">Beyond theory, the book provides practical methods for impressing your desires upon the subconscious. Here's a closer look at how to perform the most powerful techniques.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="interactive-card p-6 rounded-lg">
+                        <h3 class="text-xl font-bold text-[#D36A3D] mb-3">1. The Visualization Technique</h3>
+                        <p class="text-gray-600">This involves creating a vivid, detailed, and static mental image of your desired outcome or the happy ending. The key is to make the scene as real as possible, engaging your mental senses. Immobilize your attention on this picture, feel the reality of it, and know that your subconscious will work to bring it to pass.</p>
+                    </div>
+                     <div class="interactive-card p-6 rounded-lg">
+                        <h3 class="text-xl font-bold text-[#81B29A] mb-3">2. The Mental Movie Method</h3>
+                        <p class="text-gray-600">This is a dynamic form of visualization. Instead of a static picture, you create a short mental film where you are the main actor. The film should feature you doing, having, or being what you desire. The most important part is the happy ending, which implies your problem is solved. Replay this movie often, especially before sleep.</p>
+                    </div>
+                    <div class="interactive-card p-6 rounded-lg">
+                        <h3 class="text-xl font-bold text-[#E07A5F] mb-3">3. The Thank-You Technique</h3>
+                        <p class="text-gray-600">Gratitude is a powerful emotion that aligns you with universal forces. Before your prayer is answered, enter a state of thankfulness. Say "Thank you, Father" for the solution and the blessings you know are on their way. This state of grateful acceptance convinces the subconscious that the desire is already a reality.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: Application Workbench -->
+            <section id="section-workbench" class="content-section">
+                 <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold mb-2">The Application Workbench</h2>
+                    <p class="max-w-3xl mx-auto text-lg text-gray-600">Select a life area to discover specific techniques and affirmations you can use to program your subconscious for success.</p>
+                </div>
+                 <div class="flex flex-wrap justify-center gap-4 mb-8">
+                    <button class="control-button py-2 px-4 rounded-full active" data-area="health">Health & Healing</button>
+                    <button class="control-button py-2 px-4 rounded-full" data-area="wealth">Wealth & Success</button>
+                    <button class="control-button py-2 px-4 rounded-full" data-area="relationships">Harmonious Relationships</button>
+                </div>
+                <div id="workbench-content">
+                </div>
+            </section>
+            
+            <!-- Section: The Power of Metaphors -->
+            <section id="section-metaphors" class="content-section">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold mb-2">The Power of Metaphors</h2>
+                    <p class="max-w-3xl mx-auto text-lg text-gray-600">Murphy uses simple, powerful analogies to make the abstract workings of the mind easy to understand and remember.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <div class="interactive-card p-6 rounded-lg">
+                        <p class="text-5xl mb-4">&#127793;</p>
+                        <h3 class="text-2xl font-semibold mb-3">The Gardener</h3>
+                        <p>Your conscious mind is the gardener, and your subconscious is the fertile soil. You can plant seeds of success or seeds of failure. The soil doesn't care; it will grow whatever is planted. This illustrates your active role and responsibility in choosing your thoughts.</p>
+                    </div>
+                    <div class="interactive-card p-6 rounded-lg">
+                        <p class="text-5xl mb-4">&#9973;</p>
+                        <h3 class="text-2xl font-semibold mb-3">The Captain & Ship</h3>
+                        <p>Your conscious mind is the captain on the bridge, giving orders. The subconscious is the vast crew in the engine room that steers the ship. The crew will take you wherever the captain directs, even onto rocks if the orders are poor. This highlights the importance of conscious direction.</p>
+                    </div>
+                    <div class="interactive-card p-6 rounded-lg">
+                        <p class="text-5xl mb-4">&#128176;</p>
+                        <h3 class="text-2xl font-semibold mb-3">The Bank</h3>
+                        <p>Your thoughts and feelings are deposits into the "bank of the infinite" (your subconscious). Positive, prosperous thoughts yield dividends of happiness and success. Negative thoughts of lack and fear incur the debt of failure and misery. You reap what you mentally sow.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section: Memorable Quotes -->
+            <section id="section-quotes" class="content-section">
+                 <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold mb-2">Memorable Quotes & Reflections</h2>
+                    <p class="max-w-3xl mx-auto text-lg text-gray-600">The book is filled with powerful, declarative statements designed to be used as affirmations and reminders of your inner power.</p>
+                </div>
+                <div class="space-y-4">
+                    <blockquote class="interactive-card p-6 rounded-lg border-l-4 border-[#D36A3D]">
+                        <p class="text-xl italic text-gray-800">"Whatever your conscious mind assumes and believes to be true, your subconscious mind will accept and bring to pass. Believe in good fortune, divine guidance, right action, and all the blessings of life."</p>
+                    </blockquote>
+                    <blockquote class="interactive-card p-6 rounded-lg border-l-4 border-[#81B29A]">
+                        <p class="text-xl italic text-gray-800">"The feeling of wealth produces wealth; the feeling of health produces health."</p>
+                    </blockquote>
+                    <blockquote class="interactive-card p-6 rounded-lg border-l-4 border-[#E07A5F]">
+                        <p class="text-xl italic text-gray-800">"Never finish a negative statement; reverse it immediately, and wonders will happen in your life."</p>
+                    </blockquote>
+                </div>
+            </section>
+            
+            <!-- Section: About the Author -->
+            <section id="section-author" class="content-section">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold mb-2">About Dr. Joseph Murphy</h2>
+                    <p class="max-w-3xl mx-auto text-lg text-gray-600">The mind behind the message.</p>
+                </div>
+                <div class="interactive-card rounded-lg p-8">
+                   <div class="grid md:grid-cols-3 gap-8 items-center">
+                       <div class="md:col-span-2">
+                            <h3 class="text-2xl font-semibold text-[#3D405B] mb-4">Dr. Joseph Murphy (1898–1981)</h3>
+                            <p class="text-gray-700 mb-4">An Irish-born, naturalized American citizen, Dr. Murphy was a Divine Science minister and a prominent figure in the New Thought movement. He studied Eastern religions extensively and held Ph.D. degrees in psychology and religion. For decades, he was the minister of the Los Angeles branch of the Church of Divine Science, where his weekly lectures were attended by thousands. He wrote over 30 books, with his central message always focusing on the practical, tangible, and life-altering power of the subconscious mind.</p>
+                       </div>
+                       <div>
+                           <h4 class="text-xl font-semibold mb-3">Other Notable Works:</h4>
+                           <ul class="list-disc list-inside text-gray-600 space-y-1">
+                               <li>Miracle of Mind Dynamics</li>
+                               <li>Think Yourself Rich</li>
+                               <li>Believe in Yourself</li>
+                               <li>The Cosmic Power Within You</li>
+                               <li>Your Infinite Power to Be Rich</li>
+                           </ul>
+                       </div>
+                   </div>
+                </div>
+            </section>
+
+            <!-- Section 4: Legacy & Impact -->
+            <section id="section-legacy" class="content-section">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold mb-2">Legacy and Impact</h2>
+                    <p class="max-w-3xl mx-auto text-lg text-gray-600">Published in 1963, Murphy's work synthesized decades of New Thought philosophy and became a cornerstone of the modern self-help movement.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="interactive-card p-6 rounded-lg">
+                        <h3 class="text-2xl font-semibold text-[#81B29A] mb-3">Historical Context</h3>
+                        <p>The book emerged in a post-war America that was increasingly open to ideas of self-improvement and alternative spirituality. It provided a practical, step-by-step manual for personal transformation that resonated with millions seeking control over their lives.</p>
+                    </div>
+                    <div class="interactive-card p-6 rounded-lg">
+                        <h3 class="text-2xl font-semibold text-[#E07A5F] mb-3">Lasting Influence</h3>
+                        <p>It laid the groundwork for much of the "Law of Attraction" movement. Works like *The Secret* and speakers like Tony Robbins owe a significant intellectual debt to the principles Murphy popularized. It remains a bestseller, demonstrating its timeless appeal.</p>
+                    </div>
+                </div>
+                <div class="mt-12 interactive-card p-8 rounded-lg">
+                    <h3 class="text-2xl font-semibold text-center mb-6">Thought-Provoking Questions</h3>
+                    <ul class="space-y-4 text-gray-700">
+                        <li><span class="font-semibold text-[#D36A3D] mr-2">&#10142;</span> Murphy's philosophy places 100% responsibility on an individual's thought patterns. In what ways is this empowering, and where might it be simplistic?</li>
+                        <li><span class="font-semibold text-[#D36A3D] mr-2">&#10142;</span> The book relies on anecdotes as evidence. How does this affect its credibility for you compared to a book based on clinical studies?</li>
+                        <li><span class="font-semibold text-[#D36A3D] mr-2">&#10142;</span> How does the concept of "scientific prayer" to an impersonal "Infinite Intelligence" differ from traditional concepts of God in major religions?</li>
+                        <li><span class="font-semibold text-[#D36A3D] mr-2">&#10142;</span> If the external world is a mirror of our internal world, what might your current reality suggest about your own deep-seated, subconscious beliefs?</li>
+                    </ul>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- DATA ---
+            const principlesData = {
+                belief: { title: "The Law of Belief", content: "Your subconscious mind will faithfully reproduce whatever your conscious mind impresses upon it and accepts as true. It does not matter if the thing believed is true or false; the subconscious accepts your belief as its command. This is why it's crucial to believe in positive outcomes, good fortune, and right action." },
+                suggestion: { title: "The Power of Suggestion", content: "The subconscious is highly amenable to suggestion. You can use autosuggestion (affirming truths to yourself) to overwrite negative programming and instill positive beliefs. Suggestions gain power through repetition, faith, and expectancy. This is the primary tool for deliberately programming your mind." },
+                imagination: { title: "Imagination Over Willpower", content: "Forcing an outcome with willpower often fails because it implies conflict. The key is to use disciplined imagination to feel the reality of the desired end result. A vivid mental picture, charged with the feeling of accomplishment, persuades the subconscious far more effectively than brute force or mental struggle." },
+                attraction: { title: "You Attract What You Contemplate", content: "Your habitual thinking and imagining create deep grooves in your subconscious mind, which then attracts circumstances and conditions that match those thoughts. Consistently thinking about lack creates lack. Focusing on abundance, peace, and success will attract them into your life." }
+            };
+
+            const workbenchData = {
+                health: { title: "Techniques for Health & Healing", techniques: [ { name: "The Pass-Over Technique", desc: "Just before sleep, calmly affirm and feel that perfect health is yours. Pass the idea of wholeness to your subconscious as you drift off." }, { name: "The Mental Movie Method", desc: "Create a vivid mental scene of yourself doing what you would do if you were healed. Replay this mental movie with joy and feeling until it feels real." }, { name: "The Gratitude Technique", desc: "Cultivate a deep feeling of gratitude for the healing that you know is taking place. 'Thank you, Father, for my perfect health.' This feeling of certainty impresses the subconscious." } ] },
+                wealth: { title: "Techniques for Wealth & Success", techniques: [ { name: "The Abundance Affirmation", desc: "Repeat calmly and with feeling: 'I am one with the infinite riches of my subconscious mind. It is my right to be rich, happy, and successful.' Repeat this until you feel the truth of it." }, { name: "Feeling of Wealth", desc: "Instead of just saying 'I am wealthy,' cultivate the *feeling* of being wealthy now. Imagine your lifestyle, the good you would do. The feeling is the key that unlocks subconscious riches." }, { name: "Condemn Not Riches", desc: "Never criticize wealth or successful people. To do so is to make wealth take flight from you. See wealth as a symbol of God's abundance, flowing freely to all." } ] },
+                relationships: { title: "Techniques for Harmonious Relationships", techniques: [ { name: "Projecting Love", desc: "To find an ideal partner, mentally build up the qualities you admire. Then, affirm: 'I attract a person who is honest, sincere, loyal, and faithful. We have a wonderful life together.' Feel the reality of this love." }, { name: "The Golden Rule", desc: "To solve a conflict, ask yourself: 'What would I want from this person?' Then, think, feel, and act towards them in that way. What you send out to another, you create in your own experience." }, { name: "Forgiveness", desc: "To heal a broken relationship, you must forgive yourself and the other person completely. Refusing to forgive is a mental poison that blocks all good from coming to you. Forgive for your own sake to be free." } ] }
+            };
+
+            const chaptersData = [
+                { title: "1. The Treasure House Within You", content: "Definition: You possess an internal, infinite power (your subconscious) capable of bringing you anything you desire. Key Point: The greatest secret is realizing this power exists within you, not in external conditions." },
+                { title: "2. How Your Own Mind Works", content: "Definition: The mind has two functions: the conscious 'gardener' that plants thoughts, and the subconscious 'garden' that grows them. Key Point: The subconscious is impersonal and will grow seeds of success or failure with equal fidelity based on your habitual thinking." },
+                { title: "3. The Miracle-Working Power of Your Subconscious", content: "Definition: The subconscious has the power to heal the body, solve problems, and attract resources. Key Point: You can tap into this power by giving it a clear directive (a belief or feeling) and getting out of the way, especially during a sleepy, drowsy state." },
+                { title: "4. Mental Healings in Ancient Times", content: "Definition: Miraculous healings throughout history were not caused by the relic or person, but by the subject's own faith and belief activating their subconscious healing power. Key Point: The power is not external; it is your own mind's response to your belief." },
+                { title: "5. Mental Healings in Modern Times", content: "Definition: Modern healing through prayer or affirmation follows the same law. It is a process of convincing the subjective mind of perfect health. Key Point: All healing is ultimately self-healing, directed by the power of belief." },
+                { title: "6. Practical Techniques in Mental Healings", content: "Definition: A set of methods for impressing the subconscious, such as the 'pass-over' technique (affirming before sleep) and the 'thank-you' technique. Key Point: The most effective technique is the one that helps you genuinely feel the reality of your desired outcome." },
+                { title: "7. The Tendency of the Subconscious Is Lifeward", content: "Definition: The natural impulse of the subconscious mind is toward health, harmony, and life. Key Point: Negative patterns are unnatural acquisitions. Aligning with the subconscious lifeward drive through positive thought promotes healing." },
+                { title: "8. How to Get the Results You Want", content: "Definition: Getting results depends on avoiding conflict between your conscious desire and your subconscious belief. Key Point: Coercion or willpower fails. Success comes from imagination and feeling, which persuades the subconscious without force." },
+                { title: "9. How to Use the Power of Your Subconscious for Wealth", content: "Definition: Wealth is a state of consciousness. Consistently dwelling on ideas of abundance and success programs the subconscious to attract them. Key Point: Never criticize wealth. Feel the reality of being wealthy now to make it manifest." },
+                { title: "10. Your Right to Be Rich", content: "Definition: It is a cosmic right to live an abundant life. Poverty is a mental disease caused by a belief in lack. Key Point: Claim your right to be rich by affirming it and believing it, and your subconscious will honor that claim." },
+                { title: "11. Your Subconscious Mind as a Partner in Success", content: "Definition: Success means living a full, happy, and peaceful life. It is not just about accumulating wealth. Key Point: The three steps to success are: 1) Find out what you love to do, 2) Specialize in it, and 3) Ensure it benefits humanity." },
+                { title: "12. Scientists Use the Subconscious Mind", content: "Definition: Great scientists and inventors often receive insights and solutions in dreams or flashes of intuition. Key Point: You can deliberately present a problem to your subconscious before sleep, and it will often provide a solution from its vast storehouse of knowledge." },
+                { title: "13. Your Subconscious and the Wonders of Sleep", content: "Definition: Sleep is not just rest; it is a period of spiritual nourishment and problem-solving by the subconscious. Key Point: Never go to sleep with negative thoughts. Impress a desire for guidance or a solution upon your subconscious before sleeping." },
+                { title: "14. Your Subconscious Mind and Marital Problems", content: "Definition: Marital friction stems from projecting negative thoughts and resentments. Harmony is achieved by radiating love, peace, and goodwill. Key Point: To have a good partner, you must be a good partner mentally first. Assume the best in others to bring it out." },
+                { title: "15. Your Subconscious Mind and Your Happiness", content: "Definition: Happiness is a mental and spiritual choice, not a condition dependent on external events. Key Point: You can choose happiness by consistently thinking happy, positive thoughts, regardless of your circumstances." },
+                { title: "16. Your Subconscious Mind and Harmonious Human Relations", content: "Definition: The Golden Rule is a psychological law: as you would that men should think about you, think you about them in the same way. Key Point: Your perception of others is a reflection of your own state of mind. To change others, change your concept of them." },
+                { title: "17. How to Use Your Subconscious for Forgiveness", content: "Definition: Forgiveness is a mental act for your own benefit. It means giving up resentment and wishing the other person well. Key Point: Refusing to forgive is like drinking poison and expecting the other person to die. It blocks your own good." },
+                { title: "18. How Your Subconscious Removes Mental Blocks", content: "Definition: Mental blocks are negative patterns in the subconscious, often stemming from past experiences or suggestions. Key Point: You can dissolve these blocks through autosuggestion, affirming the opposite positive truth until the subconscious accepts it as the new pattern." },
+                { title: "19. How to Use Your Subconscious to Remove Fear", content: "Definition: Fear is a negative thought in your mind. It is faith in the wrong things. Key Point: Counteract fear by having faith in the good. Dwell on the opposite of your fear. 'Do the thing you are afraid to do, and the death of fear is certain.'" },
+                { title: "20. How to Stay Young in Spirit Forever", content: "Definition: Aging is not just the passage of time but the result of negative, fearful thinking. Key Point: You can stay young in spirit by mentally identifying with timeless qualities like love, joy, truth, and wisdom, and by feeling that you are always growing and contributing." },
+            ];
+            
+            // --- NAVIGATION ---
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.content-section');
+
+            function updateNav(targetId) {
+                navLinks.forEach(link => link.classList.remove('active-nav'));
+                document.getElementById(`nav-${targetId}`).classList.add('active-nav');
+                sections.forEach(section => section.classList.remove('active'));
+                document.getElementById(`section-${targetId}`).classList.add('active');
+                 window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    const targetId = e.target.id.split('-')[1];
+                    updateNav(targetId);
+                });
+            });
+
+            // --- PRINCIPLES SECTION ---
+            const principleButtons = document.querySelectorAll('#section-principles .control-button');
+            const principleContentEl = document.getElementById('principle-content');
+
+            function updatePrincipleContent(principleKey) {
+                const data = principlesData[principleKey];
+                principleContentEl.innerHTML = `<div class="text-center transition-opacity duration-500"><h3 class="text-2xl font-bold text-[#D36A3D] mb-4">${data.title}</h3><p class="text-lg text-gray-700">${data.content}</p></div>`;
+                principleButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                    if(btn.dataset.principle === principleKey) btn.classList.add('active');
+                });
+            }
+            principleButtons.forEach(button => button.addEventListener('click', (e) => updatePrincipleContent(e.target.dataset.principle)));
+
+            // --- WORKBENCH SECTION ---
+            const workbenchButtons = document.querySelectorAll('#section-workbench .control-button');
+            const workbenchContentEl = document.getElementById('workbench-content');
+
+            function updateWorkbenchContent(areaKey) {
+                const data = workbenchData[areaKey];
+                let contentHTML = `<h3 class="text-2xl font-semibold text-center mb-6">${data.title}</h3><div class="grid md:grid-cols-3 gap-6">`;
+                data.techniques.forEach(tech => {
+                    contentHTML += `<div class="interactive-card p-6 rounded-lg"><h4 class="font-bold text-lg text-[#81B29A] mb-2">${tech.name}</h4><p class="text-gray-600">${tech.desc}</p></div>`;
+                });
+                contentHTML += `</div>`;
+                workbenchContentEl.innerHTML = contentHTML;
+                workbenchButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                    if(btn.dataset.area === areaKey) btn.classList.add('active');
+                });
+            }
+            workbenchButtons.forEach(button => button.addEventListener('click', (e) => updateWorkbenchContent(e.target.dataset.area)));
+            
+            // --- CHAPTERS ACCORDION ---
+            const accordionContainer = document.getElementById('accordion-container');
+            chaptersData.forEach((chapter, index) => {
+                const item = document.createElement('div');
+                item.className = 'border border-gray-200 rounded-lg';
+                item.innerHTML = `
+                    <div class="accordion-item-header bg-white hover:bg-gray-50 p-4 flex justify-between items-center">
+                        <h4 class="font-semibold text-gray-800">${chapter.title}</h4>
+                        <span class="transform transition-transform duration-300">&#9662;</span>
+                    </div>
+                    <div class="accordion-item-content bg-gray-50">
+                        <p class="p-4 text-gray-700">${chapter.content}</p>
+                    </div>
+                `;
+                accordionContainer.appendChild(item);
+            });
+            
+            accordionContainer.addEventListener('click', function(e){
+                const header = e.target.closest('.accordion-item-header');
+                if(header){
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('span');
+                    
+                    if(content.style.maxHeight){
+                        content.style.maxHeight = null;
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        document.querySelectorAll('.accordion-item-content').forEach(el => el.style.maxHeight = null);
+                        document.querySelectorAll('.accordion-item-header span').forEach(el => el.style.transform = 'rotate(0deg)');
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                }
+            });
+
+            // --- CHART.JS ---
+            const ctx = document.getElementById('mindPowerChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Disciplined Imagination', 'Strong Belief', 'Repetitive Suggestion', 'Fear / Worry', 'Simple Willpower'],
+                    datasets: [{
+                        label: 'Relative Influence on Subconscious',
+                        data: [95, 90, 75, 70, 40],
+                        backgroundColor: ['rgba(129, 178, 154, 0.7)', 'rgba(224, 122, 95, 0.7)', 'rgba(244, 241, 222, 0.9)', 'rgba(211, 106, 61, 0.6)', 'rgba(61, 64, 91, 0.7)'],
+                        borderColor: ['rgba(129, 178, 154, 1)', 'rgba(224, 122, 95, 1)', 'rgba(210, 205, 175, 1)', 'rgba(211, 106, 61, 1)', 'rgba(61, 64, 91, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                    scales: { x: { beginAtZero: true, max: 100, title: { display: true, text: 'Conceptual Influence Score' } } },
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => `${c.dataset.label || ''}: ${c.parsed.x}` } } }
+                }
+            });
+
+            // --- INITIAL LOAD ---
+            updatePrincipleContent('belief');
+            updateWorkbenchContent('health');
+        });
+    </script>
+</body>
+</html>
+
