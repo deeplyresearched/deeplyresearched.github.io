@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constitutional Evolution of Abortion Rights</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: "Calm Neutral & Legal Blue" -->
+    <!-- Application Structure Plan: The SPA is expanded to a 12-section horizontal tab-based navigation. This retains the original logical flow (Overview, Roe, Casey, Dobbs) while adding 7 new thematic sections. These new sections ("The Dobbs Arguments," "Key Cases Post-Roe," "Funding & Consent Cases," "Legal Standards Explained," "The 'Liberty' Debate," "Impact & Dissent," "Key Concepts (Glossary)") directly address the user's request for more depth and are derived from the report data. This structure allows a user to do a quick chronological review or dive deep into specific themes (like funding, legal theory, or post-Roe case law). The "Legal Standards Explained" section is a new, dedicated, detailed-text section to satisfy the user's specific request for elaboration on key concepts, while the original "Key Concepts" is retitled as a "Glossary" for quick reference. -->
+    <!-- Visualization & Content Choices:
+    1. Report Info: Chronological history (1973, 1992, 2022). Goal: Orient user. Viz/Presentation: Interactive horizontal timeline (HTML/Tailwind). Interaction: Clickable nodes for each case (Roe, Casey, Dobbs) activate the corresponding content tab. Justification: Provides immediate visual context and navigation. Method: HTML/Tailwind/JS. (Existing)
+    2. Report Info: Shift in legal standards & state power (Roe vs. Casey vs. Dobbs). Goal: Compare/Change. Viz/Presentation: A dynamic Bar Chart (Chart.js) titled "Evolution of State Regulatory Power". Interaction: Chart displays three bars showing the relative level of state power under each ruling. Justification: Visually quantifies the abstract concept of 'state power' evolving. Method: Chart.js (Canvas). (Existing)
+    3. Report Info: Roe's Trimester Framework. Goal: Organize/Explain. Viz/Presentation: 3-column card layout (HTML/Tailwind) titled "The Trimester Framework". Interaction: Static display. Justification: Clearly segments the three distinct legal trimesters established by Roe. Method: HTML/Tailwind. (Existing)
+    4. Report Info: Core arguments of Dobbs (Majority vs. Dissent). Goal: Compare. Viz/Presentation: Side-by-side comparison (HTML/Tailwind) in "The Dobbs Arguments" tab. Interaction: Static text. Justification: Directly contrasts the opposing legal arguments, which is central to the user's query. Method: HTML/Tailwind. (New Section)
+    5. Report Info: Intermediate cases (Danforth, Akron, Webster, etc.). Goal: Inform/Change. Viz/Presentation: Chronological list in "Key Cases Post-Roe" tab. Interaction: Static text. Justification: Shows the gradual legal "chipping away" at Roe before Casey. Method: HTML/Tailwind. (New Section)
+    6. Report Info: Funding/Consent cases (Maher, Harris, Matheson). Goal: Organize/Inform. Viz/Presentation: Thematic list in "Funding & Consent Cases" tab. Interaction: Static text. Justification: Groups a specific, recurring type of legal challenge. Method: HTML/Tailwind. (New Section)
+    7. Report Info: Detailed definitions of legal standards. Goal: Inform/Explain. Viz/Presentation: Detailed text paragraphs in "Legal Standards Explained" tab. Interaction: Static text. Justification: Fulfills user's specific request for a detailed section on concepts. Method: HTML/Tailwind. (New Section)
+    8. Report Info: Interpretation of "Liberty". Goal: Compare/Explain. Viz/Presentation: Text with blockquotes in "The 'Liberty' Debate" tab. Interaction: Static text. Justification: Explores the core philosophical/legal disagreement between Roe and Dobbs. Method: HTML/Tailwind. (New Section)
+    9. Report Info: Dobbs dissent and future implications. Goal: Inform. Viz/Presentation: Text with bullet points in "Impact & Dissent" tab. Interaction: Static text. Justification: Explains the dissent's reasoning and the broader impact of the Dobbs ruling. Method: HTML/Tailwind. (New Section)
+    10. Report Info: Key legal terms. Goal: Inform/Organize. Viz/Presentation: Accordion-style list in "Key Concepts (Glossary)" tab. Interaction: Click to expand/collapse. Justification: Provides a quick reference glossary, distinct from the new detailed section. Method: HTML/Tailwind/JS. (Existing, modified)
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 64rem;
+            margin-left: auto;
+            margin-right: auto;
+            height: 20rem;
+            max-height: 24rem;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 24rem;
+            }
+        }
+        [data-tab-content] {
+            display: none;
+        }
+        [data-tab-content].active {
+            display: block;
+        }
+        .tab.active {
+            border-color: #2563eb;
+            color: #1d4ed8;
+            font-weight: 600;
+        }
+        .accordion-content {
+            transition: max-height 0.3s ease-out;
+        }
+        .timeline-node {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .timeline-node:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-900">
+
+    <main class="container mx-auto p-4 md:p-8 max-w-7xl">
+        <header class="mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-stone-800 mb-2">Constitutional Evolution of Abortion Rights</h1>
+            <p class="text-lg text-stone-600">From Roe v. Wade to Dobbs v. Jackson</p>
+        </header>
+
+        <nav class="flex flex-wrap border-b-2 border-stone-200 mb-6" aria-label="Main Navigation">
+            <button class="tab active text-sm md:text-base font-medium py-3 px-3 md:px-5 border-b-2 border-transparent hover:text-blue-700 transition-colors" data-tab="overview">Overview</button>
+            <button class="tab text-sm md:text-base font-medium py-3 px-3 md:px-5 border-b-2 border-transparent hover:text-blue-700 transition-colors" data-tab="roe">Roe (1973)</button>
+            <button class="tab text-sm md:text-base font-medium py-3 px-3 md:px-5 border-b-2 border-transparent hover:text-blue-700 transition-colors" data-tab="casey">Casey (1992)</button>
+            <button class="tab text-sm md:text-base font-medium py-3 px-3 md:px-5 border-b-2 border-transparent hover:text-blue-700 transition-colors" data-tab="dobbs">Dobbs (2022)</button>
+            <button class="tab text-sm md:text-base font-medium py-3 px-3 md:px-5 border-b-2 border-transparent hover:text-blue-700 transition-colors" data-tab="dobbs-args">Dobbs Arguments</button>
+            <button class="tab text-sm md:text-base font-medium py-3 px-3 md:px-5 border-b-2 border-transparent hover:text-blue-700 transition-colors" data-tab="post-roe-cases">Key Cases Post-Roe</button>
+            <button class="tab text-sm md:text-base font-medium py-3 px-3 md:px-5 border-b-2 border-transparent hover:text-blue-700 transition-colors" data-tab="funding-cases">Funding & Consent</button>
+            <button class="tab text-sm md:text-base font-medium py-3 px-3 md:px-5 border-b-2 border-transparent hover:text-blue-700 transition-colors" data-tab="standards-explained">Legal Standards Explained</button>
+            <button class="tab text-sm md:text-base font-medium py-3 px-3 md:px-5 border-b-2 border-transparent hover:text-blue-700 transition-colors" data-tab="liberty-debate">The 'Liberty' Debate</button>
+            <button class="tab text-sm md:text-base font-medium py-3 px-3 md:px-5 border-b-2 border-transparent hover:text-blue-700 transition-colors" data-tab="impact-dissent">Impact & Dissent</button>
+            <button class="tab text-sm md:text-base font-medium py-3 px-3 md:px-5 border-b-2 border-transparent hover:text-blue-700 transition-colors" data-tab="concepts-glossary">Key Concepts (Glossary)</button>
+        </nav>
+
+        <section id="content-container" class="bg-white rounded-lg shadow-lg p-6 md:p-8 min-h-[50vh]">
+
+            <div id="overview" data-tab-content class="active space-y-8">
+                <p class="text-lg text-stone-700">
+                    This section provides a high-level overview of the 49-year trajectory of the constitutional right to abortion in the United States. It began with its establishment as a fundamental right in <i>Roe v. Wade</i>, evolved and was partially eroded by the "undue burden" standard in <i>Planned Parenthood v. Casey</i>, and was ultimately overturned in <i>Dobbs v. Jackson</i>, which returned regulatory power to individual states.
+                </p>
+
+                <div>
+                    <h2 class="text-2xl font-bold text-blue-800 mb-6 text-center">Landmark Case Timeline</h2>
+                    <div class="flex items-center w-full">
+                        
+                        <div class="flex flex-col items-center">
+                            <div class="timeline-node w-24 h-24 md:w-32 md:h-32 rounded-full bg-blue-600 text-white flex flex-col justify-center items-center text-center p-2 shadow-lg cursor-pointer" data-tab="roe">
+                                <span class="font-bold text-sm md:text-base">Roe v. Wade</span>
+                                <span class="text-xs md:text-sm">1973</span>
+                            </div>
+                        </div>
+
+                        <div class="flex-1 h-1 bg-stone-300"></div>
+
+                        <div class="flex flex-col items-center">
+                            <div class="timeline-node w-24 h-24 md:w-32 md:h-32 rounded-full bg-blue-700 text-white flex flex-col justify-center items-center text-center p-2 shadow-lg cursor-pointer" data-tab="casey">
+                                <span class="font-bold text-sm md:text-base">P.P. v. Casey</span>
+                                <span class="text-xs md:text-sm">1992</span>
+                            </div>
+                        </div>
+
+                        <div class="flex-1 h-1 bg-stone-300"></div>
+
+                        <div class="flex flex-col items-center">
+                            <div class="timeline-node w-24 h-24 md:w-32 md:h-32 rounded-full bg-blue-800 text-white flex flex-col justify-center items-center text-center p-2 shadow-lg cursor-pointer" data-tab="dobbs">
+                                <span class="font-bold text-sm md:text-base">Dobbs v. Jackson</span>
+                                <span class="text-xs md:text-sm">2022</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-bold text-blue-800 mb-4 text-center">Evolution of State Regulatory Power</h2>
+                    <p class="text-stone-700 mb-6 text-center max-w-3xl mx-auto">This chart illustrates the qualitative shift in the balance of power, showing how state authority to regulate abortion (and the corresponding erosion of the federal right) increased with each landmark decision.</p>
+                    <div class="chart-container">
+                        <canvas id="standardsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="roe" data-tab-content class="space-y-6">
+                <p class="text-lg text-stone-700">
+                    In 1973, <i>Roe v. Wade</i> established a nationwide, fundamental right to abortion. The Supreme Court ruled that a woman's right to make this decision was protected by the 14th Amendment's Due Process Clause, which guarantees a "right to privacy." This decision invalidated many state laws that had criminalized abortion.
+                </p>
+                <section>
+                    <h2 class="text-2xl font-bold text-blue-800 mb-4">The Trimester Framework</h2>
+                    <p class="text-stone-700 mb-6">To balance the individual's privacy right with the state's interest in maternal health and potential life, the Court created a three-part framework based on pregnancy trimesters.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-stone-50 rounded-lg shadow-md p-6">
+                            <h3 class="font-bold text-lg text-stone-800 mb-2">First Trimester</h3>
+                            <p class="text-stone-700">The abortion decision is left to the pregnant woman and her physician. The state has no power to interfere.</p>
+                        </div>
+                        <div class="bg-stone-50 rounded-lg shadow-md p-6">
+                            <h3 class="font-bold text-lg text-stone-800 mb-2">Second Trimester</h3>
+                            <p class="text-stone-700">The state may regulate the abortion procedure in ways reasonably related to protecting maternal health (e.g., licensing clinics).</p>
+                        </div>
+                        <div class="bg-stone-50 rounded-lg shadow-md p-6">
+                            <h3 class="font-bold text-lg text-stone-800 mb-2">Third Trimester</h3>
+                            <p class="text-stone-700">Once the fetus is "viable" (can survive outside the womb), the state can regulate or even ban abortion, except when necessary to save the life or health of the mother.</p>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <h2 class="text-2xl font-bold text-blue-800 mb-4">Core Legal Principle</h2>
+                    <p class="text-stone-700">The right was deemed "fundamental," which meant that any state law restricting it was subject to **"Strict Scrutiny,"** the highest level of judicial review. This required the state to prove it had a "compelling interest" and that the law was "narrowly tailored" to achieve that interest. This was a very high bar for states to meet.</p>
+section>
+            </div>
+
+            <div id="casey" data-tab-content class="space-y-6">
+                <p class="text-lg text-stone-700">
+                    In 1992, <i>Planned Parenthood v. Casey</i> was a pivotal moment of both evolution and erosion. The Court, in a plurality opinion, faced a direct challenge to <i>Roe</i> but chose a middle path. It explicitly reaffirmed <i>Roe's</i> "central holding"—the constitutional right to an abortion before viability—but simultaneously dismantled the legal framework that protected it.
+                </p>
+                <section>
+                    <h2 class="text-2xl font-bold text-blue-800 mb-4">The "Undue Burden" Standard</h2>
+                    <p class="text-stone-700 mb-6"><i>Casey</i> discarded <i>Roe's</i> trimester framework and "strict scrutiny" test. It replaced them with the new **"undue burden"** standard. This new test asks a different question:</p>
+                    <blockquote class="border-l-4 border-blue-700 pl-4 py-2 my-4 bg-blue-50 text-stone-800 italic">
+                        "An undue burden exists and therefore a provision of law is invalid, if its purpose or effect is to place a substantial obstacle in the path of a woman seeking an abortion before the fetus attains viability."
+                    </blockquote>
+                    <p class="text-stone-700">This was a significant "erosion" because it lowered the bar for state regulations. As long as a restriction did not create a "substantial obstacle," it was permitted. This opened the door for numerous state-level restrictions that had been unconstitutional under <i>Roe</i>, such as mandatory 24-hour waiting periods and informed consent scripts.</p>
+                </section>
+                <section>
+                    <h2 class="text-2xl font-bold text-blue-800 mb-4">Application in <i>Casey</i></h2>
+                    <p class="text-stone-700">Applying this new standard, the Court upheld most of the Pennsylvania laws it was reviewing (like waiting periods and parental consent) but struck down one:</p>
+                    <ul class="list-disc list-outside ml-6 space-y-2 text-stone-700">
+                        <li><span class="font-semibold text-green-700">Upheld (Not an Undue Burden):</span> 24-hour waiting period, informed consent requirements, parental consent (with a judicial bypass option).</li>
+                        <li><span class="font-semibold text-red-700">Struck Down (Was an Undue Burden):</span> A spousal notification requirement, which the Court found could endanger women in abusive relationships.</li>
+                    </ul>
+                </section>
+            </div>
+
+            <div id="dobbs" data-tab-content class="space-y-6">
+                <p class="text-lg text-stone-700">
+                    In 2022, <i>Dobbs v. Jackson Women's Health Organization</i> directly addressed a Mississippi law banning most abortions after 15 weeks. The Supreme Court's 6-3 decision not only upheld the law but took the definitive step of overturning both <i>Roe v. Wade</i> and <i>Planned Parenthood v. Casey</i>.
+                </p>
+                <section>
+                    <h2 class="text-2xl font-bold text-blue-800 mb-4">The Ruling: Overturning Precedent</h2>
+                    <p class="text-stone-700">The Court's majority opinion, authored by Justice Alito, declared that the Constitution does not confer a right to abortion. The decision explicitly stated that <i>Roe</i> and <i>Casey</i> "must be overruled" because they were "egregiously wrong" and their reasoning was "exceptionally weak."</p>
+                    <p class="text-stone-700 mt-4">The immediate effect of this ruling was the dissolution of nearly 50 years of federal constitutional protection for abortion. The authority to regulate or ban abortion was "returned to the people and their elected representatives," meaning the issue is now decided on a state-by-state basis. The legal standard for reviewing abortion laws was lowered from <i>Casey's</i> "undue burden" to the far weaker "rational-basis review."</p>
+                </section>
+            </div>
+
+            <div id="dobbs-args" data-tab-content class="space-y-6">
+                <p class="text-lg text-stone-700">
+                    The <i>Dobbs</i> case hinged on a direct clash of constitutional interpretations. Mississippi (Dobbs) argued for the right of states to regulate, while the last-remaining Mississippi clinic (Jackson) argued for the established constitutional right.
+                </p>
+                <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-stone-50 rounded-lg shadow-md p-6">
+                        <h3 class="font-bold text-lg text-blue-800 mb-2">Petitioner's Argument (Dobbs / Mississippi)</h3>
+                        <ul class="list-disc list-outside ml-5 space-y-2 text-stone-700">
+                            <li>The Constitution makes no express reference to a right to abortion.</li>
+                            <li>The right is not "deeply rooted in U.S. history and tradition." They argued that at the time the 14th Amendment was adopted, three-quarters of states had criminalized abortion.</li>
+                            <li>The "viability line" established by <i>Roe</i> and <i>Casey</i> is arbitrary, subjective, and prevents states from protecting their legitimate interest in "potential life."</li>
+                            <li>States should be free to ban abortions if the ban is "rationally related to legitimate government interests."</li>
+                        </ul>
+                    </div>
+                    <div class="bg-stone-50 rounded-lg shadow-md p-6">
+                        <h3 class="font-bold text-lg text-blue-800 mb-2">Respondent's Argument (Jackson Women's Health)</h3>
+                        <ul class="list-disc list-outside ml-5 space-y-2 text-stone-700">
+                            <li>The right to abortion is grounded in the 14th Amendment's protection of "liberty," which includes physical autonomy and bodily integrity.</li>
+                            <li>This right is an essential element of liberty, similar to other protected rights like contraception and marriage.</li>
+                            <li>For 50 years, the Court had recognized that the right to "possession of their own body" is a core part of liberty.</li>
+                            <li>Upholding the Mississippi law would require overturning <i>Roe</i> and <i>Casey</i>, a move that would damage the Court's legitimacy and defy the principle of <i>stare decisis</i> (respect for precedent).</li>
+                        </ul>
+                    </div>
+                </section>
+            </div>
+
+            <div id="post-roe-cases" data-tab-content class="space-y-6">
+                <p class="text-lg text-stone-700">
+                    Between <i>Roe (1973)</i> and <i>Casey (1992)</i>, and continuing until <i>Dobbs (2022)</i>, the Supreme Court heard numerous cases that tested the boundaries of the <i>Roe</i> framework. These cases show the constant legal challenges that slowly chipped away at the broad right established in 1973.
+                </p>
+                <section class="space-y-4">
+                    <div class="bg-stone-50 rounded-lg shadow-sm p-4 border-l-4 border-blue-600">
+                        <h3 class="font-semibold text-stone-800"><i>Planned Parenthood v. Danforth</i> (1976)</h3>
+                        <p class="text-stone-700">The Court struck down a law requiring spousal consent for an abortion, reinforcing the individual's right.</p>
+                    </div>
+                    <div class="bg-stone-50 rounded-lg shadow-sm p-4 border-l-4 border-blue-600">
+                        <h3 class="font-semibold text-stone-800"><i>City of Akron v. Akron Center for Reproductive Health</i> (1983)</h3>
+                        <p class="text-stone-700">The Court invalidated a wide range of restrictions, including a waiting period and a ban on abortions outside hospitals after the first trimester, seen as a strong reaffirmation of <i>Roe</i>.</p>
+                    </div>
+                    <div class="bg-stone-50 rounded-lg shadow-sm p-4 border-l-4 border-blue-600">
+                        <h3 class="font-semibold text-stone-800"><i>Webster v. Reproductive Health Services</i> (1989)</h3>
+                        <p class="text-stone-700">This was a major case where the Court upheld several restrictions, including a ban on state employees performing abortions and a viability test at 20 weeks. This decision signaled a weakening of <i>Roe</i> and set the stage for <i>Casey</i>.</p>
+                    </div>
+                    <div class="bg-stone-50 rounded-lg shadow-sm p-4 border-l-4 border-blue-600">
+                        <h3 class="font-semibold text-stone-800"><i>Stenberg v. Carhart</i> (2000)</h3>
+                        <p class="text-stone-700">The Court struck down a Nebraska ban on a specific abortion procedure ("dilation and extraction"), ruling it was too vague and lacked a necessary exception to protect the woman's health. This was a post-<i>Casey</i> application of the "undue burden" standard.</p>
+                    </div>
+                    <div class="bg-stone-50 rounded-lg shadow-sm p-4 border-l-4 border-blue-600">
+                        <h3 class="font-semibold text-stone-800"><i>Gonzales v. Carhart</i> (2007)</h3>
+                        <p class="text-stone-700">In a reversal from <i>Stenberg</i>, a slightly changed Court upheld a *federal* ban on the same procedure. This decision was significant for *not* containing a clear health exception, signaling a greater willingness to defer to legislative restrictions.</p>
+                    </div>
+                </section>
+            </div>
+
+            <div id="funding-cases" data-tab-content class="space-y-6">
+                <p class="text-lg text-stone-700">
+                    A major legal battleground, separate from the right itself, involved public funding and consent laws. Opponents of abortion sought to limit access by restricting Medicaid funding and requiring parental or spousal notification.
+                </p>
+                <section class="space-y-4">
+                    <div class="bg-stone-50 rounded-lg shadow-sm p-4 border-l-4 border-blue-700">
+                        <h3 class="font-semibold text-stone-800"><i>Maher v. Roe</i> (1979)</h3>
+                        <p class="text-stone-700">The Court held that states could exclude abortion services from Medicaid coverage, ruling that the right to an abortion did not include a right to have it publicly funded. This created a significant barrier for low-income individuals.</p>
+                    </div>
+                    <div class="bg-stone-50 rounded-lg shadow-sm p-4 border-l-4 border-blue-700">
+                        <h3 class="font-semibold text-stone-800"><i>Harris v. McRae</i> (1980)</h3>
+                        <p class="text-stone-700">The Court upheld the "Hyde Amendment," a federal law that prohibited federal funding for abortions except when the woman's life was at risk or in cases of rape or incest. This confirmed the principle from <i>Maher</i> at the federal level.</p>
+                    </div>
+                    <div class="bg-stone-50 rounded-lg shadow-sm p-4 border-l-4 border-blue-700">
+                        <h3 class="font-semibold text-stone-800"><i>H.L. v. Matheson</i> (1981)</h3>
+                        <p class="text-stone-700">The Court upheld a law requiring parental notification for minors, as long as a "judicial bypass" procedure was available (allowing a minor to get a judge's permission instead).</p>
+                    </div>
+                    <div class="bg-stone-50 rounded-lg shadow-sm p-4 border-l-4 border-blue-700">
+                        <h3 class="font-semibold text-stone-800"><i>Planned Parenthood v. Danforth</i> (1976)</h3>
+                        <p class="text-stone-700">While allowing parental consent (with judicial bypass), the Court struck down a provision requiring a married woman to obtain spousal consent, ruling it gave the husband an unconstitutional veto over her decision.</p>
+                    </div>
+                </section>
+            </div>
+
+            <div id="standards-explained" data-tab-content class="space-y-6">
+                <p class="text-lg text-stone-700">
+                    This section provides a detailed elaboration of the key legal standards that defined the 50-year arc of abortion law. The shift from "Strict Scrutiny" to "Undue Burden" and finally to "Rational Basis" represents the core of the legal evolution and erosion of the right.
+                </p>
+                <section class="space-y-5">
+                    <div>
+                        <h3 class="text-xl font-bold text-blue-800 mb-2">1. Strict Scrutiny (The <i>Roe</i> Standard)</h3>
+                        <p class="text-stone-700">This is the highest and most difficult standard in constitutional law. When <i>Roe v. Wade</i> declared abortion a "fundamental right," it automatically triggered this test for any law that tried to restrict it. To be constitutional, the state had to prove two things: (1) it had a "compelling state interest" (like protecting maternal health or potential life at viability) and (2) the law was "narrowly tailored" to achieve that interest, meaning it was the least restrictive means possible. This high bar is why most pre-viability abortion restrictions were struck down for 19 years.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-blue-800 mb-2">2. The Undue Burden Standard (The <i>Casey</i> Standard)</h3>
+                        <p class="text-stone-700"><i>Planned Parenthood v. Casey</i> explicitly rejected <i>Roe's</i> rigid trimester framework and its "strict scrutiny" test. In its place, the Court created this new, weaker standard. A law was now unconstitutional *only if* it placed a "substantial obstacle" in the path of a woman seeking an abortion before viability. This was the great "erosion": it meant states *could* regulate abortion (e.g., with 24-hour waiting periods, mandatory counseling) as long as those regulations didn't amount to a "substantial obstacle." The Court found that informing a woman and making her wait 24 hours was not a substantial obstacle, but forcing her to notify a potentially abusive husband was.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-blue-800 mb-2">3. The "Deeply Rooted in History" Test (The <i>Dobbs</i> Justification)</h3>
+                        <p class="text-stone-700">This is not a standard of review, but rather the test the <i>Dobbs</i> majority used to *remove* the right entirely. To be protected under the 14th Amendment's "liberty" clause, the Court said a right must be "deeply rooted in this Nation's history and tradition." The majority looked at US law in 1868 (when the 14th Amendment was ratified) and found that most states criminalized abortion. They concluded that because the right wasn't "deeply rooted" in 19th-century history, it was not a valid constitutional right, and <i>Roe</i> and <i>Casey</i> had been "egregiously wrong" to invent it.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-blue-800 mb-2">4. Rational-Basis Review (The Post-<i>Dobbs</i> Standard)</h3>
+                        <p class="text-stone-700">This is the lowest and easiest standard of review in constitutional law. By declaring that abortion is *not* a fundamental right, the <i>Dobbs</i> Court automatically lowered the standard for review to this level. Now, an abortion law will be upheld as long as the state can provide *any* "legitimate government interest" (like protecting "potential life" at any stage) and the law is "rationally related" to that interest. This gives state laws a "strong presumption of validity," making them very easy to defend and very difficult to challenge.</p>
+                    </div>
+                </section>
+            </div>
+
+            <div id="liberty-debate" data-tab-content class="space-y-6">
+                <p class="text-lg text-stone-700">
+                    At the heart of the 50-year legal battle is a fundamental disagreement over the meaning of "liberty" in the 14th Amendment, which states no person shall be deprived of "life, liberty, or property, without due process of law."
+                </p>
+                <section>
+                    <h2 class="text-2xl font-bold text-blue-800 mb-4">The <i>Roe</i> and <i>Casey</i> Interpretation: Liberty as Autonomy</h2>
+                    <p class="text-stone-700 mb-4">The <i>Roe</i> court found that this "liberty" guarantee included a fundamental right to privacy, which covered personal decisions about family, marriage, contraception, and child-rearing. They ruled that this "is broad enough to encompass a woman's decision whether or not to terminate her pregnancy." <i>Casey</i> reaffirmed this, stating:</p>
+                    <blockquote class="border-l-4 border-blue-700 pl-4 py-2 my-4 bg-blue-50 text-stone-800 italic">
+                        "These matters, involving the most intimate and personal choices a person may make in a lifetime, choices central to personal dignity and autonomy, are central to the liberty protected by the Fourteenth Amendment."
+                    </blockquote>
+                    <p class="text-stone-700">In this view, liberty includes the right to bodily integrity and the freedom to make life-defining decisions without government interference.</p>
+                </section>
+                <section>
+                    <h2 class="text-2xl font-bold text-blue-800 mb-4">The <i>Dobbs</i> Interpretation: Liberty as History</h2>
+                    <p class="text-stone-700 mb-4">The <i>Dobbs</i> majority rejected this broad view of "liberty." They argued that the 14th Amendment only protects rights that are either (1) explicitly mentioned in the Constitution or (2) "deeply rooted in this Nation's history and tradition." Since abortion was not explicitly mentioned and was criminalized in many states in 1868, they found it did not qualify.</p>
+                    <p class="text-stone-700 mb-4">The majority opinion also argued that defining "liberty" as "autonomy" was too broad and dangerous, stating that such a definition would "license fundamental rights to illicit drug use, [or] prostitution."</h>
+                    <blockquote class="border-l-4 border-stone-700 pl-4 py-2 my-4 bg-stone-100 text-stone-800 italic">
+                        "We hold that <i>Roe</i> and <i>Casey</i> must be overruled. The Constitution makes no reference to abortion, and no such right is implicitly protected by any constitutional provision..."
+                    </blockquote>
+                </section>
+            </div>
+
+            <div id="impact-dissent" data-tab-content class="space-y-6">
+                <p class="text-lg text-stone-700">
+                    The <i>Dobbs</i> decision was met with a rare joint dissent from Justices Breyer, Sotomayor, and Kagan. They argued that the majority's decision to overturn 50 years of precedent was a radical act that would have severe consequences.
+                </p>
+                <section>
+                    <h2 class="text-2xl font-bold text-blue-800 mb-4">The Joint Dissent's Arguments</h2>
+                    <p class="text-stone-700 mb-4">The dissenters did not just defend the right to abortion; they criticized the majority's legal reasoning and its disregard for <i>stare decisis</i> (the principle of respecting settled precedent).</p>
+                    <ul class="list-disc list-outside ml-6 space-y-2 text-stone-700">
+                        <li><b>Erosion of Liberty:</b> They argued that the majority's decision "discards a balance" and "says that from the very moment of fertilization, a woman has no rights to speak of."</li>
+                        <li><b>Undermining the Court:</b> They warned that overturning such a major, long-standing precedent for no reason other than a change in the Court's membership "undermines the Court's legitimacy."</li>
+                        <li><b>Impact on Women:</b> They stated the ruling would undermine women's "promise of freedom and equality," forcing them to carry pregnancies against their will, which has a massive impact on their "educational, economic, and political" lives.</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2 class="text-2xl font-bold text-blue-800 mb-4">Jeopardizing Other Rights</h2>
+                    <p class="text-stone-700 mb-4">A major concern raised by the dissenters was that the majority's "deeply rooted in history" test endangers other established rights that are *also* based on the 14th Amendment's "liberty" clause but are not "deeply rooted" in 1868 history. These include:</p>
+                    <ul class="list-disc list-outside ml-6 space-y-2 text-stone-700">
+                        <li>The right to buy and use contraception (<i>Griswold v. Connecticut</i>)</li>
+                        <li>The right to same-sex intimacy (<i>Lawrence v. Texas</i>)</li>
+                        <li>The right to same-sex marriage (<i>Obergefell v. Hodges</i>)</li>
+                    </ul>
+                    <p class="text-stone-700 mt-4">While the majority opinion stated the decision was limited to abortion, Justice Thomas wrote a separate concurrence explicitly calling for the Court to "reconsider" all of these other precedents.</p>
+                </section>
+            </div>
+
+            <div id="concepts-glossary" data-tab-content class="space-y-4">
+                <p class="text-lg text-stone-700">
+                    This is a quick-reference glossary of the core legal concepts and tests used by the Supreme Court. Click on each term below to see its definition. For a more detailed explanation, please see the "Legal Standards Explained" tab.
+                </p>
+                
+                <div class="accordion-item border-b border-stone-200">
+                    <h3 class="accordion-header flex justify-between items-center w-full py-4 font-medium text-lg text-stone-800 cursor-pointer">
+                        14th Amendment (Due Process Clause)
+                        <span class="accordion-icon text-blue-700 text-2xl font-light">+</span>
+                    </h3>
+                    <div class="accordion-content hidden overflow-hidden max-h-0">
+                        <p class="pt-2 pb-4 text-stone-700">States that no state shall "deprive any person of life, liberty, or property, without due process of law." This clause was the foundation for the "right to privacy" cited in <i>Roe</i>.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item border-b border-stone-200">
+                    <h3 class="accordion-header flex justify-between items-center w-full py-4 font-medium text-lg text-stone-800 cursor-pointer">
+                        Strict Scrutiny (The <i>Roe</i> Standard)
+                        <span class="accordion-icon text-blue-700 text-2xl font-light">+</span>
+                    </h3>
+                    <div class="accordion-content hidden overflow-hidden max-h-0">
+                        <p class="pt-2 pb-4 text-stone-700">The highest level of judicial review. Requires the government to prove a law is "narrowly tailored" to serve a "compelling state interest." Applied to "fundamental rights."</p>
+                    </div>
+                </div>
+                
+                <div class="accordion-item border-b border-stone-200">
+                    <h3 class="accordion-header flex justify-between items-center w-full py-4 font-medium text-lg text-stone-800 cursor-pointer">
+                        Undue Burden (The <i>Casey</i> Standard)
+                        <span class="accordion-icon text-blue-700 text-2xl font-light">+</span>
+                    </h3>
+                    <div class="accordion-content hidden overflow-hidden max-h-0">
+                        <p class="pt-2 pb-4 text-stone-700">A weaker standard from <i>Casey</i>. A law is unconstitutional only if it places a "substantial obstacle" in the path of a woman seeking an abortion before viability.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item border-b border-stone-200">
+                    <h3 class="accordion-header flex justify-between items-center w-full py-4 font-medium text-lg text-stone-800 cursor-pointer">
+                        "Deeply Rooted in History" (The <i>Dobbs</i> Test)
+                        <span class="accordion-icon text-blue-700 text-2xl font-light">+</span>
+                    </h3>
+                    <div class="accordion-content hidden overflow-hidden max-h-0">
+                        <p class="pt-2 pb-4 text-stone-700">The <i>Dobbs</i> majority test for unwritten rights. To be protected by the 14th Amendment, the right must have been recognized in 1868. The Court found abortion was not.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item border-b border-stone-200">
+                    <h3 class="accordion-header flex justify-between items-center w-full py-4 font-medium text-lg text-stone-800 cursor-pointer">
+                        Rational-Basis Review (The Post-<i>Dobbs</i> Standard)
+                        <span class="accordion-icon text-blue-700 text-2xl font-light">+</span>
+                    </h3>
+                    <div class="accordion-content hidden overflow-hidden max-h-0">
+                        <p class="pt-2 pb-4 text-stone-700">The lowest level of judicial review. A law is upheld if it is "rationally related" to *any* "legitimate government interest." Gives laws a strong presumption of validity.</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('[data-tab-content]');
+            const timelineNodes = document.querySelectorAll('.timeline-node');
+            const accordions = document.querySelectorAll('.accordion-header');
+
+            function setActiveTab(tabId) {
+                tabs.forEach(tab => {
+                    tab.classList.toggle('active', tab.getAttribute('data-tab') === tabId);
+                });
+                tabContents.forEach(content => {
+                    content.classList.toggle('active', content.id === tabId);
+                });
+            }
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    setActiveTab(tabId);
+                });
+            });
+
+            timelineNodes.forEach(node => {
+                node.addEventListener('click', () => {
+                    const tabId = node.getAttribute('data-tab');
+                    setActiveTab(tabId);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            });
+            
+            accordions.forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('.accordion-icon');
+                    const isHidden = content.classList.contains('hidden');
+                    
+                    document.querySelectorAll('.accordion-content').forEach(c => {
+                        if (c !== content) {
+                            c.classList.add('hidden');
+                            c.style.maxHeight = '0';
+                            c.previousElementSibling.querySelector('.accordion-icon').textContent = '+';
+                        }
+                    });
+
+                    content.classList.toggle('hidden');
+                    
+                    if (isHidden) {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        icon.textContent = '−';
+                    } else {
+                        content.style.maxHeight = '0';
+                        icon.textContent = '+';
+                    }
+                });
+            });
+
+            const ctx = document.getElementById('standardsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Roe v. Wade (1973)', 'P.P. v. Casey (1992)', 'Dobbs v. Jackson (2022)'],
+                    datasets: [{
+                        label: 'Relative State Authority to Regulate',
+                        data: [3, 6, 10],
+                        backgroundColor: [
+                            '#3b82f6',
+                            '#1d4ed8',
+                            '#1e3a8a' 
+                        ],
+                        borderColor: [
+                            '#2563eb',
+                            '#1e40af',
+                            '#172554'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    let val = context.raw;
+                                    let desc = '';
+                                    if (context.label.startsWith('Roe')) desc = 'Low (Limited by Trimester)';
+                                    else if (context.label.startsWith('P.P.')) desc = 'Medium (Limited by "Undue Burden")';
+                                    else if (context.label.startsWith('Dobbs')) desc = 'High (Returned to States)';
+                                    
+                                    return `${label} ${desc}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Level of State Authority (Qualitative)'
+                            },
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    if (value === 3) return 'Low';
+                                    if (value === 6) return 'Medium';
+                                    if (value === 10) return 'High';
+                                    return null;
+                                }
+                            }
+                        },
+                        x: {
+                             ticks: {
+                                autoSkip: false,
+                                maxRotation: 0,
+                                minRotation: 0,
+                                callback: function(value, index, values) {
+                                    const label = this.getLabelForValue(value);
+                                    if (label.includes('(')) {
+                                        const parts = label.split('(');
+                                        return [parts[0], '(' + parts[1]];
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
