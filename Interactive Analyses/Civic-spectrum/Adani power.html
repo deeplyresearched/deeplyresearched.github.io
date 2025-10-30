@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adani & India's Energy Transition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (Cream: #fdfcf9, Muted Green: #4a5c5a, Terracotta: #a35638, Dark Gray: #3d3d3d) -->
+    <!-- Application Structure Plan: Expanded to an 11-section thematic SPA. The new structure flows from Overview -> Key Concepts -> National Goals -> Deeper National Context -> The Adani Duality -> AGEL Deep Dive -> APL Deep Dive -> Investment Landscape -> ESG Controversies -> Future (Hydrogen) -> Synthesis. This comprehensive, non-linear structure allows users to build a foundational understanding (Concepts, National) before exploring the specific corporate conflict (Duality, Deep Dives) and its complicating factors (Investment, ESG), and concluding with future outlook and analysis. -->
+    <!-- Visualization & Content Choices:
+        - Report Info: India's power mix (Source 2.2). Goal: Context. Viz: Doughnut (Chart.js).
+        - Report Info: Key definitions (Source 1.2, 1.4, 4.1, 5.2, 5.3). Goal: Define terms. Viz: HTML/CSS Accordion. Interaction: Click to expand. Justification: Manages dense text.
+        - Report Info: India's 2030 goal (Source 3.1). Goal: Show ambition. Viz: Bar (Chart.js).
+        - Report Info: India's global RE rankings (Source 2.2). Goal: Add context. Viz: Horizontal Bar (Chart.js). Justification: Clear comparison.
+        - Report Info: Adani new projects (Source 1.1, 1.2). Goal: Show duality. Viz: Bar (Chart.js).
+        - Report Info: AGEL capacity growth (Source 5.1). Goal: Detail green arm. Viz: Bar (Chart.js). Justification: Shows rapid growth.
+        - Report Info: APL details (Source 1.2, 1.4). Goal: Detail thermal arm. Viz: HTML Stat Block. Justification: Clear, concise data.
+        - Report Info: India's RE investment needs (Source 3.3). Goal: Frame financial challenge. Viz: Bar (Chart.js). Justification: Compares NEP vs IEA goal cost.
+        - Report Info: ESG controversies (Source 4.1-4.3). Goal: Organize risks. Viz: HTML/JS Tabs. Interaction: Click to change.
+        - Report Info: Green Hydrogen (Source 5.2, 5.4). Goal: Show future strategy. Viz: HTML/Tailwind Diagram. Justification: Simple, clear flow.
+        - Report Info: Analytical arguments (Source 5.2). Goal: Synthesize. Viz: 2-column text.
+        - CONFIRMING: All charts via Chart.js (Canvas). All diagrams via HTML/JS.
+        -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fdfcf9;
+            color: #3d3d3d;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        .chart-container-horizontal {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 250px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        nav {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        nav a {
+            transition: color 0.2s;
+            display: block;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+        }
+        nav a:hover {
+            background-color: #f3f4f6;
+        }
+        nav a[data-active="true"] {
+            color: #a35638;
+            font-weight: 600;
+            background-color: #fdfcf9;
+        }
+        .tab-btn {
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .tab-btn[data-active="true"] {
+            background-color: #4a5c5a;
+            color: #ffffff;
+        }
+        .tab-btn[data-active="false"] {
+            background-color: #e5e7eb;
+            color: #3d3d3d;
+        }
+        .tab-btn[data-active="false"]:hover {
+            background-color: #d1d5db;
+        }
+        .accordion-button {
+            transition: background-color 0.2s;
+        }
+        .accordion-button[aria-expanded="true"] {
+            background-color: #f3f4f6;
+        }
+        .accordion-content {
+            transition: max-height 0.3s ease-out;
+            max-height: 0;
+            overflow: hidden;
+        }
+        .accordion-content[data-visible="true"] {
+            max-height: 500px;
+        }
+        [data-js-target] { display: none; }
+        [data-js-target].block { display: block; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav class="sticky top-0 w-full bg-white/70 backdrop-blur-md shadow-sm z-50 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex-shrink-0 flex items-center">
+                    <span class="font-bold text-lg text-[#4a5c5a]">Energy Transition Analysis</span>
+                </div>
+                <div class="sm:hidden">
+                    <button id="nav-toggle" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#4a5c5a]" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <div class="block w-6 h-0.5 bg-gray-600 transition-transform duration-200" id="nav-icon-top"></div>
+                        <div class="block w-6 h-0.5 bg-gray-600 mt-1.5 transition-opacity duration-200" id="nav-icon-middle"></div>
+                        <div class="block w-6 h-0.5 bg-gray-600 mt-1.5 transition-transform duration-200" id="nav-icon-bottom"></div>
+                    </button>
+                </div>
+                <div class="hidden sm:flex sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-2" style="max-width: 75%;">
+                    <a href="#overview" class="nav-link text-sm font-medium hover:text-[#a35638]">Overview</a>
+                    <a href="#key-concepts" class="nav-link text-sm font-medium hover:text-[#a35638]">Concepts</a>
+                    <a href="#national" class="nav-link text-sm font-medium hover:text-[#a35638]">Nat'l Goals</a>
+                    <a href="#india-context" class="nav-link text-sm font-medium hover:text-[#a35638]">Nat'l Context</a>
+                    <a href="#duality" class="nav-link text-sm font-medium hover:text-[#a35638]">Duality</a>
+                    <a href="#agel-deepdive" class="nav-link text-sm font-medium hover:text-[#a35638]">AGEL</a>
+                    <a href="#apl-deepdive" class="nav-link text-sm font-medium hover:text-[#a35638]">APL</a>
+                    <a href="#investment" class="nav-link text-sm font-medium hover:text-[#a35638]">Investment</a>
+                    <a href="#esg" class="nav-link text-sm font-medium hover:text-[#a35638]">ESG</a>
+                    <a href="#future-hydrogen" class="nav-link text-sm font-medium hover:text-[#a35638]">Hydrogen</a>
+                    <a href="#synthesis" class="nav-link text-sm font-medium hover:text-[#a35638]">Synthesis</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="hidden sm:hidden bg-white shadow-lg" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="#overview" class="nav-link mobile-link block px-3 py-2 rounded-md text-base font-medium hover:text-[#a35638] hover:bg-gray-50">Overview</a>
+                <a href="#key-concepts" class="nav-link mobile-link block px-3 py-2 rounded-md text-base font-medium hover:text-[#a35638] hover:bg-gray-50">Key Concepts</a>
+                <a href="#national" class="nav-link mobile-link block px-3 py-2 rounded-md text-base font-medium hover:text-[#a35638] hover:bg-gray-50">National Goals</a>
+                <a href="#india-context" class="nav-link mobile-link block px-3 py-2 rounded-md text-base font-medium hover:text-[#a35638] hover:bg-gray-50">National Context</a>
+                <a href="#duality" class="nav-link mobile-link block px-3 py-2 rounded-md text-base font-medium hover:text-[#a35638] hover:bg-gray-50">Adani's Duality</a>
+                <a href="#agel-deepdive" class="nav-link mobile-link block px-3 py-2 rounded-md text-base font-medium hover:text-[#a35638] hover:bg-gray-50">AGEL Deep Dive</a>
+                <a href="#apl-deepdive" class="nav-link mobile-link block px-3 py-2 rounded-md text-base font-medium hover:text-[#a35638] hover:bg-gray-50">APL Deep Dive</a>
+                <a href="#investment" class="nav-link mobile-link block px-3 py-2 rounded-md text-base font-medium hover:text-[#a35638] hover:bg-gray-50">Investment</a>
+                <a href="#esg" class="nav-link mobile-link block px-3 py-2 rounded-md text-base font-medium hover:text-[#a35638] hover:bg-gray-50">ESG Controversies</a>
+                <a href="#future-hydrogen" class="nav-link mobile-link block px-3 py-2 rounded-md text-base font-medium hover:text-[#a35638] hover:bg-gray-50">Green Hydrogen</a>
+                <a href="#synthesis" class="nav-link mobile-link block px-3 py-2 rounded-md text-base font-medium hover:text-[#a35638] hover:bg-gray-50">Synthesis</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section id="overview" class="min-h-screen flex items-center py-20 px-4">
+            <div class="max-w-7xl mx-auto text-center">
+                <h1 class="text-4xl font-bold tracking-tight text-[#4a5c5a] sm:text-5xl md:text-6xl">
+                    The Adani Group & India's Energy Transition
+                </h1>
+                <p class="mt-6 text-xl text-gray-700 leading-loose max-w-3xl mx-auto">
+                    This analysis explores the central conflict of the Adani Group's role in India's energy sector: its simultaneous dominance in thermal power and its massive investment in green energy. We examine to what extent this duality supports or challenges India's ambitious climate goals, especially in light of significant ESG controversies.
+                </p>
+                <p class="mt-8 text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto">
+                    To understand Adani's role, we must first understand India's national energy landscape. The country is at a pivotal moment, with its total installed power capacity almost evenly split between fossil fuels and non-fossil fuel sources. This 50/50 balance is the stage upon which Adani's corporate strategy unfolds.
+                </p>
+                <div class="mt-12">
+                    <h2 class="text-2xl font-semibold text-[#3d3d3d] mb-4">India's Total Installed Power Capacity (approx. 476 GW)</h2>
+                    <div class="chart-container">
+                        <canvas id="indiaMixChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="key-concepts" class="min-h-screen bg-white py-20 px-4">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-center text-[#4a5c5a] mb-6">Key Concepts in the Energy Debate</h2>
+                <p class="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto text-center mb-12">
+                    To understand the complexities of this topic, it's helpful to define the key terms and concepts that shape the business strategies and national policies involved.
+                </p>
+                <div class="space-y-4">
+                    <div class="border rounded-lg shadow-sm">
+                        <button class="accordion-button w-full flex justify-between items-center p-5 text-left font-semibold text-lg text-[#3d3d3d] hover:bg-gray-50" aria-expanded="false" data-js-toggle="concept-1">
+                            <span>What is the "Energy Transition"?</span>
+                            <span class="accordion-icon text-2xl text-[#a35638]">+</span>
+                        </button>
+                        <div id="concept-1" class="accordion-content" data-visible="false">
+                            <p class="p-5 pt-0 text-gray-700 leading-relaxed">The Energy Transition refers to the global shift from an energy system based on fossil fuels (like coal and gas) to one based on renewable energy sources (like solar and wind). For India, this means decarbonizing its rapidly growing economy, investing in green technology, and meeting its international climate commitments, such as the "Net-Zero by 2070" target.</p>
+                        </div>
+                    </div>
+                    <div class="border rounded-lg shadow-sm">
+                        <button class="accordion-button w-full flex justify-between items-center p-5 text-left font-semibold text-lg text-[#3d3d3d] hover:bg-gray-50" aria-expanded="false" data-js-toggle="concept-2">
+                            <span>Why is Thermal (Coal) Power still used?</span>
+                            <span class="accordion-icon text-2xl text-[#a35638]">+</span>
+                        </button>
+                        <div id="concept-2" class="accordion-content" data-visible="false">
+                            <p class="p-5 pt-0 text-gray-700 leading-relaxed">Thermal power provides "baseload power," which is stable, reliable electricity that can be dispatched 24/7, regardless of weather. As India's economy and electricity demand grow, it needs this affordable and reliable power to prevent shortages and stabilize the grid. While renewables are cleaner, their output is intermittent (solar only works in the day, wind is variable), creating a need for a stable power source to fill the gaps. Adani Power's new thermal plants are justified on this basis of energy security.</p>
+                        </div>
+                    </div>
+                    <div class="border rounded-lg shadow-sm">
+                        <button class="accordion-button w-full flex justify-between items-center p-5 text-left font-semibold text-lg text-[#3d3d3d] hover:bg-gray-50" aria-expanded="false" data-js-toggle="concept-3">
+                            <span>What is ESG (Environmental, Social, Governance)?</span>
+                            <span class="accordion-icon text-2xl text-[#a35638]">+</span>
+                        </button>
+                        <div id="concept-3" class="accordion-content" data-visible="false">
+                            <p class="p-5 pt-0 text-gray-700 leading-relaxed">ESG refers to three central factors used by investors to measure a company's sustainability and ethical impact.
+                                <br>• <strong>Environmental:</strong> A company's impact on the planet (e.g., carbon emissions, water use).
+                                <br>• <strong>Social:</strong> How a company treats its employees, customers, and the communities it operates in.
+                                <br>• <strong>Governance:</strong> How a company is run (e.g., board independence, accounting practices, anti-corruption).
+                                <br>Poor ESG scores or controversies (like the Hindenburg report) can scare away "green" investors and make borrowing money more expensive.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="border rounded-lg shadow-sm">
+                        <button class="accordion-button w-full flex justify-between items-center p-5 text-left font-semibold text-lg text-[#3d3d3d] hover:bg-gray-50" aria-expanded="false" data-js-toggle="concept-4">
+                            <span>What is a Power Purchase Agreement (PPA)?</span>
+                            <span class="accordion-icon text-2xl text-[#a35638]">+</span>
+                        </button>
+                        <div id="concept-4" class="accordion-content" data-visible="false">
+                            <p class="p-5 pt-0 text-gray-700 leading-relaxed">A PPA is a long-term contract between an electricity generator (like Adani Power or Adani Green) and a buyer (usually a state-owned utility). The generator builds and operates a power plant, and the utility agrees to buy a set amount of power for a fixed price over a long period (e.g., 25 years). This provides stable, predictable revenue for the generator, making it possible to secure financing for large, expensive projects like solar farms or thermal plants.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="national" class="min-h-screen py-20 px-4">
+            <div class="max-w-7xl mx-auto text-center">
+                <h2 class="text-3xl font-bold text-[#4a5c5a] mb-6">India's Ambitious National Transition</h2>
+                <p class="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto mb-12">
+                    The Adani Group's strategy operates within the context of India's aggressive national climate goals. The government has set a clear and ambitious target for 2030, aiming to fundamentally shift its energy mix away from fossil fuels. This national ambition is the benchmark against which corporate actions are measured.
+                </p>
+                
+                <div class="bg-white rounded-xl shadow-lg p-8 max-w-3xl mx-auto mb-12">
+                    <h3 class="text-2xl font-semibold text-[#3d3d3d] mb-4">India's Path to 2030</h3>
+                    <p class="text-gray-600 leading-relaxed mb-8">
+                        India has pledged to achieve 500 GW of non-fossil fuel-based energy capacity by 2030. Having already reached nearly half of that, the nation must still more than double its current non-fossil capacity in the coming years, a monumental industrial undertaking.
+                    </p>
+                    <div class="chart-container">
+                        <canvas id="nationalGoalChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="india-context" class="min-h-screen bg-white py-20 px-4">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-3xl font-bold text-center text-[#4a5c5a] mb-6">National Context: A Deeper Look</h2>
+                <p class="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto text-center mb-12">
+                    India's energy transition is not just a plan; it's a massive industrial shift that has already placed the country as a global leader in renewables, even as it faces significant financial and manufacturing challenges.
+                </p>
+                <div class="grid md:grid-cols-2 gap-8 items-start">
+                    <div class="bg-[#fdfcf9] rounded-xl shadow-lg p-6 border border-gray-200">
+                        <h3 class="text-2xl font-semibold text-[#4a5c5a] mb-4">Global Renewable Rankings</h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">India has established itself as a major player in the global renewable energy landscape, ranking highly in key areas of deployment.</p>
+                        <div class="chart-container-horizontal">
+                            <canvas id="indiaRankingChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-[#fdfcf9] rounded-xl shadow-lg p-6 border border-gray-200">
+                        <h3 class="text-2xl font-semibold text-[#4a5c5a] mb-4">Domestic Manufacturing Boost</h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">A key part of India's strategy is "Make in India" – building its own components to reduce reliance on imports and secure the supply chain.</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <span class="text-xl text-[#4a5c5a] font-bold mr-3">&#8673;</span>
+                                <span class="text-gray-700"><strong>Solar PV Module Capacity:</strong> Surged 38-fold, from 2.3 GW to 88 GW (2014-2025).</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-xl text-[#4a5c5a] font-bold mr-3">&#8673;</span>
+                                <span class="text-gray-700"><strong>Solar PV Cell Capacity:</strong> Grew 21-fold, from 1.2 GW to 25 GW (2014-2025).</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-xl text-[#4a5c5a] font-bold mr-3">&#8673;</span>
+                                <span class="text-gray-700"><strong>Wind Turbine Manufacturing:</strong> 18 GW of annual manufacturing capacity is now available domestically.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="duality" class="min-h-screen py-20 px-4">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-3xl font-bold text-center text-[#4a5c5a] mb-6">Adani's Duality: Green Giant & Thermal Pillar</h2>
+                <p class="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto text-center mb-12">
+                    The core of the "Adani paradox" lies in its two major energy arms. Adani Green Energy Ltd (AGEL) is building one of the world's largest renewable portfolios, while Adani Power Ltd (APL) remains India's largest private thermal producer and is still expanding its coal-based capacity. This section explores this fundamental contradiction.
+                </p>
+                
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="bg-[#fdfcf9] rounded-xl shadow-lg p-6 border border-gray-200">
+                        <h3 class="text-2xl font-semibold text-[#4a5c5a] mb-4">The Green Giant (AGEL)</h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">Adani Green Energy is executing a monumental green expansion, positioning itself as a primary driver of India's renewable targets.</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <span class="text-[#4a5c5a] font-bold text-xl mr-3">&#10003;</span>
+                                <span class="text-gray-700"><strong>Ambitious Target:</strong> Aiming for 50 GW of renewable energy capacity by 2030.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-[#4a5c5a] font-bold text-xl mr-3">&#10003;</span>
+                                <span class="text-gray-700"><strong>World's Largest RE Park:</strong> Building a 30 GW renewable energy park in Khavda, Gujarat.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-[#4a5c5a] font-bold text-xl mr-3">&#10003;</span>
+                                <span class="text-gray-700"><strong>Rapid Growth:</strong> Operational capacity reached over 16.7 GW as of late 2025, with a $100bn investment planned in energy transition.</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="bg-[#fdfcf9] rounded-xl shadow-lg p-6 border border-gray-200">
+                        <h3 class="text-2xl font-semibold text-[#a35638] mb-4">The Thermal Pillar (APL)</h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">Simultaneously, Adani Power maintains and even expands its thermal footprint, citing India's need for stable, baseload power.</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <span class="text-[#a35638] font-bold text-xl mr-3">&#9888;</span>
+                                <span class="text-gray-700"><strong>Market Dominance:</strong> Remains India's largest private-sector thermal power producer.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-[#a35638] font-bold text-xl mr-3">&#9888;</span>
+                                <span class="text-gray-700"><strong>New Thermal Expansion:</strong> Recently won a bid to set up a new 1,496 MW (1.5 GW) ultra-supercritical thermal plant.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-[#a35638] font-bold text-xl mr-3">&#9888;</span>
+                                <span class="text-gray-700"><strong>Controversial Projects:</strong> Operates controversial coal mining projects that are a focus of ESG concerns.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-16">
+                    <h2 class="text-2xl font-semibold text-center text-[#3d3d3d] mb-4">Visualizing the Duality: New Project Scale</h2>
+                    <p class="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto text-center mb-8">
+                        This chart compares the scale of Adani's flagship *new* green project with its most recently announced *new* thermal project.
+                    </p>
+                    <div class="chart-container">
+                        <canvas id="dualityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="agel-deepdive" class="min-h-screen bg-white py-20 px-4">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-3xl font-bold text-center text-[#4a5c5a] mb-6">Deep Dive: Adani Green Energy (AGEL)</h2>
+                <p class="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto text-center mb-12">
+                    AGEL is the group's flagship for its green ambitions. Its strategy is defined by massive scale, rapid deployment of new technology, and strong financial performance within the renewables sector.
+                </p>
+                <div class="grid md:grid-cols-2 gap-8 items-start">
+                    <div class="bg-[#fdfcf9] rounded-xl shadow-lg p-6 border border-gray-200">
+                        <h3 class="text-2xl font-semibold text-[#4a5c5a] mb-4">The Khavda RE Park: A "Giga-Project"</h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">The project in Khavda, Gujarat, is set to be the world's largest renewable energy plant, highlighting the scale of Adani's investment.</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <span class="text-xl text-[#4a5c5a] font-bold mr-3">&#127760;</span>
+                                <span class="text-gray-700"><strong>Target Capacity:</strong> 30 GW.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-xl text-[#4a5c5a] font-bold mr-3">&#128207;</span>
+                                <span class="text-gray-700"><strong>Area:</strong> 538 sq km (almost 5 times the size of Paris).</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-xl text-[#4a5c5a] font-bold mr-3">&#128161;</span>
+                                <span class="text-gray-700"><strong>Advanced Tech:</strong> Deploys bifacial solar modules and India's largest 5.2 MW wind turbines.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-xl text-[#4a5c5a] font-bold mr-3">&#129529;</span>
+                                <span class="text-gray-700"><strong>Efficiency:</strong> Uses waterless robotic cleaning to save water and maximize generation.</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="bg-[#fdfcf9] rounded-xl shadow-lg p-6 border border-gray-200">
+                        <h3 class="text-2xl font-semibold text-[#4a5c5a] mb-4">Operational & Financial Snapshot</h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">AGEL has demonstrated significant year-on-year growth, reinforcing its market-leading position and financial health.</p>
+                        <div class="chart-container">
+                            <canvas id="agelGrowthChart"></canvas>
+                        </div>
+                        <p class="text-center text-gray-600 mt-4">AGEL reported an industry-leading EBITDA margin of <strong>91.7%</strong>, showing high profitability from its green assets.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="apl-deepdive" class="min-h-screen py-20 px-4">
+            <div class="max-w-7xl mx-auto text-center">
+                <h2 class="text-3xl font-bold text-[#a35638] mb-6">Deep Dive: Adani Power (APL)</h2>
+                <p class="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto mb-12">
+                    Adani Power remains the group's foundation in conventional energy. As India's largest private thermal producer, its role is to provide the stable, 24/7 baseload power that the growing economy demands. Its strategy includes both building new, more efficient plants and efforts to reduce the emissions of its existing fleet.
+                </p>
+                <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+                    <h3 class="text-2xl font-semibold text-[#3d3d3d] mb-6">Key Role & New Expansion</h3>
+                    <div class="grid md:grid-cols-2 gap-8 text-left">
+                        <div>
+                            <h4 class="text-lg font-semibold text-[#a35638] mb-2">New Thermal Project</h4>
+                            <p class="text-gray-700 leading-relaxed">APL is not just maintaining its fleet; it is actively expanding it with new-generation thermal technology.</p>
+                            <ul class="mt-4 space-y-3">
+                                <li class="flex items-center">
+                                    <span class="text-xl text-[#a35638] mr-3">&#9889;</span>
+                                    <span class="text-gray-700"><strong>Capacity:</strong> 1,496 MW (1.5 GW)</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="text-xl text-[#a35638] mr-3">&#128197;</span>
+                                    <span class="text-gray-700"><strong>PPA:</strong> 25-year contract with Maharashtra (MSEDCL).</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="text-xl text-[#a35638] mr-3">&#128295;</span>
+                                    <span class="text-gray-700"><strong>Technology:</strong> Ultra-supercritical, which is more efficient and has lower emissions than older coal plants.</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-semibold text-[#a35638] mb-2">Mitigation Efforts</h4>
+                            <p class="text-gray-700 leading-relaxed">To address its environmental impact, APL is exploring technologies to reduce the carbon intensity of its thermal generation.</p>
+                            <ul class="mt-4 space-y-3">
+                                <li class="flex items-center">
+                                    <span class="text-xl text-[#a35638] mr-3">&#127810;</span>
+                                    <span class="text-gray-700"><strong>Biomass Blending:</strong> Plans to co-fire biomass (like crop residue) with coal to reduce net CO2 emissions.</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="text-xl text-[#a35638] mr-3">&#128167;</span>
+                                    <span class="text-gray-700"><strong>Future Pilots:</strong> Investigating pilots for co-firing hydrogen and green ammonia, as well as carbon capture.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="investment" class="min-h-screen bg-white py-20 px-4">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-3xl font-bold text-center text-[#4a5c5a] mb-6">The Investment & Financial Landscape</h2>
+                <p class="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto text-center mb-12">
+                    India's energy transition is one of the world's largest investment opportunities, requiring hundreds of billions of dollars. Adani has pledged a massive $100bn, but the nation faces a significant financing gap, and the group's ESG issues create a complex dilemma for global investors.
+                </p>
+                <div class="grid md:grid-cols-2 gap-8 items-start">
+                    <div class="bg-[#fdfcf9] rounded-xl shadow-lg p-6 border border-gray-200">
+                        <h3 class="text-2xl font-semibold text-[#4a5c5a] mb-4">India's Financing Gap (2023-2030)</h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">Analysis shows a significant gap between the investment needed for India's national plan (NEP14) and the larger amount required to align with the IEA's global net-zero scenario.</p>
+                        <div class="chart-container">
+                            <canvas id="investmentChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-[#fdfcf9] rounded-xl shadow-lg p-6 border border-gray-200">
+                        <h3 class="text-2xl font-semibold text-[#4a5c5a] mb-4">The ESG Investor's Dilemma</h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">Adani Green (AGEL) is a pure-play green investment, yet its parent group faces severe governance allegations, creating a paradox for ESG funds.</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <span class="text-xl text-[#4a5c5a] font-bold mr-3">&#129488;</span>
+                                <span class="text-gray-700"><strong>Widespread Holding:</strong> Approximately 770 ESG-labeled funds hold shares of Adani Green Energy.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-xl text-[#4a5c5a] font-bold mr-3">&#129488;</span>
+                                <span class="text-gray-700"><strong>The Conflict:</strong> These funds are invested in one of the world's largest green projects, but are exposed to a group accused of bribery and fraud.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-xl text-[#4a5c5a] font-bold mr-3">&#129488;</span>
+                                <span class="text-gray-700"><strong>The Risk:</strong> This situation "calls into question" the ability of ESG funds to properly screen for governance ("G") risks, especially in emerging markets.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="esg" class="min-h-screen py-20 px-4">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-3xl font-bold text-center text-[#4a5c5a] mb-6">ESG & Governance Controversies</h2>
+                <p class="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto text-center mb-12">
+                    The conflict is not just about carbon. A significant part of the challenge to Adani's "green" narrative comes from persistent Environmental, Social, and Governance (ESG) controversies. These issues raise serious questions about corporate practices and risk, complicating the group's standing with global ESG-focused investors.
+                </p>
+
+                <div class="max-w-3xl mx-auto">
+                    <div class="mb-4 flex space-x-2 p-1 bg-gray-100 rounded-lg">
+                        <button class="tab-btn w-full py-2 px-4 rounded-lg text-sm font-medium" data-tab="governance" data-active="true">Governance (G)</button>
+                        <button class="tab-btn w-full py-2 px-4 rounded-lg text-sm font-medium" data-tab="environmental" data-active="false">Environmental (E)</button>
+                        <button class="tab-btn w-full py-2 px-4 rounded-lg text-sm font-medium" data-tab="social" data-active="false">Social (S)</button>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-inner border border-gray-200 min-h-[250px]">
+                        <div id="governance" class="tab-content space-y-4">
+                            <h3 class="text-xl font-semibold text-[#a35638]">Governance: A Crisis of Confidence</h3>
+                            <p class="text-gray-700">Governance has been the most prominent area of concern, shaking investor confidence and leading to tangible consequences from ratings agencies.</p>
+                            <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                <li><strong>Hindenburg Allegations:</strong> The 2023 short-seller report alleged decades of stock manipulation and accounting fraud, which the Adani Group denies.</li>
+                                <li><strong>Bribery Allegations:</strong> In 2024, US prosecutors reportedly expanded a probe to include allegations that an Adani Group entity engaged in bribery to secure solar contracts.</li>
+                                <li><strong>Ratings Downgrades:</strong> In response to these events, major ESG rating agencies like MSCI and Sustainalytics downgraded their scores for several Adani companies, flagging severe governance risks.</li>
+                            </ul>
+                        </div>
+                        <div id="environmental" class="tab-content hidden space-y-4">
+                            <h3 class="text-xl font-semibold text-[#a35638]">Environmental: A Mixed Record</h3>
+                            <p class="text-gray-700">The group's environmental record is a study in contrasts. While AGEL promotes its positive metrics, APL faces criticism for its core business.</p>
+                            <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                <li><strong>AGEL's Claims:</strong> Adani Green Energy reports positive metrics like being 100% water-positive at its large plants and achieving zero-waste-to-landfill status.</li>
+                                <li><strong>APL's Impact:</strong> Adani Power's operations are linked to "some of the most controversial coal mining projects in recent history," which carry significant environmental footprints, carbon emissions, and local pollution risks.</li>
+                            </ul>
+                        </div>
+                        <div id="social" class="tab-content hidden space-y-4">
+                            <h3 class="text-xl font-semibold text-[#a35638]">Social: Community & Land Impact</h3>
+                            <p class="text-gray-700">Large-scale energy and infrastructure projects invariably have significant social impacts. Concerns in this area typically revolve around the acquisition of land and the effect on local communities.</p>
+                            <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                <li><strong>Land Acquisition:</strong> Both large-scale thermal and massive solar/wind parks require vast tracts of land, often leading to disputes with local communities and farmers.</li>
+                                <li><strong>Livelihood Disruption:</strong> Activist groups have raised concerns about the impact of port and power plant operations on traditional livelihoods, such as fishing communities.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="future-hydrogen" class="min-h-screen bg-white py-20 px-4">
+            <div class="max-w-7xl mx-auto text-center">
+                <h2 class="text-3xl font-bold text-[#4a5c5a] mb-6">The Future: Green Hydrogen</h2>
+                <p class="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto mb-12">
+                    Beyond solar and wind, the Adani Group has identified green hydrogen as a "natural adjacency" and a key part of its $100bn transition investment. The goal is to leverage its massive renewable energy capacity to produce the "world's least expensive green electron," which can then be used to create green hydrogen, a clean fuel with the potential to decarbonize heavy industry and even turn India into an energy exporter.
+                </p>
+                <div class="max-w-4xl mx-auto bg-[#fdfcf9] rounded-xl shadow-lg p-8 border border-gray-200">
+                    <h3 class="text-2xl font-semibold text-[#3d3d3d] mb-8">The Green Hydrogen Value Chain</h3>
+                    <div class="flex flex-col sm:flex-row justify-center items-center sm:items-stretch gap-4 text-center">
+                        <div class="bg-white p-4 rounded-lg shadow-md border border-gray-200 w-full sm:w-1/3 flex flex-col justify-center">
+                            <span class="text-4xl">&#127774;</span>
+                            <h4 class="font-semibold text-lg text-[#4a5c5a] mt-2">1. Green Energy</h4>
+                            <p class="text-sm text-gray-600 mt-1">Massive solar and wind farms (like Khavda) produce cheap, clean electricity.</p>
+                        </div>
+                        <div class="flex items-center justify-center text-3xl font-bold text-[#a35638] sm:text-4xl transform sm:rotate-0 rotate-90 sm:my-0 my-2">&#8594;</div>
+                        <div class="bg-white p-4 rounded-lg shadow-md border border-gray-200 w-full sm:w-1/3 flex flex-col justify-center">
+                            <span class="text-4xl">&#128295;</span>
+                            <h4 class="font-semibold text-lg text-[#4a5c5a] mt-2">2. Electrolysis</h4>
+                            <p class="text-sm text-gray-600 mt-1">Adani plans to manufacture electrolysers, which use green electricity to split water (H₂O) into hydrogen and oxygen.</p>
+                        </div>
+                        <div class="flex items-center justify-center text-3xl font-bold text-[#a35638] sm:text-4xl transform sm:rotate-0 rotate-90 sm:my-0 my-2">&#8594;</div>
+                        <div class="bg-white p-4 rounded-lg shadow-md border border-gray-200 w-full sm:w-1/3 flex flex-col justify-center">
+                            <span class="text-4xl">&#128167;</span>
+                            <h4 class="font-semibold text-lg text-[#4a5c5a] mt-2">3. Green Hydrogen</h4>
+                            <p class="text-sm text-gray-600 mt-1">The resulting "Green Hydrogen" is a zero-emission fuel for use in industry (steel, cement) or for export.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="synthesis" class="min-h-screen py-20 px-4">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-3xl font-bold text-center text-[#4a5c5a] mb-6">Synthesis: Conflict or Pragmatism?</h2>
+                <p class="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto text-center mb-12">
+                    To what extent does Adani's thermal dominance conflict with India's green transition? The answer is not a simple "yes" or "no." The group's strategy is a "microcosm of India" itself, embodying the nation's complex, and at times contradictory, path to development. Below are the two primary arguments.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+                        <h3 class="text-2xl font-semibold text-[#a35638] mb-4">The "Inherent Conflict" Argument</h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">This view holds that the group's actions are fundamentally contradictory and that the thermal portfolio poses a significant challenge.</p>
+                        <ul class="list-disc list-inside space-y-3 text-gray-700">
+                            <li><strong>Carbon Lock-in:</strong> Every new thermal plant, like the 1.5 GW project, locks in decades of carbon emissions, directly conflicting with net-zero goals.</li>
+                            <li><strong>Capital Diversion:</strong> Capital and resources allocated to new coal projects could be exclusively focused on accelerating green hydrogen and renewable deployment.</li>
+                            <li><strong>Reputational Contagion:</strong> The severe governance and environmental controversies (bribery, fraud allegations) tarnish the "green" brand, making it harder for AGEL to attract premium ESG-focused global capital.</li>
+                            <li><strong>Conflicting Signals:</strong> It sends mixed signals to the market, positioning the group as a "transition" leader while simultaneously being a primary purveyor of the legacy problem.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+                        <h3 class="text-2xl font-semibold text-[#4a5c5a] mb-4">The "Pragmatic Parallel" Argument</h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">This view, often shared by the company and some analysts, is that the two strategies are parallel and necessary for India's unique growth story.</p>
+                        <ul class="list-disc list-inside space-y-3 text-gray-700">
+                            <li><strong>Energy Security:</strong> India's demand for power is rising rapidly. It needs cheap, reliable baseload power *today* to fuel its economy, a role that only thermal power can currently fill at scale.</li>
+                            <li><strong>Fueling the Transition:</strong> The stable revenue and cash flow from the profitable thermal business (APL) can be used to finance the massive, capital-intensive build-out of the green energy business (AGEL).</li>
+                            <li><strong>Microcosm of India:</strong> The group is simply reflecting India's national policy, which also involves building new renewables (500 GW target) while still relying on coal for baseload security.</li>
+                            <li><strong>Massive Green Scale:</strong> The $100bn investment and 30 GW Khavda park are so large that they will undeniably accelerate India's transition, regardless of the thermal holdings.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-base text-gray-500">
+                Interactive analysis based on publicly available information. This is not financial advice.
+            </col>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const chartColors = {
+                green: '#4a5c5a',
+                terracotta: '#a35638',
+                gray: '#9ca3af'
+            };
+
+            const tooltipLabelGW = (context) => {
+                let label = context.dataset.label || '';
+                if (label) {
+                    label += ': ';
+                }
+                if (context.parsed.x !== null && context.chart.config.type === 'bar' && context.chart.config.options.indexAxis === 'y') {
+                    label += `${context.parsed.x.toFixed(0)}`;
+                } else if (context.parsed.y !== null) {
+                    label += `${context.parsed.y.toFixed(1)} GW`;
+                }
+                return label;
+            };
+            
+            const tooltipLabelRank = (context) => {
+                let label = context.dataset.label || '';
+                if (label) {
+                    label += ': ';
+                }
+                if (context.parsed.x !== null) {
+                    label += `Rank #${context.parsed.x}`;
+                }
+                return label;
+            };
+            
+            const tooltipLabelBillion = (context) => {
+                let label = context.dataset.label || '';
+                if (label) {
+                    label += ': ';
+                }
+                if (context.parsed.y !== null) {
+                    label += `$${context.parsed.y.toFixed(0)} Billion`;
+                }
+                return label;
+            };
+
+            const doughnutTooltipLabel = (context) => {
+                let label = context.label || '';
+                if (label) {
+                    label += ': ';
+                }
+                if (context.parsed !== null) {
+                    label += `${context.raw.toFixed(1)} GW (${context.dataset.percentages[context.dataIndex]}%)`;
+                }
+                return label;
+            };
+
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                family: 'Inter',
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        enabled: true,
+                        backgroundColor: '#3d3d3d',
+                        titleFont: { family: 'Inter', weight: 'bold' },
+                        bodyFont: { family: 'Inter' },
+                        padding: 10,
+                        cornerRadius: 4,
+                        callbacks: {}
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: false,
+                            font: { family: 'Inter' }
+                        },
+                        ticks: {
+                           font: { family: 'Inter' }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: false,
+                            font: { family: 'Inter' }
+                        },
+                        ticks: {
+                           font: { family: 'Inter' }
+                        }
+                    }
+                }
+            };
+            
+            if (document.getElementById('indiaMixChart')) {
+                const indiaMixData = {
+                    labels: ['Fossil Fuels', 'Non-Fossil Fuels'],
+                    datasets: [{
+                        label: 'Capacity',
+                        data: [240, 236],
+                        percentages: [50.4, 49.6],
+                        backgroundColor: [chartColors.terracotta, chartColors.green],
+                        borderColor: '#fdfcf9',
+                        borderWidth: 2
+                    }]
+                };
+                const indiaMixOptions = JSON.parse(JSON.stringify(chartOptions));
+                indiaMixOptions.plugins.tooltip.callbacks.label = doughnutTooltipLabel;
+                delete indiaMixOptions.scales;
+
+                new Chart(document.getElementById('indiaMixChart'), {
+                    type: 'doughnut',
+                    data: indiaMixData,
+                    options: indiaMixOptions
+                });
+            }
+
+            if (document.getElementById('nationalGoalChart')) {
+                const nationalGoalData = {
+                    labels: ['Current Non-Fossil Capacity', '2030 Non-Fossil Goal'],
+                    datasets: [{
+                        label: 'Capacity (GW)',
+                        data: [236, 500],
+                        backgroundColor: [chartColors.gray, chartColors.green],
+                    }]
+                };
+                const nationalGoalOptions = JSON.parse(JSON.stringify(chartOptions));
+                nationalGoalOptions.plugins.legend.display = false;
+                nationalGoalOptions.plugins.tooltip.callbacks.label = tooltipLabelGW;
+                nationalGoalOptions.scales.y.title.display = true;
+                nationalGoalOptions.scales.y.title.text = 'Capacity (GW)';
+
+                new Chart(document.getElementById('nationalGoalChart'), {
+                    type: 'bar',
+                    data: nationalGoalData,
+                    options: nationalGoalOptions
+                });
+            }
+            
+            if (document.getElementById('indiaRankingChart')) {
+                const indiaRankingData = {
+                    labels: ['Solar Power Capacity', 'Wind Power Capacity', 'Total Renewable Capacity'],
+                    datasets: [{
+                        label: 'Global Rank',
+                        data: [3, 4, 4],
+                        backgroundColor: chartColors.green,
+                    }]
+                };
+                const indiaRankingOptions = JSON.parse(JSON.stringify(chartOptions));
+                indiaRankingOptions.indexAxis = 'y';
+                indiaRankingOptions.plugins.legend.display = false;
+                indiaRankingOptions.plugins.tooltip.callbacks.label = tooltipLabelRank;
+                indiaRankingOptions.scales.x.title.display = true;
+                indiaRankingOptions.scales.x.title.text = 'Global Rank (1st is best)';
+                indiaRankingOptions.scales.x.reverse = true;
+                indiaRankingOptions.scales.x.min = 1;
+                indiaRankingOptions.scales.x.ticks = { stepSize: 1 };
+                
+                new Chart(document.getElementById('indiaRankingChart'), {
+                    type: 'bar',
+                    data: indiaRankingData,
+                    options: indiaRankingOptions
+                });
+            }
+
+            if (document.getElementById('dualityChart')) {
+                const dualityData = {
+                    labels: ['AGEL Khavda RE Park (Target)', 'APL New Thermal Plant (Bid)'],
+                    datasets: [{
+                        label: 'Capacity (GW)',
+                        data: [30, 1.5],
+                        backgroundColor: [chartColors.green, chartColors.terracotta],
+                    }]
+                };
+                const dualityOptions = JSON.parse(JSON.stringify(chartOptions));
+                dualityOptions.plugins.legend.display = false;
+                dualityOptions.plugins.tooltip.callbacks.label = tooltipLabelGW;
+                dualityOptions.scales.y.title.display = true;
+                dualityOptions.scales.y.title.text = 'Capacity (GW)';
+
+                new Chart(document.getElementById('dualityChart'), {
+                    type: 'bar',
+                    data: dualityData,
+                    options: dualityOptions
+                });
+            }
+            
+            if (document.getElementById('agelGrowthChart')) {
+                const agelGrowthData = {
+                    labels: ['H1 FY25', 'H1 FY26'],
+                    datasets: [{
+                        label: 'Operational Capacity (GW)',
+                        data: [11.2, 16.7],
+                        backgroundColor: chartColors.green,
+                    }]
+                };
+                const agelGrowthOptions = JSON.parse(JSON.stringify(chartOptions));
+                agelGrowthOptions.plugins.legend.display = false;
+                agelGrowthOptions.plugins.tooltip.callbacks.label = tooltipLabelGW;
+                agelGrowthOptions.scales.y.title.display = true;
+                agelGrowthOptions.scales.y.title.text = 'Capacity (GW)';
+                agelGrowthOptions.scales.y.min = 10;
+                
+                new Chart(document.getElementById('agelGrowthChart'), {
+                    type: 'bar',
+                    data: agelGrowthData,
+                    options: agelGrowthOptions
+                });
+            }
+            
+            if (document.getElementById('investmentChart')) {
+                const investmentData = {
+                    labels: ['India\'s National Plan (NEP14)', 'IEA Net-Zero Alignment'],
+                    datasets: [{
+                        label: 'Required Investment (USD)',
+                        data: [293, 394],
+                        backgroundColor: [chartColors.gray, chartColors.terracotta],
+                    }]
+                };
+                const investmentOptions = JSON.parse(JSON.stringify(chartOptions));
+                investmentOptions.plugins.legend.display = false;
+                investmentOptions.plugins.tooltip.callbacks.label = tooltipLabelBillion;
+                investmentOptions.scales.y.title.display = true;
+                investmentOptions.scales.y.title.text = 'Investment (in Billions USD)';
+                investmentOptions.scales.y.min = 200;
+                
+                new Chart(document.getElementById('investmentChart'), {
+                    type: 'bar',
+                    data: investmentData,
+                    options: investmentOptions
+                });
+            }
+
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetTab = button.dataset.tab;
+
+                    tabButtons.forEach(btn => {
+                        btn.setAttribute('data-active', 'false');
+                    });
+                    button.setAttribute('data-active', 'true');
+
+                    tabContents.forEach(content => {
+                        if (content.id === targetTab) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+            
+            const accordionButtons = document.querySelectorAll('.accordion-button');
+            accordionButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const contentId = button.getAttribute('data-js-toggle');
+                    const content = document.getElementById(contentId);
+                    const icon = button.querySelector('.accordion-icon');
+                    const isExpanded = button.getAttribute('aria-expanded') === 'true';
+
+                    if (isExpanded) {
+                        button.setAttribute('aria-expanded', 'false');
+                        content.setAttribute('data-visible', 'false');
+                        icon.textContent = '+';
+                    } else {
+                        button.setAttribute('aria-expanded', 'true');
+                        content.setAttribute('data-visible', 'true');
+                        icon.textContent = '−';
+                    }
+                });
+            });
+
+            const allNavLinks = document.querySelectorAll('.nav-link');
+            const mobileNavLinks = document.querySelectorAll('.mobile-link');
+            const sections = document.querySelectorAll('section');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const navToggle = document.getElementById('nav-toggle');
+            const navIconTop = document.getElementById('nav-icon-top');
+            const navIconMiddle = document.getElementById('nav-icon-middle');
+            const navIconBottom = document.getElementById('nav-icon-bottom');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '-80px 0px -40% 0px',
+                threshold: 0
+            };
+
+            const navObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        allNavLinks.forEach(link => {
+                            link.setAttribute('data-active', 'false');
+                            if (link.getAttribute('href') === `#${id}`) {
+                                link.setAttribute('data-active', 'true');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                navObserver.observe(section);
+            });
+            
+            allNavLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        const topOffset = targetElement.offsetTop - 64;
+                        window.scrollTo({
+                            top: topOffset,
+                            behavior: 'smooth'
+                        });
+                        
+                        if (mobileMenu.classList.contains('hidden') === false) {
+                            mobileMenu.classList.add('hidden');
+                            navToggle.setAttribute('aria-expanded', 'false');
+                            navIconTop.style.transform = 'none';
+                            navIconMiddle.style.opacity = '1';
+                            navIconBottom.style.transform = 'none';
+                        }
+                    }
+                });
+            });
+
+            navToggle.addEventListener('click', () => {
+                const isExpanded = navToggle.getAttribute('aria-expanded') === 'true';
+                mobileMenu.classList.toggle('hidden');
+                navToggle.setAttribute('aria-expanded', !isExpanded);
+
+                if (!isExpanded) {
+                    navIconTop.style.transform = 'translateY(6px) rotate(45deg)';
+                    navIconMiddle.style.opacity = '0';
+                    navIconBottom.style.transform = 'translateY(-6px) rotate(-45deg)';
+                } else {
+                    navIconTop.style.transform = 'none';
+                    navIconMiddle.style.opacity = '1';
+                    navIconBottom.style.transform = 'none';
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
+
