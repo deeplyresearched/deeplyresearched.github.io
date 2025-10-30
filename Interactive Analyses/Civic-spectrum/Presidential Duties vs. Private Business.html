@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis of Presidential Conflicts of Interest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Neutral Gray & Deep Blue -->
+    <!-- Application Structure Plan: The SPA uses a 7-tab navigation to segment a large amount of complex information. This prevents user overload. The tabs are: 1) Overview (intro/summary), 2) Key Concepts (interactive dictionary of legal/ethical terms), 3) Timeline (chronological context), 4) Case Studies (filterable examples), 5) The Org & Data (financials/chart), 6) Ethics & Institutions (impact on gov't agencies), 7) Legal Analysis (lawsuits/implications). This structure allows a user to either follow a linear path or jump directly to their area of interest (e.g., specific "Cases" or the "Timeline"). -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Core conflict (refusal to divest). Goal: Inform. Viz/Method: Introductory text + "Key Findings" callout box. Interaction: None. Justification: Sets the main premise and summarizes key data.
+        - Report Info: Legal/Ethical Rules (Emoluments, Nepotism, Weaponization). Goal: Organize/Inform. Viz/Method: Enhanced Interactive Toggles (HTML/JS). Interaction: Click to expand/collapse. Justification: Makes dense legal/ethical text highly digestible.
+        - Report Info: Chronological events (2017-2025). Goal: Show change. Viz/Method: Vertical Timeline (HTML/Tailwind). Interaction: Reading. Justification: Provides crucial context for when conflicts occurred.
+        - Report Info: Specific examples (DC Hotel, China, Russia, Kushner Fund). Goal: Explore/Organize. Viz/Method: Filterable Card Grid (HTML/Tailwind/JS). Interaction: Click filter buttons to sort. Justification: Primary interactive element to explore evidence.
+        - Report Info: Spending data (China $5.5M, etc.). Goal: Compare. Viz/Method: Bar Chart (Chart.js/Canvas). Interaction: Hover tooltips. Justification: Quantifies financial flows. (Library: Chart.js).
+        - Report Info: Impact on OGE, DOJ. Goal: Inform/Analyze. Viz/Method: Thematic text blocks. Interaction: None. Justification: Explains the broader institutional consequences.
+        - Report Info: Lawsuits & $230M DOJ claim. Goal: Analyze. Viz/Method: Thematic text blocks. Interaction: None. Justification: Details legal challenges and the unique personal conflict.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        .tab-button.active {
+            border-color: #1d4ed8;
+            background-color: #1d4ed8;
+            color: #ffffff;
+        }
+        .tab-button:not(.active):hover {
+            background-color: #eff6ff;
+        }
+        .key-concept-toggle {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .key-concept-toggle:hover {
+            background-color: #fafafa;
+        }
+        .key-concept-toggle .arrow {
+            transition: transform 0.3s ease;
+        }
+        .key-concept-toggle.open .arrow {
+            transform: rotate(90deg);
+        }
+        .filter-button {
+            transition: all 0.2s ease;
+        }
+        .filter-button.active {
+            background-color: #1d4ed8;
+            color: #ffffff;
+            font-weight: 600;
+        }
+        .case-card {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform-origin: top;
+        }
+        /* Timeline styles */
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+            padding-left: 2rem;
+            border-left: 2px solid #d1d5db;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -0.5rem;
+            top: 0.25rem;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 9999px;
+            background-color: #1d4ed8;
+            border: 2px solid #ffffff;
+        }
+        .timeline-item:last-child {
+            border-left: 2px solid transparent;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        
+        <header class="mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-blue-900 mb-2 text-center">Presidential Duties vs. Private Business</h1>
+            <p class="text-lg text-gray-600 text-center max-w-3xl mx-auto">An interactive analysis of potential conflicts of interest during the Trump presidency.</p>
+        </header>
+
+        <nav class="mb-8">
+            <div class="flex overflow-x-auto justify-start md:justify-center gap-2 md:gap-4 pb-2" id="tab-buttons">
+                <button data-tab="overview" class="tab-button active text-sm md:text-base font-medium py-2 px-4 rounded-full border border-gray-300">Overview</button>
+                <button data-tab="concepts" class="tab-button text-sm md:text-base font-medium py-2 px-4 rounded-full border border-gray-300">Key Concepts</button>
+                <button data-tab="timeline" class="tab-button text-sm md:text-base font-medium py-2 px-4 rounded-full border border-gray-300">Timeline</button>
+                <button data-tab="cases" class="tab-button text-sm md:text-base font-medium py-2 px-4 rounded-full border border-gray-300">Case Studies</button>
+                <button data-tab="org" class="tab-button text-sm md:text-base font-medium py-2 px-4 rounded-full border border-gray-300">The Org & Data</button>
+                <button data-tab="ethics" class="tab-button text-sm md:text-base font-medium py-2 px-4 rounded-full border border-gray-300">Ethics & Institutions</button>
+                <button data-tab="analysis" class="tab-button text-sm md:text-base font-medium py-2 px-4 rounded-full border border-gray-300">Legal Analysis</button>
+            </div>
+        </nav>
+
+        <main id="tab-panels">
+            
+            <section id="overview" class="tab-panel p-4 md:p-8 bg-white rounded-lg shadow-sm">
+                <h2 class="text-2xl font-bold text-blue-900 mb-4">An Unprecedented Presidency</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 space-y-4 text-gray-700 leading-relaxed">
+                        <p>This application explores the complex web of potential conflicts of interest stemming from Donald Trump's decision to retain ownership of his global business empire, the Trump Organization, while serving as President of the United States. This was a significant departure from modern presidential precedent, where predecessors divested assets or used blind trusts to avoid even the appearance of a conflict.</p>
+                        <p>Ethics watchdog groups, such as Citizens for Responsibility and Ethics in Washington (CREW), identified over 3,400 potential conflicts of interest during his four-year term. These concerns centered on the possibility that his decisions as president could be influenced by his personal financial interests, or that foreign and domestic actors could seek to curry favor by patronizing his businesses.</p>
+                        <p>The core of the issue involves constitutional questions, ethics laws, and a continuous blending of the presidency with a private, global brand. This interactive analysis allows you to explore the key legal concepts, examine specific case studies, and understand the financial data and legal challenges at the heart of the debate.</p>
+                    </div>
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                        <h3 class="text-xl font-semibold text-blue-900 mb-3">Key Findings by the Numbers</h3>
+                        <ul class="list-disc list-outside pl-5 space-y-3 text-gray-800">
+                            <li><strong class="text-blue-800">3,400+</strong> potential conflicts of interest identified by CREW during his first term.</li>
+                            <li><strong class="text-blue-800">$5.5 Million+</strong> spent by Chinese state-controlled entities at Trump properties.</li>
+                            <li><strong class="text-blue-800">$2 Billion</strong> investment from a Saudi sovereign wealth fund into Jared Kushner's private equity firm post-presidency.</li>
+                            <li><strong class="text-blue-800">500+</strong> visits made by the president to his own properties.</li>
+                            <li><strong class="text-blue-800">$750,000+</strong> spent by at least 6 foreign governments at the Trump International Hotel in D.C.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="concepts" class="tab-panel hidden p-4 md:p-8 bg-white rounded-lg shadow-sm">
+                <h2 class="text-2xl font-bold text-blue-900 mb-4">Key Legal & Ethical Frameworks</h2>
+                <p class="text-gray-600 mb-6">Understanding the debate requires familiarity with key terms. These are not just abstract rules; they are the foundation of ethics in government, designed to ensure officials serve the public, not their own wallets. Click on each concept below to learn more.</p>
+                <div class="border rounded-lg divide-y divide-gray-200" id="key-concepts-list">
+                    
+                    <div class="key-concept">
+                        <div class="key-concept-toggle flex justify-between items-center p-4">
+                            <h3 class="font-semibold text-lg text-blue-800">The Foreign Emoluments Clause</h3>
+                            <span class="arrow text-blue-800 font-bold text-2xl transform transition-transform duration-300">&#8250;</span>
+                        </div>
+                        <div class="key-concept-details hidden p-4 border-t border-gray-200 space-y-2">
+                            <p class="text-gray-700"><strong>Source:</strong> U.S. Constitution, Article I, Section 9, Clause 8.</p>
+                            <p class="text-gray-700"><strong>What it says:</strong> Prohibits any person holding an "Office of Profit or Trust" from accepting "any present, Emolument, Office, or Title, of any kind whatever, from any King, Prince, or foreign State" without the consent of Congress.</p>
+                            <p class="text-gray-700"><strong>The Debate:</strong> This was the central legal question. Lawsuits alleged that payments from foreign governments to Trump's businesses (like diplomats staying at his D.C. hotel) were unconstitutional "emoluments." The DOJ, under Trump, argued the term only applied to payments for official services or those arising from the office itself, not to "arm's-length" private transactions like a hotel bill. Critics and many legal scholars argued for a broad definition, as intended by the framers, to cover *any* profit, gain, or advantage from a foreign state to prevent loyalty from being compromised.</p>
+                        </div>
+                    </div>
+
+                    <div class="key-concept">
+                        <div class="key-concept-toggle flex justify-between items-center p-4">
+                            <h3 class="font-semibold text-lg text-blue-800">The Domestic Emoluments Clause</h3>
+                            <span class="arrow text-blue-800 font-bold text-2xl transform transition-transform duration-300">&#8250;</span>
+                        </div>
+                        <div class="key-concept-details hidden p-4 border-t border-gray-200 space-y-2">
+                            <p class="text-gray-700"><strong>Source:</strong> U.S. Constitution, Article II, Section 1, Clause 7.</p>
+                            <p class="text-gray-700"><strong>What it says:</strong> Prohibits the President from receiving any "Emolument" from the United States, or any individual state, beyond his fixed salary. This is to prevent states or Congress from improperly influencing the president with extra payments.</p>
+                            <p class="text-gray-700"><strong>The Debate:</strong> This clause was also cited in lawsuits, questioning whether payments from U.S. states (e.g., for events) or federal payments (e.g., Secret Service costs for staying at his properties) constituted improper benefits beyond his salary.</p>
+                        </div>
+                    </div>
+
+                    <div class="key-concept">
+                        <div class="key-concept-toggle flex justify-between items-center p-4">
+                            <h3 class="font-semibold text-lg text-blue-800">Divestment & Blind Trusts</h3>
+                            <span class="arrow text-blue-800 font-bold text-2xl transform transition-transform duration-300">&#8250;</span>
+                        </div>
+                        <div class="key-concept-details hidden p-4 border-t border-gray-200 space-y-2">
+                            <p class="text-gray-700"><strong>Presidential Precedent:</strong> For decades, modern presidents have voluntarily separated themselves from their private financial interests to avoid conflicts. The two main tools are:</p>
+                            <ul class="list-disc list-inside text-gray-700 mt-2 space-y-1">
+                                <li><strong>Divestment:</strong> Selling off all assets that could pose a conflict (e.g., Jimmy Carter sold his peanut farm).</li>
+                                <li><strong>Blind Trust:</strong> Transferring assets to an independent manager who has full control and does not communicate with the official. The official "blindly" benefits without knowing which assets are being bought or sold, severing the link between their decisions and personal gain.</li>
+                            </ul>
+                            <p class="text-gray-700"><strong>Trump's Approach:</strong> President Trump did not divest. He placed his assets in a "revocable trust" managed by his sons. Ethics experts pointed out this was not "blind" as he retained ownership, knew what the assets were, and could revoke the trust at any time.</p>
+                        </div>
+                    </div>
+
+                    <div class="key-concept">
+                        <div class="key-concept-toggle flex justify-between items-center p-4">
+                            <h3 class="font-semibold text-lg text-blue-800">Anti-Nepotism Law (5 U.S.C. § 3110)</h3>
+                            <span class="arrow text-blue-800 font-bold text-2xl transform transition-transform duration-300">&#8250;</span>
+                        </div>
+                        <div class="key-concept-details hidden p-4 border-t border-gray-200 space-y-2">
+                            <p class="text-gray-700"><strong>What it says:</strong> A public official "may not appoint, employ, promote, advance, or advocate for appointment" a relative to a position in the agency they serve.</p>
+                            <p class="text-gray-700"><strong>The Debate:</strong> The appointment of his daughter and son-in-law to senior White House advisory roles was challenged under this law. The Department of Justice's Office of Legal Counsel (OLC) issued an opinion that the White House is not an "agency" for the purposes of this law, a conclusion that was highly disputed by many ethics experts. This raised concerns about favoritism and the qualification of appointees.</p>
+                        </div>
+                    </div>
+
+                    <div class="key-concept">
+                        <div class="key-concept-toggle flex justify-between items-center p-4">
+                            <h3 class="font-semibold text-lg text-blue-800">Federal Contracts (Old Post Office Lease)</h3>
+                            <span class="arrow text-blue-800 font-bold text-2xl transform transition-transform duration-300">&#8250;</span>
+                        </div>
+                        <div class="key-concept-details hidden p-4 border-t border-gray-200 space-y-2">
+                            <p class="text-gray-700"><strong>The Conflict:</strong> The Trump Organization held a lease with the General Services Administration (GSA), a federal agency, for the Old Post Office building (Trump International Hotel D.C.). A clause in the lease stated that no "elected official of the Government of the United States... shall be admitted to any share or part of this Lease, or to any benefit that may arise therefrom."</p>
+                            <p class="text-gray-700"><strong>The Debate:</strong> Upon taking office, President Trump became both landlord (via the GSA) and tenant (via his company). Critics argued this was a clear violation of the lease. The GSA, under his administration, ruled that he was not in violation, a decision that ethics watchdogs labeled as a failure to enforce the law due to a conflict of interest.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="timeline" class="tab-panel hidden p-4 md:p-8 bg-white rounded-lg shadow-sm">
+                <h2 class="text-2xl font-bold text-blue-900 mb-6">Timeline of Key Events</h2>
+                <div class="relative">
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <h3 class="font-semibold text-lg text-blue-800 mb-1">Jan 2017: Inauguration & Trust</h3>
+                        <p class="text-gray-700">Donald Trump takes office and announces he will not divest from the Trump Organization, instead placing it in a revocable trust managed by his sons. Ethics groups call the trust inadequate.</p>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <h3 class="font-semibold text-lg text-blue-800 mb-1">Jan-Mar 2017: Lawsuits Filed</h3>
+                        <p class="text-gray-700">CREW files the first major Emoluments Clause lawsuit. Shortly after, D.C. and Maryland file a separate suit, citing unfair competition with their own state-owned venues.</p>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <h3 class="font-semibold text-lg text-blue-800 mb-1">2017-2018: Foreign Trademarks</h3>
+                        <p class="text-gray-700">The Chinese government grants dozens of valuable, long-sought trademarks to businesses linked to Donald Trump and his daughter, Ivanka Trump, raising concerns about influence during trade negotiations.</p>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <h3 class="font-semibold text-lg text-blue-800 mb-1">Oct 2018: Khashoggi Murder</h3>
+                        <p class="text-gray-700">Following the murder of journalist Jamal Khashoggi, President Trump defends the Saudi regime, which had been a major source of revenue for his properties. CREW notes Saudi lobbyists spent nearly $300k at his D.C. hotel.</p>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <h3 class="font-semibold text-lg text-blue-800 mb-1">Oct 2019: G-7 Summit Pitch</h3>
+                        <p class="text-gray-700">The White House announces the 2020 G-7 summit will be held at the Trump National Doral resort in Miami. After intense bipartisan backlash, the decision is reversed.</p>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <h3 class="font-semibold text-lg text-blue-800 mb-1">Sep 2020: CREW Report</h3>
+                        <p class="text-gray-700">CREW releases a comprehensive report identifying over 3,400 conflicts of interest during the president's first term.</p>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <h3 class="font-semibold text-lg text-blue-800 mb-1">Jan 2021: Lawsuits Dismissed</h3>
+                        <p class="text-gray-700">After Trump leaves office, the Supreme Court dismisses all pending Emoluments Clause lawsuits as moot, leaving the central legal questions unanswered.</p>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <h3 class="font-semibold text-lg text-blue-800 mb-1">Post-Presidency: Kushner Fund</h3>
+                        <p class="text-gray-700">Jared Kushner's new private equity firm, Affinity Partners, receives a $2 billion investment from Saudi Arabia's sovereign wealth fund, raising fresh concerns about rewards for past policy.</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <h3 class="font-semibold text-lg text-blue-800 mb-1">2025: Ethics Officials Fired</h3>
+                        <p class="text-gray-700">In his second term, Trump fires David Huitema, head of the Office of Government Ethics (OGE), and the head of the Office of Special Counsel, which enforces the Hatch Act, signaling a direct challenge to government watchdogs.</p>
+                    </div>
+
+                </div>
+            </section>
+
+            <section id="cases" class="tab-panel hidden p-4 md:p-8 bg-white rounded-lg shadow-sm">
+                <h2 class="text-2xl font-bold text-blue-900 mb-4">Interactive Case Studies</h2>
+                <p class="text-gray-600 mb-6">Explore specific examples of potential conflicts. Use the filters to sort cases by the primary actors involved.</p>
+                <div class="flex flex-wrap justify-center gap-2 mb-6" id="filter-buttons">
+                    <button class="filter-button active py-2 px-4 rounded-full bg-gray-100 text-gray-700" data-filter="all">All</button>
+                    <button class="filter-button py-2 px-4 rounded-full bg-gray-100 text-gray-700" data-filter="foreign">Foreign Governments</button>
+                    <button class="filter-button py-2 px-4 rounded-full bg-gray-100 text-gray-700" data-filter="lobbyist">Lobbyists & Domestic</button>
+                    <button class="filter-button py-2 px-4 rounded-full bg-gray-100 text-gray-700" data-filter="brand">Brand & New Business</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="case-cards-container">
+                    
+                    <div class="case-card bg-gray-50 border border-gray-200 rounded-lg p-6" data-category="foreign lobbyist">
+                        <span class="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full mb-3">Foreign & Lobbyist</span>
+                        <h3 class="font-semibold text-xl text-blue-900 mb-3">Trump Int'l Hotel, D.C.</h3>
+                        <p class="text-gray-700">The hotel, leased from the federal gov't, became a hub for those seeking influence.</p>
+                        <ul class="list-disc list-outside text-gray-700 mt-3 pl-5 space-y-1">
+                            <li>Over <strong>$750,000</strong> spent by officials from 6 foreign governments.</li>
+                            <li>Nearly <strong>$300,000</strong> spent by Saudi lobbyists.</li>
+                        </ul>
+                    </div>
+
+                    <div class="case-card bg-gray-50 border border-gray-200 rounded-lg p-6" data-category="foreign">
+                        <span class="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full mb-3">Foreign Government</span>
+                        <h3 class="font-semibold text-xl text-blue-900 mb-3">China Relations</h3>
+                        <p class="text-gray-700">Financial ties with China continued throughout the presidency, even during trade negotiations.</p>
+                        <ul class="list-disc list-outside text-gray-700 mt-3 pl-5 space-y-1">
+                            <li>Chinese state-controlled entities spent over <strong>$5.5 million</strong> at Trump properties.</li>
+                            <li>Dozens of valuable trademarks were granted by the Chinese government.</li>
+                        </ul>
+                    </div>
+
+                    <div class="case-card bg-gray-50 border border-gray-200 rounded-lg p-6" data-category="foreign">
+                        <span class="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full mb-3">Foreign Government</span>
+                        <h3 class="font-semibold text-xl text-blue-900 mb-3">Saudi Arabia & Affiliates</h3>
+                        <p class="text-gray-700">Deepening financial ties with Saudi Arabia raised concerns about policy influence.</p>
+                        <ul class="list-disc list-outside text-gray-700 mt-3 pl-5 space-y-1">
+                            <li>Saudi-backed LIV Golf league hosted tournaments at Trump golf courses.</li>
+                            <li>President defended Saudi regime after the 2018 murder of Jamal Khashoggi.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="case-card bg-gray-50 border border-gray-200 rounded-lg p-6" data-category="foreign">
+                        <span class="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full mb-3">Foreign Government</span>
+                        <h3 class="font-semibold text-xl text-blue-900 mb-3">Russia Relations</h3>
+                        <p class="text-gray-700">Long-standing business ambitions in Russia, coupled with praise for Vladimir Putin, raised questions.</p>
+                        <ul class="list-disc list-outside text-gray-700 mt-3 pl-5 space-y-1">
+                            <li>Long-sought desire to extend his real-estate empire into Russia.</li>
+                            <li>GOP-led Senate committee and Mueller investigation confirmed Moscow sought to help Trump.</li>
+                        </ul>
+                    </div>
+
+                    <div class="case-card bg-gray-50 border border-gray-200 rounded-lg p-6" data-category="brand">
+                        <span class="inline-block bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full mb-3">Brand & New Business</span>
+                        <h3 class="font-semibold text-xl text-blue-900 mb-3">Presidential Self-Promotion</h3>
+                        <p class="text-gray-700">The presidency was frequently used as a platform to promote Trump-branded properties.</p>
+                        <ul class="list-disc list-outside text-gray-700 mt-3 pl-5 space-y-1">
+                            <li>Made over <strong>500 visits</strong> to his own properties during his term.</li>
+                            <li>Publicly proposed hosting the G-7 Summit at his Doral, Florida golf resort.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="case-card bg-gray-50 border border-gray-200 rounded-lg p-6" data-category="lobbyist">
+                        <span class="inline-block bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full mb-3">Lobbyists & Domestic</span>
+                        <h3 class="font-semibold text-xl text-blue-900 mb-3">Access for Special Interests</h3>
+                        <p class="text-gray-700">Trump properties became go-to venues for domestic political and special interest groups.</p>
+                        <ul class="list-disc list-outside text-gray-700 mt-3 pl-5 space-y-1">
+                            <li><strong>130 special interest groups</strong> (many with business before the administration) held events.</li>
+                            <li><strong>141 members of Congress</strong> patronized Trump properties.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="case-card bg-gray-50 border border-gray-200 rounded-lg p-6" data-category="foreign lobbyist">
+                        <span class="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full mb-3">Foreign & Lobbyist</span>
+                        <h3 class="font-semibold text-xl text-blue-900 mb-3">Jared Kushner's Fund</h3>
+                        <p class="text-gray-700">Post-presidency, Jared Kushner's private equity firm received massive investments from foreign funds.</p>
+                        <ul class="list-disc list-outside text-gray-700 mt-3 pl-5 space-y-1">
+                            <li><strong>$2 Billion</strong> investment from a Saudi fund with ties to Prince Mohammed bin Salman.</li>
+                            <li><strong>$1.5 Billion</strong> from Qatar and UAE investors.</li>
+                        </ul>
+                    </div>
+
+                    <div class="case-card bg-gray-50 border border-gray-200 rounded-lg p-6" data-category="brand">
+                        <span class="inline-block bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full mb-3">Brand & New Business</span>
+                        <h3 class="font-semibold text-xl text-blue-900 mb-3">New Ventures</h3>
+                        <p class="text-gray-700">New businesses launched create fresh pathways for entities to funnel money to Trump.</p>
+                        <ul class="list-disc list-outside text-gray-700 mt-3 pl-5 space-y-1">
+                            <li>Majority stake in <strong>Truth Social</strong>, a publicly traded company.</li>
+                            <li>Launch of <strong>World Liberty Financial</strong>, a cryptocurrency company.</li>
+                        </ul>
+                    </div>
+
+                    <div class="case-card bg-gray-50 border border-gray-200 rounded-lg p-6" data-category="foreign brand">
+                        <span class="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full mb-3">Foreign & Brand</span>
+                        <h3 class="font-semibold text-xl text-blue-900 mb-3">Mar-a-Lago</h3>
+                        <p class="text-gray-700">The private club in Florida was often referred to as the "Winter White House."</p>
+                        <ul class="list-disc list-outside text-gray-700 mt-3 pl-5 space-y-1">
+                            <li>Membership fees reportedly doubled after the 2016 election.</li>
+                            <li>Used to host foreign leaders, blending official functions with a private, paid club.</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </section>
+
+            <section id="org" class="tab-panel hidden p-4 md:p-8 bg-white rounded-lg shadow-sm">
+                <h2 class="text-2xl font-bold text-blue-900 mb-4">The Trump Organization & Data</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-800 mb-3">Business Structure</h3>
+                        <p class="text-gray-700 mb-4">The Trump Organization is not a single entity but a sprawling conglomerate of approximately 500 business entities. Its interests are primarily in real estate (hotels, golf courses, residential) as well as branding and licensing deals.</p>
+                        <p class="text-gray-700">Upon taking office in 2017, Donald Trump placed his assets in a revocable trust managed by his sons. This structure was criticized by ethics experts because, as a revocable trust, he retained his ownership interest and could withdraw funds at any time, meaning he continued to profit from his businesses while in office.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-800 mb-3">Known Spending at Properties</h3>
+                        <p class="text-gray-700 mb-4">While the full scope of revenue is not public, investigations revealed millions of dollars in spending from groups with interests before the U.S. government. The chart below visualizes some of this reported data.</p>
+                        <div class="chart-container">
+                            <canvas id="spendingChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="ethics" class="tab-panel hidden p-4 md:p-8 bg-white rounded-lg shadow-sm">
+                <h2 class="text-2xl font-bold text-blue-900 mb-4">Impact on Ethics & Institutions</h2>
+                <p class="text-gray-600 mb-6">The conflicts of interest extended beyond personal enrichment, leading to what critics described as a systematic assault on government ethics and a weakening of independent institutions.</p>
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-800 mb-2">Politicizing Independent Agencies</h3>
+                        <p class="text-gray-700">Reports from the Economic Policy Institute and CREW highlight a "crusade" to undermine independent agencies. These agencies were designed by Congress to be insulated from political pressure to protect workers, consumers, and the public good. Methods included:</p>
+                        <ul class="list-disc list-outside pl-5 mt-2 space-y-1 text-gray-700">
+                            <li>Firing independent agency leaders who, by law, can often only be removed for misconduct.</li>
+                            <li>Stacking boards with loyalists or leaving seats vacant to prevent agencies from functioning.</li>
+                            <li>Implementing new controls to give the White House power over agency operations and funding.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-800 mb-2">Weaponization of the Justice Department</h3>
+                        <p class="text-gray-700">Multiple reports detail efforts to use the DOJ for political or personal aims. This "weaponization" involves using government power to target, intimidate, or reward individuals based on their political affiliation rather than for legitimate law enforcement purposes.</p>
+                        <ul class="list-disc list-outside pl-5 mt-2 space-y-1 text-gray-700">
+                            <li>Establishing a "DOJ Weaponization Working Group" to examine federal investigations into Donald Trump and his businesses.</li>
+                            <li>Granting clemency to individuals convicted of seditious conspiracy for the January 6th insurrection.</li>
+                            <li>Disbanding the DOJ's Kleptocracy Team, which investigated embezzlement by corrupt foreign politicians.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-800 mb-2">Erosion of Transparency & Watchdogs</h3>
+                        <p class="text-gray-700">A core theme was the removal of transparency and the firing of government watchdogs. This included:</p>
+                        <ul class="list-disc list-outside pl-5 mt-2 space-y-1 text-gray-700">
+                            <li>Firing David Huitema, the head of the Office of Government Ethics (OGE).</li>
+                            <li>Firing the head of the Office of Special Counsel, which protects whistleblowers and enforces the Hatch Act.</li>
+                            <li>Removing the Public Apportionments Database, a statutorily required database showing how the government spends appropriated funds (it was restored after a CREW lawsuit).</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="analysis" class="tab-panel hidden p-4 md:p-8 bg-white rounded-lg shadow-sm">
+                <h2 class="text-2xl font-bold text-blue-900 mb-4">Legal Challenges & Analysis</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="space-y-4 text-gray-700 leading-relaxed">
+                        <h3 class="text-xl font-semibold text-blue-800">The Emoluments Lawsuits</h3>
+                        <p>The unprecedented nature of the presidency led to multiple lawsuits alleging constitutional violations, primarily of the Emoluments Clauses.</p>
+                        <ul class="list-disc list-outside pl-5 space-y-2">
+                            <li><strong>CREW v. Trump:</strong> Filed by Citizens for Responsibility andEthics in Washington, arguing payments from foreign governments to Trump's businesses were emoluments.</li>
+                            <li><strong>Blumenthal v. Trump:</strong> Filed by Democratic members of Congress, arguing they were denied their right to "consent" to the president accepting foreign emoluments.</li>
+                            <li><strong>D.C. and Maryland v. Trump:</strong> Argued the Trump Hotel D.C. created unfair competition for state-owned venues.</li>
+                        </ul>
+                        <h3 class="text-xl font-semibold text-blue-800 pt-4">An Unanswered Question</h3>
+                        <p>A definitive, binding judicial ruling on the meaning of "emolument" in the modern era never materialized. The Supreme Court ultimately dismissed the pending cases as "moot" after President Trump left office in January 2021.</p>
+                        <p>As a result, the central legal questions remain unanswered. Critics argue this has set a dangerous precedent, potentially eroding ethical norms that have guided presidents for decades. The core of the analysis rests on the impact of these conflicts on public trust.</p>
+                    </div>
+                    <div class="space-y-4 text-gray-700 leading-relaxed bg-blue-50 border border-blue-200 rounded-lg p-6">
+                        <h3 class="text-xl font-semibold text-blue-800">A New Personal Conflict: The $230M Claim</h3>
+                        <p>A new, unprecedented conflict has arisen in his second term. Reports from PBS and The New York Times indicate Trump is seeking <strong>$230 million</strong> in compensation from the U.S. government over past federal investigations (e.g., the Russia investigation and Mar-a-Lago search).</p>
+                        <p>The ethical travesty, as one law professor noted, is that he is seeking this taxpayer-funded payout from the *same* Justice Department he now oversees. The officials who would review and potentially approve this claim include:</p>
+                        <ul class="list-disc list-outside pl-5 space-y-1">
+                            <li><strong>Attorney General Pam Bondi</strong></li>
+                            <li><strong>Deputy AG Todd Blanche</strong></li>
+                            <li><strong>FBI Director Kash Patel</strong></li>
+                        </ul>
+                        <p>These individuals are his own appointees, and some previously served as his defense lawyers. This creates a fundamental, "bizarre" conflict where the president's subordinates are tasked with deciding whether to pay him and his family hundreds of millions of dollars.</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabPanels = document.querySelectorAll('.tab-panel');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetTab = button.getAttribute('data-tab');
+
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    button.classList.add('active');
+
+                    tabPanels.forEach(panel => {
+                        if (panel.id === targetTab) {
+                            panel.classList.remove('hidden');
+                        } else {
+                            panel.classList.add('hidden');
+                        }
+                    });
+
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            });
+
+            const conceptToggles = document.querySelectorAll('.key-concept-toggle');
+            conceptToggles.forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    toggle.classList.toggle('open');
+                    const details = toggle.nextElementSibling;
+                    details.classList.toggle('hidden');
+                });
+            });
+
+            const filterButtons = document.querySelectorAll('.filter-button');
+            const caseCards = document.querySelectorAll('.case-card');
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const filter = button.getAttribute('data-filter');
+
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    caseCards.forEach(card => {
+                        const categories = card.getAttribute('data-category');
+                        if (filter === 'all' || categories.includes(filter)) {
+                            card.classList.remove('hidden');
+                        } else {
+                            card.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            const ctx = document.getElementById('spendingChart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Chinese State-Entities', 'Foreign Gov\'ts (D.C. Hotel)', 'Saudi Lobbyists (D.C. Hotel)'],
+                        datasets: [{
+                            label: 'Reported Spending (USD)',
+                            data: [5500000, 750000, 300000],
+                            backgroundColor: [
+                                'rgba(59, 130, 246, 0.7)',
+                                'rgba(30, 64, 175, 0.7)',
+                                'rgba(16, 185, 129, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgba(59, 130, 246, 1)',
+                                'rgba(30, 64, 175, 1)',
+                                'rgba(16, 185, 129, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value, index, values) {
+                                        return '$' + (value / 1000000) + 'M';
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.x !== null) {
+                                            label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.x);
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+        });
+    </script>
+
+</body>
+</html>
+
