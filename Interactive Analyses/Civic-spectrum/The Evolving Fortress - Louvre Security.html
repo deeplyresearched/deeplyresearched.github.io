@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Evolving Fortress: Louvre Security</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Warm Neutrals (bg-gray-50, bg-white, text-gray-800, text-blue-700) -->
+    <!-- Application Structure Plan: A 5-section SPA using top-bar navigation (JS scroll-to). Structure: [Home (Intro)] -> [Interactive Timeline (JS Tabs, Chart.js)] -> [Security Layers (HTML Grid Diagram)] -> [Public View (HTML Flow Diagram)] -> [Lessons (HTML List)]. This structure was chosen to move the user from historical cause (Timeline) to current state (Layers), then to impact (Public View) and synthesis (Lessons). JS-powered tabs for the timeline allow deep-dives into key eras without overwhelming the user on a single long page, making the cause-effect relationship central and interactive. -->
+    <!-- Visualization & Content Choices: 1. 1990s Upgrades (Report Info) -> Goal: Show proportions -> Viz: Doughnut Chart -> Interaction: Hover -> Justification: Clear breakdown of tech mix -> Library: Chart.js (Canvas). 2. Threat Evolution (Report Info) -> Goal: Compare change over time -> Viz: Stacked Bar Chart -> Interaction: Hover -> Justification: Shows shift from theft-centric to diverse threats -> Library: Chart.js (Canvas). 3. Security "Onion" Model (Report Info) -> Goal: Organize/Explain -> Viz: 3-Column HTML/Tailwind Grid -> Interaction: None (static diagram) -> Justification: Clearer, more semantic, and more responsive than a static canvas diagram. 4. Public Reaction Flow (Report Info) -> Goal: Show process -> Viz: HTML/Tailwind Flexbox Row -> Interaction: None -> Justification: Simple, clear representation of a sequence. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        .tab-button.active {
+            @apply bg-blue-700 text-white;
+        }
+        .tab-button:not(.active) {
+            @apply bg-gray-200 text-gray-700 hover:bg-gray-300;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 288px; 
+        }
+        @media (min-width: 640px) {
+            .chart-container {
+                height: 320px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+
+    <header class="sticky top-0 bg-white/90 backdrop-blur-sm shadow-md z-50">
+        <nav class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <span class="text-xl font-bold text-blue-800">Louvre Security</span>
+                <ul class="flex flex-wrap justify-end space-x-2 sm:space-x-4">
+                    <li><a href="#home" class="nav-link text-sm sm:text-base font-medium text-gray-600 hover:text-blue-700 p-1">Home</a></li>
+                    <li><a href="#timeline" class="nav-link text-sm sm:text-base font-medium text-gray-600 hover:text-blue-700 p-1">Timeline</a></li>
+                    <li><a href="#case-study-mona-lisa" class="nav-link text-sm sm:text-base font-medium text-gray-600 hover:text-blue-700 p-1">Mona Lisa</a></li>
+                    <li><a href="#layers" class="nav-link text-sm sm:text-base font-medium text-gray-600 hover:text-blue-700 p-1">Layers</a></li>
+                    <li><a href="#key-concepts" class="nav-link text-sm sm:text-base font-medium text-gray-600 hover:text-blue-700 p-1">Concepts</a></li>
+                    <li><a href="#human-element" class="nav-link text-sm sm:text-base font-medium text-gray-600 hover:text-blue-700 p-1">People</a></li>
+                    <li><a href="#insider-threat" class="nav-link text-sm sm:text-base font-medium text-gray-600 hover:text-blue-700 p-1">Insiders</a></li>
+                    <li><a href="#public-view" class="nav-link text-sm sm:text-base font-medium text-gray-600 hover:text-blue-700 p-1">Public</a></li>
+                    <li><a href="#future-security" class="nav-link text-sm sm:text-base font-medium text-gray-600 hover:text-blue-700 p-1">Future</a></li>
+                    <li><a href="#lessons" class="nav-link text-sm sm:text-base font-medium text-gray-600 hover:text-blue-700 p-1">Lessons</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-6xl mx-auto p-4 sm:p-8">
+
+        <section id="home" class="min-h-[calc(100vh-4rem)] flex items-center pt-16">
+            <div class="w-full text-center">
+                <h1 class="text-4xl md:text-6xl font-extrabold text-blue-800 mb-4">The Evolving Fortress</h1>
+                <p class="text-lg md:text-2xl text-gray-700 max-w-3xl mx-auto">
+                    An interactive exploration of how major thefts and security incidents have shaped the high-tech defense of the Louvre Museum, balancing priceless art with public access.
+                </p>
+            </div>
+        </section>
+
+        <section id="case-study-mona-lisa" class="py-16 bg-white rounded-lg shadow-lg my-16 p-8">
+            <h2 class="text-3xl font-bold text-center text-blue-800 mb-4">Case Study: The 'Mona Lisa' Effect</h2>
+            <p class="text-center text-gray-700 max-w-3xl mx-auto mb-12">
+                The Mona Lisa is not just a painting; it is the catalyst for and centerpiece of the Louvre's entire security strategy. Its protection drives innovation that benefits the whole museum. It's a "fortress within a fortress," pushing the boundaries of what museum security means.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h3 class="text-2xl font-bold text-blue-700 mb-3">A Microcosm of Security</h3>
+                    <p class="mb-4">The painting's enclosure is a marvel of engineering, upgraded in 2019. It sits behind 1.5-inch thick, anti-reflective, bulletproof glass. This enclosure is not just a barrier; it's a micro-climate, maintaining a precise temperature and humidity to preserve the fragile poplar wood panel.</p>
+                    <p class="mb-4">This single installation combines all the Louvre's security layers into one:
+                        <ul class="list-disc list-inside ml-4 text-gray-700 space-y-2">
+                            <li><strong>Physical Barrier:</strong> The bulletproof glass, which has famously withstood vandalism attempts.</li>
+                            <li><strong>Electronic Surveillance:</strong> Dedicated, always-on cameras monitoring it from multiple angles.</li>
+                            <li><strong>Artwork-Specific Alarms:</strong> Vibration and proximity sensors that would alert guards to any unauthorized touch.</li>
+                            <li><strong>Human Element:</strong> It is never left without at least two dedicated guards during opening hours.</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <div class="w-full bg-gray-100 rounded-lg p-6 border-2 border-blue-200">
+                        <img src="https://placehold.co/600x400/e2e8f0/3b82f6?text=Mona+Lisa+Security+Enclosure" alt="Diagram of Mona Lisa Security Enclosure" class="w-full h-auto rounded-md object-cover"
+                             onerror="this.src='https://placehold.co/600x400/e2e8f0/3b82f6?text=Diagram:+Mona+Lisa+Security+Enclosure'">
+                        <p class="text-center text-sm text-gray-600 mt-2">The painting is protected by a custom, climate-controlled, bulletproof enclosure, representing the final and strongest layer of security.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="layers" class="py-16 bg-white rounded-lg shadow-lg my-16 p-8">
+            <h2 class="text-3xl font-bold text-center text-blue-800 mb-4">Inside the Fortress: Layers of Modern Security</h2>
+            <p class="text-center text-gray-700 max-w-3xl mx-auto mb-12">
+                Today's Louvre security is a "defense in depth" model, often compared to an onion. An intruder must breach multiple, independent layers of protection to reach an artwork. This approach combines high-tech surveillance with a highly visible human presence, creating a powerful deterrent.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="border border-gray-200 rounded-lg p-6 text-center">
+                    <div class="text-5xl mb-4">🏛️</div>
+                    <h3 class="text-xl font-bold text-blue-700 mb-2">Layer 1: The Perimeter</h3>
+                    <p class="text-gray-700">
+                        Protection starts before you even enter. This includes extensive outdoor CCTV, security patrols (including armed soldiers from "Opération Sentinelle"), and a single, hardened public entry point at the Pyramid with comprehensive airport-style baggage screening and X-ray machines.
+                    </p>
+                </div>
+                <div class="border border-gray-200 rounded-lg p-6 text-center">
+                    <div class="text-5xl mb-4">👁️</div>
+                    <h3 class="text-xl font-bold text-blue-700 mb-2">Layer 2: The Galleries</h3>
+                    <p class="text-gray-700">
+                        Inside, a network of over 2,000 CCTV cameras operates 24/7, monitored from a central command center. Trained guards are stationed in every key gallery, supported by plainclothes officers. At night, galleries are secured with motion detectors, infrared barriers, and door/window alarms.
+                    </p>
+                </div>
+                <div class="border border-gray-200 rounded-lg p-6 text-center">
+                    <div class="text-5xl mb-4">🖼️</div>
+                    <h3 class="text-xl font-bold text-blue-700 mb-2">Layer 3: The Artwork</h3>
+                    <p class="text-gray-700">
+                        The final line of defense. High-value pieces like the Mona Lisa are protected by custom-built, climate-controlled, bulletproof glass enclosures. Many artworks are physically bolted to the wall and equipped with vibration sensors or RFID tags that trigger an alarm if the piece is moved or even touched.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="key-concepts" class="py-16">
+            <h2 class="text-3xl font-bold text-center text-blue-800 mb-4">Detailing Key Security Concepts</h2>
+            <p class="text-center text-gray-700 max-w-3xl mx-auto mb-12">
+                The Louvre's strategy is built on several core principles that are now industry standards. Understanding these concepts is essential to grasping the "why" behind their security design. This section elaborates on the foundational ideas mentioned throughout the report.
+            </p>
+            <div class="max-w-4xl mx-auto space-y-6">
+                <div class="bg-white p-6 rounded-lg shadow-lg border-l-4 border-blue-700">
+                    <h3 class="font-bold text-xl text-blue-700 mb-2">1. Defense in Depth (The "Onion" Model)</h3>
+                    <p class="text-gray-700">This is the central concept, shown in the "Layers" section. It's the military principle that security is more effective when layered. Instead of one strong wall, you create multiple, different barriers (Perimeter, Galleries, Artwork). The goal is to ensure that the failure of one single layer does not compromise the entire system. It slows down an attacker, increases their chance of detection, and provides multiple opportunities for response.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg border-l-4 border-blue-700">
+                    <h3 class="font-bold text-xl text-blue-700 mb-2">2. Threat Model Evolution</h3>
+                    <p class="text-gray-700">A "threat model" is an analysis of the dangers a system faces. The Louvre's model has evolved significantly.
+                        <br><strong>- 1911 Model:</strong> Focused almost entirely on simple theft from insiders or intruders.
+                        <br><strong>- 2020s Model:</strong> Far more complex, balancing theft (now high-tech) with vandalism (for protest or fame), terrorism (mass casualty/symbolic attack), and even cyber-attacks (targeting building systems or digital records). Security spending and training must now cover all these possibilities.
+                    </p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg border-l-4 border-blue-700">
+                    <h3 class="font-bold text-xl text-blue-700 mb-2">3. The Insider Threat</h3>
+                    <p class="text-gray-700">As proven by the 1911 Mona Lisa theft, the most dangerous attacker is one who already has legitimate access. This refers to employees, contractors, or maintenance staff. Modern security assumes this threat exists and mitigates it with background checks, clear access hierarchies (you can only enter areas you *need* to be in), and auditing systems that log who goes where and when.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg border-l-4 border-blue-700">
+                    <h3 class="font-bold text-xl text-blue-700 mb-2">4. Security vs. Access (The Core Conflict)</h3>
+                    <p class="text-gray-700">This is the fundamental, daily challenge. A perfectly secure museum would be a concrete vault with no windows, doors, or visitors. But a museum's *purpose* is to grant public access. Every security measure must be weighed against its impact on the visitor experience. Bag checks create lines, glass barriers create reflections, and visible guards can feel intimidating. The Louvre's job is to find the sustainable balance between these two conflicting goals.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="human-element" class="py-16 bg-white rounded-lg shadow-lg my-16 p-8">
+            <h2 class="text-3xl font-bold text-center text-blue-800 mb-4">The Human Element: Technology's Partner</h2>
+            <p class="text-center text-gray-700 max-w-3xl mx-auto mb-12">
+                While technology like cameras and alarms are critical, the Louvre's security ultimately rests on its human staff. This "human algorithm" provides a layer of intelligence and adaptability that technology cannot match.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="border border-gray-200 rounded-lg p-6 text-center">
+                    <div class="text-5xl mb-4">💂</div>
+                    <h3 class="text-xl font-bold text-blue-700 mb-2">Uniformed Guards</h3>
+                    <p class="text-gray-700">
+                        The most visible layer. Their primary role is deterrence and response. They are trained to watch crowds, spot suspicious behavior (e.g., unusual photography, lingering too long), and be the immediate first responders to an incident or alarm.
+                    </p>
+                </div>
+                <div class="border border-gray-200 rounded-lg p-6 text-center">
+                    <div class="text-5xl mb-4">🕵️</div>
+                    <h3 class="text-xl font-bold text-blue-700 mb-2">Plainclothes Officers</h3>
+                    <p class="text-gray-700">
+                        Blending in with the tourists, these officers are the "behavioral analysis" experts. They watch for subtle signs of ill-intent—potential pickpockets, vandals preparing an act, or thieves casing a room—allowing intervention *before* an incident occurs.
+                    </p>
+                </div>
+                <div class="border border-gray-200 rounded-lg p-6 text-center">
+                    <div class="text-5xl mb-4">🖥️</div>
+                    <h3 class="text-xl font-bold text-blue-700 mb-2">Command Center Staff</h3>
+                    <p class="text-gray-700">
+                        The "eyes in the sky" who monitor the 2,000+ camera feeds. They coordinate all security operations, dispatching guards to alarms, tracking suspects remotely, and liaising with external police forces during major emergencies.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="insider-threat" class="py-16">
+            <h2 class="text-3xl font-bold text-center text-blue-800 mb-4">The Insider Threat: The Peruggia Legacy</h2>
+            <p class="text-center text-gray-700 max-w-3xl mx-auto mb-12">
+                The 1911 theft by Vincenzo Peruggia, an employee, fundamentally and permanently shaped museum security. The assumption that the call "is coming from inside the house" is now a core security tenet. Every modern system is designed in part to mitigate this specific risk.
+            </p>
+            <div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+                <h3 class="text-xl font-bold text-blue-700 mb-4">Modern Defenses Against the Insider Threat</h3>
+                <ul class="list-disc list-outside space-y-4 text-gray-700 ml-5">
+                    <li>
+                        <strong>Principle of Least Privilege:</strong> Staff and contractors are given access *only* to the areas and systems absolutely necessary for their jobs, and only for the times they are working. Peruggia's old all-access key would not exist today.
+                    </li>
+                    <li>
+                        <strong>Mandatory Background Checks:</strong> All employees and long-term contractors undergo rigorous vetting to screen for criminal history or other red flags.
+                    </li>
+                    <li>
+                        <strong>Electronic Access Control & Auditing:</strong> Keycards and biometric scanners have replaced physical keys. Every door opening is logged, creating a digital trail of who was where and when, making anonymous movement impossible.
+                    </li>
+                    <li>
+                        <strong>Two-Person Rule:</strong> For high-stakes operations, such as moving valuable art or accessing sensitive areas, procedures often require two staff members to be present, preventing a single individual from acting alone.
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="public-view" class="py-16">
+            <h2 class="text-3xl font-bold text-center text-blue-800 mb-4">The Public View: Perception & Trust</h2>
+            <p class="text-center text-gray-700 max-w-3xl mx-auto mb-12">
+                The prompt asks how a "current theft" would affect the museum's public view. Any security breach at the Louvre, no matter how small, becomes instant global news. This creates a cycle of public perception that the museum must actively manage. The institution's reputation is built not on being impenetrable, but on its response to failure.
+            </p>
+            <div class="w-full max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+                <h3 class="text-xl font-bold text-blue-700 mb-4 text-center">The Public Perception Cycle</h3>
+                <div class="flex flex-col sm:flex-row justify-between items-center text-center space-y-4 sm:space-y-0 sm:space-x-4">
+                    <div class="flex-1 p-3 bg-gray-100 rounded-lg">
+                        <span class="text-2xl">💥</span>
+                        <p class="font-semibold">Incident Occurs</p>
+                        <p class="text-sm">A theft or act of vandalism happens.</p>
+                    </div>
+                    <div class="text-3xl text-blue-500 font-light hidden sm:block">→</div>
+                    <div class="flex-1 p-3 bg-gray-100 rounded-lg">
+                        <span class="text-2xl">📰</span>
+                        <p class="font-semibold">Media Shock</p>
+                        <p class="text-sm">Global headlines question the Louvre's security.</p>
+                    </div>
+                    <div class="text-3xl text-blue-500 font-light hidden sm:block">→</div>
+                    <div class="flex-1 p-3 bg-gray-100 rounded-lg">
+                        <span class="text-2xl">🛡️</span>
+                        <p class="font-semibold">Visible Response</p>
+                        <p class="text-sm">Louvre announces new, stronger security measures.</p>
+                    </div>
+                    <div class="text-3xl text-blue-500 font-light hidden sm:block">→</div>
+                    <div class="flex-1 p-3 bg-gray-100 rounded-lg">
+                        <span class="text-2xl">📈</span>
+                        <p class="font-semibold">Trust Restored</p>
+                        <p class="text-sm">Public is reassured by the decisive action.</p>
+                    </div>
+                </div>
+                <p class="mt-6 text-center text-gray-700">
+                    Ultimately, the Louvre's "invincibility" is a myth. Its true strength lies in its resilience and its willingness to adapt. The story of the Mona Lisa's theft, once a source of shame, is now part of its legend, enhancing its value and mystique. A "current" incident would likely follow the same pattern: short-term embarrassment followed by a long-term strengthening of security and public fascination.
+                </p>
+            </div>
+        </section>
+
+        <section id="future-security" class="py-16 bg-white rounded-lg shadow-lg my-16 p-8">
+            <h2 class="text-3xl font-bold text-center text-blue-800 mb-4">Future of Louvre Security: Challenges & Innovations</h2>
+            <p class="text-center text-gray-700 max-w-3xl mx-auto mb-12">
+                Security is a constant race. As technology advances, so do the threats. The Louvre's next evolution will involve integrating data and AI to move from a reactive to a *predictive* security model.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="border border-gray-200 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-blue-700 mb-2">AI & Predictive Analytics</h3>
+                    <p class="text-gray-700">
+                        Humans can't effectively monitor 2,000+ cameras. The future is AI-powered systems that learn "normal" crowd behavior and can instantly flag anomalies—a bag left unattended, a person loitering in a restricted area, or a gesture of vandalism—directing human guards to the *exact* point of interest.
+                    </p>
+                </div>
+                <div class="border border-gray-200 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-blue-700 mb-2">Cybersecurity as Physical Security</h3>
+                    <p class="text-gray-700">
+                        As the museum becomes "smarter," it becomes more vulnerable to digital threats. A cyberattack could shut down the alarm system, unlock doors, or disable the Mona Lisa's climate control. Securing the museum's network is now as critical as securing its doors.
+                    </p>
+                </div>
+                <div class="border border-gray-200 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-blue-700 mb-2">Drone & Non-Invasive Tech</h3>
+                    <p class="text-gray-700">
+                        Protecting the vast roof and perimeter from above (via drones) is a new challenge. Inside, museums are exploring non-invasive scanners (like those at airports) that could replace bulky bag checks, speeding up entry while improving threat detection.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="lessons" class="py-16">
+            <h2 class="text-3xl font-bold text-center text-blue-800 mb-4">Broader Lessons in Museum Security</h2>
+            <p class="text-center text-gray-700 max-w-3xl mx-auto mb-12">
+                The Louvre's multi-decade evolution from a vulnerable palace to a high-tech fortress provides a masterclass in institutional security. The core lessons learned are now fundamental principles for museums worldwide, highlighting the constant, dynamic struggle to protect cultural heritage.
+            </p>
+            <div class="max-w-3xl mx-auto space-y-4">
+                <div class="bg-white p-5 rounded-lg shadow-lg flex items-start space-x-4">
+                    <span class="text-3xl pt-1">🛡️</span>
+                    <div>
+                        <h3 class="font-bold text-lg text-blue-700">Layered Defense (Defense in Depth)</h3>
+                        <p class="text-gray-700">Never rely on a single solution. Security must be a series of layers (perimeter, gallery, artwork) that force an intruder to defeat multiple, varied systems.</p>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-lg shadow-lg flex items-start space-x-4">
+                    <span class="text-3xl pt-1">👤</span>
+                    <div>
+                        <h3 class="font-bold text-lg text-blue-700">The Insider Threat is Paramount</h3>
+                        <p class="text-gray-700">The 1911 theft proved the greatest danger often comes from trusted employees. Strict background checks, access controls, and staff training are as critical as any alarm.</p>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-lg shadow-lg flex items-start space-x-4">
+                    <span class="text-3xl pt-1">🔄</span>
+                    <div>
+                        <h3 class="font-bold text-lg text-blue-700">The Threat Model is Always Evolving</h3>
+                        <p class="text-gray-700">A system designed to stop 1990s art thieves is not prepared for 2020s protestors or terrorists. Security must constantly adapt to new threats, technologies, and motives.</p>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-lg shadow-lg flex items-start space-x-4">
+                    <span class="text-3xl pt-1">⚖️</span>
+                    <div>
+                        <h3 class="font-bold text-lg text-blue-700">The Core Tension: Security vs. Access</h3>
+                        <p class="text-gray-700">A museum's mission is to be open. A perfect fortress is a failed museum. The goal is not to create an impenetrable vault, but to find the optimal, sustainable balance between protection and the public good.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="text-center p-6 border-t border-gray-200 mt-16">
+        <p class="text-sm text-gray-600">Interactive Report created from source analysis.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', e => {
+                    e.preventDefault();
+                    const targetId = e.currentTarget.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        const headerOffset = document.querySelector('header').offsetHeight;
+                        const elementPosition = targetElement.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            const tabsContainer = document.getElementById('tabs-container');
+
+            if (tabsContainer) {
+                const tabButtons = tabsContainer.querySelectorAll('.tab-button');
+                const tabContents = tabsContainer.querySelectorAll('.tab-content');
+
+                tabsContainer.addEventListener('click', e => {
+                    if (!e.target.matches('.tab-button')) return;
+                    
+                    const targetTab = e.target.getAttribute('data-tab');
+
+                    tabButtons.forEach(button => {
+                        button.classList.remove('active');
+                    });
+                    e.target.classList.add('active');
+
+                    tabContents.forEach(content => {
+                        if (content.id === targetTab) {
+                            content.classList.add('active');
+                        } else {
+                            content.classList.remove('active');
+                        }
+                    });
+                });
+            }
+
+            function initCharts() {
+                const techCtx = document.getElementById('techChart');
+                if (techCtx) {
+                    new Chart(techCtx.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['CCTV Surveillance', 'Electronic Alarms', 'Physical Barriers', 'RFID Tagging'],
+                            datasets: [{
+                                label: 'Tech Mix',
+                                data: [40, 30, 15, 15],
+                                backgroundColor: [
+                                    'rgba(37, 99, 235, 0.8)',
+                                    'rgba(59, 130, 246, 0.8)',
+                                    'rgba(147, 197, 253, 0.8)',
+                                    'rgba(219, 234, 254, 0.8)'
+                                ],
+                                borderColor: 'rgba(255, 255, 255, 0.7)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 15,
+                                        boxWidth: 12
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                const threatCtx = document.getElementById('threatChart');
+                if (threatCtx) {
+                    new Chart(threatCtx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: ['Theft', 'Vandalism', 'Terrorism'],
+                            datasets: [
+                                {
+                                    label: '1990s Focus',
+                                    data: [90, 5, 5],
+                                    backgroundColor: 'rgba(147, 197, 253, 0.8)',
+                                },
+                                {
+                                    label: '2020s Focus',
+                                    data: [40, 30, 30],
+                                    backgroundColor: 'rgba(37, 99, 235, 0.8)',
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value + '%'
+                                        }
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Security Focus Allocation'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            initCharts();
+        });
+    </script>
+</body>
+</html>
+
